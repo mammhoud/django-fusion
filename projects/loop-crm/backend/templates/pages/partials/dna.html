@@ -1,0 +1,11 @@
+{% if page.dna %}
+  {% for block in page.dna %}
+    {% if block.block_type == "dna" %}
+      <section class="loop-dna" aria-label="Project heritage">
+        {% for item in block.value.items %}
+          <div class="loop-dna__item"><span class="loop-dna__key">{{ item.label }}</span><strong>{{ item.value }}</strong></div>
+        {% endfor %}
+      </section>
+    {% endif %}
+  {% endfor %}
+{% endif %}

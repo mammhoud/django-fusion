@@ -1,0 +1,80 @@
+---
+// Loop-CRM public landing layout — shared shell for /, /pricing/, /faq/,
+// /privacy/, /terms/. Content is driven by the Wagtail /apis/pages/ road; this
+// layout owns only the chrome (nav + footer) and the CRT visual system.
+import '../styles/globals.css';
+import '../styles/landing.css';
+import { iconSvg } from '@/lib/icons';
+import { Button } from '@/components/ui/button';
+
+interface NavLink {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  title?: string;
+  description?: string;
+  navLinks?: NavLink[];
+}
+
+const {
+  title = 'Loop CRM · from social impression to closed deal',
+  description = 'Loop CRM unifies CRM, social publishing, attribution, and finance. From social impression to closed deal, one platform, one source of truth.',
+  navLinks = [
+    { label: 'Product', href: '#modules' },
+    { label: 'How it works', href: '#how' },
+    { label: 'Pricing', href: '/pricing/' },
+    { label: 'FAQ', href: '/faq/' },
+    { label: 'Source', href: 'https://github.com/mammhoud/structa.cloud' },
+  ],
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Cpath d='M19 32a13 13 0 1 1 6 10' fill='none' stroke='%23eaeaea' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='m38 20 8 1-3 7' fill='none' stroke='%23e61919' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <title>{title}</title>
+  </head>
+  <body class="loop-site-body loop-landing">
+    <a class="loop-skip-link" href="#loop-main">Skip to content</a>
+    <header class="loop-nav">
+      <a class="loop-nav__brand" href="/" aria-label="Loop CRM home"><span class="loop-nav__mark" set:html={iconSvg('loop', 20)} /><span>Loop<span class="loop-nav__brand-sub">revenue workspace</span></span></a>
+      <nav class="loop-nav__links" aria-label="Landing">
+        {
+          navLinks.map((link) => (
+            link.href.startsWith('#') ? (
+              <a href={link.href}>{link.label}</a>
+            ) : (
+              <a href={link.href} target={link.href.startsWith('http') ? '_blank' : undefined} rel={link.href.startsWith('http') ? 'noreferrer' : undefined}>{link.label}</a>
+            )
+          ))
+        }
+      </nav>
+      <div class="loop-nav__actions">
+        <a class="loop-nav__signin" href="/accounts/login/">Sign in</a>
+        <Button asChild size="sm"><a href="/accounts/signup/">Start free</a></Button>
+      </div>
+    </header>
+
+    <main id="loop-main">
+      <slot />
+    </main>
+
+    <footer class="loop-footer">
+      <div class="loop-footer__brand">
+        <a class="loop-nav__brand" href="/"><span class="loop-nav__mark" set:html={iconSvg('loop', 18)} /><span>Loop CRM</span></a>
+        <p>From social impression to closed deal. One platform, one source of truth.</p>
+      </div>
+      <div class="loop-footer__col"><h4>Product</h4><a href="/crm/">CRM</a><a href="/marketing/">Publishing</a><a href="/finance/">Finance</a><a href="/attribution/">Attribution</a></div>
+      <div class="loop-footer__col"><h4>Company</h4><a href="https://github.com/mammhoud/structa.cloud" target="_blank" rel="noreferrer">Source</a><a href="/accounts/login/">Sign in</a><a href="/accounts/signup/">Create account</a></div>
+      <div class="loop-footer__col"><h4>Legal</h4><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div>
+      <p class="loop-footer__bottom">Loop CRM · structa.cloud · built from the Twenty and Postiz DNA</p>
+    </footer>
+  </body>
+</html>

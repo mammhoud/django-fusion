@@ -1,0 +1,21 @@
+{% if page.faq %}
+  {% for block in page.faq %}
+    {% if block.block_type == "faq" %}
+      {% with sec=block.value %}
+        <section class="loop-section">
+          {% if sec.eyebrow %}<p class="loop-eyebrow">{{ sec.eyebrow }}</p>{% endif %}
+          <h2>{{ sec.title }}</h2>
+          {% if sec.description %}<p class="loop-section__lede">{{ sec.description }}</p>{% endif %}
+          <div class="loop-faq">
+            {% for item in sec.items %}
+              <details class="loop-faq__item">
+                <summary><h3>{{ item.question }}</h3></summary>
+                {% if item.answer %}<p>{{ item.answer }}</p>{% endif %}
+              </details>
+            {% endfor %}
+          </div>
+        </section>
+      {% endwith %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

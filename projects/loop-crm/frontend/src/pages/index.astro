@@ -1,307 +1,115 @@
 ---
-import '../styles/globals.css';
-import PipelineDemo from '@/components/demo/PipelineDemo';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+// Landing homepage — data-driven from GET /apis/pages/home/ (Wagtail → JSON).
+// No hard-coded landing copy: sections render only when the page payload
+// provides them; when the backend is unreachable an explicit empty state is
+// shown instead of resurrecting static content.
+import LandingLayout from '@/layouts/LandingLayout.astro';
+import HeroSection from '@/components/landing/HeroSection.astro';
+import PricingSection from '@/components/landing/PricingSection.astro';
+import FaqSection from '@/components/landing/FaqSection.astro';
+import CtaSection from '@/components/landing/CtaSection.astro';
 import { iconSvg } from '@/lib/icons';
+import { fetchPage } from '@/lib/landing';
 
-const modules = [
-  {
-    key: 'crm',
-    label: 'CRM',
-    title: 'The relationship graph, not a spreadsheet',
-    copy: 'Companies, contacts, configurable pipelines, activities, and custom fields. Ownership and roles stay clear from first touch to close.',
-    href: '/crm/',
-  },
-  {
-    key: 'marketing',
-    label: 'Social publishing',
-    title: 'Plan, approve, and publish from one calendar',
-    copy: 'A channel-aware content calendar with media, approvals, and scheduled publishing. Providers are replaceable behind one connector surface.',
-    href: '/marketing/',
-  },
-  {
-    key: 'attribution',
-    label: 'Attribution + finance',
-    title: 'Every touchpoint traces to revenue',
-    copy: 'First, last, linear, time-decay, and position-based models. Won deals create invoices, payments, and recognized revenue automatically.',
-    href: '/finance/',
-  },
-];
-
-const steps = [
-  { n: '01', title: 'Connect channels', copy: 'Link your social accounts once. Loop CRM records every interaction as a touchpoint.' },
-  { n: '02', title: 'Run the content calendar', copy: 'Drafts move through approval to scheduled publishing, with honest status at every step.' },
-  { n: '03', title: 'Close deals with context', copy: 'Sales sees which content influenced each opportunity, in the deal record itself.' },
-  { n: '04', title: 'Recognize revenue', copy: 'A won deal creates the invoice, payment, and revenue event. No double entry.' },
-];
-
-const tiers = [
-  { name: 'Free', price: '$0', cadence: 'forever', copy: 'For small teams proving the loop.', features: ['1 workspace', '3 members', '1 pipeline', '5 scheduled posts per month'], cta: 'Start free' },
-  { name: 'Pro', price: '$29', cadence: 'per user / month', copy: 'For revenue teams running real campaigns.', features: ['Unlimited pipelines', '100 scheduled posts per month', 'All attribution models', 'Finance ledger', 'Workflow automation'], cta: 'Start free', featured: true },
-  { name: 'Enterprise', price: 'Custom', cadence: 'annual', copy: 'For organizations with compliance needs.', features: ['SSO and audit log', 'Custom fields', 'Dedicated support', 'On-prem or VPC deploy'], cta: 'Talk to us' },
-];
+const { ok, page, error } = await fetchPage('home');
 ---
-<!doctype html>
-<html lang="en" class="dark">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <meta name="description" content="Loop CRM unifies CRM, social publishing, attribution, and finance. From social impression to closed deal, one platform, one source of truth." />
-    <meta name="theme-color" content="#0a0a0a" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0a'/%3E%3Cpath d='M19 32a13 13 0 1 1 6 10' fill='none' stroke='%23eaeaea' stroke-width='6' stroke-linecap='round'/%3E%3Cpath d='m38 20 8 1-3 7' fill='none' stroke='%23e61919' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
-    <title>Loop CRM · from social impression to closed deal</title>
-  </head>
-  <body class="loop-site-body loop-landing">
-    <a class="loop-skip-link" href="#loop-main">Skip to content</a>
-    <header class="loop-nav">
-      <a class="loop-nav__brand" href="/" aria-label="Loop CRM home"><span class="loop-nav__mark" set:html={iconSvg('loop', 20)} /><span>Loop<span class="loop-nav__brand-sub">revenue workspace</span></span></a>
-      <nav class="loop-nav__links" aria-label="Landing">
-        <a href="#modules">Product</a>
-        <a href="#how">How it works</a>
-        <a href="#pricing">Pricing</a>
-        <a href="https://github.com/mammhoud/structa.cloud" target="_blank" rel="noreferrer">Source</a>
-      </nav>
-      <div class="loop-nav__actions">
-        <a class="loop-nav__signin" href="/accounts/login/">Sign in</a>
-        <Button asChild size="sm"><a href="/accounts/signup/">Start free</a></Button>
-      </div>
-    </header>
-
-    <main id="loop-main">
-      <section class="loop-hero">
-        <div class="loop-hero__copy">
-          <p class="loop-eyebrow">Loop CRM · unified revenue platform</p>
-          <h1>From social impression to closed deal, in one loop.</h1>
-          <p class="loop-hero__lede">CRM, social publishing, attribution, and finance in one workspace. Every touchpoint is traced to the revenue it creates.</p>
-          <div class="loop-hero__actions">
-            <Button asChild size="lg"><a href="/accounts/signup/">Start free</a></Button>
-            <Button asChild size="lg" variant="outline"><a href="/accounts/login/">Sign in to your workspace</a></Button>
-          </div>
-          <p class="loop-hero__note">Built from the Twenty and Postiz DNA · Django + Dramatiq runtime</p>
-        </div>
-        <div class="loop-hero__visual">
-          <PipelineDemo client:load />
+<LandingLayout
+  title={page?.seo_title || 'Loop CRM · from social impression to closed deal'}
+  description={page?.search_description || 'Loop CRM unifies CRM, social publishing, attribution, and finance. From social impression to closed deal, one platform, one source of truth.'}
+>
+  {
+    !ok || !page ? (
+      <section class="loop-empty">
+        <div class="loop-empty__box">
+          <p class="loop-eyebrow">Content unavailable</p>
+          <h1>Landing content is offline</h1>
+          <p>The backend that serves this page did not respond{error ? ` (${error})` : ''}. Start the Django backend and reload to see the Wagtail-managed landing.</p>
         </div>
       </section>
+    ) : (
+      <>
+        {page.hero && <HeroSection hero={page.hero} visual />}
 
-      <section class="loop-dna" aria-label="Project heritage">
-        <div class="loop-dna__item"><span class="loop-dna__key">CRM DNA</span><strong>Twenty</strong></div>
-        <div class="loop-dna__item"><span class="loop-dna__key">Publishing DNA</span><strong>Postiz</strong></div>
-        <div class="loop-dna__item"><span class="loop-dna__key">Runtime</span><strong>Django + Dramatiq</strong></div>
-      </section>
+        {
+          page.dna && page.dna.length > 0 && (
+            <section class="loop-dna" aria-label="Project heritage">
+              {page.dna.map((item) => (
+                <div class="loop-dna__item"><span class="loop-dna__key">{item.label}</span><strong>{item.value}</strong></div>
+              ))}
+            </section>
+          )
+        }
 
-      <section id="modules" class="loop-modules">
-        <div class="loop-section-head" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
-          <p class="loop-eyebrow">One platform</p>
-          <h2>Three modules, one source of truth</h2>
-          <p class="loop-section-lede">Sales, marketing, and RevOps stop syncing spreadsheets. Every record lives in the same workspace, so attribution survives the handoff.</p>
-        </div>
-        <div class="loop-modules__grid">
-          {modules.map((mod, i) => (
-            <a
-              class:list={['loop-module', i === 0 && 'loop-module--wide', i === 2 && 'loop-module--tall']}
-              href={mod.href}
-              x-data="{ shown: false }"
-              x-intersect.once="shown = true"
-              :class="shown && 'is-shown'"
-            >
-              <span class="loop-module__icon" set:html={iconSvg(mod.key, 20)} />
-              <span class="loop-module__label">{mod.label}</span>
-              <h3>{mod.title}</h3>
-              <p>{mod.copy}</p>
-              <span class="loop-module__more">Open {mod.label} <b aria-hidden="true">→</b></span>
-            </a>
-          ))}
-        </div>
-      </section>
+        {
+          page.features && page.features.length > 0 && (
+            <section id="modules" class="loop-modules">
+              <div class="loop-section-head" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
+                {page.features_head?.eyebrow && <p class="loop-eyebrow">{page.features_head.eyebrow}</p>}
+                {page.features_head?.title && <h2>{page.features_head.title}</h2>}
+                {page.features_head?.description && <p class="loop-section-lede">{page.features_head.description}</p>}
+              </div>
+              <div class="loop-modules__grid">
+                {page.features.map((mod, i) => (
+                  <a
+                    class:list={['loop-module', i === 0 && 'loop-module--wide', i === 2 && 'loop-module--tall']}
+                    href={mod.href || '/crm/'}
+                    x-data="{ shown: false }"
+                    x-intersect.once="shown = true"
+                    :class="shown && 'is-shown'"
+                  >
+                    <span class="loop-module__icon" set:html={iconSvg(mod.icon || 'crm', 20)} />
+                    {mod.label && <span class="loop-module__label">{mod.label}</span>}
+                    <h3>{mod.title}</h3>
+                    {mod.description && <p>{mod.description}</p>}
+                    <span class="loop-module__more">Open {mod.label || 'module'} <b aria-hidden="true">→</b></span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )
+        }
 
-      <section id="how" class="loop-how">
-        <div class="loop-section-head" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
-          <p class="loop-eyebrow">The loop</p>
-          <h2>Four steps, fully auditable</h2>
-        </div>
-        <ol class="loop-steps">
-          {steps.map((step) => (
-            <li class="loop-step" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
-              <span class="loop-step__n" aria-hidden="true">{step.n}</span>
-              <div><h3>{step.title}</h3><p>{step.copy}</p></div>
-            </li>
-          ))}
-        </ol>
-      </section>
+        {
+          page.steps && page.steps.length > 0 && (
+            <section id="how" class="loop-how">
+              <div class="loop-section-head" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
+                {page.steps_head?.eyebrow && <p class="loop-eyebrow">{page.steps_head.eyebrow}</p>}
+                {page.steps_head?.title && <h2>{page.steps_head.title}</h2>}
+                {page.steps_head?.description && <p class="loop-section-lede">{page.steps_head.description}</p>}
+              </div>
+              <ol class="loop-steps">
+                {page.steps.map((step) => (
+                  <li class="loop-step" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
+                    <span class="loop-step__n" aria-hidden="true">{step.number}</span>
+                    <div><h3>{step.title}</h3>{step.copy && <p>{step.copy}</p>}</div>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )
+        }
 
-      <section id="pricing" class="loop-pricing">
-        <div class="loop-section-head" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
-          <p class="loop-eyebrow">Pricing</p>
-          <h2>Start free, scale when the loop is proven</h2>
-        </div>
-        <div class="loop-tiers">
-          {tiers.map((tier) => (
-            <div class:list={['loop-tier', tier.featured && 'loop-tier--featured']} x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
-              {tier.featured && <Badge className="loop-tier__badge">Most popular</Badge>}
-              <h3>{tier.name}</h3>
-              <p class="loop-tier__price"><strong>{tier.price}</strong><span>{tier.cadence}</span></p>
-              <p class="loop-tier__copy">{tier.copy}</p>
-              <ul class="loop-tier__features">
-                {tier.features.map((feature) => <li>{feature}</li>)}
-              </ul>
-              <Button asChild variant={tier.featured ? 'default' : 'outline'}><a href="/accounts/signup/">{tier.cta}</a></Button>
-            </div>
-          ))}
-        </div>
-      </section>
+        {
+          page.stats && page.stats.length > 0 && (
+            <section class="loop-stats-band">
+              <div class="loop-section-head" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
+                {page.stats_head?.eyebrow && <p class="loop-eyebrow">{page.stats_head.eyebrow}</p>}
+                {page.stats_head?.title && <h2>{page.stats_head.title}</h2>}
+                {page.stats_head?.description && <p class="loop-section-lede">{page.stats_head.description}</p>}
+              </div>
+              <div class="loop-stats-grid">
+                {page.stats.map((stat) => (
+                  <div class="loop-stat"><strong>{stat.value}{stat.suffix}</strong><span>{stat.label}</span></div>
+                ))}
+              </div>
+            </section>
+          )
+        }
 
-      <section class="loop-cta" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
-        <p class="loop-eyebrow">Ready when you are</p>
-        <h2>Start closing the loop</h2>
-        <p>Connect a channel, publish one post, and watch it trace to a deal.</p>
-        <Button asChild size="lg"><a href="/accounts/signup/">Start free</a></Button>
-      </section>
-    </main>
-
-    <footer class="loop-footer">
-      <div class="loop-footer__brand">
-        <a class="loop-nav__brand" href="/"><span class="loop-nav__mark" set:html={iconSvg('loop', 18)} /><span>Loop CRM</span></a>
-        <p>From social impression to closed deal. One platform, one source of truth.</p>
-      </div>
-      <div class="loop-footer__col"><h4>Product</h4><a href="/crm/">CRM</a><a href="/marketing/">Publishing</a><a href="/finance/">Finance</a><a href="/attribution/">Attribution</a></div>
-      <div class="loop-footer__col"><h4>Company</h4><a href="https://github.com/mammhoud/structa.cloud" target="_blank" rel="noreferrer">Source</a><a href="/accounts/login/">Sign in</a><a href="/accounts/signup/">Create account</a></div>
-      <div class="loop-footer__col"><h4>Legal</h4><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div>
-      <p class="loop-footer__bottom">Loop CRM · structa.cloud · open source since 2026</p>
-    </footer>
-  </body>
-</html>
-
-<style>
-  .loop-skip-link { position:fixed; z-index:60; top:.75rem; left:.75rem; transform:translateY(-150%); padding:.55rem .75rem; border:1px solid var(--loop-accent); border-radius:.45rem; background:var(--loop-panel-raised); color:var(--loop-accent-bright); transition:transform .2s ease; }
-  .loop-skip-link:focus { transform:translateY(0); }
-  .loop-landing { position:relative; overflow-x:hidden; background:radial-gradient(circle at 78% -8%, rgba(94,159,139,.2), transparent 34rem), var(--loop-bg-deep); }
-  .loop-landing::before { position:fixed; z-index:0; inset:0; pointer-events:none; content:""; opacity:.22; background-image:linear-gradient(rgba(139,203,181,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(139,203,181,.04) 1px, transparent 1px); background-size:5rem 5rem; mask-image:linear-gradient(to bottom, black, transparent 80%); }
-  main, header, footer { position:relative; z-index:1; }
-  .loop-nav { position:sticky; z-index:40; top:0; display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.7rem clamp(1rem,5vw,4.5rem); border-bottom:1px solid rgba(42,59,61,.6); background:rgba(8,16,19,.72); backdrop-filter:blur(18px); }
-  .loop-nav__brand { display:flex; align-items:center; gap:.6rem; color:var(--loop-ink); text-decoration:none; letter-spacing:-.04em; }
-  .loop-nav__brand > span:last-child { font-size:1.1rem; font-weight:700; }
-  .loop-nav__brand-sub { display:block; color:var(--loop-dim); font:500 .5rem/1 "JetBrains Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
-  .loop-nav__mark { display:grid; place-items:center; width:2.1rem; height:2.1rem; border:1px solid var(--loop-accent); background:var(--loop-panel); color:var(--loop-accent-bright); }
-  .loop-nav__links { display:flex; gap:1.6rem; }
-  .loop-nav__links a { color:var(--loop-muted); font-size:.88rem; text-decoration:none; transition:color .2s ease; }
-  .loop-nav__links a:hover { color:var(--loop-accent-bright); }
-  .loop-nav__actions { display:flex; align-items:center; gap:.9rem; }
-  .loop-nav__signin { color:var(--loop-muted); font-size:.88rem; text-decoration:none; transition:color .2s ease; }
-  .loop-nav__signin:hover { color:var(--loop-accent-bright); }
-
-  .loop-hero { display:grid; grid-template-columns:minmax(0, 1.05fr) minmax(0, .95fr); gap:clamp(2rem,5vw,5rem); align-items:center; min-height:min(46rem, calc(100dvh - 4rem)); padding:clamp(3rem,7vw,6rem) clamp(1rem,5vw,4.5rem) clamp(3rem,6vw,5rem); }
-  .loop-hero__copy { animation:loop-rise .7s cubic-bezier(.16,1,.3,1) both; }
-  .loop-eyebrow { margin:0 0 .8rem; color:var(--loop-accent); font:600 .64rem "JetBrains Mono",monospace; letter-spacing:.16em; text-transform:uppercase; }
-  .loop-hero h1 { margin:0; max-width:20ch; color:var(--loop-ink); font-size:clamp(2.6rem,6vw,5.2rem); font-weight:700; line-height:1.04; letter-spacing:-.06em; text-wrap:balance; }
-  .loop-hero__lede { max-width:38rem; margin:1.4rem 0 0; color:var(--loop-muted); font-size:clamp(.98rem,1.4vw,1.14rem); line-height:1.65; text-wrap:pretty; }
-  .loop-hero__actions { display:flex; flex-wrap:wrap; gap:.8rem; margin-top:2rem; }
-  .loop-hero__note { margin:1.4rem 0 0; color:var(--loop-dim); font:500 .62rem "JetBrains Mono",monospace; letter-spacing:.06em; }
-  .loop-hero__visual { animation:loop-rise .7s .12s cubic-bezier(.16,1,.3,1) both; }
-
-  .loop-dna { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid var(--loop-line-soft); border-bottom:1px solid var(--loop-line-soft); }
-  .loop-dna__item { display:flex; flex-direction:column; gap:.3rem; padding:1.2rem clamp(1rem,3vw,2.5rem); border-right:1px solid var(--loop-line-soft); }
-  .loop-dna__item:last-child { border-right:0; }
-  .loop-dna__key { color:var(--loop-dim); font:600 .56rem "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
-  .loop-dna__item strong { color:var(--loop-ink); font-size:1rem; font-weight:600; }
-
-  .loop-modules, .loop-how, .loop-pricing, .loop-cta { padding:clamp(4rem,9vw,8rem) clamp(1rem,5vw,4.5rem); }
-  .loop-section-head { max-width:44rem; opacity:0; transform:translateY(1.2rem); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
-  .loop-section-head.is-shown { opacity:1; transform:none; }
-  .loop-section-head h2 { margin:0; color:var(--loop-ink); font-size:clamp(2rem,4.4vw,3.6rem); font-weight:700; line-height:1.04; letter-spacing:-.06em; text-wrap:balance; }
-  .loop-section-lede { max-width:42rem; margin:1rem 0 0; color:var(--loop-muted); font-size:1.02rem; line-height:1.65; }
-  .loop-modules__grid { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:1rem; margin-top:3rem; }
-  .loop-module { position:relative; display:flex; flex-direction:column; grid-column:span 4; min-height:17rem; padding:1.6rem; border:1px solid var(--loop-line); background:var(--loop-panel); color:var(--loop-ink); text-decoration:none; opacity:0; transform:translateY(1.2rem); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1), border-color .25s ease, background .25s ease; }
-  .loop-module.is-shown { opacity:1; transform:none; }
-  .loop-module:hover { border-color:#477c6c; background:#162a28; transform:translateY(-3px); }
-  .loop-module--wide { grid-column:span 7; min-height:20rem; }
-  .loop-module--tall { grid-column:5 / span 8; margin-top:-2.5rem; }
-  .loop-module__icon { display:grid; place-items:center; width:2.6rem; height:2.6rem; border:1px solid var(--loop-line); background:var(--loop-bg-deep); color:var(--loop-accent); }
-  .loop-module__label { margin-top:1.4rem; color:var(--loop-accent); font:600 .6rem "JetBrains Mono",monospace; letter-spacing:.14em; text-transform:uppercase; }
-  .loop-module h3 { margin:.6rem 0 0; font-size:1.55rem; font-weight:600; letter-spacing:-.04em; line-height:1.08; text-wrap:balance; }
-  .loop-module p { max-width:36rem; margin:.8rem 0 0; color:var(--loop-muted); line-height:1.6; }
-  .loop-module__more { margin-top:auto; padding-top:1.4rem; color:var(--loop-accent-bright); font:500 .72rem "JetBrains Mono",monospace; }
-  .loop-module__more b { transition:transform .2s ease; }
-  .loop-module:hover .loop-module__more b { transform:translateX(4px); }
-
-  .loop-steps { display:grid; gap:0; margin:3rem 0 0; padding:0; list-style:none; border-top:1px solid var(--loop-line-soft); }
-  .loop-step { display:grid; grid-template-columns:4rem minmax(0,1fr); gap:1.2rem; padding:1.6rem 0; border-bottom:1px solid var(--loop-line-soft); opacity:0; transform:translateY(.9rem); transition:opacity .55s cubic-bezier(.16,1,.3,1), transform .55s cubic-bezier(.16,1,.3,1); }
-  .loop-step.is-shown { opacity:1; transform:none; }
-  .loop-step__n { color:var(--loop-accent); font:600 1.05rem "JetBrains Mono",monospace; }
-  .loop-step h3 { margin:0; color:var(--loop-ink); font-size:1.3rem; font-weight:600; letter-spacing:-.03em; }
-  .loop-step p { max-width:40rem; margin:.45rem 0 0; color:var(--loop-muted); line-height:1.6; }
-
-  .loop-tiers { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; align-items:stretch; margin-top:3rem; }
-  .loop-tier { position:relative; display:flex; flex-direction:column; padding:1.7rem; border:1px solid var(--loop-line); background:var(--loop-panel); opacity:0; transform:translateY(1.1rem); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1), border-color .25s ease; }
-  .loop-tier.is-shown { opacity:1; transform:none; }
-  .loop-tier--featured { border-color:#3d7164; background:linear-gradient(160deg, rgba(25,59,53,.55), rgba(17,27,30,.85)); box-shadow:0 1.5rem 3.5rem rgba(3,17,19,.5); }
-  .loop-tier__badge { position:absolute; top:-.65rem; left:1.4rem; }
-  .loop-tier h3 { margin:0; color:var(--loop-accent-bright); font-size:1rem; font-weight:700; letter-spacing:-.02em; }
-  .loop-tier__price { display:flex; align-items:baseline; gap:.55rem; margin:1rem 0 0; }
-  .loop-tier__price strong { color:var(--loop-ink); font-size:2.4rem; font-weight:700; letter-spacing:-.06em; }
-  .loop-tier__price span { color:var(--loop-dim); font:500 .68rem "JetBrains Mono",monospace; }
-  .loop-tier__copy { margin:1rem 0 0; color:var(--loop-muted); font-size:.9rem; line-height:1.55; }
-  .loop-tier__features { display:grid; gap:.55rem; margin:1.4rem 0; padding:1.2rem 0 0; border-top:1px solid var(--loop-line-soft); list-style:none; }
-  .loop-tier__features li { position:relative; padding-left:1.2rem; color:var(--loop-muted); font-size:.88rem; }
-  .loop-tier__features li::before { position:absolute; left:0; top:.5rem; width:.35rem; height:.35rem; background:var(--loop-accent); content:""; }
-  .loop-tier :global([data-slot="button"]) { margin-top:auto; }
-
-  .loop-cta { display:grid; justify-items:start; gap:1rem; max-width:64rem; margin:0 auto; padding-bottom:clamp(5rem,10vw,9rem); opacity:0; transform:translateY(1.2rem); transition:opacity .6s cubic-bezier(.16,1,.3,1), transform .6s cubic-bezier(.16,1,.3,1); }
-  .loop-cta.is-shown { opacity:1; transform:none; }
-  .loop-cta h2 { margin:0; color:var(--loop-ink); font-size:clamp(2.4rem,5.5vw,4.4rem); font-weight:700; line-height:1.04; letter-spacing:-.055em; }
-  .loop-cta p { margin:0; color:var(--loop-muted); font-size:1.05rem; }
-
-  .loop-footer { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:2rem; padding:3.5rem clamp(1rem,5vw,4.5rem) 2rem; border-top:1px solid var(--loop-line-soft); }
-  .loop-footer__brand p { max-width:24rem; margin:1rem 0 0; color:var(--loop-dim); font-size:.85rem; line-height:1.6; }
-  .loop-footer__col { display:grid; gap:.55rem; align-content:start; }
-  .loop-footer__col h4 { margin:0; color:var(--loop-ink); font:600 .6rem "JetBrains Mono",monospace; letter-spacing:.14em; text-transform:uppercase; }
-  .loop-footer__col a, .loop-footer__col span { color:var(--loop-muted); font-size:.86rem; text-decoration:none; transition:color .2s ease; }
-  .loop-footer__col a:hover { color:var(--loop-accent-bright); }
-  .loop-footer__bottom { grid-column:1 / -1; margin:2rem 0 0; padding-top:1.4rem; border-top:1px solid var(--loop-line-soft); color:var(--loop-dim); font:500 .62rem "JetBrains Mono",monospace; }
-
-  .loop-pipeline { border:1px solid var(--loop-line); background:var(--loop-panel); box-shadow:0 2.5rem 5rem var(--loop-shadow), inset 0 1px 0 rgba(234,234,234,.06); overflow:hidden; }
-  .loop-pipeline__header { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1.1rem 1.3rem; border-bottom:1px solid var(--loop-line-soft); }
-  .loop-pipeline__header > div { display:grid; gap:.2rem; }
-  .loop-pipeline__kicker, .loop-pipeline__revenue span { color:var(--loop-dim); font:600 .56rem "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
-  .loop-pipeline__header strong { color:var(--loop-ink); font-size:1.05rem; font-weight:600; letter-spacing:-.02em; }
-  .loop-pipeline__revenue { text-align:right; }
-  .loop-pipeline__revenue strong { color:var(--loop-accent-bright); font:700 1.3rem "JetBrains Mono",monospace; }
-  .loop-pipeline__board { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.75rem; padding:1.1rem 1.3rem 1.3rem; }
-  .loop-pipeline__col { min-width:0; }
-  .loop-pipeline__col-head { display:flex; align-items:center; gap:.45rem; padding:0 .15rem .55rem; color:var(--loop-muted); font:600 .6rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
-  .loop-pipeline__dot { width:.4rem; height:.4rem; background:var(--loop-dim); }
-  .loop-pipeline__dot--lead { background:#d9b26c; }
-  .loop-pipeline__dot--qualified { background:#7fb4d9; }
-  .loop-pipeline__dot--won { background:var(--loop-accent); box-shadow:0 0 .6rem rgba(139,203,181,.8); }
-  .loop-pipeline__total { margin-left:auto; color:var(--loop-dim); }
-  .loop-pipeline__col-body { display:grid; gap:.5rem; min-height:9rem; }
-  .loop-pipeline__card { display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.6rem .7rem; border:1px solid var(--loop-line); background:var(--loop-panel-raised); color:var(--loop-ink); font-size:.78rem; animation:loop-card-in .45s cubic-bezier(.16,1,.3,1) both; transition:border-color .2s ease, transform .2s ease; }
-  .loop-pipeline__card:hover { border-color:#477c6c; transform:translateY(-1px); }
-  .loop-pipeline__card strong { color:var(--loop-accent-bright); font:600 .72rem "JetBrains Mono",monospace; }
-  .loop-pipeline__foot { display:flex; justify-content:space-between; gap:1rem; padding:.7rem 1.3rem; border-top:1px solid var(--loop-line-soft); color:var(--loop-dim); font:500 .56rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
-  @keyframes loop-card-in { from { opacity:0; transform:translateY(.4rem) scale(.97); } to { opacity:1; transform:none; } }
-  @keyframes loop-rise { from { opacity:0; transform:translateY(1.4rem); } to { opacity:1; transform:none; } }
-  @media (max-width:900px) {
-    .loop-hero { grid-template-columns:1fr; min-height:auto; }
-    .loop-hero__visual { order:-1; }
-    .loop-modules__grid { grid-template-columns:1fr; }
-    .loop-module, .loop-module--wide, .loop-module--tall { grid-column:span 1; min-height:0; margin-top:0; }
-    .loop-tiers { grid-template-columns:1fr; }
-    .loop-dna { grid-template-columns:repeat(2,1fr); }
-    .loop-dna__item:nth-child(2) { border-right:0; }
-    .loop-dna__item:nth-child(-n+2) { border-bottom:1px solid var(--loop-line-soft); }
-    .loop-dna__item:nth-child(3) { grid-column:1 / -1; border-right:0; }
-    .loop-nav__links { display:none; }
-    .loop-footer { grid-template-columns:1fr 1fr; }
+        {page.pricing && <PricingSection pricing={page.pricing} head={page.pricing_head} />}
+        {page.faq && <FaqSection faq={page.faq} head={page.faq_head} />}
+        {page.cta && <CtaSection cta={page.cta} />}
+      </>
+    )
   }
-  @media (max-width:560px) {
-    .loop-step { grid-template-columns:2.6rem minmax(0,1fr); }
-    .loop-footer { grid-template-columns:1fr; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .loop-hero__copy, .loop-hero__visual, .loop-section-head, .loop-module, .loop-step, .loop-tier, .loop-cta { opacity:1 !important; transform:none !important; animation:none; }
-    .loop-landing *, .loop-landing *::before { transition:none !important; }
-  }
-</style>
+</LandingLayout>

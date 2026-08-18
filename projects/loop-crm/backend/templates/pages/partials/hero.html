@@ -1,0 +1,28 @@
+{% if page.hero %}
+  {% for block in page.hero %}
+    {% if block.block_type == "hero" %}
+      {% with hero=block.value %}
+        <section class="loop-hero">
+          {% if hero.badge %}<p class="loop-eyebrow">{{ hero.badge }}</p>{% endif %}
+          <h1>{{ hero.title }}{% if hero.accent %} <span class="accent">{{ hero.accent }}</span>{% endif %}</h1>
+          {% if hero.subtitle %}<p class="loop-lede">{{ hero.subtitle }}</p>{% endif %}
+          {% if hero.primary_cta or hero.secondary_cta %}
+            <div class="loop-actions">
+              {% if hero.primary_cta %}
+                {% with btn=hero.primary_cta %}
+                  <a class="loop-btn loop-btn--primary" href="{% if btn.page %}{{ btn.page.url }}{% elif btn.href %}{{ btn.href }}{% else %}#{% endif %}">{% if btn.label %}{{ btn.label }}{% elif btn.page %}{{ btn.page.title }}{% else %}Start free{% endif %}</a>
+                {% endwith %}
+              {% endif %}
+              {% if hero.secondary_cta %}
+                {% with btn=hero.secondary_cta %}
+                  <a class="loop-btn loop-btn--outline" href="{% if btn.page %}{{ btn.page.url }}{% elif btn.href %}{{ btn.href }}{% else %}#{% endif %}">{% if btn.label %}{{ btn.label }}{% elif btn.page %}{{ btn.page.title }}{% else %}Sign in{% endif %}</a>
+                {% endwith %}
+              {% endif %}
+            </div>
+          {% endif %}
+          {% if hero.note %}<p class="loop-note">{{ hero.note }}</p>{% endif %}
+        </section>
+      {% endwith %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

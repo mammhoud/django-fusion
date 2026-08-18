@@ -1,0 +1,32 @@
+---
+// Pricing — data-driven from GET /apis/pages/pricing/ (Wagtail → JSON).
+import LandingLayout from '@/layouts/LandingLayout.astro';
+import HeroSection from '@/components/landing/HeroSection.astro';
+import PricingSection from '@/components/landing/PricingSection.astro';
+import FaqSection from '@/components/landing/FaqSection.astro';
+import CtaSection from '@/components/landing/CtaSection.astro';
+import EmptyState from '@/components/landing/EmptyState.astro';
+import { fetchPage } from '@/lib/landing';
+
+const { ok, page, error } = await fetchPage('pricing');
+
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'FAQ', href: '/faq/' },
+  { label: 'Source', href: 'https://github.com/mammhoud/structa.cloud' },
+];
+---
+<LandingLayout title={page?.seo_title || 'Pricing — Loop CRM'} description={page?.search_description || 'Loop CRM pricing: start free, scale when the loop is proven.'} navLinks={navLinks}>
+  {
+    !ok || !page ? (
+      <EmptyState error={error} />
+    ) : (
+      <>
+        {page.hero && <HeroSection hero={page.hero} />}
+        {page.pricing && <PricingSection pricing={page.pricing} head={page.pricing_head} />}
+        {page.faq && <FaqSection faq={page.faq} head={page.faq_head} />}
+        {page.cta && <CtaSection cta={page.cta} />}
+      </>
+    )
+  }
+</LandingLayout>

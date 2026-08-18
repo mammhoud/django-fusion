@@ -1,0 +1,40 @@
+---
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import type { PricingTier, SectionHead } from '@/lib/landing';
+
+interface Props {
+  pricing: PricingTier[];
+  head?: SectionHead;
+}
+const { pricing, head } = Astro.props;
+---
+{
+  pricing && pricing.length > 0 && (
+    <section id="pricing" class="loop-pricing">
+      <div class="loop-section-head" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
+        {head?.eyebrow && <p class="loop-eyebrow">{head.eyebrow}</p>}
+        {head?.title && <h2>{head.title}</h2>}
+        {head?.description && <p class="loop-section-lede">{head.description}</p>}
+      </div>
+      <div class="loop-tiers">
+        {pricing.map((tier) => (
+          <div class:list={['loop-tier', tier.featured && 'loop-tier--featured']} x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
+            {tier.featured && <Badge className="loop-tier__badge">Most popular</Badge>}
+            <h3>{tier.name}</h3>
+            <p class="loop-tier__price"><strong>{tier.price}</strong>{tier.period && <span>{tier.period}</span>}</p>
+            {tier.description && <p class="loop-tier__copy">{tier.description}</p>}
+            {tier.features && tier.features.length > 0 && (
+              <ul class="loop-tier__features">
+                {tier.features.map((feature) => <li>{feature}</li>)}
+              </ul>
+            )}
+            <Button asChild variant={tier.featured ? 'default' : 'outline'}>
+              <a href={tier.cta_href || '/accounts/signup/'}>{tier.cta_label || 'Start free'}</a>
+            </Button>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}

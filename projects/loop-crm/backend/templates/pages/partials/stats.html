@@ -1,0 +1,16 @@
+{% if page.stats %}
+  {% for block in page.stats %}
+    {% if block.block_type == "stats" %}
+      {% with sec=block.value %}
+        <section class="loop-section">
+          {% if sec.title %}<h2>{{ sec.title }}</h2>{% endif %}
+          <div class="loop-stats">
+            {% for stat in sec.stats %}
+              <div class="loop-stat"><strong>{{ stat.value }}{{ stat.suffix }}</strong><span>{{ stat.label }}</span></div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endwith %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

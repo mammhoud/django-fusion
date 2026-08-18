@@ -1,6 +1,6 @@
 # Loop-CRM — Wagtail Landing, Subscription/Billing, and Webapp Enhancement Plan
 
-> **Status:** Proposed
+> **Status:** Phases 0–4 shipped (2026-08-18) · Phases 5–8 planned
 > **Date:** 2026-08-18
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
 > **Related:** [`merge-plan.md`](merge-plan.md) · [`projects/loop-crm/docs/DESIGN_SYSTEM.md`](../../../projects/loop-crm/docs/DESIGN_SYSTEM.md) · [`docs/plans/editions/08-tenant-schemas.md`](../editions/08-tenant-schemas.md) · [`libs/django-fusion/docs/06-forms-and-tables.md`](../../../libs/django-fusion/docs/06-forms-and-tables.md)
@@ -464,35 +464,43 @@ covering:
 
 ## 17. Implementation steps (phases)
 
-### Phase 0 — Remove license (small, first PR)
+### Phase 0 — Remove license (small, first PR) — ✅ shipped
 - `index.astro`: delete DNA `License` item, `AGPL-3.0` hero note, footer
-  `<span>AGPL-3.0</span>`; `terms.astro`: SaaS terms copy; `merge-plan.md`
-  header line; grep for remaining `licen[sc]e`/`AGPL` claims (exclude
-  `package-lock.json` third-party metadata). Verify with `npm run check`.
+  `<span>AGPL-3.0</span>`; `terms.astro` + `privacy.astro`: SaaS copy;
+  `merge-plan.md` header line; grep clean (excludes `package-lock.json`
+  third-party metadata + `dist/` artifacts). Verified with `npm run check`.
+  New seed copy carries a test guard (`apps/pages/tests.py`).
 
-### Phase 1 — Add Wagtail to the backend
+### Phase 1 — Add Wagtail to the backend — ✅ shipped
 - `INSTALLED_APPS` += `wagtail*` apps + `apps.pages` + `apps.content`;
-  `WAGTAIL_SITE_NAME`; `urls.py` mounts `/cms/` (admin + documents/images),
-  Wagtail catch-all gated for admin preview only; `TEMPLATES` page dir;
-  `migrate`; `make backend-check`.
+  `WAGTAIL_SITE_NAME` + `WAGTAILADMIN_BASE_URL`; `urls.py` mounts `/cms/`
+  (admin + documents + images), trailing Wagtail catch-all for editor
+  previews only; `migrate` + `make backend-check` green.
 
-### Phase 2 — Wagtail page models + content blocks
-- `apps/content/blocks.py` (Hero, CTA, Features, Steps, Pricing, FAQ, Stats,
-  Button/Link with page chooser); `apps/pages/models.py` (`LandingPage`
-  abstract, `HomePage`, `PricingPage`, `FaqPage`, `PrivacyPage`, `TermsPage`);
-  root-page `post_migrate`/seed; page templates for Wagtail preview;
-  `backend/templates/pages/*.html`.
+### Phase 2 — Wagtail page models + content blocks — ✅ shipped
+- `apps/content/blocks.py` (Hero, DNA band, CTA, Features, Steps, Stats,
+  Pricing, FAQ, Button/Link with page chooser); `apps/pages/models.py`
+  (`LandingPage` abstract, `HomePage`, `PricingPage`, `FaqPage`, `PrivacyPage`,
+  `TermsPage`); migration `apps/pages/0001_initial`; Wagtail preview templates
+  `backend/templates/pages/{base,home,pricing,faq,privacy,terms}.html` +
+  `partials/`.
 
-### Phase 3 — Public JSON data road + Astro landing
-- `apps/pages/api.py` — `page_data_api` (port `_stream_to_plain`,
-  `_button_to_dict`, `_page_to_dict`); mount `/apis/pages/<slug>/`;
-  `astro.config.mjs` proxy += `/apis`; `index.astro`/`pricing.astro`/
-  `faq.astro` fetch and render from JSON; skeleton/empty state (no hard-coded
-  fallback).
+### Phase 3 — Public JSON data road + Astro landing — ✅ shipped
+- `apps/pages/api.py` — `page_data_api` + `page_list_api` (port
+  `_stream_to_plain`, `_button_to_dict`, `_normalize_page_links`,
+  `_page_to_dict`; sections also expose `<field>_head` = editor-managed
+  section headings); mounted at `/apis/pages/<slug>/` + `/apis/pages/`;
+  `astro.config.mjs` proxy += `/apis` `/cms` `/documents` `/images` and
+  `PUBLIC_BACKEND_URL` define; `index.astro` + new `pricing.astro`/
+  `faq.astro` + `privacy.astro`/`terms.astro` fetch and render from JSON via
+  `src/lib/landing.ts` + shared `LandingLayout.astro` and landing section
+  components; explicit empty state (no hard-coded fallback).
 
-### Phase 4 — Seed + Makefile
-- `seed_pages.py` (idempotent, current copy as initial content); backend
-  Makefile `seed-pages` + project Makefile `backend-seed-pages`; docs updated.
+### Phase 4 — Seed + Makefile — ✅ shipped
+- `apps/pages/management/commands/seed_pages.py` (idempotent, replaces the
+  Wagtail default placeholder HomePage, `--refresh` restores seeded copy
+  without clobbering editor edits); backend Makefile `seed-pages` + project
+  Makefile `backend-seed-pages`; `apps/pages/tests.py` pins seed + API contract.
 
 ### Phase 5 — Billing & subscriptions (Stripe)
 - `apps/billing` (Plan, BillingAccount, Seat); `configs/env.py` +=

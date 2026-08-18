@@ -1,0 +1,27 @@
+---
+import { Button } from '@/components/ui/button';
+import type { CtaData } from '@/lib/landing';
+
+interface Props {
+  cta: CtaData;
+}
+const { cta } = Astro.props;
+---
+<section class="loop-cta" x-data="{ shown: false }" x-intersect.once="shown = true" :class="shown && 'is-shown'">
+  {cta.title && <h2>{cta.title}</h2>}
+  {cta.subtitle && <p>{cta.subtitle}</p>}
+  {(cta.primary_cta || cta.secondary_cta) && (
+    <div class="loop-hero__actions">
+      {cta.primary_cta && (
+        <Button asChild size="lg" variant={cta.primary_cta.style === 'outline' || cta.primary_cta.style === 'secondary' ? 'outline' : 'default'}>
+          <a href={cta.primary_cta.href || '/accounts/signup/'}>{cta.primary_cta.label || 'Start free'}</a>
+        </Button>
+      )}
+      {cta.secondary_cta && (
+        <Button asChild size="lg" variant="outline">
+          <a href={cta.secondary_cta.href || '/accounts/login/'}>{cta.secondary_cta.label || 'Sign in'}</a>
+        </Button>
+      )}
+    </div>
+  )}
+</section>

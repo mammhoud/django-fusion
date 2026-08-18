@@ -38,10 +38,16 @@ export default defineConfig({
         ),
       },
     },
+    define: {
+      // Absolute backend URL for server-side fetch() in .astro frontmatter
+      // (landing pages pull /apis/pages/<slug>/ at build/dev time).
+      'import.meta.env.PUBLIC_BACKEND_URL': JSON.stringify(BACKEND_URL),
+    },
     plugins: [tailwindcss()],
     server: {
       proxy: {
         '/api': { target: BACKEND_URL, changeOrigin: true },
+        '/apis': { target: BACKEND_URL, changeOrigin: true },
         '/bolt': { target: BACKEND_URL, changeOrigin: true },
         '/accounts': { target: BACKEND_URL, changeOrigin: true },
         '/account': { target: BACKEND_URL, changeOrigin: true },
@@ -49,6 +55,9 @@ export default defineConfig({
         '/static': { target: BACKEND_URL, changeOrigin: true },
         '/media': { target: BACKEND_URL, changeOrigin: true },
         '/admin': { target: BACKEND_URL, changeOrigin: true },
+        '/cms': { target: BACKEND_URL, changeOrigin: true },
+        '/documents': { target: BACKEND_URL, changeOrigin: true },
+        '/images': { target: BACKEND_URL, changeOrigin: true },
         '/fragment': { target: BACKEND_URL, changeOrigin: true },
         '/fragments': { target: BACKEND_URL, changeOrigin: true },
         '/ws': { target: BACKEND_URL, changeOrigin: true, ws: true },

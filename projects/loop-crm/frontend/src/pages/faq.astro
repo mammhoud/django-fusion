@@ -1,34 +1,28 @@
 ---
-// Terms — data-driven from GET /apis/pages/terms/ (Wagtail → JSON).
+// FAQ — data-driven from GET /apis/pages/faq/ (Wagtail → JSON).
 import LandingLayout from '@/layouts/LandingLayout.astro';
 import HeroSection from '@/components/landing/HeroSection.astro';
+import FaqSection from '@/components/landing/FaqSection.astro';
 import CtaSection from '@/components/landing/CtaSection.astro';
 import EmptyState from '@/components/landing/EmptyState.astro';
 import { fetchPage } from '@/lib/landing';
 
-const { ok, page, error } = await fetchPage('terms');
+const { ok, page, error } = await fetchPage('faq');
 
 const navLinks = [
   { label: 'Home', href: '/' },
   { label: 'Pricing', href: '/pricing/' },
-  { label: 'FAQ', href: '/faq/' },
-  { label: 'Privacy', href: '/privacy/' },
+  { label: 'Source', href: 'https://github.com/mammhoud/structa.cloud' },
 ];
 ---
-<LandingLayout title={page?.seo_title || 'Terms — Loop CRM'} description={page?.search_description || 'Loop CRM terms of use.'} navLinks={navLinks}>
+<LandingLayout title={page?.seo_title || 'FAQ — Loop CRM'} description={page?.search_description || 'Loop CRM frequently asked questions.'} navLinks={navLinks}>
   {
     !ok || !page ? (
       <EmptyState error={error} />
     ) : (
       <>
         {page.hero && <HeroSection hero={page.hero} />}
-        <section class="loop-legal">
-          <p class="loop-eyebrow">Legal</p>
-          <h1>{page.title}</h1>
-          {page.body && (
-            <div class="loop-legal__body" set:html={page.body} />
-          )}
-        </section>
+        {page.faq && <FaqSection faq={page.faq} head={page.faq_head} />}
         {page.cta && <CtaSection cta={page.cta} />}
       </>
     )

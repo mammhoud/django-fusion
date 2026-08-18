@@ -1,0 +1,28 @@
+{% if page.pricing %}
+  {% for block in page.pricing %}
+    {% if block.block_type == "pricing" %}
+      {% with sec=block.value %}
+        <section class="loop-section">
+          {% if sec.eyebrow %}<p class="loop-eyebrow">{{ sec.eyebrow }}</p>{% endif %}
+          <h2>{{ sec.title }}</h2>
+          {% if sec.description %}<p class="loop-section__lede">{{ sec.description }}</p>{% endif %}
+          <div class="loop-tiers">
+            {% for tier in sec.tiers %}
+              <div class="loop-tier{% if tier.featured %} loop-tier--featured{% endif %}">
+                <h3>{{ tier.name }}</h3>
+                <p class="loop-tier__price"><strong>{{ tier.price }}</strong>{% if tier.period %}<span>{{ tier.period }}</span>{% endif %}</p>
+                {% if tier.description %}<p>{{ tier.description }}</p>{% endif %}
+                <ul>
+                  {% for feature in tier.features %}<li>{{ feature }}</li>{% endfor %}
+                </ul>
+                {% if tier.cta_label or tier.cta_href or tier.cta_page %}
+                  <a class="loop-btn{% if tier.featured %} loop-btn--primary{% else %} loop-btn--outline{% endif %}" href="{% if tier.cta_page %}{{ tier.cta_page.url }}{% elif tier.cta_href %}{{ tier.cta_href }}{% else %}#{% endif %}">{% if tier.cta_label %}{{ tier.cta_label }}{% elif tier.cta_page %}{{ tier.cta_page.title }}{% else %}Start free{% endif %}</a>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </section>
+      {% endwith %}
+    {% endif %}
+  {% endfor %}
+{% endif %}

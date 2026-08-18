@@ -20,6 +20,7 @@ from apps.core.realtime import workspace_events_sse
 from apps.crm import views as crm_views
 from apps.finance import views as finance_views
 from apps.marketing import views as marketing_views
+from apps.pages import api as pages_api
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -46,6 +47,11 @@ urlpatterns = [
     path("fragments/marketing/channels/connect/", marketing_views.channel_connect, name="channel_connect"),
     path("fragments/marketing/channels/<int:pk>/disconnect/", marketing_views.channel_disconnect, name="channel_disconnect"),
     path("fragments/marketing/channels/<int:pk>/refresh/", marketing_views.channel_refresh, name="channel_refresh"),
+    # ── Public landing road — Wagtail-managed pages for the Astro frontend.
+    # Astro fetches /apis/pages/<slug>/ and renders; the backend never serves
+    # public HTML (the trailing Wagtail catch-all below is preview-only).
+    path("apis/pages/", pages_api.page_list_api, name="page_list_api"),
+    path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
     path("api/v1/", include("apps.core.urls")),
     path("api/v1/", include("apps.crm.urls")),
     path("api/v1/", include("apps.marketing.urls")),
