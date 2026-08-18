@@ -32,7 +32,7 @@ const capabilities = pageFeatures?.map((f: any) => ({
 }));
 ---
 
-<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'The full feature document — capabilities, server-rendered HTML, HTMX fragments, and the AHA stack.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
+<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'CTC Research capabilities — medical AI, biostatistics, evidence synthesis, and publication integrity.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
   <Hero eyebrow={pageHero?.badge || 'features · the full capability list'} heading={pageHero?.title || 'Built to ship as'} accent='documents' intro={pageHero?.subtitle || 'No SPA, no JSON API, no hydration waterfall. Every page is finished HTML in one response. Here\'s what makes it work.'} primaryCta={{ label: 'See the products', href: '/products' }} secondaryCta={{ label: 'Explore projects', href: '/projects' }} status='200 OK · text/html · every capability in one response' />
 
   {capabilities?.length ? (
@@ -40,8 +40,8 @@ const capabilities = pageFeatures?.map((f: any) => ({
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
         <p class='tag-marker mb-4'>capabilities</p>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>The AHA stack, broken down</h2>
-        <p class='text-fu-muted'>Astro, HTMX, and Alpine.js power every page. Here\'s what each layer does and why there\'s no framework overhead.</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Capabilities, broken down</h2>
+        <p class='text-fu-muted'>Medical AI, biostatistics, and evidence synthesis — what each capability does and why it matters for trusted evidence.</p>
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
         {capabilities!.map((cap, i) => (
@@ -63,7 +63,7 @@ const capabilities = pageFeatures?.map((f: any) => ({
   <!-- All feature content above is rendered from the same build-time page
        data contract. Do not fetch the full `/features/` document into a
        fragment target; that would nest the Astro shell. -->
-  <CTA heading={pageCta?.title || 'Ship the document, not the app'} intro={pageCta?.subtitle || 'One HTTP response, finished HTML.'} ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'} ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'} />
+  <CTA heading={pageCta?.title || 'Advance health through research'} intro={pageCta?.subtitle || 'Structured methods and responsible medical AI, from protocol to publication.'} ctaLabel={pageCta?.primary_cta?.label || 'Browse courses'} ctaHref={pageCta?.primary_cta?.href || '/courses/'} />
   <Toast />
   <HtmxBootstrap />
 </Layout>

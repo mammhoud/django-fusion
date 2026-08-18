@@ -1,0 +1,19 @@
+---
+// Delivery phases are consolidated into /about/services/ — each legacy phase
+// URL redirects permanently there (mirrors the backend /services/phases/*
+// → /about/services/ 301).
+import { fetchPageList } from '@/lib/api';
+
+export async function getStaticPaths() {
+  try {
+    const list = await fetchPageList();
+    return list.pages
+      .filter((page) => page.type === 'PhasePage')
+      .map((page) => ({ params: { slug: page.slug } }));
+  } catch {
+    return [];
+  }
+}
+
+return Astro.redirect('/about/services/', 301);
+---

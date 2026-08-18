@@ -138,7 +138,7 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
     """
 
     # ── Site identity ──
-    site_name = models.CharField(max_length=200, default="TharaaEdu",
+    site_name = models.CharField(max_length=200, default="CTC Research",
                                   help_text="Site name displayed in footer/titles")
     site_tagline = models.CharField(max_length=300, blank=True, default="",
                                      help_text="Short tagline")
@@ -200,7 +200,7 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
                                      help_text="Contact phone number")
     footer_email = models.EmailField(blank=True, default="",
                                       help_text="Contact email")
-    footer_copyright = models.CharField(max_length=200, default="© 2025 TharaaEdu. All rights reserved.",
+    footer_copyright = models.CharField(max_length=200, default="© 2026 CTC Research. All rights reserved.",
                                          help_text="Copyright text in footer bottom")
     footer_banner_enabled = models.BooleanField(default=False,
         help_text="Show a site-wide announcement banner above the footer")

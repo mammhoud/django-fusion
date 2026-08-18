@@ -55,9 +55,21 @@
                              class="flag-icon"
                              alt="{{ lang.name_local }}"
                              loading="lazy">
-                    {% elif lang.code|slice:":2" == "it" %}
+                    {% elif lang.code == "sv" %}
+                        <img src="https://flagcdn.com/w40/se.png"
+                             srcset="https://flagcdn.com/w80/se.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code == "it" %}
                         <img src="https://flagcdn.com/w40/it.png"
                              srcset="https://flagcdn.com/w80/it.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code == "pt-br" %}
+                        <img src="https://flagcdn.com/w40/br.png"
+                             srcset="https://flagcdn.com/w80/br.png 2x"
                              class="flag-icon"
                              alt="{{ lang.name_local }}"
                              loading="lazy">

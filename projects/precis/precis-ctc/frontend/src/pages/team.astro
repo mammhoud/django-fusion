@@ -1,0 +1,54 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import TeamSection from '@/components/blocks/TeamSection.astro';
+import Toast from '@/components/ui/Toast.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData, TeamMember } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData('team'),
+  ]);
+} catch { /* use fallbacks */ }
+
+// Map the backend team_members shape onto TeamSection's props. Names and
+// bios come from the localized TeamPage — no hardcoded members anywhere.
+const members = (pageData?.team_members || []).map((m: TeamMember) => ({
+  name: m.name || '',
+  role: m.position || '',
+  image: m.photo?.url,
+  initials: (m.name || '').split(/\s+/).map((p) => p[0]).join('').slice(0, 2).toUpperCase(),
+  bio: m.bio,
+  links: [
+    m.linkedin ? { platform: 'linkedin', url: m.linkedin, label: 'LinkedIn' } : null,
+    m.twitter ? { platform: 'website', url: m.twitter, label: 'Twitter' } : null,
+    m.facebook ? { platform: 'website', url: m.facebook, label: 'Facebook' } : null,
+  ].filter(Boolean) as { platform: string; url: string; label: string }[],
+}));
+---
+
+<Layout
+  title={pageData?.title || 'Our Team'}
+  description={pageData?.search_description || 'Meet the team behind CTC Research.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="team"
+>
+  {members.length ? (
+    <TeamSection
+      eyebrow="the team"
+      title={pageData?.team_title || 'Meet the team'}
+      description={pageData?.team_subtitle}
+      members={members}
+    />
+  ) : (
+    <ContentError label="Team data unavailable" />
+  )}
+
+  <Toast />
+</Layout>

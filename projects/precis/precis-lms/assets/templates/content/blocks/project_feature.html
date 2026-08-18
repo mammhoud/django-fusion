@@ -1,0 +1,12 @@
+{% load wagtailcore_tags %}
+{% comment %} A single project feature row — shared (reused across the monorepo)
+   or standalone (project-only). Mirrors the Astro project__feature chips. {% endcomment %}
+<li class="project__feature{% if value.shared %} project__feature--shared{% endif %}" style="display:flex;align-items:baseline;gap:.5rem;font-size:.8rem;color:hsl(var(--fu-text) / .8);">
+  <span class="project__feature-bullet" style="color:hsl(var(--fu-link));flex:none;">•</span>
+  <span>{{ value.label }}</span>
+  {% if value.shared %}
+  <span class="project__feature-tag project__feature-tag--shared" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:hsl(var(--fu-live));flex:none;">shared</span>
+  {% else %}
+  <span class="project__feature-tag project__feature-tag--own" style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:hsl(var(--fu-muted));flex:none;">own</span>
+  {% endif %}
+</li>

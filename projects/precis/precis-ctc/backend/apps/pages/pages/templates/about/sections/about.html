@@ -72,81 +72,60 @@
                         </div>
                     {% endif %}
 
-                    <!-- Stats / Additional Info -->
+                    <!-- Counters -->
+                    {% if block.value.counters %}
                     <div class="row g-3 mt-4">
-                        {% if block.value.stat1_value %}
+                        {% for counter_block in block.value.counters %}
+                        {% with counter=counter_block.value %}
                         <div class="col-6 col-md-4">
                             <div class="text-center p-3 bg-light rounded-3">
-                                <div class="display-6 fw-bold text-primary">{{ block.value.stat1_value }}</div>
-                                <div class="small text-muted">{{ block.value.stat1_label }}</div>
+                                {% if counter.icon_class %}
+                                <div class="fs-4 text-primary mb-2"><i class="{{ counter.icon_class }}"></i></div>
+                                {% endif %}
+                                <div class="display-6 fw-bold text-primary">{{ counter.number }}</div>
+                                <div class="small text-muted">{{ counter.label }}</div>
                             </div>
                         </div>
-                        {% endif %}
-                        
-                        {% if block.value.stat2_value %}
-                        <div class="col-6 col-md-4">
-                            <div class="text-center p-3 bg-light rounded-3">
-                                <div class="display-6 fw-bold text-primary">{{ block.value.stat2_value }}</div>
-                                <div class="small text-muted">{{ block.value.stat2_label }}</div>
-                            </div>
-                        </div>
-                        {% endif %}
-                        
-                        {% if block.value.stat3_value %}
-                        <div class="col-6 col-md-4">
-                            <div class="text-center p-3 bg-light rounded-3">
-                                <div class="display-6 fw-bold text-primary">{{ block.value.stat3_value }}</div>
-                                <div class="small text-muted">{{ block.value.stat3_label }}</div>
-                            </div>
-                        </div>
-                        {% endif %}
+                        {% endwith %}
+                        {% endfor %}
                     </div>
+                    {% endif %}
                 </div>
             </div>
         </div><!-- end row -->
 
-        <!-- Services Section -->
-        {% if block.value.service_items %}
+        <!-- Experience Description -->
+        {% if block.value.experience_description %}
         <div class="row mt-5 mt-lg-6 pt-5 border-top">
             <div class="col-12">
-                <div class="text-center mb-5">
-                    <h3 class="display-6 fw-bold mb-3">{% trans "Our Services" %}</h3>
-                    <p class="text-muted lead mb-0">{% trans "Professional solutions for your needs" %}</p>
-                </div>
-                
-                <div class="row g-4 g-lg-5" data-cues="fadeIn">
-                    {% for service_block in block.value.service_items %}
-                        {% with service=service_block.value %}
-                        <div class="col-12 col-md-6 col-lg-4" data-cue="fadeIn">
-                            <div class="card border-0 h-100 p-4 p-lg-5 rounded-4 hover-lift bg-white shadow-sm">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 me-4">
-                                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
-                                             style="width: 70px; height: 70px;">
-                                            <i class="{{ service.icon_class|default:'fas fa-cog' }} fs-3"></i>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="fw-bold mb-2">{{ service.title }}</h5>
-                                        <p class="text-muted mb-0">{{ service.description }}</p>
-                                        
-                                        {% if service.link_text %}
-                                        <a href="{{ service.link_url|default:'#' }}" 
-                                           class="btn btn-link text-primary text-decoration-none p-0 mt-3 d-inline-flex align-items-center gap-2">
-                                            <span>{{ service.link_text }}</span>
-                                            <i class="fas fa-arrow-right fs-6 transition-all"></i>
-                                        </a>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endwith %}
-                    {% endfor %}
+                <div class="text-muted fs-5 lh-lg">
+                    {{ block.value.experience_description|richtext }}
                 </div>
             </div>
         </div>
         {% endif %}
 
-    </div>
+        <!-- Video Link -->
+        {% if block.value.video_link %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <a href="{{ block.value.video_link }}" target="_blank" rel="noopener"
+                   class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="fas fa-play me-2"></i>{% trans "Watch Video" %}
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Media Gallery -->
+        {% if block.value.gallery %}
+        <div class="row mt-5 mt-lg-6 pt-5 border-top">
+            <div class="col-12">
+                {% include_block block.value.gallery %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div><!-- end container -->
 </section>
+<!-- About section end -->

@@ -1,0 +1,9 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ localized_content.title|default:page.title }} · Structa Cloud{% endblock %}
+
+{% block content %}
+  {% comment %} Blog index — hero, post grid, cta — rendered by the shared content-region partial. {% endcomment %}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}

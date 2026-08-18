@@ -41,6 +41,42 @@ class Command(BaseCommand):
             ),
         )
 
+    @staticmethod
+    def _reset_sequences():
+        """Advance Postgres id sequences past the fixture's explicit PKs.
+
+        ``loaddata`` inserts rows with explicit primary keys but does not bump
+        the underlying sequence, so the next ``Model.objects.create()`` on a
+        seeded table can collide with an already-used id. Reset the sequences
+        for the Wagtail tables the fixture seeds with explicit PKs.
+        """
+        from django.db import connection
+
+        if connection.vendor != "postgresql":
+            return
+        tables = (
+            "wagtailcore_locale",
+            "wagtailcore_page",
+            "wagtailcore_site",
+            "wagtailcore_pagesubscription",
+            "wagtailimages_image",
+            "wagtailimages_rendition",
+        )
+        with connection.cursor() as cursor:
+            for table in tables:
+                try:
+                    cursor.execute(
+                        "SELECT setval("
+                        "pg_get_serial_sequence(%s, 'id'), "
+                        "(SELECT COALESCE(MAX(id), 1) FROM %s), true"
+                        ") ",
+                        [table, table],
+                    )
+                except Exception:
+                    # Table may not exist in this checkout — sequence resets
+                    # are best-effort and must never abort the fixture load.
+                    continue
+
     def handle(self, **options):
         dry_run = options["dry_run"]
         replace_existing = options["replace"]
@@ -95,9 +131,16 @@ class Command(BaseCommand):
                 )
                 self.stdout.write(self.style.SUCCESS("✅ created"))
             else:
+                # The fixture's pages/page-subscriptions reference the
+                # ``admin`` username as their owner/subscriber, so the row
+                # must exist even when no superuser password is configured.
+                User.objects.create_user(
+                    username=username,
+                    email=email,
+                )
                 self.stdout.write(
-                    self.style.WARNING(
-                        "⚠️ skipped (set SUPERUSER_PASSWORD to create an admin user)"
+                    self.style.SUCCESS(
+                        "✅ created (fixture owner; no superuser password set)"
                     )
                 )
         else:
@@ -138,7 +181,7 @@ class Command(BaseCommand):
             )
         elif replace_existing:
             from django.db.utils import OperationalError
-            from wagtail.models import Page, Site
+            from wagtail.models import Locale, Page, Site
             from wagtail.images.models import Image as WagtailImage
 
             WagtailImage.objects.all().delete()
@@ -147,6 +190,14 @@ class Command(BaseCommand):
             except OperationalError:
                 pass  # wagtailredirects table may not exist
             Page.objects.filter(depth__gt=1).delete()
+            # The production DB may have seeded locales in a different order
+            # than the fixture dump (e.g. an extra ``sv`` locale inserted
+            # before the dump's fr/de/es/ar/pt-br). The fixture stores explicit
+            # locale PKs (en=1, fr=2, de=3, es=4, ar=5, pt-br=6), so remove
+            # every non-default locale while keeping the root page's locale.
+            root = Page.objects.filter(depth=1).first()
+            keep = {root.locale_id} if root and root.locale_id else set()
+            Locale.objects.exclude(pk__in=keep).delete()
             self.stdout.write(self.style.SUCCESS("✅ replaced"))
         else:
             self.stdout.write(self.style.SUCCESS("✅ preserved"))
@@ -164,6 +215,7 @@ class Command(BaseCommand):
 
         try:
             call_command("loaddata", fixture_path, verbosity=0)
+            self._reset_sequences()
             self.stdout.write(self.style.SUCCESS("✅\n"))
         except Exception as exc:
             self.stdout.write(self.style.ERROR(f"❌\n"))

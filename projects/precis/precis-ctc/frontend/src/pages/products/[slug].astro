@@ -144,7 +144,7 @@ const faqItems = pageFaq?.map((f: any) => ({
         <div class='mx-auto mb-14 max-w-2xl text-center'>
           <p class='tag-marker mb-4'>reference</p>
           <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Models &amp; snippets</h2>
-          <p class='text-fu-muted'>Copy these patterns into your own Fusion project.</p>
+          <p class='text-fu-muted'>Reference patterns for CTC Research programs.</p>
         </div>
         <div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
           {snippets.map((snip) => (
@@ -188,10 +188,10 @@ const faqItems = pageFaq?.map((f: any) => ({
   {faqItems?.length ? <FAQ items={faqItems} heading='Questions, answered' intro='The honest answers to product questions.' /> : null}
 
   <CTA
-    heading={pageCta?.title || 'Everything is open source'}
-    intro={pageCta?.subtitle || 'Explore the full product line.'}
-    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
-    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+    heading={pageCta?.title || 'Advance health through research'}
+    intro={pageCta?.subtitle || 'Explore the full program line from CTC Research.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'Browse courses'}
+    ctaHref={pageCta?.primary_cta?.href || '/courses/'}
   />
   <Toast />
   <HtmxBootstrap />

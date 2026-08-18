@@ -15,8 +15,13 @@ import re
 from datetime import datetime
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from wagtail.blocks.list_block import ListValue
+from wagtail.blocks.struct_block import StructValue
+from wagtail.blocks.stream_block import StreamValue
 from wagtail.models import Page
+from wagtail.rich_text import RichText
 
 logger = logging.getLogger(__name__)
 
@@ -57,15 +62,46 @@ def _live_page(slug: str, language: str = "en"):
 
 
 def _plain(value):
-    """Convert Wagtail values and related model objects to JSON-safe values."""
+    """Convert Wagtail values and related model objects to JSON-safe values.
+
+    Handles the Wagtail container/value types that appear inside StreamField
+    blocks — ``StructValue``, ``ListValue``, ``StreamValue`` and ``RichText`` —
+    so that seeded blocks (gallery ``media_items``, counters, contact-form
+    ``fields``, ``methods``, ``team_members``) serialize as clean JSON instead
+    of the default ``<ListValue: [...]>`` string representation.
+    """
     if value is None or isinstance(value, (str, int, float, bool)):
         return value
     if isinstance(value, bytes):
         return value.decode("utf-8", errors="replace")
-    if hasattr(value, "items"):
+
+    # RichText → its rendered HTML.
+    if isinstance(value, RichText):
+        return str(value)
+
+    # Wagtail StreamValue → list of {type, ...value} entries.
+    if isinstance(value, StreamValue):
+        items = []
+        for block in value:
+            data = _plain(block.value)
+            if isinstance(data, dict):
+                data.setdefault("type", block.block_type)
+                items.append(data)
+            else:
+                items.append({"type": block.block_type, "value": data})
+        return items
+
+    # Wagtail StructValue and plain dicts → recurse over items.
+    if isinstance(value, (StructValue, dict)) or (
+        not isinstance(value, (str, bytes, list, tuple, ListValue))
+        and hasattr(value, "items")
+    ):
         return {str(key): _plain(item) for key, item in value.items()}
-    if isinstance(value, (list, tuple)):
+
+    # Wagtail ListValue and plain lists/tuples → recurse over items.
+    if isinstance(value, (ListValue, list, tuple)):
         return [_plain(item) for item in value]
+
     if hasattr(value, "isoformat"):
         return value.isoformat()
 
@@ -138,12 +174,88 @@ def _page_data(page) -> dict:
             if items:
                 data[target] = items
 
+    # Expose the concrete seeded blocks the Astro shell renders directly —
+    # team members, gallery media, counters, the about experience/video
+    # fields, and the home "methods" list — so the frontend never needs a
+    # hardcoded fallback. Values are localized via _live_page().
+    _extract_seeded_blocks(specific, data)
+
     data.setdefault("cta", {
         "title": "Start learning with CTC Research",
         "subtitle": "A medical research center built with Django, Wagtail, and Astro.",
         "primary_cta": {"label": "Browse courses", "href": "/courses/", "style": "primary"},
     })
     return data
+
+
+def _extract_seeded_blocks(specific, data: dict) -> None:
+    """Populate structured seed blocks the frontend renders directly.
+
+    Keeps the Astro data contract explicit for team members, gallery media,
+    counters, the about experience/video fields, and the home "methods" list.
+    """
+    # Team members (TeamPage.body → team_section blocks).
+    body = getattr(specific, "body", None)
+    if body is not None:
+        for block in body:
+            if block.block_type == "team_section":
+                members = block.value.get("team_members") or []
+                if members:
+                    data["team_members"] = _plain(members)
+                    data.setdefault("team_title", _plain(block.value.get("title") or ""))
+                    data.setdefault("team_subtitle", _plain(block.value.get("subtitle") or ""))
+                break
+
+    # About page: gallery, counters, experience + video (facts → about).
+    facts = getattr(specific, "facts", None)
+    if facts is not None:
+        for block in facts:
+            if block.block_type == "about":
+                about = block.value
+                gallery = about.get("gallery")
+                if gallery is not None:
+                    media_items = gallery.get("media_items") or []
+                    if media_items:
+                        data["gallery"] = _plain(media_items)
+                counters = about.get("counters")
+                if counters:
+                    data["counters"] = _plain(counters)
+                if about.get("experience_description"):
+                    data["experience_description"] = _plain(about["experience_description"])
+                if about.get("video_link"):
+                    data["video_link"] = _plain(about["video_link"])
+                break
+
+    # Home page: why-choose "methods" list (CTA → why_choose_section).
+    cta = getattr(specific, "CTA", None)
+    if cta is not None:
+        for block in cta:
+            if block.block_type == "why_choose_section":
+                methods = block.value.get("methods") or []
+                if methods:
+                    data["methods"] = _plain(methods)
+                break
+
+    # Events page: active/visible Event rows so the Astro /events/ route
+    # renders the seeded calendar instead of a 404/fallback.
+    if specific.__class__.__name__ == "EventPage":
+        try:
+            from apps.pages.accounts.models import Event
+
+            data["events"] = [
+                {
+                    "title": event.title,
+                    "description": event.description,
+                    "event_type": event.event_type,
+                    "event_type_label": event.get_event_type_display(),
+                    "location": event.location,
+                    "start_date": event.start_date.isoformat() if event.start_date else None,
+                    "end_date": event.end_date.isoformat() if event.end_date else None,
+                }
+                for event in Event.objects.filter(is_active=True, is_visible=True).order_by("start_date", "title")
+            ]
+        except Exception:
+            logger.exception("Event listing unavailable")
 
 
 def site_settings_api(request: HttpRequest) -> JsonResponse:
@@ -295,15 +407,16 @@ def content_languages_api(request: HttpRequest) -> JsonResponse:
 
 # Frontend route table — the Astro app is the renderer, so navigation only
 # ever links to routes it actually builds. Wagtail page slugs are mapped onto
-# the closest frontend route; pages without a frontend equivalent (team,
-# events) are intentionally omitted instead of emitting 404 links. The map
-# also drops locale-prefixed `child.url` values the static app cannot serve.
+# the closest frontend route. The map also drops locale-prefixed `child.url`
+# values the static app cannot serve.
 _FRONTEND_ROUTES = {
     "home": "/",
     "all-courses": "/courses/",
     "about": "/about/",
     "contact": "/contact/",
     "services": "/services/",
+    "team": "/team/",
+    "events": "/events/",
 }
 
 
@@ -313,8 +426,15 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
     try:
         from wagtail.models import Locale
 
-        root = Page.get_first_root_node()
-        children = root.get_children().live()
+        # The seeded tree is ``root -> home -> {about, contact, team,
+        # all-courses, events, services}``. Iterate the *home* page's
+        # children — not ``root.get_children()``, which only yields the
+        # single ``home`` page and therefore never surfaced the real nav
+        # links.
+        home = _live_page("home", language)
+        if home is None:
+            home = Page.objects.live().filter(slug="home").first()
+        children = home.get_children().live() if home else Page.objects.none()
         locale = Locale.objects.filter(language_code=language).first()
         if locale is not None:
             children = children.filter(locale=locale)
@@ -323,7 +443,7 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
             if route is None:
                 continue
             specific = child.specific
-            if not getattr(specific, "show_in_nav", True):
+            if not (getattr(specific, "show_in_nav", True) or getattr(specific, "show_in_menus", True)):
                 continue
             items.append({
                 "label": child.title,
@@ -363,17 +483,73 @@ def page_list_api(request: HttpRequest) -> JsonResponse:
 
 
 def contact_api(request: HttpRequest) -> JsonResponse:
-    return JsonResponse({
-        "title": "Get in touch",
-        "description": "Questions about courses, content, or the Fusion platform? Send a message.",
-        "methods": [{
+    """GET /apis/contact/ — seeded ContactPage form fields + contact methods.
+
+    Reads the localized ContactPage so the Astro contact form renders the
+    editor-managed fields (translated per locale) instead of hardcoded
+    fallbacks. Falls back to a minimal email method only when the page tree
+    has not been seeded yet.
+    """
+    language = _requested_language(request)
+    page = _live_page("contact", language)
+
+    title = "Get in touch"
+    description = "Questions about courses, content, or the platform? Send a message."
+    form_title = "Send us a message"
+    form_description = "We will get back to you within one business day."
+    fields: list[dict] = []
+    methods: list[dict] = []
+
+    if page is not None:
+        specific = page.specific
+        title = page.title or title
+
+        # Seeded form fields (contact_form → contact_form → fields).
+        for block in getattr(specific, "contact_form", []) or []:
+            if block.block_type == "contact_form":
+                fields = _plain(block.value.get("fields") or [])
+                break
+
+        if getattr(specific, "form_title", ""):
+            form_title = strip_tags(_plain(getattr(specific, "form_title")))
+        if getattr(specific, "form_intro", ""):
+            form_description = strip_tags(_plain(getattr(specific, "form_intro")))
+
+        # Contact info description (contact_info → contact_info → description).
+        for block in getattr(specific, "contact_info", []) or []:
+            if block.block_type == "contact_info":
+                description = block.value.get("description") or description
+                break
+
+        # Contact details → methods (address / phone / email).
+        for block in getattr(specific, "contact_details", []) or []:
+            value = block.value
+            lines = value.get("lines") or []
+            label = value.get("title") or block.block_type.title()
+            if block.block_type == "email":
+                for line in lines:
+                    methods.append({"type": "email", "label": label, "value": str(line), "href": f"mailto:{line}"})
+            elif block.block_type == "phone":
+                for line in lines:
+                    methods.append({"type": "phone", "label": label, "value": str(line), "href": f"tel:{line}"})
+            else:
+                methods.append({"type": block.block_type, "label": label, "value": " / ".join(map(str, lines)), "href": ""})
+
+    if not methods:
+        methods = [{
             "type": "email",
             "label": "Email",
             "value": "support@ctc-research.com",
             "href": "mailto:support@ctc-research.com",
-        }],
-        "form_title": "Send us a message",
-        "form_description": "We will get back to you within one business day.",
+        }]
+
+    return JsonResponse({
+        "title": title,
+        "description": description,
+        "methods": methods,
+        "form_title": form_title,
+        "form_description": form_description,
+        "fields": fields,
     })
 
 
@@ -430,16 +606,17 @@ def contact_submit_api(request: HttpRequest) -> HttpResponse:
 
     name = html.escape(str(payload.get("name", "")).strip())
     email = html.escape(str(payload.get("email", "")).strip())
-    subject = str(payload.get("subject", "")).strip()
+    # The seeded ContactPage form uses name/email/message only; subject is
+    # optional so the editor-managed field set remains the source of truth.
+    subject = str(payload.get("subject", "")).strip() or "Contact form submission"
     message = str(payload.get("message", "")).strip()
     if (
         not name
-        or not subject
         or not re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email)
         or len(message) < 10
     ):
         return HttpResponse(
-            '<p class="text-red-500 font-medium">Please provide a name, subject, valid email, and message.</p>',
+            '<p class="text-red-500 font-medium">Please provide a name, valid email, and message.</p>',
             status=400,
         )
 

@@ -1,0 +1,50 @@
+{% load wagtailcore_tags %}
+{% comment %} A single reference snippet (SnippetBlock) — title + language label +
+   verbatim code. Snippets are rendered only inside BlogPostPage deep dives;
+   related_post remains available for an explicit post-to-post reference. {% endcomment %}
+{% if value.related_post %}
+<figure class="card snippet__card snippet__card--deep-dive overflow-hidden">
+  <figcaption class="snippet__head flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5">
+    <span class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink">{{ value.title }}</span>
+    {% if value.language %}<span class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{{ value.language }}</span>{% endif %}
+  </figcaption>
+  <div class="p-5">
+    <p class="text-sm text-fu-text/70">
+      The full code for this section now lives in a blog deep dive — read the
+      walkthrough, then copy the patterns from there.
+    </p>
+    <a href="{{ value.related_post.url }}" class="mt-4 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-link-dark">
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+      Read the deep dive: {{ value.related_post.title }} →
+    </a>
+  </div>
+</figure>
+{% else %}
+<figure class="card snippet__card overflow-hidden"{% if value.render_preview and value.language|lower == "html" %} x-data="{ preview: false }"{% endif %}>
+  <figcaption class="snippet__head flex flex-wrap items-center justify-between gap-3 border-b border-fu-line bg-fu-card px-4 py-2.5">
+    <span class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink">{{ value.title }}</span>
+    <div class="flex items-center gap-3">
+      {% if value.language %}<span class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted">{{ value.language }}</span>{% endif %}
+      {% if value.render_preview and value.language|lower == "html" %}
+      <button type="button" class="snippet__preview-toggle btn-secondary !px-3 !py-1.5 !text-[0.65rem]" @click="preview = !preview" :aria-expanded="preview.toString()">
+        <span x-text="preview ? 'Show code' : 'Render preview'"></span>
+      </button>
+      {% endif %}
+    </div>
+  </figcaption>
+  <pre{% if value.render_preview and value.language|lower == "html" %} x-show="!preview"{% endif %} class="snippet__code overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed" style="color:#e6e6e6;"><code>{{ value.code }}</code></pre>
+  {% if value.render_preview and value.language|lower == "html" %}
+  <div x-show="preview" x-cloak class="snippet__preview bg-fu-paper p-3">
+    <iframe
+      title="Rendered preview of {{ value.title }}"
+      class="snippet__preview-frame"
+      sandbox=""
+      referrerpolicy="no-referrer"
+      loading="lazy"
+      srcdoc="{{ value.code|escape }}"
+    ></iframe>
+    <p class="mt-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted">sandboxed HTML · scripts disabled</p>
+  </div>
+  {% endif %}
+</figure>
+{% endif %}

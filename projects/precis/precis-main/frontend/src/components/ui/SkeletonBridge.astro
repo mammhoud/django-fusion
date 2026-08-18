@@ -1,0 +1,52 @@
+---
+/**
+ * SkeletonBridge — single Astro component that wires:
+ *
+ * 1. Skeleton placeholder rendering (FusionSkeletonBridge)
+ * 2. Per-component JS/CSS lazy-loading (FusionComponentLoader)
+ * 3. HTMX afterSettle → skeleton→real-content swap
+ *
+ * Drop this into any layout template and it handles the full
+ * first-paint skeleton → hydration pipeline.
+ *
+ * Requires the backend to embed:
+ *   - window.__FUSION_SKELETON_MANIFEST__ ({% fusion_page_skeleton %})
+ *   - window.__FUSION_COMPONENT_ASSETS__   ({% fusion_component_assets_json %})
+ */
+---
+
+<script>
+  import { FusionSkeletonBridge } from '@fusion/skeleton';
+  import { FusionComponentLoader } from '@fusion/component-loader';
+
+  // ── Skeleton rendering ─────────────────────────────────────────
+  const manifest = window.__FUSION_SKELETON_MANIFEST__ ?? { skeletons: [] };
+  const skeletonBridge = new FusionSkeletonBridge(manifest);
+
+  if (manifest.skeletons.length > 0) {
+    skeletonBridge.renderAll();
+    window.__fusionSkeletonBridge = skeletonBridge;
+  }
+
+  // ── Component lazy-loading ─────────────────────────────────────
+  if (window.__FUSION_COMPONENT_ASSETS__) {
+    const loader = new FusionComponentLoader(window.__FUSION_COMPONENT_ASSETS__);
+
+    // Preload critical (above-the-fold) components
+    const entries = skeletonBridge.getEntries();
+    const critical = entries.filter((_entry: { component: string }, index: number) => index < 3); // first 3 components
+    loader.preloadCritical(critical);
+    loader.observeComponents();
+  }
+
+  // ── HTMX integration: swap skeleton → real content ─────────────
+  document.body.addEventListener('htmx:afterSettle', ((e: CustomEvent) => {
+    const target = e.detail?.target as HTMLElement | undefined;
+    if (target) {
+      const path = target.dataset.fusionSkeleton;
+      if (path) {
+        skeletonBridge.swap(path, target.innerHTML);
+      }
+    }
+  }) as EventListener);
+</script>

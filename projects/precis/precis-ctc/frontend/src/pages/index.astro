@@ -10,12 +10,6 @@ import ContentError from '@/components/ui/ContentError.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, CONTENT_LANGUAGE } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 import { teaserCopy } from '@/lib/teaser-translations';
-import { fusionApiUrl } from '@/lib/site';
-
-// The HTMX demo fetches the backend ping fragment — always point at the
-// configured backend (Django), never same-origin (the Astro host has no
-// /fragment/ping/ route and would 404).
-const pingEndpoint = `${fusionApiUrl.replace(/\/+$/, '')}/fragment/ping/`;
 
 // ── Fetch from backend (SSG build-time), fall back to static content ──
 let siteSettings: SiteSettings | undefined;
@@ -36,7 +30,7 @@ const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const hasEditorialHero = Boolean(pageHero?.title && pageHero?.subtitle && pageHero?.primary_cta?.href);
 const pageStats = (pageData?.stats as any[] | undefined);
-const pageFeatures = (pageData?.features as any[] | undefined);
+const methods = pageData?.methods as string[] | undefined;
 
 // ── Fallbacks (used when backend is unreachable at build time) ──
 const techStats = pageStats?.map((s: any) => ({
@@ -45,20 +39,21 @@ const techStats = pageStats?.map((s: any) => ({
   suffix: String(s.suffix || ''),
 }));
 
-const stackItems = pageFeatures?.map((f: any) => ({
-  icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
-  title: String(f.title || ''),
-  description: String(f.description || ''),
+// Seeded research programs — the three pillars from the HomePage `summary`
+// about block (service_items). Rendered only when the backend provides them;
+// there is deliberately no hardcoded program list in the frontend.
+const aboutBlock = (pageData?.features as any[] | undefined)?.find((f: any) => f.type === 'about');
+const serviceItems = (aboutBlock?.service_items || []).map((s: any) => ({
+  title: String(s.title || ''),
+  description: String(s.description || ''),
+  iconClass: String(s.icon_class || ''),
 }));
 
-const productCards = (pageData?.products || []).map((product: any) => ({
-  name: String(product.title || ''),
-  tag: String(product.category || 'product'),
-  description: String(product.excerpt || product.tagline || ''),
-  href: String(product.href || `/products/${product.slug}/`),
-  icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
-  external: String(product.href || '').startsWith('http'),
-}));
+// Seeded vision copy — the CTA why_choose_section (title + description).
+const visionBlock = (pageCta as any[] | undefined)?.find((c: any) => c.type === 'why_choose_section');
+const visionTitle = String(visionBlock?.title || '');
+const visionDescription = String(visionBlock?.description || '');
+const visionSubtitle = String(visionBlock?.subtitle || '');
 ---
 
 <Layout
@@ -76,8 +71,77 @@ const productCards = (pageData?.products || []).map((product: any) => ({
     intro={hasEditorialHero && pageHero?.subtitle ? pageHero.subtitle : 'A research center for clinicians, biostatisticians, and medical writers — protocols, evidence synthesis, and responsible AI, reduced to method.'}
     primaryCta={hasEditorialHero && pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Start your learning path', href: '/courses/' }}
     secondaryCta={hasEditorialHero && pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
-    status='200 OK · text/html · 0 KB client framework'
+    status='200 OK · text/html · the center, in one response'
   />
+
+  <!-- Why-choose methods — seeded on HomePage.CTA (why_choose_section) and
+       rendered from the localized page data, never hardcoded. -->
+  {methods?.length ? (
+  <section class='doc-sheet bg-fu-card py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mb-12 max-w-2xl'>
+        <p class='eyebrow-pill mb-5'>what we do</p>
+        <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl'>Our methods</h2>
+      </div>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
+        {methods.map((method: string, i: number) => (
+          <div class='card reveal p-7' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+            <span class='mb-4 block font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-teal'>{String(i + 1).padStart(2, '0')}</span>
+            <p class='font-display text-lg font-normal text-fu-ink'>{method}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : null}
+
+  <!-- Research programs — the three seeded pillars (Mastery / Capability /
+       Impact). Rendered only when the backend seeds them; never hardcoded. -->
+  {serviceItems.length ? (
+  <section id='programs' class='doc-sheet bg-fu-paper py-24 md:py-32'>
+    <div class='container-fusion'>
+      <div class='mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end'>
+        <div class='max-w-2xl'>
+          <p class='eyebrow-pill mb-5'>{visionSubtitle || 'research programs'}</p>
+          <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl'>
+            {visionTitle || 'Three pillars, one research agenda'}
+          </h2>
+          <p class='text-fu-muted'>
+            {visionDescription || 'Every program at the center is organized around three pillars — mastery, capability, and impact — so education and research stay connected to measurable health outcomes.'}
+          </p>
+        </div>
+        <p class='hidden shrink-0 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-fu-muted md:block'>
+          mastery · capability · impact
+        </p>
+      </div>
+
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
+        {serviceItems.map((item: any, i: number) => (
+          <div
+            class={`card reveal group relative p-8 pt-10 ${i === 1 ? 'md:translate-y-8' : ''}`}
+            x-data x-intersect='`$el.classList.add("reveal-visible")`'
+            style={`--reveal-delay: ${i * 90}ms`}
+          >
+            <span class='absolute right-6 top-4 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted/70' aria-hidden='true'>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <div class='mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full border border-fu-teal/25 bg-fu-teal/5 text-fu-teal transition-all duration-500 group-hover:border-fu-teal group-hover:bg-fu-teal/10' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
+              <svg class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.5' aria-hidden='true'>
+                <path stroke-linecap='round' stroke-linejoin='round' d={i === 0
+                  ? 'M12 21s-7-4.35-7-11a7 7 0 1114 0c0 6.65-7 11-7 11zM12 12a2.5 2.5 0 100-5 2.5 2.5 0 000 5z'
+                  : i === 1
+                  ? 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'
+                  : 'M3.05 11a9 9 0 0117.9 0M3.05 13a9 9 0 0117.9 0M12 21a8.5 8.5 0 010-17 8.5 8.5 0 010 17z'} />
+              </svg>
+            </div>
+            <h3 class='mb-2 font-display text-xl font-normal text-fu-ink'>{item.title}</h3>
+            <p class='max-w-lg text-sm leading-relaxed text-fu-muted'>{item.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : null}
 
   <!-- Outcome-led learning layer: visible progress, learner friction, the
        learning path, product response, architecture proof, and FAQs. -->
@@ -85,174 +149,6 @@ const productCards = (pageData?.products || []).map((product: any) => ({
 
   <!-- Tech Stats — renders only when the backend provides stats (HomePage is a slim page by design) -->
   {techStats?.length ? <Stats stats={techStats} /> : null}
-
-  <!-- The Stack — asymmetric bento grid (§3B) -->
-  {stackItems?.length ? (
-  <section class='doc-sheet bg-fu-paper py-24 md:py-32'>
-    <div class='container-fusion'>
-      <div class='mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end'>
-        <div class='max-w-2xl'>
-          <p class='eyebrow-pill mb-5'>the stack</p>
-          <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl'>
-            One monorepo, <em class='italic text-fu-teal'>six projects</em>
-          </h2>
-          <p class='text-fu-muted'>
-            Every site, library, and tool shares the same repository, the same configs, and the same CI pipeline. Django on the backend, Astro on the frontend, and HTMX bridging the two.
-          </p>
-        </div>
-        <p class='hidden shrink-0 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-fu-muted md:block'>
-          django · wagtail · astro · htmx · alpine
-        </p>
-      </div>
-
-      <div class='grid grid-cols-1 gap-5 md:grid-cols-12'>
-        {stackItems.map((item: any, i: number) => {
-          // Bento rhythm: wide / tall / standard / wide-span to break monotony
-          const span = i === 0 ? 'md:col-span-7' : i === 1 ? 'md:col-span-5' : i === 2 ? 'md:col-span-5' : 'md:col-span-7';
-          return (
-            <div
-              class={`card reveal group relative p-8 pt-10 ${span}`}
-              x-data x-intersect='`$el.classList.add("reveal-visible")`'
-              style={`--reveal-delay: ${i * 90}ms`}
-            >
-              <span class='absolute right-6 top-4 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted/70' aria-hidden='true'>
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div class='mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full border border-fu-teal/25 bg-fu-teal/5 text-fu-teal transition-all duration-500 group-hover:border-fu-teal group-hover:bg-fu-teal/10' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
-                <svg class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.5' aria-hidden='true'>
-                  <path stroke-linecap='round' stroke-linejoin='round' d={item.icon} />
-                </svg>
-              </div>
-              <h3 class='mb-2 font-display text-xl font-normal text-fu-ink'>{item.title}</h3>
-              <p class='max-w-lg text-sm leading-relaxed text-fu-muted'>{item.description}</p>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-  ) : null}
-
-  <!-- Products preview — staggered editorial cards -->
-  <section id='products' class='doc-sheet bg-fu-card py-24 md:py-32'>
-    <div class='container-fusion'>
-      <div class='mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end'>
-        <div class='max-w-2xl'>
-          <p class='eyebrow-pill mb-5'>products</p>
-          <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl'>
-            What we <em class='italic text-fu-teal'>ship</em>
-          </h2>
-          <p class='text-fu-muted'>
-            Open-source libraries, cloud platforms, and desktop apps — all from one codebase.
-          </p>
-        </div>
-        <a href='/products/' class='btn-secondary group !px-6 !py-2.5 text-sm shrink-0'>
-          All products
-          <span class='flex h-6 w-6 items-center justify-center rounded-full bg-fu-teal/10 text-fu-teal transition-transform duration-500 group-hover:translate-x-0.5' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
-            <svg class='h-3 w-3' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.4' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M9 5l7 7-7 7'/></svg>
-          </span>
-        </a>
-      </div>
-
-      <div class='grid grid-cols-1 gap-5 md:grid-cols-12'>
-        {productCards.map((product: any, i: number) => {
-          // Z-axis cascade feel: alternating offset columns, generous whitespace
-          const offset = i % 2 === 0 ? 'md:translate-y-0' : 'md:translate-y-8';
-          const span = i === 0 ? 'md:col-span-7' : i === 1 ? 'md:col-span-5' : i === 2 ? 'md:col-span-5' : 'md:col-span-7';
-          return (
-            <a
-              href={product.href}
-              target={product.external ? '_blank' : undefined}
-              rel={product.external ? 'noopener noreferrer' : undefined}
-              class={`card reveal group p-8 ${span} ${offset}`}
-              x-data x-intersect='`$el.classList.add("reveal-visible")`'
-              style={`--reveal-delay: ${i * 100}ms`}
-            >
-              <div class='mb-5 flex items-center gap-4'>
-                <div class='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-fu-teal/25 bg-fu-teal/5 text-fu-teal transition-all duration-500 group-hover:border-fu-teal group-hover:bg-fu-teal/10' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
-                  <svg class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.5' aria-hidden='true'>
-                    <path stroke-linecap='round' stroke-linejoin='round' d={product.icon} />
-                  </svg>
-                </div>
-                <div>
-                  <h3 class='font-display text-xl font-normal text-fu-ink transition-colors duration-300 group-hover:text-fu-teal'>
-                    {product.name}
-                    {product.external && (
-                      <svg class='ml-1 inline h-3.5 w-3.5 text-fu-amber' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'>
-                        <path stroke-linecap='round' stroke-linejoin='round' d='M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6v6m-9 3l9-9' />
-                      </svg>
-                    )}
-                  </h3>
-                  <p class='font-mono text-[0.62rem] uppercase tracking-[0.16em] text-fu-amber'>{product.tag}</p>
-                </div>
-              </div>
-              <p class='max-w-lg text-sm leading-relaxed text-fu-muted'>{product.description}</p>
-            </a>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-
-  <!-- HTMX + Alpine Demo — interactive proof -->
-  <section class='doc-sheet bg-fu-paper py-24 md:py-32'>
-    <div class='container-fusion'>
-      <div class='mb-16 max-w-2xl'>
-        <p class='eyebrow-pill mb-5'>live demo</p>
-        <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl'>
-          This page is the <em class='italic text-fu-teal'>framework</em>
-        </h2>
-        <p class='text-fu-muted'>
-          No React. No Vue. No Svelte. Just server-rendered HTML with HTMX for dynamic regions and Alpine.js for micro-interactions. Try the interactive demos below — they work because the page is a document.
-        </p>
-      </div>
-
-      <div class='grid grid-cols-1 gap-6 md:grid-cols-3'>
-        <!-- HTMX: Server time -->
-        <div class='card reveal p-7' x-data="{ time: '' }" x-intersect='`$el.classList.add("reveal-visible")`'>
-          <h3 class='mb-3 font-display text-lg font-normal text-fu-ink'>HTMX: Fragment Swap</h3>
-          <p class='mb-4 text-sm text-fu-muted'>Click the button — an HTML fragment streams from the backend via HTMX, swapping the content without a page reload.</p>
-          <div class='mb-4 rounded-2xl border border-fu-line bg-fu-paper p-4 font-mono text-sm' id='htmx-demo-target'>
-            <span class='text-fu-muted'>Click &quot;Fetch from server&quot; to see HTMX in action.</span>
-          </div>
-          <button
-            class='btn-secondary w-full'
-            hx-get={pingEndpoint}
-            hx-target='#htmx-demo-target'
-            hx-swap='innerHTML'
-          >
-            Fetch from server
-          </button>
-        </div>
-
-        <!-- Alpine: Counter -->
-        <div class='card reveal p-7' x-data="{ count: 0 }" x-intersect='`$el.classList.add("reveal-visible")`' style='--reveal-delay: 100ms'>
-          <h3 class='mb-3 font-display text-lg font-normal text-fu-ink'>Alpine.js: Reactive State</h3>
-          <p class='mb-4 text-sm text-fu-muted'>A self-contained counter — zero server calls, zero framework. Alpine.js manages local state with a single x-data directive.</p>
-          <div class='mb-4 flex items-center justify-center gap-4'>
-            <button class='btn-secondary !h-10 !w-10 !p-0' @click='count = Math.max(0, count - 1)' aria-label='Decrement'>−</button>
-            <span class='font-mono text-3xl font-light text-fu-ink tabular-nums' x-text='count'>0</span>
-            <button class='btn-secondary !h-10 !w-10 !p-0' @click='count++' aria-label='Increment'>+</button>
-          </div>
-        </div>
-
-        <!-- Theme persistence -->
-        <div class='card reveal p-7' x-data="{ storedTheme: '' }" x-init="storedTheme = localStorage.getItem('fusion-theme') || 'system default'" x-intersect='`$el.classList.add("reveal-visible")`' style='--reveal-delay: 200ms'>
-          <h3 class='mb-3 font-display text-lg font-normal text-fu-ink'>Theme: localStorage</h3>
-          <p class='mb-4 text-sm text-fu-muted'>Your theme preference persists across sessions via localStorage, applied before first paint — no flash, no cookie banner.</p>
-          <div class='rounded-2xl border border-fu-line bg-fu-paper p-4'>
-            <p class='font-mono text-sm'>
-              <span class='text-fu-muted'>Current: </span>
-              <span class='font-semibold text-fu-teal' x-text='storedTheme'>system default</span>
-            </p>
-            <p class='mt-2 font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted'>
-              Toggle via the header ☀️/🌙 button
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- The homepage content is already rendered from the build-time page data
        above. Do not issue a second HTMX request for the whole page: the
@@ -284,10 +180,10 @@ const productCards = (pageData?.products || []).map((product: any) => ({
   {pageData ? <RenderModeSwitch route='home' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
 
   <CTA
-    heading={pageCta?.title || 'Built open-source, shipped as HTML'}
-    intro={pageCta?.subtitle || "Everything structa.cloud builds is on GitHub at github.com/mammhoud. Explore the monorepo, try the tools, and reach out for collaboration."}
-    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
-    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+    heading={pageCta?.title || 'Advance health through research'}
+    intro={pageCta?.subtitle || 'Join clinicians, biostatisticians, and medical writers building trusted evidence — start a learning path or partner with the center.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'Browse courses'}
+    ctaHref={pageCta?.primary_cta?.href || '/courses/'}
   />
 
   <Toast />

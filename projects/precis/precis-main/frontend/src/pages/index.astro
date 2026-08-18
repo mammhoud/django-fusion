@@ -1,0 +1,233 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Stats from '@/components/blocks/Stats.astro';
+import OutcomeFramework from '@/components/blocks/OutcomeFramework.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import RenderModeSwitch from '@/components/ui/RenderModeSwitch.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import ProductGrid from '@/components/ui/ProductGrid.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+// ── Fetch backend-owned content at build time ──
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(),
+    cachedNavigation(),
+    cachedPageData('home'),
+  ]);
+} catch {
+  // Backend unreachable — page-level components render explicit error states.
+}
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const hasEditorialHero = Boolean(pageHero?.title && pageHero?.subtitle && pageHero?.primary_cta?.href);
+const pageStats = (pageData?.stats as any[] | undefined);
+const pageFeatures = (pageData?.features as any[] | undefined);
+
+// ── Presentation mapping for backend-owned content ──
+const techStats = pageStats?.map((s: any) => ({
+  label: String(s.label || ''),
+  value: Number(s.value || 0),
+  suffix: String(s.suffix || ''),
+}));
+
+const stackItems = pageFeatures?.map((f: any) => ({
+  icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
+  title: String(f.title || ''),
+  description: String(f.description || ''),
+}));
+
+// Home preview cards — the backend already curates this list for home
+// (subproducts like vResume are excluded via show_on_home), so we render
+// every product the API returns as a simple themed card, matching the
+// /products/ grid style instead of the old editorial rail.
+const productCards = (pageData?.products || []).map((product: any) => ({
+  title: String(product.title || ''),
+  slug: String(product.slug || ''),
+  tag: String(product.category || ''),
+  description: String(product.excerpt || product.tagline || ''),
+  tagline: String(product.tagline || ''),
+  version: String(product.version || ''),
+  href: String(product.href || `/products/${product.slug}/`),
+  logo_style: String(product.logo_style || ''),
+  status: String(product.status || ''),
+  editions: Array.isArray(product.editions) ? product.editions : [],
+  // The first edition's offer chip (e.g. the Community edition's
+  // "Offline-first · open source") surfaces on the card, mirroring the
+  // badge-offer treatment on the product detail page.
+  offer_label: Array.isArray(product.editions)
+    ? String(product.editions.find((e: any) => e.offer_label)?.offer_label || '')
+    : '',
+  tech: Array.isArray(product.tech) ? product.tech : [],
+  external: String(product.href || '').startsWith('http'),
+}));
+---
+
+<Layout
+  title={pageData?.title}
+  description={pageData?.search_description}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="home"
+>
+  <Hero
+    eyebrow={pageHero?.badge || 'engineering outcomes · structa.cloud'}
+    heading={hasEditorialHero ? pageHero?.title : 'Build faster. Scale smarter. Spend less.'}
+    accent={hasEditorialHero && pageHero?.accent ? pageHero.accent : 'with confidence'}
+    intro={hasEditorialHero && pageHero?.subtitle ? pageHero.subtitle : 'AI agents, cloud platforms, and automation systems engineered for growth — with less operational complexity and a clearer path to the next release.'}
+    primaryCta={hasEditorialHero && pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Book a strategy session', href: '/contact/' }}
+    secondaryCta={hasEditorialHero && pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'View our work', href: '/projects/' }}
+    status='200 OK · text/html'
+    variant='cinematic'
+  />
+
+  <!-- Outcome-led conversion layer: transparent engineering signals, buyer
+       friction, delivery path, service outcomes, architecture proof, an
+       illustrative ROI model, and objection handling. -->
+  <OutcomeFramework />
+
+  <!-- Optional backend stats — the home keeps the entry experience focused. -->
+  {techStats?.length ? <Stats stats={techStats} /> : null}
+
+  <!-- Optional backend feature emphasis — content appears only when seeded. -->
+  {stackItems?.length ? (() => {
+    const featured = stackItems[0];
+    const rest = stackItems.slice(1);
+    const lastSpans = rest.length > 0 && rest.length % 2 === 1;
+    return (
+  <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mb-14 max-w-2xl'>
+        <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+          {pageFeatures?.[0]?.title || pageData?.title || 'One monorepo, six projects'}
+        </h2>
+        <p class='mt-3 max-w-xl text-fu-muted'>
+          {pageFeatures?.[0]?.description || pageData?.search_description || 'Every site, library, and tool shares one repository, one config, one CI pipeline.'}
+        </p>
+      </div>
+
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+        <div
+          class='reveal card-gradient group relative flex flex-col gap-5 p-6 md:col-span-2 md:flex-row md:items-center md:gap-8 md:p-8'
+          x-data x-intersect='`$el.classList.add("reveal-visible")`'
+        >
+          <div class='inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md border border-fu-paper/15 bg-fu-paper/10 text-fu-link'>
+            <svg class='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+              <path stroke-linecap='round' stroke-linejoin='round' d={featured.icon} />
+            </svg>
+          </div>
+          <div>
+            <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-paper'>{featured.title}</h3>
+            <p class='text-sm leading-relaxed text-fu-paper/75'>{featured.description}</p>
+          </div>
+        </div>
+
+        {rest.map((item: any, i: number) => {
+          const isLast = i === rest.length - 1;
+          return (
+            <div
+              class:list={[
+                'reveal card group relative p-6',
+                isLast && lastSpans ? 'md:col-span-2' : '',
+              ]}
+              x-data x-intersect='`$el.classList.add("reveal-visible")`'
+              style={`--reveal-i: ${i + 1}`}
+            >
+              <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link transition-colors duration-300 group-hover:border-fu-link'>
+                <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                  <path stroke-linecap='round' stroke-linejoin='round' d={item.icon} />
+                </svg>
+              </div>
+              <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-ink'>{item.title}</h3>
+              <p class='text-sm leading-relaxed text-fu-muted'>{item.description}</p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+    );
+  })() : null}
+
+  <!-- Products preview — a simple responsive card grid (the same themed
+       cards as /products/, curated by the backend: subproducts like vResume
+       never appear here). One column on phones, two on small screens,
+       three on wide ones. -->
+  <section id='products' class='doc-sheet bg-fu-paper py-20 md:py-28'>
+    <div class='container-fusion'>
+      <div class='mb-12 max-w-2xl'>
+        <p class='tag-marker mb-4'>products</p>
+        <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>
+          {pageData?.title || 'What we ship'}
+        </h2>
+        <p class='mt-3 max-w-xl text-fu-muted'>
+          {pageData?.search_description || 'Open-source libraries, cloud platforms, and desktop apps from one codebase.'}
+        </p>
+      </div>      <!-- Products preview — server-rendered at build time, then kept in sync
+           with the Redux products slice by the client ProductGrid. -->
+      <ProductGrid products={productCards} />
+
+    </div>
+  </section>
+
+  <!-- Related reading — editorial links that extend the landing story -->
+  <section class='doc-sheet bg-fu-card py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mb-10 max-w-2xl'>
+        <p class='tag-marker mb-4'>related reading</p>
+        <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Go deeper before you decide</h2>
+        <p class='mt-3 text-fu-muted'>Practical notes on the stack, content ownership, and shipping fast — the same ideas behind every product here.</p>
+      </div>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+        <a href='/blog/why-landing-pages-as-documents/' class='card reveal group flex flex-col gap-2 p-6 transition-colors hover:border-fu-link/40' x-data x-intersect='`$el.classList.add("reveal-visible")`'>
+          <p class='font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted'>performance · product decision</p>
+          <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink transition-colors group-hover:text-fu-link'>A fast first visit is a product decision</h3>
+          <p class='text-sm leading-relaxed text-fu-muted'>Performance is part of trust. A clear page that arrives quickly gives customers more confidence before the first conversation.</p>
+          <span class='mt-auto pt-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>Read the post →</span>
+        </a>
+        <a href='/blog/htmx-fragments-vs-json-apis/' class='card reveal group flex flex-col gap-2 p-6 transition-colors hover:border-fu-link/40' x-data x-intersect='`$el.classList.add("reveal-visible")`' style='--reveal-delay: 80ms'>
+          <p class='font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted'>content · bilingual delivery</p>
+          <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink transition-colors group-hover:text-fu-link'>Designing bilingual journeys without duplication</h3>
+          <p class='text-sm leading-relaxed text-fu-muted'>A practical way to keep Arabic and English content aligned while letting each language sound natural.</p>
+          <span class='mt-auto pt-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>Read the post →</span>
+        </a>
+      </div>
+      <div class='mt-8'>
+        <a href='/blog/' class='btn-secondary group !px-6 !py-2.5 text-sm'>
+          All posts
+          <span class='flex h-6 w-6 items-center justify-center rounded-full bg-fu-teal/10 text-fu-teal transition-transform duration-500 group-hover:translate-x-0.5' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
+            <svg class='h-3 w-3' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.4' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M9 5l7 7-7 7'/></svg>
+          </span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HTMX → backend: server-rendered fragment replaces this region -->
+  {pageData ? <RenderModeSwitch route='home' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
+
+  <CTA
+    heading={pageCta?.title}
+    intro={pageCta?.subtitle}
+    ctaLabel={pageCta?.primary_cta?.label}
+    ctaHref={pageCta?.primary_cta?.href}
+    secondaryCta={pageCta?.secondary_cta ? { label: pageCta.secondary_cta.label, href: pageCta.secondary_cta.href } : undefined}
+  />
+
+  <Toast />
+  <HtmxBootstrap />
+</Layout>
+
+<script>
+  import '../lib/home-motion';
+</script>

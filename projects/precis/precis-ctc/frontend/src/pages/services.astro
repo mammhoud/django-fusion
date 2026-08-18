@@ -44,7 +44,7 @@ const processSteps = pageProcess?.map((p: any) => ({
 
 <Layout
   title={pageData?.title || 'Services'}
-  description={pageData?.search_description || 'Structa Cloud services — server-rendered sites, HTMX integrations, and Alpine-powered UX, built as you go.'}
+  description={pageData?.search_description || 'CTC Research services — medical AI, clinical evidence, and health innovation programs.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -105,10 +105,10 @@ const processSteps = pageProcess?.map((p: any) => ({
   ) : <ContentError label="Process data unavailable" />}
 
   <CTA
-    heading={pageCta?.title || 'Everything is open source'}
-    intro={pageCta?.subtitle || 'All structa.cloud libraries are public on GitHub. Explore the code, open issues, or contribute.'}
-    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
-    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+    heading={pageCta?.title || 'Advance health through research'}
+    intro={pageCta?.subtitle || 'Partner with CTC Research on medical AI, clinical evidence, and health innovation.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'Contact us'}
+    ctaHref={pageCta?.primary_cta?.href || '/contact/'}
   />
   <Toast />
   <HtmxBootstrap />

@@ -48,7 +48,7 @@ const faqItems = pageFaq?.map((f: any) => ({
 
 <Layout
   title={pageData?.title || 'Pricing'}
-  description={pageData?.search_description || 'Simple, transparent pricing for structa.cloud — start free and scale as you grow. No hidden fees, cancel anytime.'}
+  description={pageData?.search_description || 'CTC Research programs and pricing — start free and scale as you grow.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -81,10 +81,10 @@ const faqItems = pageFaq?.map((f: any) => ({
   ) : <ContentError label="FAQ data unavailable" />}
 
   <CTA
-    heading={pageCta?.title || 'Everything is open source'}
-    intro={pageCta?.subtitle || 'All structa.cloud libraries are public on GitHub. Explore the code, open issues, or contribute.'}
-    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
-    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+    heading={pageCta?.title || 'Advance health through research'}
+    intro={pageCta?.subtitle || 'Join clinicians, biostatisticians, and medical writers building trusted evidence.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'Browse courses'}
+    ctaHref={pageCta?.primary_cta?.href || '/courses/'}
   />
   <Toast />
   <HtmxBootstrap />

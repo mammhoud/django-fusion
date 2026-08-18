@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Ink sheet (the document) with a hypermedia-blue tag glyph -->
+  <rect width="32" height="32" rx="4" fill="#1A1917"/>
+  <path d="M11 8L6 13l5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M21 8l5 5-5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M18 7l-4 18" stroke="#FFE14D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+</svg>

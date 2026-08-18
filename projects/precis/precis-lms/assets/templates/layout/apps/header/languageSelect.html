@@ -16,7 +16,7 @@
     </form>
 
     <ul class="dropdown-menu dropdown-menu-language shadow-sm" aria-labelledby="languageDropdown">
-        {% for lang in wagtail_languages %}
+        {% for lang in LANGUAGES %}
         {% if lang.is_active %}
         <li class="nav-dropdown-item">
             <a class="nav-dropdown-link-compact {% if lang.code == LANGUAGE_CODE %}active{% endif %}"

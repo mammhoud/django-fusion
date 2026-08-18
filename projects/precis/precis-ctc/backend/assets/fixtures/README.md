@@ -226,13 +226,15 @@ python tests/scripts/manage_fixtures.py --recommended
 
 ### Known Problems
 
-1. **Fixture Model Incompatibility**
-   - ❌ `dump-data.json` contains old app models (pages.homepage, etc.)
-   - ✅ Solution: Use `just-locales.json` instead
+1. **Legacy StreamBlock `item` wrappers (resolved)**
+   - ✅ `dump-data.json` was migrated from StreamBlock `{"type": "item", "value": …}`
+     wrappers to the current `ListBlock` plain-list format for `methods`,
+     `team_members`, `skills`, contact-form `fields`, and gallery `media_items`.
 
-2. **Foreign Key Violations**
-   - ❌ Page fixtures reference non-existent content types
-   - ✅ Solution: Use cleaned versions or populate_content command
+2. **Foreign Key dependencies**
+   - ⚠️ `dump-data.json` references an `admin` user and the
+     `Root > Media > Main Photos (assets)` collection tree; create these before
+     `loaddata` (see `tests/test_fixture_data.py` for the exact setup).
 
 3. **Large File Sizes**
    - ⚠️ Main dump is 1.3MB
@@ -259,22 +261,21 @@ python tests/scripts/manage_fixtures.py --recommended
 
 ## 🔍 Fixture Analysis
 
-### dump-data.json (1.3MB, 1,015 objects)
-**Source**: Original database export  
-**Status**: Contains incompatible models  
+### dump-data.json (~210KB, 178 objects)
+**Source**: Curated Wagtail dump (main site tree + page content + images)  
+**Status**: ✅ Compatible with current models — loaded directly by `tests/test_fixture_data.py`  
 **Content**:
-- 73 wagtailcore.page records
-- 6 wagtailcore.locale records
-- 6 pages.homepage (OLD - doesn't exist)
-- 6 pages.aboutpage (OLD - doesn't exist)
-- 6 pages.contactpage (OLD - doesn't exist)
-- 6 pages.teampage (OLD - doesn't exist)
-- 5 lms.coursespage (OLD - doesn't exist)
-- 289 page activity logs
-- 211 model change logs
-- 22 images and 54 renditions
+- 43 `wagtailcore.page` records (root + 6 locales × 7 page families)
+- 6 `wagtailcore.locale` records (en, fr, de, es, ar, pt-br)
+- 6 records each for `pages.homepage`, `pages.aboutpage`, `pages.contactpage`,
+  `pages.teampage`, `pages.eventpage`, `pages.servicespage`, and `lms.coursespage`
+- 1 `wagtailcore.site`, 10 `wagtailcore.pagesubscription`
+- 22 `wagtailimages.image` and 54 `wagtailimages.rendition` records
 
-**Why Not Use**: References old app structure with non-existent models
+**Why Use**: This is the canonical page-tree + multilingual content seed. Its
+StreamField blocks are stored in the current model format — repeated items are
+plain `ListBlock` lists (`methods`, `team_members`, `skills`, form `fields`,
+gallery `media_items`), not legacy StreamBlock `{"type": "item", ...}` wrappers.
 
 ### just-locales.json (647B, 6 objects)
 **Source**: Extracted from dump-data.json  

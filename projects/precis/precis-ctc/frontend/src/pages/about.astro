@@ -27,9 +27,28 @@ const pageStats = (pageData?.stats as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
+const pageCounters = (pageData?.counters as any[] | undefined);
+const pageGallery = (pageData?.gallery as any[] | undefined);
+const experienceDesc = pageData?.experience_description;
+const videoLink = pageData?.video_link;
+const methods = pageData?.methods as string[] | undefined;
 
 // ── Mapped from backend data (no hardcoded fallbacks) ──
-const bioStats = pageStats?.map((s: any) => ({ label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || '') }));
+// AboutPage seeds counters (not the generic `stats` field) — prefer them.
+const bioStats = (pageCounters?.length ? pageCounters : pageStats)?.map((s: any) => ({
+  label: String(s.label || ''),
+  value: Number(s.number ?? s.value ?? 0),
+  suffix: String(s.suffix || ''),
+}));
+
+const galleryItems = pageGallery?.map((g: any) => ({
+  type: String(g.media_type || 'image'),
+  src: g.image?.image?.url || g.image?.url || '',
+  alt: g.image?.alternative_text || g.caption || '',
+  embedUrl: g.video?.embed_url || '',
+  caption: String(g.caption || '').replace(/<[^>]+>/g, ''),
+  category: g.category || '',
+}));
 
 const skills = pageFeatures?.map((f: any) => ({
   icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
@@ -38,9 +57,9 @@ const skills = pageFeatures?.map((f: any) => ({
 }));
 
 const missionValues = [
-  { title: 'Server-rendered by default', text: 'Every page ships as finished HTML. No heavy SPA, no hydration overhead — just the web as it was designed to work.' },
-  { title: 'Open source first', text: 'All core libraries are public. django-fusion, ceptor-ai, and django-bolt are open for contribution and use.' },
-  { title: 'Boring technology wins', text: 'Django, PostgreSQL, HTML, CSS — proven tools that keep working. No framework churn, no maintenance treadmill.' },
+  { title: 'Interdisciplinary research', text: 'Medical AI, biostatistics, and clinical evidence synthesis in one center — from protocol design to publication integrity.' },
+  { title: 'Evidence you can build on', text: 'Structured methods, reproducible reviews, and responsible data analytics that turn research intent into trusted evidence.' },
+  { title: 'Learning that sticks', text: 'Courses and certificates shaped for clinicians, biostatisticians, and medical writers — with a visible next action at every step.' },
 ];
 
 const testimonialItems = pageTestimonials?.map((t: any) => ({
@@ -57,20 +76,20 @@ const faqItems = pageFaq?.map((f: any) => ({
 
 <Layout
   title={pageData?.title || 'About'}
-  description={pageData?.search_description || 'Mahmoud Ezzat Moustafa — full-stack developer, open-source contributor, and the engineer behind structa.cloud.'}
+  description={pageData?.search_description || 'CTC Research — a global center of excellence for medical AI, clinical research, and health innovation.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
   pageSlug="about"
 >
   <Hero
-    eyebrow={pageHero?.badge || 'about · the engineer behind the code'}
-    heading={pageHero?.title || 'Mahmoud Ezzat'}
-    accent='Moustafa'
-    intro={pageHero?.subtitle || "Full-stack developer and open-source contributor specializing in Python/Django, AI tools, and cloud architecture. I build server-rendered platforms that ship as documents — no heavy SPAs, no framework overhead, just the web working the way it should."}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'View GitHub', href: 'https://github.com/mammhoud' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Read the blog', href: 'https://mammhoud.github.io' }}
-    status='200 OK · text/html · the engineer, in one response'
+    eyebrow={pageHero?.badge || 'about · ctc research'}
+    heading={pageHero?.title || 'CTC Research'}
+    accent='medical research center'
+    intro={pageHero?.subtitle || 'A globally recognized center of excellence advancing health and well-being through interdisciplinary innovation, medical AI, and high-impact research.'}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore courses', href: '/courses/' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Meet the team', href: '/team/' }}
+    status='200 OK · text/html · the center, in one response'
   />
 
   {bioStats?.length ? <Stats stats={bioStats} /> : <ContentError label="Stats data unavailable" />}
@@ -80,8 +99,8 @@ const faqItems = pageFaq?.map((f: any) => ({
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
         <p class='tag-marker mb-4'>philosophy</p>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Why I build this way</h2>
-        <p class='text-fu-muted'>Three principles guide every project: server-render by default, open source first, and choose boring technology that keeps working.</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Why CTC Research</h2>
+        <p class='text-fu-muted'>Three principles guide every program: interdisciplinary research, evidence you can build on, and learning that sticks.</p>
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
         {missionValues.map((value, i) => (
@@ -104,8 +123,8 @@ const faqItems = pageFaq?.map((f: any) => ({
 
   {skills?.length ? (
   <Features
-    heading='The stack, in detail'
-    intro='From Django backends to AI agents, these are the technologies that power structa.cloud.'
+    heading='What we do, in detail'
+    intro='From protocol design to publication integrity, these are the capabilities that power CTC Research.'
     features={skills.map((s) => ({
       icon: 'rocket' as const,
       title: s.title,
@@ -118,9 +137,76 @@ const faqItems = pageFaq?.map((f: any) => ({
   {testimonialItems?.length ? <Testimonials testimonials={testimonialItems} /> : <ContentError label="Testimonials unavailable" />}
   {faqItems?.length ? <FAQ items={faqItems} /> : <ContentError label="FAQ data unavailable" />}
 
+  {methods?.length ? (
+  <section class='doc-sheet bg-fu-card py-20 md:py-28'>
+    <div class='container-fusion'>
+      <div class='mb-12 max-w-2xl'>
+        <p class='eyebrow-pill mb-5'>what we do</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Our methods</h2>
+      </div>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
+        {methods.map((method: string, i: number) => (
+          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+            <span class='mb-4 block font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-teal'>{String(i + 1).padStart(2, '0')}</span>
+            <p class='font-display text-lg font-normal text-fu-ink'>{method}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : null}
+
+  {experienceDesc || videoLink ? (
+  <section class='doc-sheet bg-fu-paper py-20 md:py-28'>
+    <div class='container-fusion max-w-3xl'>
+      {experienceDesc ? <div class='text-lg leading-relaxed text-fu-muted' set:html={experienceDesc} /> : null}
+      {videoLink ? (
+        <a href={videoLink} target='_blank' rel='noopener noreferrer' class='btn-secondary mt-8 inline-flex items-center gap-2'>
+          <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z'/><path stroke-linecap='round' stroke-linejoin='round' d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>
+          Watch video
+        </a>
+      ) : null}
+    </div>
+  </section>
+  ) : null}
+
+  {galleryItems?.length ? (
+  <section class='doc-sheet bg-fu-card py-20 md:py-28'>
+    <div class='container-fusion'>
+      <div class='mb-12 max-w-2xl'>
+        <p class='eyebrow-pill mb-5'>gallery</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Snapshots</h2>
+      </div>
+      <div class='grid grid-flow-dense grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3'>
+        {galleryItems.map((item: any, i: number) => (
+          <div class='card reveal group overflow-hidden' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 60}ms`}>
+            <div class='aspect-square overflow-hidden bg-fu-line/40'>
+              {item.src ? (
+                <img src={item.src} alt={item.alt || item.caption} loading='lazy' class='h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105' />
+              ) : item.embedUrl ? (
+                <div class='flex h-full w-full items-center justify-center bg-fu-ink/5 text-fu-teal'>
+                  <a href={item.embedUrl} target='_blank' rel='noopener noreferrer' aria-label='Play video'>
+                    <svg class='h-10 w-10' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.6' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z'/><path stroke-linecap='round' stroke-linejoin='round' d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/></svg>
+                  </a>
+                </div>
+              ) : null}
+            </div>
+            {(item.caption || item.category) ? (
+              <div class='p-4'>
+                {item.category ? <span class='mb-2 inline-block rounded-full bg-fu-teal/10 px-3 py-1 text-xs font-medium text-fu-teal'>{item.category}</span> : null}
+                {item.caption ? <p class='text-sm text-fu-muted'>{item.caption}</p> : null}
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : null}
+
   <CTA
-    heading={pageCta?.title || "Let's build together"}
-    intro={pageCta?.subtitle || 'Open to collaboration, consulting, and new projects. Reach out on GitHub, LinkedIn, or through the contact form.'}
+    heading={pageCta?.title || "Let's advance health together"}
+    intro={pageCta?.subtitle || 'Partner with us on medical AI research, clinical evidence, and health innovation — or join a learning path.'}
     ctaLabel={pageCta?.primary_cta?.label || 'Get in touch'}
     ctaHref={pageCta?.primary_cta?.href || '/contact'}
   />

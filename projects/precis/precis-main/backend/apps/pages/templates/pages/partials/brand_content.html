@@ -1,0 +1,68 @@
+{% comment %} pages/partials/brand_content.html — the /brand/ identity boards.
+   One board per live product card, presenting the brandkit story: lockup,
+   construction geometry, essence line, colour system, voice. The accent
+   swatch is the product's own brand hue; the four others are the shared
+   paper/ink system so every brand visibly sits in one family. {% endcomment %}
+<section class="container-fusion" style="padding-block:4rem 5rem;">
+  <div class="mb-14 max-w-2xl">
+    <span class="tag-marker">brand · per product</span>
+    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.875rem;margin:.75rem 0 .5rem;">The product family</h2>
+    <p style="color:hsl(var(--fu-text) / .7);font-size:.875rem;margin:0;line-height:1.6;">
+      Each board shows the lockup, the construction logic of the mark, the
+      one-line essence, the typographic voice, and the colour system the
+      brand sits in.
+    </p>
+  </div>
+
+  <div class="brand-boards" style="display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+    {% for board in brand_boards %}
+    <article class="brand-board reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="--reveal-i: {{ forloop.counter0 }}">
+      <div class="brand-board__lockup" style="display:flex;align-items:center;gap:1rem;padding:1.5rem;border-bottom:1px solid hsl(var(--fu-line));">
+        <div class="brand-board__mark">
+          {% include "content/blocks/product_logo.html" with logo_style=board.mark %}
+        </div>
+        <div>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.25rem;font-weight:700;margin:0;color:hsl(var(--fu-ink));">{{ board.name }}</h3>
+          <p style="margin:.15rem 0 0;font-family:'JetBrains Mono',monospace;font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">{{ board.role }}</p>
+        </div>
+      </div>
+      <!-- The construction panel: drafting grid + centre ticks + the mark.
+           All geometry, the faint grid pulse, and the mark's micro
+           spring-scale on reveal live in .brand-board__construction (the
+           class is the single source of truth — no inline overrides, which
+           would freeze the animated background). -->
+      <div class="brand-board__construction">
+        {% include "content/blocks/product_logo.html" with logo_style=board.mark %}
+      </div>
+      <div class="brand-board__body" style="padding:1.5rem;">
+        <p style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;line-height:1.35;margin:0 0 1.25rem;color:hsl(var(--fu-ink));">{{ board.essence }}</p>
+        <div style="display:grid;gap:.75rem;">
+          <div style="display:flex;gap:.75rem;align-items:baseline;font-size:.78rem;">
+            <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">metaphor</span>
+            <span style="color:hsl(var(--fu-ink) / .85);">{{ board.metaphor }}</span>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:baseline;font-size:.78rem;">
+            <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">construction</span>
+            <span style="color:hsl(var(--fu-ink) / .85);">{{ board.construction }}</span>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:baseline;font-size:.78rem;">
+            <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">voice</span>
+            <span style="color:hsl(var(--fu-ink) / .85);">{{ board.voice }}</span>
+          </div>
+          <div style="display:flex;gap:.75rem;align-items:center;font-size:.78rem;">
+            <span style="flex:none;width:5.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));">palette</span>
+            <div style="display:grid;gap:.4rem;grid-template-columns:repeat({{ board.swatches|length }},1fr);width:100%;">
+              {% for swatch in board.swatches %}
+              <div style="aspect-ratio:1;border-radius:.375rem;border:1px solid hsl(var(--fu-line));{{ swatch.style }}" title="{{ swatch.token }}"></div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1.25rem;border-top:1px solid hsl(var(--fu-line));padding-top:1rem;">
+          <a href="{{ board.href }}" style="font-family:'JetBrains Mono',monospace;font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));text-decoration:none;">See the product →</a>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>

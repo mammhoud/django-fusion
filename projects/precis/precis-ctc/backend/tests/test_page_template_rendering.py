@@ -11,12 +11,15 @@ Pages are rendered through the real WagtailPageMixin pipeline
 """
 from __future__ import annotations
 
+import base64
 from pathlib import Path
 
 from django.conf import settings as dj_settings
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
 from django.test import RequestFactory, TestCase, override_settings
-from wagtail.models import Locale, Page, Site
+from wagtail.images.models import Image
+from wagtail.models import Collection, Locale, Page, Site
 
 from apps.content.models.pages.about import AboutPage
 from apps.content.models.pages.events import EventPage
@@ -95,7 +98,7 @@ class TestPageTemplateRendering(TestCase):
             defaults={
                 "root_page": cls.root,
                 "is_default_site": True,
-                "site_name": "Fusion Test",
+                "site_name": "CTC Research Test",
             },
         )
 
@@ -163,9 +166,9 @@ class TestPageTemplateRendering(TestCase):
                 head=[("page_title", {"page_title": "About Us", "breadcrumb_home_text": "Home"})],
                 facts=[
                     ("about", {
-                        "welcome_text": "Welcome to Fusion",
+                        "welcome_text": "Welcome to CTC Research",
                         "main_title": "Who We Are",
-                        "description": "Built on the Fusion LMS.",
+                        "description": "Built on CTC Research.",
                         "years_experience": 20,
                     }),
                     ("testimonials", {
@@ -190,8 +193,90 @@ class TestPageTemplateRendering(TestCase):
         assert "page-title" in content
         # dynamic backend block data rendered through about/sections/about.html
         assert "Who We Are" in content
-        assert "Welcome to Fusion" in content
+        assert "Welcome to CTC Research" in content
         # about/sections/testimonials.html renders the block's client data
         assert "What Clients Say" in content
         assert "Outstanding platform." in content
         assert "Jane Doe" in content
+
+    def test_about_page_renders_gallery_counters_and_video(self):
+        """The media gallery, counters, experience, and video blocks render.
+
+        Locks in the StreamBlock → ListBlock migration: the gallery renders via
+        ``{% include_block %}`` (Wagtail block rendering) instead of the legacy
+        ``{% comp %}`` wrapper, and its items render through
+        ``blocks/media/gallery_item.html`` with the ``self``/``value`` contract.
+        """
+        root_collection = Collection.get_first_root_node()
+        if root_collection is None:
+            root_collection = Collection.add_root(name="Root")
+        png = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk"
+            "YPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=="
+        )
+        image = Image.objects.create(
+            title="Gallery Test",
+            file=ContentFile(png, name="gallery.png"),
+            collection=root_collection,
+        )
+
+        about = self.root.add_child(
+            instance=AboutPage(
+                title="About Gallery",
+                slug="about-gallery",
+                live=True,
+                owner=self.user,
+                head=[("page_title", {"page_title": "About Us", "breadcrumb_home_text": "Home"})],
+                facts=[
+                    ("about", {
+                        "welcome_text": "Welcome",
+                        "main_title": "Our Story",
+                        "description": "About the center.",
+                        "years_experience": 20,
+                        "experience_description": "<p>Two decades of research.</p>",
+                        "video_link": "https://www.youtube.com/watch?v=abc",
+                        "counters": [
+                            ("counter", {"icon_class": "fas fa-flask", "number": 120, "label": "Projects"}),
+                        ],
+                        "gallery": {
+                            "gallery_title": "Media",
+                            "gallery_description": "",
+                            "lightbox_enabled": True,
+                            "lazy_loading": True,
+                            "media_items": [
+                                {
+                                    "media_type": "image",
+                                    "image": {"image": image, "alternative_text": "Lab photo", "lazy_loading": True},
+                                    "video": {"embed_url": ""},
+                                    "caption": "<p>Our lab</p>",
+                                    "category": "research",
+                                    "featured": False,
+                                },
+                                {
+                                    "media_type": "video",
+                                    "image": {},
+                                    "video": {"embed_url": "https://www.youtube.com/watch?v=xyz"},
+                                    "caption": "",
+                                    "category": "",
+                                    "featured": False,
+                                },
+                            ],
+                        },
+                    }),
+                ],
+            )
+        )
+        response = self._render(about)
+        assert response.status_code == 200, response.content[:500]
+        content = response.content.decode()
+        # gallery wrapper + items (image alt text + video placeholder)
+        assert "media-gallery" in content
+        assert "media-item" in content
+        assert "Lab photo" in content
+        assert "bi-play-circle" in content
+        # counters
+        assert ">120<" in content
+        assert "Projects" in content
+        # experience + video link
+        assert "Two decades of research" in content
+        assert "Watch Video" in content

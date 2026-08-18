@@ -49,7 +49,7 @@ class TestFixtureContent(TestCase):
                 title="Test Home Page",
                 slug="test-home",
                 live=True,
-                seo_title="Fusion CMS | AI-Powered Platform",
+                seo_title="CTC Research | AI-Powered Platform",
                 search_description="A powerful CMS platform.",
                 show_in_menus=False,
                 locale=cls.en,
@@ -63,7 +63,7 @@ class TestFixtureContent(TestCase):
                 title="About Us",
                 slug="about",
                 live=True,
-                seo_title="About | Fusion CMS",
+                seo_title="About | CTC Research",
                 search_description="Learn about our platform.",
                 show_in_menus=True,
                 locale=cls.en,
@@ -75,7 +75,7 @@ class TestFixtureContent(TestCase):
                 title="Contact",
                 slug="contact",
                 live=True,
-                seo_title="Contact | Fusion CMS",
+                seo_title="Contact | CTC Research",
                 search_description="Get in touch.",
                 show_in_menus=False,
                 locale=cls.en,
@@ -87,7 +87,7 @@ class TestFixtureContent(TestCase):
                 title="Our Team",
                 slug="team",
                 live=True,
-                seo_title="Team | Fusion CMS",
+                seo_title="Team | CTC Research",
                 search_description="Meet our team.",
                 show_in_menus=True,
                 locale=cls.en,
@@ -99,7 +99,7 @@ class TestFixtureContent(TestCase):
                 title="Courses",
                 slug="all-courses",
                 live=True,
-                seo_title="Courses | Fusion CMS",
+                seo_title="Courses | CTC Research",
                 search_description="Explore our courses.",
                 show_in_menus=False,
                 locale=cls.en,
@@ -113,8 +113,8 @@ class TestFixtureContent(TestCase):
                 title="الصفحة الرئيسية",
                 slug="home-ar",
                 live=True,
-                seo_title="Fusion CMS Arabic",
-                search_description="منصة CMS قوية.",
+                seo_title="CTC Research Arabic",
+                search_description="منصة أبحاث طبية قوية.",
                 show_in_menus=False,
                 locale=cls.ar,
                 owner=cls.user,
@@ -128,7 +128,7 @@ class TestFixtureContent(TestCase):
             defaults={
                 "root_page": cls.home,
                 "is_default_site": True,
-                "site_name": "Fusion CMS Test",
+                "site_name": "CTC Research Test",
             },
         )
 
@@ -154,7 +154,7 @@ class TestFixtureContent(TestCase):
         assert child_slugs == expected
 
     def test_page_seo_fields(self):
-        assert self.about.seo_title == "About | Fusion CMS"
+        assert self.about.seo_title == "About | CTC Research"
         assert self.about.show_in_menus is True
         assert "Learn about" in self.about.search_description
 

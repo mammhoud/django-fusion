@@ -49,7 +49,11 @@ CSRF_TRUSTED_ORIGINS = _as_list(_security_map["CSRF_TRUSTED_ORIGINS"])
 CSRF_COOKIE_SECURE = _security_map["CSRF_COOKIE_SECURE"]
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access
 CSRF_COOKIE_NAME = "csrftoken"
-CSRF_HEADER_NAME = "X-CSRFToken"
+# Django reads the token from request.META using this key, which is the WSGI
+# environ key for the ``X-CSRFToken`` HTTP header (i.e. ``HTTP_X_CSRFTOKEN``).
+# The raw header name ("X-CSRFToken") is not a META key and silently made
+# header-based CSRF (AJAX/JSON clients) fail with 403.
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
 
 # Session Configuration
 SESSION_COOKIE_SECURE = settings.get_bool("SESSION_COOKIE_SECURE", settings.is_production, block="SECURITY")

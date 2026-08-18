@@ -1,0 +1,43 @@
+{% load wagtailcore_tags %}
+{% comment %} Feature comparison section (FeatureComparisonSectionBlock) — a full
+   edition-by-edition capability table. Columns = editions, rows = features,
+   cells = Yes / No / short note. Used by product pages (pages/product.html). {% endcomment %}
+<div class="max-w-2xl">
+  {% if value.eyebrow %}<p class="tag-marker mb-4">{{ value.eyebrow }}</p>{% endif %}
+  <h2 class="text-2xl font-bold text-fu-text sm:text-3xl" style="font-family:'Bricolage Grotesque',sans-serif;">{{ value.title }}</h2>
+  {% if value.description %}<p class="mt-4 text-fu-text/70">{{ value.description }}</p>{% endif %}
+</div>
+<div class="comparison__table-wrap mt-10 overflow-x-auto rounded-xl border border-fu-line bg-fu-card">
+  <table class="comparison__table w-full min-w-[640px] border-collapse text-left text-sm">
+    <thead>
+      <tr class="border-b border-fu-line bg-fu-paper/60">
+        <th scope="col" class="comparison__head-cell px-4 py-3.5 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-fu-muted">Feature</th>
+        {% for column in value.columns %}
+        <th scope="col" class="comparison__head-cell px-4 py-3.5 text-center font-display text-[0.95rem] font-semibold text-fu-ink" style="font-family:'Bricolage Grotesque',sans-serif;">{{ column }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in value.rows %}
+      <tr class="comparison__row border-b border-fu-line/50 last:border-b-0">
+        <th scope="row" class="comparison__feature-cell px-4 py-3 align-top font-medium text-fu-ink">{{ row.feature }}</th>
+        {% for cell in row.cells %}
+        <td class="comparison__cell px-4 py-3 text-center">
+          {% if cell == "Yes" %}
+            <span class="inline-flex items-center justify-center text-fu-live" title="Included" aria-label="Included">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            </span>
+          {% elif cell == "No" %}
+            <span class="inline-flex items-center justify-center text-fu-muted/70" title="Not included" aria-label="Not included">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 6l12 12M18 6L6 18"/></svg>
+            </span>
+          {% else %}
+            <span class="text-fu-text/80">{{ cell }}</span>
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -1,5 +1,3 @@
-import { staticPageData } from './content-translations';
-
 /**
  * Landing-fusion API client — fetches all data from the Wagtail/django-fusion backend.
  *
@@ -135,12 +133,66 @@ export interface ContactMethod {
   href: string;
 }
 
+export interface ContactFormField {
+  field_type: string;
+  name: string;
+  label: string;
+  placeholder?: string;
+  help_text?: string;
+  required?: boolean;
+  choices?: string[];
+}
+
 export interface ContactData {
   title: string;
   description: string;
   methods: ContactMethod[];
   form_title: string;
   form_description: string;
+  fields?: ContactFormField[];
+}
+
+export interface TeamMember {
+  name: string;
+  position: string;
+  bio?: string;
+  photo?: { id: number; title: string; url?: string } | null;
+  linkedin?: string;
+  twitter?: string;
+  facebook?: string;
+  email?: string;
+  phone?: string;
+  skills?: { name: string; percentage: number }[];
+  order?: number;
+}
+
+export interface GalleryItem {
+  media_type: 'image' | 'video';
+  image?: {
+    image?: { id: number; title: string; url?: string };
+    alternative_text?: string;
+  };
+  video?: { embed_url?: string };
+  caption?: string;
+  category?: string;
+  featured?: boolean;
+}
+
+export interface Counter {
+  type?: string;
+  icon_class?: string;
+  number?: number;
+  label?: string;
+}
+
+export interface EventItem {
+  title: string;
+  description?: string;
+  event_type?: string;
+  event_type_label?: string;
+  location?: string;
+  start_date?: string | null;
+  end_date?: string | null;
 }
 
 export interface PageData {
@@ -181,6 +233,16 @@ export interface PageData {
   snippets?: Record<string, any>[];
   products?: { title: string; slug: string; tagline: string; href: string }[];
   contact?: Record<string, any>[];
+  // Seeded blocks the Astro shell renders directly (see landing_api.py):
+  team_members?: TeamMember[];
+  team_title?: string;
+  team_subtitle?: string;
+  gallery?: GalleryItem[];
+  counters?: Counter[];
+  methods?: string[];
+  experience_description?: string;
+  video_link?: string;
+  events?: EventItem[];
   // Blog post meta (BlogPostPage detail pages)
   category?: string;
   post_date?: string;
@@ -244,25 +306,6 @@ export function fetchContact(): Promise<ContactData> {
 export function fetchPageData(slug: string, language: LanguageCode = CONTENT_LANGUAGE): Promise<PageData> {
   const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
   return fetchJSON<PageData>(`/apis/pages/${slug}/${query}`);
-}
-
-/**
- * Fetch backend-owned page data with a static fallback for slugs the seeded
- * Wagtail tree does not cover (pricing, features, projects, faq, blog, …).
- * Wagtail remains authoritative whenever it has the page; the fallback keeps
- * every Astro route a complete document instead of an error state.
- */
-export async function fetchPageDataWithFallback(
-  slug: string,
-  language: LanguageCode = CONTENT_LANGUAGE,
-): Promise<PageData> {
-  try {
-    return await fetchPageData(slug, language);
-  } catch (error) {
-    const fallback = staticPageData(slug);
-    if (fallback) return fallback;
-    throw error;
-  }
 }
 
 /** Fetch list of all published pages. */
@@ -393,8 +436,8 @@ export const SEEDED_FALLBACK_SLUGS = {
     'scientific-medical-manuscript-writing',
     'research-ethics-gcp-publication-integrity',
   ],
-  products: ['forge-pos', 'lms', 'cms'],
-  blog: ['why-landing-pages-as-documents', 'htmx-fragments-vs-json-apis'],
+  products: [],
+  blog: [],
 } as const;
 
 /**
@@ -530,6 +573,7 @@ export async function fetchNavigationWithFallback(): Promise<NavigationData> {
     return { nav_items: [
       { label: 'Home', href: '/' }, { label: 'Courses', href: '/courses/' },
       { label: 'About', href: '/about/' }, { label: 'Services', href: '/services/' },
+      { label: 'Team', href: '/team/' }, { label: 'Events', href: '/events/' },
       { label: 'Contact', href: '/contact/' },
     ] };
   }
@@ -539,4 +583,4 @@ export const cachedAssets = () => fetchCached('assets', fetchAssets);
 export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettingsWithFallback);
 export const cachedNavigation = () => fetchCached('navigation', fetchNavigationWithFallback);
 export const cachedContact = () => fetchCached('contact', fetchContact);
-export const cachedPageData = (slug: string, language: LanguageCode = CONTENT_LANGUAGE) => fetchCached(`page:${slug}:${language}`, () => fetchPageDataWithFallback(slug, language));
+export const cachedPageData = (slug: string, language: LanguageCode = CONTENT_LANGUAGE) => fetchCached(`page:${slug}:${language}`, () => fetchPageData(slug, language));

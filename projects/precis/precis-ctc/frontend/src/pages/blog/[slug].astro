@@ -40,16 +40,16 @@ const resolvedPost: BlogPostData = postData || {
   id: 0,
   slug: slug || '',
   title: (slug || 'blog post').replace(/[-_]+/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-  content: '<p>This Precis editorial document is temporarily using its resilient static shell. The published article will appear as soon as the content service is available.</p>',
-  excerpt: 'A Precis editorial document.',
-  author: { name: 'Precis editorial team', id: null },
+  content: '<p>This CTC Research editorial document is temporarily using its resilient static shell. The published article will appear as soon as the content service is available.</p>',
+  excerpt: 'A CTC Research editorial document.',
+  author: { name: 'CTC Research editorial team', id: null },
   published_date: null,
   featured_image_url: null,
   categories: [],
   tags: [],
   reading_time: 1,
   likes_count: 0,
-  meta_description: 'A Precis editorial document.',
+  meta_description: 'A CTC Research editorial document.',
   related_posts: [],
 };
 const pageData: PageData = {
@@ -77,7 +77,7 @@ const excerpt = String(pageData?.excerpt || '');
 
 <Layout
   title={pageData?.title || 'Blog post'}
-  description={excerpt || pageData?.search_description || 'A structa.cloud blog post on the AHA stack.'}
+  description={excerpt || pageData?.search_description || 'A CTC Research blog post on medical AI and health innovation.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -202,7 +202,7 @@ const excerpt = String(pageData?.excerpt || '');
 
   <CTA
     heading={pageCta?.title || 'Everything is open source'}
-    intro={pageCta?.subtitle || 'Explore more posts on the AHA stack.'}
+    intro={pageCta?.subtitle || 'Explore more posts from CTC Research.'}
     ctaLabel={pageCta?.primary_cta?.label || 'Back to the blog'}
     ctaHref={pageCta?.primary_cta?.href || '/blog'}
   />

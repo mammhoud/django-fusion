@@ -13,4 +13,9 @@ from django_fusion.core.assets import urls as assets_urls
 urlpatterns = [
     path("api/", include("apps.core.api.urls")),
     path("fusion/assets/", include(assets_urls)),
+    # Language switching + page/auth namespaces referenced by the shared
+    # landing header (partials/language_selector.html → set_language;
+    # partials/auth_buttons.html → plugins:* / plugins:profile:*).
+    path("i18n/", include("django.conf.urls.i18n")),
+    path("", include("apps.pages.urls", namespace="plugins")),
 ]

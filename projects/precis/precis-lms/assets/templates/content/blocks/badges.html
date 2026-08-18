@@ -1,0 +1,13 @@
+{% load wagtailcore_tags %}
+<section class="container-fusion py-16">
+  {% if value.eyebrow %}<p class="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-fu-text/50">{{ value.eyebrow }}</p>{% endif %}
+  {% if value.title %}
+    <h2 class="mb-3 max-w-2xl text-2xl font-bold text-fu-text sm:text-3xl">{{ value.title }}</h2>
+  {% endif %}
+  {% if value.description %}<p class="mb-8 max-w-2xl text-sm text-fu-text/70">{{ value.description }}</p>{% endif %}
+  <div class="flex flex-wrap gap-3">
+    {% for badge in value.badges %}
+      {% include_block badge %}
+    {% endfor %}
+  </div>
+</section>

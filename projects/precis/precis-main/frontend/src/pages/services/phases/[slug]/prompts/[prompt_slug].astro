@@ -1,0 +1,26 @@
+---
+// Delivery phases + implementation prompts are consolidated into
+// /about/services/ — each legacy prompt URL redirects permanently there.
+import { cachedPageData, fetchPageList } from '@/lib/api';
+
+export async function getStaticPaths() {
+  let list;
+  try {
+    list = await fetchPageList();
+  } catch {
+    return [];
+  }
+  const promptPages = list.pages.filter((page) => page.type === 'PromptPage');
+  const paths: { params: { slug: string; prompt_slug: string } }[] = [];
+  for (const prompt of promptPages) {
+    try {
+      const promptData = await cachedPageData(prompt.slug);
+      const phase = promptData.phase;
+      if (phase?.slug) paths.push({ params: { slug: phase.slug, prompt_slug: prompt.slug } });
+    } catch { /* skip incomplete content */ }
+  }
+  return paths;
+}
+
+return Astro.redirect('/about/services/', 301);
+---

@@ -12,34 +12,29 @@ interface Props {
 
 const defaultItems = [
   {
-    question: 'What exactly is the AHA stack?',
+    question: 'What does CTC Research offer?',
     answer:
-      'AHA stands for Astro + HTMX + Alpine.js — a lightweight alternative to heavy SPA frameworks. Astro renders server-side HTML, HTMX swaps fragments from the Django backend, and Alpine.js powers local interactivity. No Redux, no decoder, no client-side router needed for most pages.',
+      'CTC Research is a global center of excellence advancing health and well-being through medical AI, clinical research, and health innovation — learning paths, research programs, and evidence services.',
   },
   {
-    question: 'Do I need to write JavaScript?',
+    question: 'Do I need a research background?',
     answer:
-      'Not for the page itself. Your content is HTML; interactions are declared with small hx-* and x-* attributes. Alpine is 15 KB, and you only load it on pages that actually use it.',
+      'No. Courses are structured for clinicians, biostatisticians, and medical writers, with beginner-friendly paths that build toward advanced methods.',
   },
   {
-    question: 'How is this different from a React or Vue site?',
+    question: 'How do the learning paths work?',
     answer:
-      'A React site sends a shell plus a bundle, then builds the page in the browser. Fusion sends the finished HTML in one response. Less to download, less to run, and search engines read exactly what your visitors see.',
+      'Each path is self-paced with clear modules, preview lessons, and a visible next action. Progress and certificates stay in one learner account.',
   },
   {
-    question: 'Can I still build dynamic dashboards?',
+    question: 'Can teams or institutions partner with the center?',
     answer:
-      'Yes. HTMX streams HTML fragments from Django over plain HTTP — the same technology as your landing page. Dynamic regions stay server-rendered, so there is never a second, parallel API to maintain.',
+      'Yes. Contact us about research collaboration, team learning cohorts, and custom programs for your organization.',
   },
   {
-    question: 'What about team and enterprise needs?',
+    question: 'Is the content evidence-based?',
     answer:
-      'The Enterprise sheet includes SSO, audit logs, custom branding and a dedicated success manager. Contact us for volume discounts and custom requirements.',
-  },
-  {
-    question: 'Is my data secure?',
-    answer:
-      'Sessions use django-allauth best practices, forms are CSRF-protected, and traffic is served over HTTPS with Let’s Encrypt certificates.',
+      'Yes. Methods follow reproducible research standards — good clinical practice, publication integrity, and responsible AI practices.',
   },
 ];
 

@@ -8,7 +8,7 @@
 <html class="{% if theme %}{{ theme }}{% endif %}{% block html_class %}{% endblock %}" dir="{{ LANGUAGE_BIDI|yesno:"rtl,ltr,auto" }}" lang="{{ LANGUAGE_CODE|default:" en-us" }}" {% block html_attr %}
     data-sidenav-view="{{ sidenav }}" {% endblock html_attr %}>
 <head>
-    <title>{% block title %}{% firstof page_title page.title 'Fusion CMS' %}{% endblock %}</title>
+    <title>{% block title %}{% firstof page_title page.title 'CTC Research' %}{% endblock %}</title>
     {% block meta_tags %}{% endblock %}
     {% block meta %}
     {% endblock meta %}

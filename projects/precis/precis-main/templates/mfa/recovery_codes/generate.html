@@ -1,0 +1,23 @@
+{% extends "mfa/recovery_codes/base.html" %}
+{% load i18n %}
+{% block head_title %}{% trans "Recovery Codes" %}{% endblock %}
+{% block auth_inner %}
+<p class="tag-marker" style="margin:0 0 .25rem;">account · security · recovery</p>
+<h2 style="margin:0 0 .5rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;color:hsl(var(--fu-ink));">Recovery codes</h2>
+<p style="margin:0 0 1.5rem;font-size:.85rem;line-height:1.6;color:hsl(var(--fu-muted));">
+  You are about to generate a new set of recovery codes for your account.
+  {% if unused_code_count %}This action will invalidate your existing codes.{% endif %}
+  Are you sure?
+</p>
+
+{% url 'mfa_generate_recovery_codes' as action_url %}
+<form method="post" action="{{ action_url }}">
+  {% csrf_token %}
+  {% for field in form %}{% if field.is_hidden %}{{ field }}{% endif %}{% endfor %}
+  <button type="submit" class="btn btn-primary" style="width:100%;padding:.7rem 1rem;{% if unused_code_count %}background:#dc2626;box-shadow:none;{% endif %}">Generate</button>
+</form>
+
+<p style="margin:1.25rem 0 0;text-align:center;font-size:.75rem;color:hsl(var(--fu-muted));">
+  <a href="{% url 'mfa_index' %}" style="font-weight:500;color:hsl(var(--fu-link));">&larr; Keep my current codes</a>
+</p>
+{% endblock %}

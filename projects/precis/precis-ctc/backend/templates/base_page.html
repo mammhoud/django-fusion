@@ -5,6 +5,10 @@
 
 {% block bodyclass %}page-{{ page.slug|default:"home" }}{% endblock %}
 
+{% block header %}
+    {% comp "landing/header/landing.html" /%}
+{% endblock header %}
+
 {% block body %}
     <main id="main-content">
         {% block content %}

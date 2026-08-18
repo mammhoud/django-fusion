@@ -55,7 +55,7 @@ export default defineConfig({
         // Shared fusion-js modular TS bundles (htmx wrapper, SSE, fragments,
         // scroll reveal, theme) — consumed via src/fusion/* project bindings.
         '@fusion': fileURLToPath(
-          new URL('../../../libs/django-fusion/js/fusion-js/src', import.meta.url),
+          new URL('../../../../libs/django-fusion/js/fusion-js/src', import.meta.url),
         ),
       },
     },

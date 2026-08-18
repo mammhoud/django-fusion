@@ -17,9 +17,13 @@ import { staticPageData } from './content-translations';
  *   GET /apis/pages/           — page list
  */
 
-/** Base URL for the Django backend. Set PUBLIC_FUSION_API_URL env var to override. */
-const browserApiBase = (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || '';
-const buildApiBase = (import.meta.env.PUBLIC_BUILD_API_URL as string | undefined) || 'https://ctc-research.com';
+/**
+ * Base URL for the Django backend.
+ * - Browser (runtime): PUBLIC_BROWSER_API_URL, empty = same-origin routing.
+ * - Build (SSG fetch): PUBLIC_FUSION_API_URL, default local loopback.
+ */
+const browserApiBase = (import.meta.env.PUBLIC_BROWSER_API_URL as string | undefined) || '';
+const buildApiBase = (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) || 'http://127.0.0.1:5070';
 
 export const SUPPORTED_LANGUAGE_CODES = ['en', 'sv', 'fr', 'de', 'es', 'ar', 'pt-br'] as const;
 export type LanguageCode = (typeof SUPPORTED_LANGUAGE_CODES)[number];
@@ -181,6 +185,26 @@ export interface PageData {
   snippets?: Record<string, any>[];
   products?: { title: string; slug: string; tagline: string; href: string }[];
   contact?: Record<string, any>[];
+  // Ported landing-slice fields (product catalog, delivery phases/prompts,
+  // brand kit) — produced by the backend page-data serializer.
+  logo_style?: string;
+  version?: string;
+  tagline?: string;
+  status?: string;
+  display_mode?: string;
+  hidden?: boolean;
+  palette_overrides?: Record<string, string[]>;
+  phases?: { id: number; slug: string; title: string; phase_number?: number; phase_label?: string; href: string }[];
+  phase_number?: number;
+  phase_label?: string;
+  outcomes?: string[];
+  prompts?: { slug: string; title: string; href: string }[];
+  prompt?: string;
+  context?: string;
+  output?: string;
+  tool?: string;
+  phase?: { title: string; slug: string; href: string };
+  preview_gallery?: Record<string, any>[];
   // Blog post meta (BlogPostPage detail pages)
   category?: string;
   post_date?: string;
@@ -268,6 +292,17 @@ export async function fetchPageDataWithFallback(
 /** Fetch list of all published pages. */
 export function fetchPageList(): Promise<PageListData> {
   return fetchJSON<PageListData>('/apis/pages/');
+}
+
+/** Fetch the backend-rendered content fragment (HTML) for a page slug. */
+export async function fetchFragment(slug: string, language: LanguageCode = CONTENT_LANGUAGE): Promise<string> {
+  const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
+  const url = `${API_BASE}/fragment/pages/${slug}/${query}`;
+  const res = await fetch(url, { headers: { Accept: 'text/html' } });
+  if (!res.ok) {
+    throw new Error(`Fragment ${slug} returned ${res.status}`);
+  }
+  return res.text();
 }
 
 /**
@@ -540,3 +575,4 @@ export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSetting
 export const cachedNavigation = () => fetchCached('navigation', fetchNavigationWithFallback);
 export const cachedContact = () => fetchCached('contact', fetchContact);
 export const cachedPageData = (slug: string, language: LanguageCode = CONTENT_LANGUAGE) => fetchCached(`page:${slug}:${language}`, () => fetchPageDataWithFallback(slug, language));
+export const cachedFragment = (slug: string, language: LanguageCode = CONTENT_LANGUAGE) => fetchCached(`fragment:${slug}:${language}`, () => fetchFragment(slug, language));

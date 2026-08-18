@@ -1,0 +1,6 @@
+---
+// Projects merged into Products — the catalog page now carries the full
+// product cards AND the repo project grid, so this legacy route redirects
+// permanently (mirrors the backend's /projects/ → /products/ 301).
+return Astro.redirect('/products/', 301);
+---

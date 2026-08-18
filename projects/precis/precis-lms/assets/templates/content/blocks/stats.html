@@ -1,0 +1,11 @@
+{% load wagtailcore_tags %}
+<section class="container-fusion py-16">
+  {% if value.title %}
+    <h2 class="mb-10 max-w-2xl text-2xl font-bold text-fu-text sm:text-3xl">{{ value.title }}</h2>
+  {% endif %}
+  <div class="grid grid-cols-2 gap-8 lg:grid-cols-4">
+    {% for stat in value.stats %}
+      {% include_block stat %}
+    {% endfor %}
+  </div>
+</section>

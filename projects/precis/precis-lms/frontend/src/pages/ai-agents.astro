@@ -1,0 +1,48 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import type { SiteSettings, NavigationData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+try {
+  [siteSettings, navData] = await Promise.all([cachedSiteSettings(), cachedNavigation()]);
+} catch { /* use static presentation fallbacks */ }
+---
+
+<Layout title="AI Agents for Repeatable Workflows" description="Design secure AI agents that reduce repetitive work while keeping human approval and clear data boundaries." navItems={navData?.nav_items} siteSettings={siteSettings} pageSlug="ai-agents">
+  <section class="section-hero reg-marks overflow-hidden py-20 md:py-28">
+    <div class="container-fusion">
+      <div class="max-w-3xl">
+        <p class="tag-marker mb-5">service · AI agents</p>
+        <h1 class="font-display text-4xl font-bold tracking-tight text-fu-ink md:text-6xl">Automate the repeatable work. Keep the important decisions human.</h1>
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-fu-muted">We map operational workflows, introduce secure agent assistance where it helps, and leave your team with an auditable path from input to approved action.</p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a class="btn-primary" href="/contact/?topic=infrastructure-and-ai-assessment">Get an AI opportunity assessment <span aria-hidden="true">→</span></a>
+          <a class="btn-secondary" href="/services/">See the delivery path</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="doc-sheet bg-fu-card py-20 md:py-28">
+    <div class="container-fusion">
+      <div class="grid gap-5 md:grid-cols-3">
+        <article class="card p-6"><p class="tag-marker mb-4">01 · discover</p><h2 class="font-display text-xl font-semibold text-fu-ink">Find the expensive repetition</h2><p class="mt-3 text-sm leading-relaxed text-fu-muted">Start with a workflow, its inputs, its failure modes, and the approval points your team already trusts.</p></article>
+        <article class="card p-6"><p class="tag-marker mb-4">02 · design</p><h2 class="font-display text-xl font-semibold text-fu-ink">Set boundaries before prompts</h2><p class="mt-3 text-sm leading-relaxed text-fu-muted">Define permissions, data retention, evaluation signals, provider controls, and a clear human handoff.</p></article>
+        <article class="card p-6"><p class="tag-marker mb-4">03 · operate</p><h2 class="font-display text-xl font-semibold text-fu-ink">Measure useful work</h2><p class="mt-3 text-sm leading-relaxed text-fu-muted">Ship a narrow first workflow, observe it in production, and improve based on time saved and quality maintained.</p></article>
+      </div>
+      <div class="mt-16 grid gap-8 lg:grid-cols-2">
+        <div><p class="tag-marker mb-4">what you leave with</p><h2 class="font-display text-3xl font-bold tracking-tight text-fu-ink">A practical automation roadmap, not a demo.</h2></div>
+        <ul class="grid gap-3 text-sm text-fu-muted"><li class="card p-5">Workflow map with opportunity and risk notes.</li><li class="card p-5">Small, testable agent or retrieval-assisted prototype.</li><li class="card p-5">Security, evaluation, and ownership checklist.</li><li class="card p-5">Next-step backlog your engineering team can execute.</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <CTA heading="Ready to find the right first workflow?" intro="Bring one repetitive process. We will help you decide whether AI is the right tool, and what a safe first step looks like." ctaLabel="Get my free assessment" ctaHref="/contact/?topic=infrastructure-and-ai-assessment" />
+  <Toast />
+  <HtmxBootstrap />
+</Layout>

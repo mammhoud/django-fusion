@@ -1,0 +1,10 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ localized_content.title|default:page.title }} · Structa Cloud{% endblock %}
+
+{% block content %}
+  {% comment %} Full product document — hero, body, stats, features+pricing, testimonials,
+     faq, cta — from the one shared content-region partial. {% endcomment %}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}

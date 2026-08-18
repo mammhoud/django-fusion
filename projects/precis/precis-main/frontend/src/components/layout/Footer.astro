@@ -1,0 +1,110 @@
+---
+import { browserApiUrl } from '@/lib/site';
+
+interface Props {
+  siteName?: string;
+  siteSettings?: {
+    site_tagline?: string;
+    footer_description?: string;
+    footer_copyright?: string;
+    footer_link_groups?: { title: string; links: { label: string; url: string }[] }[];
+  };
+}
+
+const { siteName = 'Structa Cloud', siteSettings } = Astro.props;
+const year = new Date().getFullYear();
+
+// Newsletter endpoint is same-origin in production; Astro dev can set
+// PUBLIC_BROWSER_API_URL when Django is served on another public origin.
+const apiBase: string = browserApiUrl;
+
+const footerGroups = siteSettings?.footer_link_groups?.length
+  ? siteSettings.footer_link_groups
+  : [
+    { title: 'Platform', links: [{ label: 'Benefits', url: '/services/benefits/' }, { label: 'Services', url: '/services/' }, { label: 'Products', url: '/products/' }, { label: 'Pricing', url: '/pricing/' }, { label: 'Brand', url: '/brand/' }, { label: 'About', url: '/about/' }] },
+    { title: 'Resources', links: [{ label: 'Blog', url: '/blog/' }, { label: 'FAQ', url: '/faq/' }, { label: 'Privacy Policy', url: '/privacy/' }, { label: 'Contact', url: '/contact/' }] },
+    { title: 'Community', links: [{ label: 'Get Started', url: '/contact/' }, { label: 'GitHub', url: 'https://github.com/mammhoud' }, { label: 'LinkedIn', url: 'https://linkedin.com/in/mammhoud' }, { label: 'Portfolio', url: 'https://mammhoud.github.io' }] },
+  ];
+---
+
+<footer class="doc-sheet border-t border-fu-line bg-fu-paper text-fu-muted">
+  <div class="container-fusion py-14">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-3">
+      <div class="lg:col-span-1">
+        <a href="/" class="mb-4 flex items-center gap-2 font-mono font-semibold text-fu-ink">
+          <span>{siteName}</span>
+        </a>
+        <p class="mb-4 text-sm">{siteSettings?.footer_description || 'Full-stack engineering.'}</p>
+        <!-- Newsletter signup — Alpine fetch to the backend API. Subscribers are
+             persisted to the NewsletterSubscriber Wagtail snippet. The API base
+             is exposed on window via define:vars (Astro does not interpolate
+             template literals inside attribute strings). -->
+        <script is:inline define:vars={{ apiBase }}>
+          window.__FUSION_NEWSLETTER_API = apiBase;
+        </script>
+        <div
+          x-data="{
+            api: window.__FUSION_NEWSLETTER_API || '',
+            email: '',
+            done: false,
+            busy: false,
+            error: '',
+            async subscribe() {
+              this.busy = true;
+              this.error = '';
+              try {
+                const r = await fetch((this.api || window.location.origin) + '/api/newsletter/subscribe/', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: this.email, source: 'footer' }),
+                });
+                const d = await r.json().catch(() => ({}));
+                if (r.ok && d.success) { this.done = true; }
+                else { this.error = (d.message || 'Could not subscribe. Try again.'); }
+              } catch (e) { this.error = 'Network error. Try again later.'; }
+              finally { this.busy = false; }
+            }
+          }"
+        >
+          <p class="mb-2 font-mono text-xs uppercase tracking-wider text-fu-ink">Newsletter</p>
+          <p class="mb-3 text-sm">Product updates and engineering notes. No spam.</p>
+          <template x-if="!done">
+            <form @submit.prevent="subscribe()" class="flex gap-2">
+              <input type="email" x-model="email" required placeholder="you@example.com"
+                     class="min-w-0 flex-1 rounded-md border border-fu-line bg-fu-paper px-3 py-2 text-sm text-fu-ink placeholder:text-fu-muted focus:border-fu-link focus:outline-none" />
+              <button type="submit" class="btn-primary !h-auto !px-4 !py-2 text-sm" :disabled="busy">
+                <span x-show="!busy">Subscribe</span><span x-show="busy" x-cloak>…</span>
+              </button>
+            </form>
+          </template>
+          <template x-if="done">
+            <p class="font-mono text-xs text-fu-live">✓ Subscribed. Welcome aboard.</p>
+          </template>
+          <p x-show="error" x-cloak class="mt-2 text-xs text-red-500" x-text="error"></p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-3 lg:col-span-2">
+        {footerGroups.map((column) => (
+          <div>
+            <h3 class="mb-4 font-mono text-xs uppercase tracking-wider text-fu-ink">{column.title}</h3>
+            <ul class="space-y-2">
+              {column.links.map((link) => (
+                <li><a href={link.url} class="text-sm hover:text-fu-link">{link.label}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div class="mt-12 border-t border-fu-line pt-7 text-center">
+      <p class="font-mono text-xs uppercase">&copy; {year} {siteName}</p>
+      <p class="mt-2 font-mono text-[0.65rem] uppercase tracking-wider text-fu-muted">
+        <a href="https://github.com/mammhoud" class="hover:text-fu-link">GitHub</a>
+        <span class="mx-2 text-fu-line" aria-hidden="true">|</span>
+        <a href="https://linkedin.com/in/mammhoud" class="hover:text-fu-link">LinkedIn</a>
+        <span class="mx-2 text-fu-line" aria-hidden="true">|</span>
+        <a href="https://mammhoud.github.io" class="hover:text-fu-link">Portfolio</a>
+      </p>
+    </div>
+  </div>
+</footer>

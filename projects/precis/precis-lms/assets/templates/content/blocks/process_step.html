@@ -1,0 +1,13 @@
+{% load wagtailcore_tags %}
+{% comment %} A single numbered step (ProcessStepBlock). The step number is
+   rendered by the parent (process.html) via forloop.counter, so editors can
+   reorder steps without maintaining numbers. {% endcomment %}
+<div class="card process__step flex flex-col gap-3 p-6">
+  <h3 class="font-display text-[1.05rem] font-semibold text-fu-ink" style="font-family:'Bricolage Grotesque',sans-serif;">{{ value.title }}</h3>
+  {% if value.description %}
+  <p class="text-sm leading-relaxed text-fu-muted">{{ value.description }}</p>
+  {% endif %}
+  {% if value.deliverable %}
+  <p class="process__deliverable mt-auto font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link">{{ value.deliverable }}</p>
+  {% endif %}
+</div>

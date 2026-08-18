@@ -1,5 +1,7 @@
 from .contact import *
 from .pages import *
+from .comments import *
+from .landing import *
 from .blog import *
 from .course import *
 from .lms import *

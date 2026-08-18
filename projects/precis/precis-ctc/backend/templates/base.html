@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% fusion_render_first_flag %}
-    <title>{% block title %}{{ fusion_branding.site_name|default:"Fusion LMS" }}{% endblock title %}</title>
+    <title>{% block title %}{{ fusion_branding.site_name|default:"CTC Research" }}{% endblock title %}</title>
     {% block meta %}
-        <meta name="description" content="Modern learning management platform powered by django-fusion and django-bolt.">
+        <meta name="description" content="CTC Research — a medical research center for clinical evidence, biostatistics, and responsible medical AI.">
     {% endblock meta %}
     {% fusion_branding %}
     {% block css %}
@@ -15,6 +15,7 @@
     {% endblock css %}
 </head>
 <body class="{% block body_class %}{% endblock body_class %} fu-themed" data-page="{{ page_type|default:"" }}" {% fusion_body_data %}>
+    {% block header %}{% endblock header %}
     {% block body %}
         {% fusion_layout layout|default:"default" %}
     {% endblock body %}

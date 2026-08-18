@@ -1,0 +1,33 @@
+{% load wagtailcore_tags %}
+{% comment %} A single screenshot variant (PostVariantBlock) — image (or a
+   stylized screen frame when no URL is set), caption and an optional
+   hyperlink (chosen page wins over the manual URL). {% endcomment %}
+<figure class="card post-variant overflow-hidden">
+  {% if value.screenshot_url %}
+    <img src="{{ value.screenshot_url }}" alt="{{ value.caption|default:value.name }}" class="post-variant__shot w-full" loading="lazy" />
+  {% else %}
+    <div class="post-variant__frame" aria-hidden="true">
+      <div class="post-variant__chrome">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="post-variant__screen">
+        <span class="post-variant__mark">{{ value.name|truncatechars:18 }}</span>
+        <span class="post-variant__line"></span>
+        <span class="post-variant__line post-variant__line--short"></span>
+      </div>
+    </div>
+  {% endif %}
+  <figcaption class="post-variant__body p-5">
+    <p class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted">{{ value.name }}</p>
+    {% if value.caption %}<p class="mt-1 text-sm text-fu-text/70">{{ value.caption }}</p>{% endif %}
+    {% if value.link_page %}
+      <a href="{{ value.link_page.url }}" class="mt-3 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-link-dark">
+        {{ value.link_label|default:value.link_page.title }} ↗
+      </a>
+    {% elif value.link_href %}
+      <a href="{{ value.link_href }}" class="mt-3 inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-link-dark">
+        {{ value.link_label|default:"Open" }} ↗
+      </a>
+    {% endif %}
+  </figcaption>
+</figure>

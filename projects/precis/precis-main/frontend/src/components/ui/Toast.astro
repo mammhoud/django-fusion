@@ -1,0 +1,50 @@
+---
+/** Toast notification — Redux-powered, replaces Alpine $store('toast'). */
+---
+
+<style>
+  #redux-toast { transition: opacity 0.3s ease, transform 0.3s ease; }
+  #redux-toast.hidden { opacity: 0; transform: translateY(1rem); pointer-events: none; }
+</style>
+
+<div id="redux-toast" class="pointer-events-none fixed bottom-6 right-6 z-[70] hidden" role="status" aria-live="polite">
+  <div id="redux-toast-inner" class="flex items-center gap-3 rounded-md border border-fu-line bg-fu-card px-5 py-3.5 text-sm font-medium shadow-xl">
+    <svg id="redux-toast-icon-ok" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+    <svg id="redux-toast-icon-err" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    <span id="redux-toast-msg"></span>
+  </div>
+</div>
+
+<script>
+  const toastEl = document.getElementById('redux-toast');
+  const toastMsg = document.getElementById('redux-toast-msg');
+  const toastInner = document.getElementById('redux-toast-inner');
+  const iconOk = document.getElementById('redux-toast-icon-ok');
+  const iconErr = document.getElementById('redux-toast-icon-err');
+
+  function subscribeToStore(): void {
+    const store = window.__reduxStore;
+    if (!store) {
+      requestAnimationFrame(subscribeToStore);
+      return;
+    }
+    if (!toastEl || !toastMsg || !toastInner || !iconOk || !iconErr) return;
+    store.subscribe(() => {
+      const { visible, message, variant } = store.getState().toast;
+      if (visible) {
+        toastEl.classList.remove('hidden');
+        toastMsg.textContent = message;
+        const isError = variant === 'error';
+        iconOk.classList.toggle('hidden', isError);
+        iconErr.classList.toggle('hidden', !isError);
+        toastInner.className = toastInner.className.replace(
+          /text-(fu-live|fu-link|red-600|red-400)/g,
+          '',
+        ) + (isError ? ' text-red-600 dark:text-red-400' : ' text-fu-live');
+      } else {
+        toastEl.classList.add('hidden');
+      }
+    });
+  }
+  subscribeToStore();
+</script>

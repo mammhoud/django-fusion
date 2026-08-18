@@ -82,6 +82,16 @@ _CONTEXT_PROCESSORS = [
 if importlib.util.find_spec("wagtail") is not None:
     _CONTEXT_PROCESSORS.append("wagtail.contrib.settings.context_processors.settings")
 
+# Rich per-request language list for the header language switcher. The
+# django-fusion helper returns ``LANGUAGES`` as a list of dicts
+# (code / name / name_local / is_active / is_current / is_default) instead of
+# the bare (code, name) tuples from django.template.context_processors.i18n.
+# It must be registered *after* i18n so it overwrites the tuple list in the
+# RequestContext. The ``layout/*/header/languageSelect.html`` partials iterate
+# this same ``LANGUAGES`` list.
+if importlib.util.find_spec("django_fusion") is not None:
+    _CONTEXT_PROCESSORS.append("django_fusion.core.context.languages.LANGUAGES")
+
 _TEMPLATE_BUILTINS = ["django.templatetags.static"]
 if importlib.util.find_spec("heroicons") is not None:
     _TEMPLATE_BUILTINS.append("heroicons.templatetags.heroicons")

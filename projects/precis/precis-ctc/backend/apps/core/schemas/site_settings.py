@@ -44,7 +44,7 @@ class FooterLinkGroupResponse(BaseModel):
 class SiteIdentityResponse(BaseModel):
     """Site identity info (name, tagline, logo)."""
 
-    site_name: str = "TharaaEdu"
+    site_name: str = "CTC Research"
     site_tagline: str = ""
     logo_url: Optional[str] = None
 

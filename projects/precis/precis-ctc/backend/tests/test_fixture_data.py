@@ -87,7 +87,7 @@ EN_CHILD_SLUGS = ["about", "contact", "team", "all-courses", "events", "services
 # Titles from the fixture (English locale)
 EXPECTED_TITLES = {
     "home": "Home Page",
-    "about": "About Fusion LMS",
+    "about": "About CTC Research",
     "contact": "Contact Us",
     "team": "Our Team",
     "all-courses": "AI for Scientific & Medical Writing Courses",
@@ -426,7 +426,7 @@ class TestFixtureData(TestCase):
         assert response.status_code == 200
         body = json.loads(response.content)
         assert body["data"]["slug"] == "about"
-        assert body["data"]["title"] == "About Fusion LMS"
+        assert body["data"]["title"] == "About CTC Research"
 
     def test_unknown_page_data_returns_404(self):
         response = self.client.get("/api/pages/does-not-exist/data/")

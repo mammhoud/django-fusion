@@ -1,0 +1,37 @@
+{% load wagtailcore_tags %}
+{% comment %} A single project card (ProjectBlock) — rendered inside the projects
+   grid section of pages/partials/page_content.html. BEM classes (project__*)
+   mirror the Astro side (frontend/src/pages/projects.astro) so both rendering
+   roads share the same look. {% endcomment %}
+<article class="card project__card" style="padding:1.5rem;">
+  <div class="project__head" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.5rem;">
+    <span class="tag-marker project__category">{{ value.category }}</span>
+    {% if value.edition %}
+    <span class="badge-primary badge project__edition">{{ value.edition }}</span>
+    {% endif %}
+  </div>
+
+  <h3 class="project__name" style="font-family:'Bricolage Grotesque',sans-serif;font-size:1.05rem;font-weight:600;margin:0 0 .25rem;color:hsl(var(--fu-ink));">
+    {{ value.name }}
+  </h3>
+
+  {% if value.path %}
+  <p class="project__path" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:.16em;color:hsl(var(--fu-muted));margin:0 0 .75rem;">
+    {{ value.path }}
+  </p>
+  {% endif %}
+
+  {% if value.description %}
+  <p class="project__text" style="color:hsl(var(--fu-text) / .7);font-size:.875rem;line-height:1.6;margin:0 0 1rem;">
+    {{ value.description }}
+  </p>
+  {% endif %}
+
+  {% if value.features %}
+  <ul class="project__features" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.35rem;">
+    {% for feature in value.features %}
+      {% include_block feature %}
+    {% endfor %}
+  </ul>
+  {% endif %}
+</article>

@@ -116,6 +116,12 @@ except Exception:
 # ── Health & admin ───────────────────────────────────────────────────────────
 urlpatterns = [
     path("health/", HealthCheckView.as_view(), name="health"),
+    # Django language switching — the header language selector posts to
+    # ``{% url 'set_language' %}``. ``configure_common_urls`` above falls back
+    # to a no-op because its import path references the legacy
+    # ``django_fusion.contrib.debug_tools`` package, so register the i18n
+    # views explicitly here.
+    path("i18n/", include("django.conf.urls.i18n")),
     # Stable Fusion health contract used by deployment smoke checks. Keep the
     # existing /api/health/ endpoint for API clients and expose this explicit
     # alias so proxy-level checks do not depend on the API namespace layout.

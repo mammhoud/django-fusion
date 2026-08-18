@@ -99,32 +99,105 @@ def _stream_items(page, field_name: str) -> list[dict]:
     return items
 
 
+def _button_to_dict(btn) -> dict | None:
+    """Serialize a ButtonBlock StructValue (label/href/page/style) to a dict.
+
+    A chosen page resolves to its live URL; the label falls back to the page
+    title (the button's visible header) when the editor left it empty.
+    """
+    if not btn:
+        return None
+    label = btn.get("label") or ""
+    href = btn.get("href") or ""
+    style = btn.get("style") or "primary"
+    page = btn.get("page")
+    page_dict = None
+    if page is not None:
+        try:
+            page_dict = {"id": page.pk, "title": page.title, "url": page.url}
+        except Exception:
+            page_dict = None
+        if page_dict and page_dict.get("url"):
+            href = href or page_dict["url"]
+            label = label or page_dict["title"]
+    return {"label": label, "href": href, "style": style, "page": page_dict}
+
+
 def _page_data(page) -> dict:
-    """Return a frontend-shaped page payload from any live LMS page."""
+    """Return a frontend-shaped page payload from any live LMS page.
+
+    Covers both the native LMS page fields and the ported landing-slice page
+    models (hero/cta StreamFields, delivery phases/prompts, product editions,
+    brand palettes) so the shared Astro frontend renders the same document.
+    """
     specific = page.specific
+    class_name = specific.__class__.__name__
     data = {
         "id": page.pk,
         "slug": page.slug or "home",
         "title": page.title,
-        "type": specific.__class__.__name__,
+        "type": class_name,
         "show_in_nav": bool(getattr(specific, "show_in_nav", True)),
         "seo_title": getattr(page, "seo_title", "") or page.title,
         "search_description": getattr(page, "search_description", "") or "",
     }
 
-    hero_heading = getattr(specific, "hero_heading", "")
-    hero_subheading = getattr(specific, "hero_subheading", "")
+    # Ported landing-slice listing fields (ProductPage card, brand/display modes).
+    if hasattr(specific, "logo_style"):
+        data["logo_style"] = specific.logo_style
+        data["status"] = specific.status
+        data["hidden"] = bool(specific.hidden)
+    if getattr(specific, "version", ""):
+        data["version"] = specific.version
+    if getattr(specific, "tagline", ""):
+        data["tagline"] = specific.tagline
+    if hasattr(specific, "get_category_display"):
+        data["category"] = specific.get_category_display().lower()
+    if getattr(specific, "display_mode", None):
+        data["display_mode"] = specific.display_mode
+
+    # Hero — the ported LandingPage hero StreamField wins; native LMS pages
+    # fall back to hero_heading/hero_subheading/intro_text.
     data["hero"] = {
         "badge": "fusion lms · server-rendered content",
-        "title": hero_heading or page.title,
-        "subtitle": hero_subheading or getattr(specific, "intro_text", "") or "",
+        "title": getattr(specific, "hero_heading", "") or page.title,
+        "subtitle": getattr(specific, "hero_subheading", "") or getattr(specific, "intro_text", "") or "",
         "primary_cta": {"label": "Explore courses", "href": "/courses/", "style": "primary"},
         "secondary_cta": {"label": "Learn about Fusion", "href": "/about/", "style": "secondary"},
     }
+    hero = getattr(specific, "hero", None)
+    if hero:
+        for block in hero:
+            if block.block_type == "hero":
+                value = block.value
+                data["hero"] = {
+                    "badge": value.get("badge", ""),
+                    "title": value.get("title", page.title),
+                    "accent": value.get("accent", ""),
+                    "subtitle": value.get("subtitle", ""),
+                    "primary_cta": _button_to_dict(value.get("primary_cta")),
+                    "secondary_cta": _button_to_dict(value.get("secondary_cta")),
+                    "trusted_by": value.get("trusted_by", ""),
+                }
+                break
 
     body = getattr(specific, "body", None) or getattr(specific, "intro_text", None)
     if body:
         data["body"] = str(body)
+
+    # CTA — the ported LandingPage cta StreamField wins over the LMS default.
+    cta = getattr(specific, "cta", None)
+    if cta:
+        for block in cta:
+            if block.block_type == "cta":
+                value = block.value
+                data["cta"] = {
+                    "title": value.get("title", ""),
+                    "subtitle": value.get("subtitle", ""),
+                    "primary_cta": _button_to_dict(value.get("primary_cta")),
+                    "secondary_cta": _button_to_dict(value.get("secondary_cta")),
+                }
+                break
 
     for field_name in ("stats", "features", "testimonials", "pricing", "faq", "projects", "services", "process", "blog"):
         items = _stream_items(specific, field_name)
@@ -137,6 +210,56 @@ def _page_data(page) -> dict:
             items = _stream_items(specific, source)
             if items:
                 data[target] = items
+
+    # Delivery phases / prompts — the ported services methodology.
+    if class_name == "PhasePage":
+        data["phase_number"] = specific.phase_number
+        data["phase_label"] = specific.get_phase_label_display()
+        data["outcomes"] = [line.strip() for line in specific.outcomes.splitlines() if line.strip()]
+        data["prompts"] = [
+            {"slug": child.slug, "title": child.title, "href": "/about/services/"}
+            for child in specific.get_children().live().specific()
+        ]
+    elif class_name == "PromptPage":
+        data["prompt"] = specific.prompt
+        data["context"] = str(specific.context) if specific.context else ""
+        data["output"] = str(specific.output) if specific.output else ""
+        data["tool"] = specific.tool
+        parent = specific.get_parent().specific
+        data["phase"] = {"title": parent.title, "slug": parent.slug, "href": "/about/services/"}
+
+    # Product detail — editions become the public gallery + preview routes.
+    if class_name == "ProductPage":
+        data.pop("snippets", None)
+        data["editions"] = specific.get_editions()
+        data["preview_gallery"] = specific.get_preview_gallery()
+
+    # Product listing — one card per live, non-hidden ProductPage child.
+    if class_name == "ProductsPage":
+        cards = specific.get_product_cards()
+        if cards:
+            data["products"] = cards
+
+    # Brand page — editor-authored palette overrides per product slug.
+    if class_name == "BrandPage":
+        overrides = specific.get_palette_overrides()
+        if overrides:
+            data["palette_overrides"] = overrides
+
+    # Services — nested delivery phases.
+    if class_name == "ServicesPage":
+        data["phases"] = [
+            {
+                "id": child.pk,
+                "slug": child.slug,
+                "title": child.title,
+                "phase_number": child.phase_number,
+                "phase_label": child.get_phase_label_display(),
+                "href": "/about/services/",
+            }
+            for child in specific.get_children().live().specific()
+            if child.__class__.__name__ == "PhasePage"
+        ]
 
     data.setdefault("cta", {
         "title": "Start learning with Fusion LMS",
@@ -360,6 +483,150 @@ def page_list_api(request: HttpRequest) -> JsonResponse:
     for page in Page.objects.live().filter(depth__gt=1).order_by("title"):
         pages.append({"id": page.pk, "slug": page.slug, "title": page.title, "type": page.specific_class.__name__})
     return JsonResponse({"pages": pages, "total": len(pages)})
+
+
+def brand_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/brand/ — brand kit boards, one per live product.
+
+    Single source for the /brand/ page and the product-tooltip brand modal:
+    each board carries the product card (title, href, logo, tagline) plus the
+    brandkit story (essence, metaphor, construction, voice, palette swatches
+    pre-resolved to CSS).
+    """
+    try:
+        from apps.content.models.landing import BrandPage
+        from apps.pages.pages.brand_spec import get_brand_boards
+
+        boards = get_brand_boards(brand_page=BrandPage.objects.first())
+    except Exception:
+        logger.exception("brand_api error")
+        boards = []
+    return JsonResponse({"boards": boards})
+
+
+def pricing_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/pricing/ — every live, non-hidden product with its editions.
+
+    Drives the tabbed /pricing/ page: each product carries its slug, title,
+    tagline, logo style, status and the edition list (name / price / period /
+    tier / featured). Hidden products are excluded.
+    """
+    try:
+        from apps.content.models.landing import PricingPage
+
+        page = PricingPage.objects.first()
+        products = page.get_product_pricing() if page else []
+        return JsonResponse({"products": products})
+    except Exception:
+        logger.exception("pricing_api error")
+        return JsonResponse({"products": []})
+
+
+def products_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/products/ — the Product snippet catalog with language filter.
+
+    Editor-managed catalog-of-record (apps/content/models/products.py): each
+    item carries title, slug, category, language, price and the unified
+    currency from FUSION_DEFAULT_CURRENCY. Supports ``?language=``,
+    ``?category=`` and ``?q=`` filters so the frontend can filter the grid by
+    language without a second content source.
+    """
+    try:
+        from apps.content.models.landing import ProductPage
+        from apps.content.models.products import Product
+    except Exception:
+        logger.exception("products_api import failed")
+        return JsonResponse({"products": []})
+
+    qs = Product.objects.filter(is_published=True)
+    # Hidden ProductPage documents stay catalog-only (direct link still
+    # works), so their snippets never appear in the public catalog either.
+    try:
+        hidden_slugs = set(
+            ProductPage.objects.filter(hidden=True).values_list("slug", flat=True)
+        )
+        if hidden_slugs:
+            qs = qs.exclude(detail_slug__in=hidden_slugs).exclude(
+                detail_slug="", slug__in=hidden_slugs
+            )
+    except Exception:
+        logger.exception("products_api hidden-product filter failed")
+    language = (request.GET.get("language") or "").lower()
+    if language:
+        qs = qs.filter(language=language)
+    category = (request.GET.get("category") or "").lower()
+    if category:
+        qs = qs.filter(category=category)
+    q = (request.GET.get("q") or "").strip()
+    if q:
+        qs = qs.filter(title__icontains=q)
+    return JsonResponse({
+        "products": [product.as_dict() for product in qs.order_by("-is_featured", "title")],
+        "language": language or None,
+        "languages": [item["code"] for item in _language_catalog()],
+    })
+
+
+def get_home_courses():
+    """Return the bounded, annotated published-course queryset shared by both roads."""
+    from django.db.models import Count, Q
+
+    from apps.learning.models import Course
+
+    return (
+        Course.objects.filter(is_published=True)
+        .select_related("instructor")
+        .annotate(
+            module_count=Count("modules", distinct=True),
+            lesson_count=Count(
+                "modules__lessons",
+                filter=Q(modules__lessons__is_active=True),
+                distinct=True,
+            ),
+        )
+        .order_by("-is_featured", "title")[:6]
+    )
+
+
+def courses_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/courses/ — the public, published learning catalog.
+
+    Adapted from precis-landing for the lms ``Course`` model: difficulty comes
+    from ``difficulty_level``, duration from the ``duration`` (hours) field, and
+    the module/lesson counts are annotated directly (lms Course has no
+    ``module_count``/``lesson_count`` fields).
+    """
+    from django.conf import settings as django_settings
+
+    courses = list(get_home_courses())
+    language = (request.GET.get("language") or "").lower()
+    if language:
+        courses = [course for course in courses if (course.language or "") == language]
+    currency = str(getattr(django_settings, "FUSION_DEFAULT_CURRENCY", "USD") or "USD")
+    return JsonResponse({
+        "courses": [
+            {
+                "slug": course.slug,
+                "title": course.title,
+                "short_description": course.short_description,
+                "difficulty": str(course.get_difficulty_level_display()),
+                "language": course.language,
+                "currency": currency,
+                "duration_hours": str(course.duration),
+                "price": str(course.price),
+                "is_free": course.is_free,
+                "is_featured": course.is_featured,
+                "has_certificate": course.has_certificate,
+                "module_count": course.module_count,
+                "lesson_count": course.lesson_count,
+                "instructor": course.instructor.get_full_name() or course.instructor.get_username(),
+                "href": str(course.url),
+            }
+            for course in courses
+        ],
+        "language": language or None,
+        "languages": [item["code"] for item in _language_catalog()],
+    })
 
 
 def contact_api(request: HttpRequest) -> JsonResponse:

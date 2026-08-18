@@ -1,0 +1,56 @@
+{% load i18n %}{% autoescape off %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ subject|default:"Structa Cloud" }}</title>
+</head>
+<body style="margin:0;padding:0;background:#F6F5F1;font-family:'Public Sans',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#F6F5F1;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#FFFFFF;border-radius:12px;border:1px solid #E5E1D8;overflow:hidden;">
+          <!-- Wordmark -->
+          <tr>
+            <td style="padding:28px 32px 20px;border-bottom:1px solid #EFECE5;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding-right:10px;">
+                    <svg width="30" height="30" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Structa Cloud">
+                      <rect width="32" height="32" rx="4" fill="#1A1917"/>
+                      <path d="M11 8L6 13l5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M21 8l5 5-5 5" stroke="#0B57D0" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M18 7l-4 18" stroke="#FFE14D" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    </svg>
+                  </td>
+                  <td style="font-family:'Courier New',monospace;font-weight:700;font-size:16px;color:#1A1917;letter-spacing:-0.02em;">Structa Cloud</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:32px;font-size:15px;line-height:1.65;color:#3D3B36;">
+              {% block email_body %}{% endblock %}
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px;background:#F6F5F1;border-top:1px solid #EFECE5;">
+              <p style="margin:0;font-size:12px;color:#8A857C;line-height:1.6;">
+                You're receiving this because you have an account with Structa Cloud.
+                <br>
+                <a href="{{ current_site.domain }}" style="color:#0B57D0;text-decoration:underline;text-underline-offset:2px;">{{ current_site.domain }}</a>
+                &nbsp;·&nbsp; <a href="https://github.com/mammhoud" style="color:#0B57D0;text-decoration:none;">GitHub</a>
+                &nbsp;·&nbsp; <a href="https://linkedin.com/in/mammhoud" style="color:#0B57D0;text-decoration:none;">LinkedIn</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+{% endautoescape %}

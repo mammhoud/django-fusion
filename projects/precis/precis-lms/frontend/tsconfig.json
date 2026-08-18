@@ -6,7 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@fusion/*": ["../../../libs/django-fusion/js/fusion-js/src/*"]
+      "@fusion/*": ["../../../../libs/django-fusion/js/fusion-js/src/*"]
     }
   }
 }

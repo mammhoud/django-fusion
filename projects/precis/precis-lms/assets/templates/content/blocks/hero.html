@@ -1,0 +1,95 @@
+{% load wagtailcore_tags %}
+{% comment %} Shared landing hero. The page communicates the product value and
+   next action here; implementation details live in the engineering blog. {% endcomment %}
+<section class="hero">
+  <span class="hero__corner-tl" aria-hidden="true"></span>
+  <span class="hero__corner-br" aria-hidden="true"></span>
+
+  <div class="hero__inner">
+    <div class="hero__content">
+      {% if value.badge %}
+      <p
+        class="hero__eyebrow"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+        x-cloak
+      >
+        {{ value.badge }}
+      </p>
+      {% endif %}
+
+      <h1
+        class="hero__heading"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+      >
+        {{ value.title }}{% if value.accent %}
+        <span class="hero__accent">
+          <span class="relative z-10">{{ value.accent }}</span>
+          <span class="hero__accent-mark" aria-hidden="true"></span>
+        </span>{% endif %}
+      </h1>
+
+      {% if value.subtitle %}
+      <p
+        class="hero__intro"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+        style="transition-delay: 100ms"
+      >
+        {{ value.subtitle }}
+      </p>
+      {% endif %}
+
+      {% if value.primary_cta or value.secondary_cta %}
+      <div
+        class="hero__actions"
+        x-data
+        x-intersect="$el.classList.add('reveal-visible')"
+        style="transition-delay: 200ms"
+      >
+        {% if value.primary_cta %}
+        <span
+          class="btn-magnetic"
+          x-data="magnetic"
+          @pointerenter="active = true; center()"
+          @pointermove="track($event)"
+          @pointerleave="leave()"
+          :class="active && 'btn-magnetic--tracking'"
+          :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+        >
+          {% include_block value.primary_cta %}
+        </span>
+        {% endif %}
+        {% if value.secondary_cta %}
+        <span
+          class="btn-magnetic"
+          x-data="magnetic"
+          @pointerenter="active = true; center()"
+          @pointermove="track($event)"
+          @pointerleave="leave()"
+          :class="active && 'btn-magnetic--tracking'"
+          :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+        >
+          {% include_block value.secondary_cta %}
+        </span>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if value.trusted_by %}
+  <div class="hero__trusted" aria-label="Built for">
+    <p class="hero__trusted-text">{{ value.trusted_by }}</p>
+  </div>
+  {% endif %}
+
+  <div
+    x-data
+    aria-hidden="true"
+    style="height:0;pointer-events:none;"
+    x-intersect:enter="$dispatch('fusion:header-scrolled', { scrolled: false })"
+    x-intersect:leave="$dispatch('fusion:header-scrolled', { scrolled: true })"
+  ></div>
+</section>

@@ -1,0 +1,10 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ localized_content.title|default:page.title }} · Structa Cloud{% endblock %}
+
+{% block content %}
+  {% comment %} Blog post document — hero, meta row, body, cta — rendered by the
+     shared content-region partial (same road as the HTMX fragment). {% endcomment %}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}

@@ -1,0 +1,19 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import Toast from '@/components/ui/Toast.astro';
+import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
+import type { SiteSettings, NavigationData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+try { [siteSettings, navData] = await Promise.all([cachedSiteSettings(), cachedNavigation()]); } catch { /* static fallback */ }
+---
+
+<Layout title="Software Engineering That Ships" description="Build maintainable web products with a clear delivery path, strong interfaces, and systems your team can own." navItems={navData?.nav_items} siteSettings={siteSettings} pageSlug="software-engineering">
+  <section class="section-hero reg-marks overflow-hidden py-20 md:py-28"><div class="container-fusion"><div class="max-w-3xl"><p class="tag-marker mb-5">service · software engineering</p><h1 class="font-display text-4xl font-bold tracking-tight text-fu-ink md:text-6xl">Turn a difficult product decision into a shippable system.</h1><p class="mt-6 max-w-2xl text-lg leading-relaxed text-fu-muted">From a first slice to a platform your team can evolve, we make the user journey, delivery contract, and technical trade-offs visible.</p><div class="mt-8 flex flex-wrap gap-3"><a class="btn-primary" href="/contact/?topic=infrastructure-and-ai-assessment">Discuss a product build <span aria-hidden="true">→</span></a><a class="btn-secondary" href="/projects/">View our work</a></div></div></div></section>
+  <section class="doc-sheet bg-fu-card py-20 md:py-28"><div class="container-fusion"><div class="grid gap-5 lg:grid-cols-3"><article class="card p-6"><p class="tag-marker mb-4">shape</p><h2 class="font-display text-xl font-semibold text-fu-ink">Make the job clear</h2><p class="mt-3 text-sm leading-relaxed text-fu-muted">Align the product slice with the user, the business constraint, and the evidence needed for the next decision.</p></article><article class="card p-6"><p class="tag-marker mb-4">ship</p><h2 class="font-display text-xl font-semibold text-fu-ink">Deliver in thin slices</h2><p class="mt-3 text-sm leading-relaxed text-fu-muted">Prefer working interfaces, explicit contracts, and small releases over a long invisible build phase.</p></article><article class="card p-6"><p class="tag-marker mb-4">own</p><h2 class="font-display text-xl font-semibold text-fu-ink">Leave a system teams can grow</h2><p class="mt-3 text-sm leading-relaxed text-fu-muted">Document the important choices, automate the repeatable work, and make ownership part of the deliverable.</p></article></div><div class="mt-16 grid gap-8 lg:grid-cols-[0.8fr_1.2fr]"><div><p class="tag-marker mb-4">delivery contract</p><h2 class="font-display text-3xl font-bold tracking-tight text-fu-ink">A release is more than code.</h2></div><ul class="grid gap-3 text-sm text-fu-muted"><li class="card p-5">A clear user journey and acceptance boundary.</li><li class="card p-5">A maintainable backend and frontend contract.</li><li class="card p-5">Checks, observability, and a path to handoff.</li><li class="card p-5">A prioritized next slice, not a vague “phase two.”</li></ul></div></div></section>
+  <CTA heading="Have a product decision you need to turn into momentum?" intro="Start with the hardest constraint. We will help shape a first slice your team can see, test, and ship." ctaLabel="Discuss a product build" ctaHref="/contact/?topic=infrastructure-and-ai-assessment" />
+  <Toast /><HtmxBootstrap />
+</Layout>
