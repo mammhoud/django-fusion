@@ -78,9 +78,12 @@ services:
       - ./assets:/app/assets:ro
       - ../../../libs:/app/libs:rw
       - ../../../logs:/app/logs:z
-      # Keep named volumes at Django's effective STATIC_ROOT and MEDIA_ROOT.
+      # Keep a named volume at Django's effective STATIC_ROOT (collectstatic
+      # output) and bind the monorepo-shared media tree so the shared Nginx
+      # proxy serves the same files the backend writes (it mounts
+      # projects/assets/media/ctc-research → /var/www/media/ctc-research).
       - precis-ctc-static:/app/precis-ctc/assets/staticfiles:rw
-      - precis-ctc-media:/app/media:rw
+      - ../../../assets/media/ctc-research:/app/media:rw
       - ./Env:/app/precis-ctc/Env:ro
     networks:
       - common
@@ -141,7 +144,7 @@ services:
       - ./assets:/app/assets:ro
       - ../../../libs:/app/libs:rw
       - ../../../logs:/app/logs:z
-      - precis-ctc-media:/app/media:rw
+      - ../../../assets/media/ctc-research:/app/media:rw
       - ./Env:/app/precis-ctc/Env:ro
     networks:
       - common
@@ -192,7 +195,7 @@ services:
       - ./assets:/app/assets:ro
       - ../../../libs:/app/libs:rw
       - ../../../logs:/app/logs:z
-      - precis-ctc-media:/app/media:rw
+      - ../../../assets/media/ctc-research:/app/media:rw
       - ./Env:/app/precis-ctc/Env:ro
     networks:
       - common
@@ -250,7 +253,4 @@ networks:
 volumes:
   precis-ctc-static:
     name: precis-ctc-static
-    external: true
-  precis-ctc-media:
-    name: precis-ctc-media
     external: true

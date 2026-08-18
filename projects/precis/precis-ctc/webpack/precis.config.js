@@ -15,13 +15,17 @@
  *   # Via the Makefile
  *   cd projects/precis && make build
  *
- * Output:
- *   assets/bundles/
+ * Output (shared monorepo tree, beside media):
+ *   projects/assets/bundles/ctc-research/
  *   ├── app.[contenthash].js
  *   ├── main.[contenthash].css
  *   ├── vendor.[contenthash].js
  *   ├── bundles.json          ← consumed by django-webpack-loader
  *   └── libs/                 ← copied static libs
+ *
+ * The backend registers this dir in STATICFILES_DIRS under the
+ * bundles/ctc-research/ namespace, so collectstatic copies it into STATIC_ROOT
+ * and the shared Nginx proxy serves it at /static/bundles/ctc-research/.
  *
  * Template usage:
  *   {% load render_bundle from webpack_loader %}
@@ -48,13 +52,15 @@ module.exports = createConfig({
   },
 
   // ── Output ───────────────────────────────────────────────────────────
-  // The backend pipeline (configs/base/assets.py) computes SITE_NAME from
-  // BASE_DIR.name = 'precis' and expects bundles under
-  // assets/bundles/<site-name>/ so collectstatic serves them at
-  // /static/bundles/precis/* and WEBPACK_LOADER/FUSION_ASSET_PIPELINE find
-  // their stats file at assets/bundles/precis/bundles.json.
-  outputPath: 'assets/bundles/precis',
-  outputPublic: '/static/bundles/precis/',
+  // Bundles land in the shared monorepo tree (projects/assets/bundles/ctc-research/,
+  // beside projects/assets/media/ctc-research/) using the site's public identity
+  // 'ctc-research' so the shared Nginx proxy can map them at
+  // /static/bundles/ctc-research/ without renaming. The backend registers this
+  // dir in STATICFILES_DIRS (see backend/settings.py) so collectstatic serves
+  // them from STATIC_ROOT and WEBPACK_LOADER/FUSION_ASSET_PIPELINE find the
+  // stats file at projects/assets/bundles/ctc-research/bundles.json.
+  outputPath: '../../assets/bundles/ctc-research',
+  outputPublic: '/static/bundles/ctc-research/',
 
   // ── Resolve aliases ──────────────────────────────────────────────────
   aliases: {
@@ -77,9 +83,9 @@ module.exports = createConfig({
 // ── Console summary ────────────────────────────────────────────────────────
 console.log(`
 ╔══════════════════════════════════════════════════════════════╗
-║  📚 Precis LMS Webpack                                      ║
-║  Output: assets/bundles/                                    ║
-║  Public: /static/bundles/                                   ║
+║  🏥 CTC Research Webpack                                    ║
+║  Output: projects/assets/bundles/ctc-research/              ║
+║  Public: /static/bundles/ctc-research/                      ║
 ║  django-webpack-loader → {% render_bundle 'precis' %}      ║
 ╚══════════════════════════════════════════════════════════════╝
 `);

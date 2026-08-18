@@ -35,8 +35,9 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 APPLICATIONS_ROOT = REPOSITORY_ROOT / "applications"
 PROJECTS_ROOT = REPOSITORY_ROOT / "projects"
 PROXY = APPLICATIONS_ROOT / "proxy"
-CTC = PROJECTS_ROOT / "precis" / "lms-ctc"
-MAIN = PROJECTS_ROOT / "precis" / "main"
+CTC = PROJECTS_ROOT / "precis" / "precis-ctc"
+MAIN = PROJECTS_ROOT / "precis" / "precis-main"
+SHARED_ASSETS = PROJECTS_ROOT / "assets"
 
 
 def site_root(site: str) -> Path:
@@ -55,6 +56,18 @@ def site_rel(site: str) -> str:
     if site == "precis-ctc":
         return "precis/precis-ctc"
     return f"precis/{site}"
+
+
+def site_identity(site: str) -> str:
+    """Public site identity used for URL namespaces and proxy paths.
+
+    precis-ctc maps to ctc-research (the domain/marketing identity): the shared
+    Nginx/Traefik configs, media tree (projects/assets/media/ctc-research), and
+    bundle namespace (/static/bundles/ctc-research/) all use the identity name.
+    """
+    if site == "precis-ctc":
+        return "ctc-research"
+    return site
 
 
 class Colors:
@@ -144,11 +157,14 @@ def check_django_settings(site: str) -> CheckResult:
     """Verify Django static/media settings point to expected directories."""
     result = CheckResult()
     product_root = site_root(site)
-    assets_py = (
-        product_root / "backend" / "configs" / "base" / "assets.py"
-        if (product_root / "backend" / "configs").exists()
-        else product_root / "configs" / "base" / "assets.py"
-    )
+    candidates = [
+        product_root / "backend" / "configs" / "base" / "assets.py",
+        product_root / "configs" / "base" / "assets.py",
+        # Shared configs live one level up from the product root
+        # (projects/precis/configs for precis-ctc).
+        product_root.parent / "configs" / "base" / "assets.py",
+    ]
+    assets_py = next((c for c in candidates if c.exists()), candidates[0])
     text = read_text(assets_py)
 
     expected_patterns = [
@@ -168,8 +184,16 @@ def check_django_settings(site: str) -> CheckResult:
 def check_webpack_config(site: str) -> CheckResult:
     """Verify webpack output path and publicPath match Django BUNDLE_DIR_NAME."""
     result = CheckResult()
-    webpack_main = site_root(site) / "webpack" / "main.config.js"
+    webpack_main = site_root(site) / "webpack" / "precis.config.js"
     text = read_text(webpack_main)
+
+    # Bundle output targets the shared monorepo tree for ctc (beside media).
+    if site == "precis-ctc":
+        if "assets/bundles/ctc-research" not in text:
+            result.add_error(f"{webpack_main}: outputPath must resolve to projects/assets/bundles/ctc-research")
+        if "'/static/bundles/ctc-research/'" not in text:
+            result.add_error(f"{webpack_main}: publicPath must be /static/bundles/ctc-research/")
+        return result
 
     if f'"{site}"' not in text and f"'{site}'" not in text:
         result.add_error(f"{webpack_main}: site '{site}' not referenced in SITE_DIR_MAP or SITE_ENTRIES")
@@ -195,10 +219,12 @@ def check_nginx_config(site: str) -> CheckResult:
     nginx_conf = PROXY / "nginx" / "default.conf.template"
     text = read_text(nginx_conf)
 
+    # Proxy paths use the site's public identity (ctc-research, not precis-ctc).
+    identity = site_identity(site)
     required_locations = [
-        f"/static/bundles/{site}/",
-        f"/sites/{site}/static/",
-        f"/media/{site}/",
+        f"/static/bundles/{identity}/",
+        f"/sites/{identity}/static/",
+        f"/media/{identity}/",
     ]
 
     for loc in required_locations:
@@ -209,9 +235,18 @@ def check_nginx_config(site: str) -> CheckResult:
     compose_text = read_text(compose)
 
     required_mounts = [
-        f"../projects/{site_rel(site)}/assets/staticfiles:/var/www/sites/{site}/static:ro",
-        f"../projects/{site_rel(site)}/assets/media:/var/www/media/{site}:ro",
+        f"../projects/{site_rel(site)}/assets/staticfiles:/var/www/sites/{identity}/static:ro",
     ]
+    if site == "precis-ctc":
+        # CTC media lives in the monorepo-shared tree (project-named) so the
+        # proxy serves exactly what the backend writes.
+        required_mounts.append(
+            "../projects/assets/media/ctc-research:/var/www/media/ctc-research:ro"
+        )
+    else:
+        required_mounts.append(
+            f"../projects/{site_rel(site)}/assets/media:/var/www/media/{identity}:ro"
+        )
 
     for mount in required_mounts:
         if mount not in compose_text:
@@ -223,7 +258,7 @@ def check_nginx_config(site: str) -> CheckResult:
 def check_traefik_routing(site: str) -> CheckResult:
     """Verify Traefik routes static/media paths to shared-proxy."""
     result = CheckResult()
-    traefik_file = PROXY / "traefik" / "dynamic" / f"{site}.yml"
+    traefik_file = PROXY / "traefik" / "dynamic" / f"{site_identity(site)}.yml"
     text = read_text(traefik_file)
 
     if "shared-proxy:80" not in text:
@@ -244,7 +279,10 @@ def check_traefik_routing(site: str) -> CheckResult:
 def check_bundles_json(site: str, strict: bool) -> CheckResult:
     """Optionally verify that bundles.json exists and is valid JSON."""
     result = CheckResult()
-    bundles_json = site_root(site) / "assets" / "bundles" / site / "bundles.json"
+    if site == "precis-ctc":
+        bundles_json = SHARED_ASSETS / "bundles" / "ctc-research" / "bundles.json"
+    else:
+        bundles_json = site_root(site) / "assets" / "bundles" / site / "bundles.json"
 
     if not bundles_json.exists():
         msg = f"{bundles_json} not found. Run: npm --prefix projects/assets run build:{site_alias(site)}"

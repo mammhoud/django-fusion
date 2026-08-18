@@ -26,9 +26,10 @@ import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PRECIS = PROJECT_ROOT / "projects" / "precis"
-PRECIS_ASSETS_CONFIG = PRECIS / "backend" / "configs" / "base" / "assets.py"
+PRECIS_ASSETS_CONFIG = PRECIS / "configs" / "base" / "assets.py"
 PROXY = PROJECT_ROOT / "applications" / "proxy"
-CTC = PROJECT_ROOT / "projects" / "precis-ctc"
+CTC = PROJECT_ROOT / "projects" / "precis" / "precis-ctc"
+SHARED_ASSETS = PROJECT_ROOT / "projects" / "assets"
 
 TEST_DOCKER = os.environ.get("TEST_DOCKER", "false").lower() == "true"
 
@@ -59,16 +60,21 @@ class TestSharedMediaConfiguration:
     """Static configuration checks that do not require a running server."""
 
     def test_nginx_compose_mounts_ctc_staticfiles(self) -> None:
-        """shared-proxy must mount precis-ctc staticfiles read-only."""
+        """shared-proxy must mount ctc staticfiles read-only under the ctc-research site path."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
-        assert "../projects/precis-ctc/assets/staticfiles:/var/www/sites/precis-ctc/static:ro" in text
+        assert "../projects/precis/precis-ctc/assets/staticfiles:/var/www/sites/ctc-research/static:ro" in text
 
     def test_nginx_compose_mounts_ctc_media(self) -> None:
-        """shared-proxy must mount precis-ctc media read-only."""
+        """shared-proxy must mount the shared ctc-research media tree read-only."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
-        assert "../projects/precis-ctc/assets/media:/var/www/media/precis-ctc:ro" in text
+        assert "../projects/assets/media/ctc-research:/var/www/media/ctc-research:ro" in text
+
+    def test_shared_media_dir_exists(self) -> None:
+        """The shared ctc-research media tree must exist beside the other project media."""
+        assert (SHARED_ASSETS / "media" / "ctc-research").is_dir()
+        assert (SHARED_ASSETS / "media" / "ctc-research" / "images").is_dir()
 
     def test_nginx_compose_mounts_shared_static(self) -> None:
         """shared-proxy must mount the workspace shared static files."""
@@ -80,36 +86,36 @@ class TestSharedMediaConfiguration:
         """Nginx must have a location for CTC webpack bundles."""
         conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
-        assert "location /static/bundles/precis-ctc/ {" in text
-        assert "alias /var/www/sites/precis-ctc/static/bundles/precis-ctc/;" in text
+        assert "location /static/bundles/ctc-research/ {" in text
+        assert "alias /var/www/sites/ctc-research/static/bundles/ctc-research/;" in text
 
     def test_nginx_config_has_ctc_static_location(self) -> None:
         """Nginx must have a location for CTC site-specific static files."""
         conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
-        assert "location /sites/precis-ctc/static/ {" in text
-        assert "alias /var/www/sites/precis-ctc/static/;" in text
+        assert "location /sites/ctc-research/static/ {" in text
+        assert "alias /var/www/sites/ctc-research/static/;" in text
 
     def test_nginx_config_has_ctc_media_location(self) -> None:
         """Nginx must have a location for CTC site-specific media files."""
         conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
-        assert "location /media/precis-ctc/ {" in text
-        assert "alias /var/www/media/precis-ctc/;" in text
+        assert "location /media/ctc-research/ {" in text
+        assert "alias /var/www/media/ctc-research/;" in text
 
     def test_nginx_config_has_shared_static_fallback(self) -> None:
-        """Nginx must have a fallback /static/ location."""
+        """Nginx must have a fallback /static/ location backed by $static_root."""
         conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
         assert "location /static/ {" in text
-        assert "alias /var/www/static/;" in text
+        assert "alias $static_root/;" in text
 
     def test_nginx_config_has_shared_media_fallback(self) -> None:
-        """Nginx must have a fallback /media/ location."""
+        """Nginx must have a fallback /media/ location backed by $media_root."""
         conf = PROXY / "nginx" / "default.conf.template"
         text = _read(conf)
         assert "location /media/ {" in text
-        assert "alias /var/www/media/;" in text
+        assert "alias $media_root/;" in text
 
     def test_traefik_ctc_routes_static_media_to_shared_media(self) -> None:
         """Traefik must route ctc-research.com /static /media /sites to shared-proxy."""
@@ -153,11 +159,11 @@ class TestSharedMediaConfiguration:
         assert 'MEDIA_URL  = settings.get("MEDIA_URL", "/media/")' in text
 
     def test_ctc_docker_compose_mounts_static_and_media_volumes(self) -> None:
-        """precis-ctc-website container must mount static and media volumes."""
+        """precis-ctc-website container must mount static volume + shared media tree."""
         compose = CTC / "docker-compose.yml"
         text = _read(compose)
-        assert "precis-ctc-static:/app/precis-ctc/static:rw" in text
-        assert "precis-ctc-media:/app/precis-ctc/media:rw" in text
+        assert "precis-ctc-static:/app/precis-ctc/assets/staticfiles:rw" in text
+        assert "../../../assets/media/ctc-research:/app/media:rw" in text
 
 
 # ── Local Media Serving Tests ────────────────────────────────────────────────
@@ -228,7 +234,7 @@ class TestRunningServerMedia:
     def test_shared_media_container_exposes_static_volume(self) -> None:
         """shared-proxy container must have CTC staticfiles mounted."""
         result = subprocess.run(
-            ["docker", "exec", "shared-proxy", "ls", f"/var/www/sites/precis-ctc/static/"],
+            ["docker", "exec", "shared-proxy", "ls", f"/var/www/sites/ctc-research/static/"],
             capture_output=True,
             text=True,
         )
@@ -238,7 +244,7 @@ class TestRunningServerMedia:
     def test_shared_media_container_exposes_media_volume(self) -> None:
         """shared-proxy container must have CTC media mounted."""
         result = subprocess.run(
-            ["docker", "exec", "shared-proxy", "ls", f"/var/www/media/precis-ctc/"],
+            ["docker", "exec", "shared-proxy", "ls", f"/var/www/media/ctc-research/"],
             capture_output=True,
             text=True,
         )
