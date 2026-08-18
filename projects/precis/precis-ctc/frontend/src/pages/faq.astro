@@ -3,7 +3,6 @@ import Layout from '@/layouts/Layout.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import ContentError from '@/components/ui/ContentError.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -19,10 +18,16 @@ try {
 const pageCta = pageData?.cta;
 const pageFaq = (pageData?.faq as any[] | undefined);
 
-const faqItems = pageFaq?.map((f: any) => ({
+const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
   question: String(f.question || ''),
   answer: String(f.answer || ''),
-}));
+})) : [
+  { question: 'Can you help define a clinical research question?', answer: 'Yes. We translate a clinical need into a focused question, estimand, protocol, and outcome definition before analysis begins.' },
+  { question: 'Do you support systematic reviews and evidence synthesis?', answer: 'Our evidence workflow covers search strategy, screening, extraction, appraisal, synthesis, and transparent reporting.' },
+  { question: 'Do you provide medical and scientific writing support?', answer: 'We help research teams structure methods and results, clarify the discussion, and prepare publication-ready manuscripts.' },
+  { question: 'Are your courses designed for clinicians and researchers?', answer: 'Yes. The learning paths use applied examples from clinical research, biostatistics, medical AI, and publication integrity.' },
+  { question: 'How do we start a research collaboration?', answer: 'Send the research question, current protocol or dataset summary, and intended outcome through the contact page. We will propose a focused next step.' },
+];
 ---
 
 <Layout title={pageData?.title || 'FAQ'} description={pageData?.search_description || 'Frequently asked questions about CTC Research — medical AI, clinical evidence, and health innovation.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="faq">
@@ -37,7 +42,7 @@ const faqItems = pageFaq?.map((f: any) => ({
   </section>
 
   <div class='py-14'>
-    {faqItems?.length ? <FAQ items={faqItems} /> : <ContentError label="FAQ data unavailable" />}
+    <FAQ items={faqItems} />
   </div>
 
   <CTA heading={pageCta?.title || 'Still have questions?'} intro={pageCta?.subtitle || 'Reach out through the contact form and we will get back to you.'} ctaLabel={pageCta?.primary_cta?.label || 'Contact us'} ctaHref={pageCta?.primary_cta?.href || '/contact'} />

@@ -193,6 +193,7 @@ export interface EventItem {
   location?: string;
   start_date?: string | null;
   end_date?: string | null;
+  image?: string;
 }
 
 export interface PageData {
@@ -262,6 +263,29 @@ export interface PageListData {
   total: number;
 }
 
+export interface PublicationItem {
+  id: number;
+  title: string;
+  slug: string;
+  abstract: string;
+  authors: string;
+  category: string;
+  language: LanguageCode;
+  published_at: string | null;
+  external_url: string;
+}
+
+export interface PublicationListData {
+  documents: PublicationItem[];
+  total: number;
+  language: LanguageCode;
+  guidance: {
+    title: string;
+    body: string;
+    steps: string[];
+  };
+}
+
 export interface AssetManifest {
   version: string;
   static_url: string;
@@ -302,8 +326,34 @@ export function fetchContact(): Promise<ContactData> {
   return fetchJSON<ContactData>('/apis/contact/');
 }
 
-/** Fetch full page data for a single page by slug. */
-export function fetchPageData(slug: string, language: LanguageCode = CONTENT_LANGUAGE): Promise<PageData> {
+/**
+ * Fetch full page data for a published page by slug.
+ *
+ * The CMS page index is authoritative for optional marketing pages. Checking it
+ * first avoids turning an intentionally static Astro page (for example FAQ or
+ * pricing) into a stream of expected 404s in the backend access log.
+ */
+let pageIndexPromise: Promise<PageListData> | undefined;
+function fetchPublishedPageIndex(): Promise<PageListData> {
+  pageIndexPromise ??= fetchPageList();
+  return pageIndexPromise;
+}
+
+export async function fetchPageData(
+  slug: string,
+  language: LanguageCode = CONTENT_LANGUAGE,
+): Promise<PageData | undefined> {
+  let pageIndex: PageListData;
+  try {
+    pageIndex = await fetchPublishedPageIndex();
+  } catch {
+    // A backend outage should leave the static page shell available without
+    // issuing a second request that can only fail noisily.
+    return undefined;
+  }
+
+  if (!pageIndex.pages.some((page) => page.slug === slug)) return undefined;
+
   const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
   return fetchJSON<PageData>(`/apis/pages/${slug}/${query}`);
 }
@@ -311,6 +361,11 @@ export function fetchPageData(slug: string, language: LanguageCode = CONTENT_LAN
 /** Fetch list of all published pages. */
 export function fetchPageList(): Promise<PageListData> {
   return fetchJSON<PageListData>('/apis/pages/');
+}
+
+/** Fetch Wagtail-managed research documents for the active language. */
+export function fetchPublications(language: LanguageCode = CONTENT_LANGUAGE): Promise<PublicationListData> {
+  return fetchJSON<PublicationListData>(`/apis/research/publications/?lang=${encodeURIComponent(language)}`);
 }
 
 /**
@@ -419,41 +474,6 @@ export interface CourseDetail extends Omit<CourseCard, 'instructor'> {
   }[];
 }
 
-// ── Seeded fallback slugs ──────────────────────────────────────────────
-// Detail-route slugs used by getStaticPaths() when the backend API is
-// unreachable (or returns an empty list) during the static build, e.g.
-// `docker compose up -d --build` before the backend is healthy. Kept in
-// one place so the seeded set cannot drift between pages. See also the
-// backend fixtures (apps/learning/fixtures/medical_research_catalog.json,
-// apps/pages/fixtures/) and tests/e2e.test.mjs, e2e/courses.spec.ts +
-// tests/section-placement.
-export const SEEDED_FALLBACK_SLUGS = {
-  courses: [
-    'clinical-trial-design-protocol-development',
-    'biostatistics-clinical-research',
-    'systematic-reviews-evidence-synthesis',
-    'medical-ai-clinical-data-analytics',
-    'scientific-medical-manuscript-writing',
-    'research-ethics-gcp-publication-integrity',
-  ],
-  products: [],
-  blog: [],
-} as const;
-
-/**
- * The published medical-research catalog used when Astro builds before Django
- * is healthy. Keep this compact mirror aligned with the backend fixture; it
- * prevents an empty catalog shell and preserves all six known detail routes.
- */
-const SEEDED_COURSE_CARDS: CourseCard[] = [
-  { id: 9, title: 'Clinical Trial Design & Protocol Development', slug: 'clinical-trial-design-protocol-development', short_description: 'Design clear, ethical, and analysis-ready clinical trials.', image_url: null, instructor: 'CTC Research', price: 149.99, original_price: 199.99, difficulty: 'intermediate', language: 'en', duration: 18, rating: 0, reviews_count: 0, is_featured: true, has_certificate: true },
-  { id: 10, title: 'Biostatistics for Clinical Research', slug: 'biostatistics-clinical-research', short_description: 'Use statistics confidently to interpret clinical evidence.', image_url: null, instructor: 'CTC Research', price: 129.99, original_price: 169.99, difficulty: 'intermediate', language: 'en', duration: 22, rating: 0, reviews_count: 0, is_featured: false, has_certificate: true },
-  { id: 11, title: 'Systematic Reviews & Evidence Synthesis', slug: 'systematic-reviews-evidence-synthesis', short_description: 'Plan reproducible reviews that turn literature into evidence.', image_url: null, instructor: 'CTC Research', price: 159.99, original_price: null, difficulty: 'advanced', language: 'en', duration: 24, rating: 0, reviews_count: 0, is_featured: true, has_certificate: true },
-  { id: 12, title: 'Medical AI & Clinical Data Analytics', slug: 'medical-ai-clinical-data-analytics', short_description: 'Apply responsible AI methods to real clinical data questions.', image_url: null, instructor: 'CTC Research', price: 179.99, original_price: 229.99, difficulty: 'advanced', language: 'en', duration: 26, rating: 0, reviews_count: 0, is_featured: false, has_certificate: true },
-  { id: 13, title: 'Scientific & Medical Manuscript Writing', slug: 'scientific-medical-manuscript-writing', short_description: 'Turn rigorous research into a clear, publishable manuscript.', image_url: null, instructor: 'CTC Research', price: 119.99, original_price: 149.99, difficulty: 'intermediate', language: 'en', duration: 16, rating: 0, reviews_count: 0, is_featured: false, has_certificate: true },
-  { id: 14, title: 'Research Ethics, GCP & Publication Integrity', slug: 'research-ethics-gcp-publication-integrity', short_description: 'Build trustworthy research from protocol to publication.', image_url: null, instructor: 'CTC Research', price: 99.99, original_price: null, difficulty: 'beginner', language: 'en', duration: 12, rating: 0, reviews_count: 0, is_featured: false, has_certificate: true },
-];
-
 /** Fetch the published medical-research course catalog. */
 const COURSE_CONTENT_VERSION = '2026-08-08-medical-catalog-v2';
 
@@ -475,60 +495,9 @@ export async function fetchCourseList(): Promise<CourseListData> {
   };
 }
 
-export async function fetchCourseListWithFallback(): Promise<CourseListData> {
-  try {
-    const catalog = await fetchCourseList();
-    return catalog.data.length ? catalog : {
-      data: SEEDED_COURSE_CARDS,
-      pagination: { page: 1, per_page: SEEDED_COURSE_CARDS.length, total: SEEDED_COURSE_CARDS.length, total_pages: 1 },
-    };
-  } catch {
-    return {
-      data: SEEDED_COURSE_CARDS,
-      pagination: { page: 1, per_page: SEEDED_COURSE_CARDS.length, total: SEEDED_COURSE_CARDS.length, total_pages: 1 },
-    };
-  }
-}
-
 /** Fetch a single published course for the preview/detail page. */
 export function fetchCourseDetail(slug: string): Promise<CourseDetail> {
   return fetchJSON<CourseDetail>(`/api/courses/${encodeURIComponent(slug)}/?content_version=${COURSE_CONTENT_VERSION}`);
-}
-
-export async function fetchCourseDetailWithFallback(slug: string): Promise<CourseDetail> {
-  try {
-    return await fetchCourseDetail(slug);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : '';
-    const expectedAvailabilityFailure = error instanceof TypeError || /API .* returned 404/.test(message);
-    if (!expectedAvailabilityFailure) throw error;
-    const card = SEEDED_COURSE_CARDS.find((course) => course.slug === slug);
-    if (!card) throw error;
-    return {
-      ...card,
-      id: card.id,
-      description: card.short_description,
-      overview: [],
-      preview_video_url: [],
-      objectives: [],
-      requirements: [],
-      target_audience: [],
-      specializations: [],
-      tags: [],
-      discount_percentage: 0,
-      enrollment_count: 0,
-      is_free: card.price === 0,
-      is_discounted: Boolean(card.original_price && card.original_price > card.price),
-      current_price: card.price,
-      discount_percentage_calculated: card.original_price ? Math.round((1 - card.price / card.original_price) * 100) : 0,
-      discount_until: null,
-      enrolled_count: 0,
-      average_rating: card.rating,
-      header_image: null,
-      instructor: { name: card.instructor, username: 'precis-ctc', bio: 'Clinical research educators and practitioners.', profile: null },
-      modules: [],
-    };
-  }
 }
 
 // ── Caching helpers (build-time dedup for SSG, TTL for dev-server HMR) ─────
@@ -549,38 +518,8 @@ async function fetchCached<T>(key: string, fetcher: () => Promise<T>): Promise<T
   return data;
 }
 
-export async function fetchSiteSettingsWithFallback(): Promise<SiteSettings> {
-  try {
-    return await fetchSiteSettings();
-  } catch {
-    return {
-      site_name: 'CTC Research', site_tagline: 'Learning that ships.', logo_url: null, favicon_url: '/favicon.svg',
-      primary_color: '#00a1b3', accent_color: '#008080', meta_description: 'Medical research learning and evidence services.',
-      meta_keywords: '', meta_author: 'CTC Research', og_image_url: null, twitter_handle: '', analytics_provider: '',
-      google_tag_manager_id: '', google_analytics_id: '', nav_show_home: true, nav_show_contact: true,
-      nav_cta_label: 'Get started', nav_cta_url: '/contact/', footer_description: 'Medical research learning and evidence services.',
-      footer_address: '', footer_phone: '', footer_email: '', footer_copyright: '© 2026 CTC Research', newsletter_prompt: '',
-      google_play_url: '', apple_store_url: '', privacy_policy_url: '/privacy/', terms_of_use_url: '', chat_enabled: false,
-      chat_provider: '', chat_widget_id: '', social_links: [], footer_link_groups: [],
-    };
-  }
-}
-
-export async function fetchNavigationWithFallback(): Promise<NavigationData> {
-  try {
-    return await fetchNavigation();
-  } catch {
-    return { nav_items: [
-      { label: 'Home', href: '/' }, { label: 'Courses', href: '/courses/' },
-      { label: 'About', href: '/about/' }, { label: 'Services', href: '/services/' },
-      { label: 'Team', href: '/team/' }, { label: 'Events', href: '/events/' },
-      { label: 'Contact', href: '/contact/' },
-    ] };
-  }
-}
-
 export const cachedAssets = () => fetchCached('assets', fetchAssets);
-export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettingsWithFallback);
-export const cachedNavigation = () => fetchCached('navigation', fetchNavigationWithFallback);
+export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettings);
+export const cachedNavigation = () => fetchCached('navigation', fetchNavigation);
 export const cachedContact = () => fetchCached('contact', fetchContact);
 export const cachedPageData = (slug: string, language: LanguageCode = CONTENT_LANGUAGE) => fetchCached(`page:${slug}:${language}`, () => fetchPageData(slug, language));

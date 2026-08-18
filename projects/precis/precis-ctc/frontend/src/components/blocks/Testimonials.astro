@@ -19,33 +19,33 @@ interface Props {
 const defaultTestimonials: Testimonial[] = [
   {
     quote:
-      'We swapped a 480 KB React bundle for server-rendered HTML and our load time halved. The page is the document — nothing in between.',
-    author: 'Sarah Mitchell',
-    role: 'CTO',
-    company: 'EduStart',
+      'The evidence-synthesis training changed how our group writes protocols. Every study now starts with a reproducible method, not a blank page.',
+    author: 'Dr. Laurens van Kleef',
+    role: 'Postdoctoral Researcher',
+    company: 'Erasmus MC',
     link: { label: 'Read case study', href: '/blog/' },
   },
   {
     quote:
-      'Alpine handled the accordion and modals in an afternoon. We deleted more state-management code than we wrote this quarter.',
-    author: 'David Chen',
-    role: 'Lead Developer',
-    company: 'LearnLoop',
+      'As a medical writer, the structured-review workflow saves me weeks per manuscript. Clear method, clear reporting, no ambiguity.',
+    author: 'Maya Okafor',
+    role: 'Medical Writer',
+    company: 'Independent',
     link: { label: 'Read case study', href: '/blog/' },
   },
   {
     quote:
-      'Search engines read our finished pages instead of a JS shell. Organic traffic doubled within a month, with zero extra work.',
-    author: 'Amira Hassan',
-    role: 'Marketing Director',
-    company: 'SkillBridge',
+      'The biostatistics track gave our clinicians a shared language with the data team. Study design is now a collaboration, not a handoff.',
+    author: 'Dr. Sofia Reyes',
+    role: 'Clinical Research Lead',
+    company: 'Northwell Research',
     link: { label: 'Read case study', href: '/blog/' },
   },
 ];
 
 const {
-  heading = 'The stack, reviewed in production',
-  intro = 'Teams that moved off heavy SPAs, in their own words.',
+  heading = 'The work, reviewed by researchers',
+  intro = 'Clinicians, biostatisticians, and medical writers on what changed when the method got structured.',
   testimonials = defaultTestimonials,
 } = Astro.props;
 

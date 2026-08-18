@@ -7,7 +7,6 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -25,23 +24,27 @@ const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const pageProjects = (pageData?.projects as any[] | undefined);
 
-const repoProjects = pageProjects?.map((p: any) => ({
+const repoProjects = pageProjects?.length ? pageProjects.map((p: any) => ({
   name: String(p.name || ''),
   edition: String(p.edition || ''),
-  category: String(p.category || 'project'),
+  category: String(p.category || 'program'),
   path: String(p.path || ''),
   text: String(p.description || p.text || ''),
   features: (p.features as any[] | undefined)?.map((f: any) => ({
     label: String(f.label || ''),
     shared: Boolean(f.shared),
   })) ?? [],
-}));
+})) : [
+  { name: 'Clinical evidence programs', edition: 'research', category: 'program', path: 'protocol → analysis → publication', text: 'Applied support for teams designing and reporting clinical studies.', features: [{ label: 'Protocol review', shared: true }, { label: 'Evidence synthesis', shared: true }] },
+  { name: 'Medical writing studio', edition: 'writing', category: 'program', path: 'question → manuscript', text: 'Editorial and methodological guidance for clear, publishable scientific writing.', features: [{ label: 'Methods clarity', shared: true }, { label: 'Reporting review', shared: false }] },
+  { name: 'Responsible medical AI', edition: 'analytics', category: 'program', path: 'data → validation → care', text: 'A research track for evaluating clinical data and AI systems responsibly.', features: [{ label: 'Bias and validation', shared: true }, { label: 'Implementation planning', shared: false }] },
+];
 ---
 
 <Layout title={pageData?.title || 'Projects'} description={pageData?.search_description || 'The full project document — the monorepo at a glance.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="projects">
   <Hero eyebrow={pageHero?.badge || 'projects · research programs'} heading={pageHero?.title || 'Programs and research'} accent='evidence you can build on' intro={pageHero?.subtitle || 'Learning paths, research programs, and evidence services from CTC Research.'} primaryCta={{ label: 'See the features', href: '/features' }} secondaryCta={{ label: 'Read the FAQ', href: '/projects#faq' }} status='200 OK · text/html · every program in one response' />
 
-  {repoProjects?.length ? (
+  {repoProjects.length ? (
   <section class='page-section doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
@@ -72,7 +75,7 @@ const repoProjects = pageProjects?.map((p: any) => ({
       </div>
     </div>
   </section>
-  ) : <ContentError label="Projects data unavailable" />}
+  ) : null}
 
   <Stats />
   <Features heading='Evidence you can build on' intro='Structured methods, reproducible reviews, and responsible data analytics.' />

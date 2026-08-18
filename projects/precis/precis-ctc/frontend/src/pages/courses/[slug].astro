@@ -3,27 +3,13 @@ import Layout from '@/layouts/Layout.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { fetchCourseDetailWithFallback, fetchCourseListWithFallback, SEEDED_FALLBACK_SLUGS } from '@/lib/api';
+import { fetchCourseDetail, fetchCourseList } from '@/lib/api';
 import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { CourseDetail, NavigationData, SiteSettings } from '@/lib/api';
 
 export async function getStaticPaths() {
-  // Build-time content is optional: `docker compose up -d --build` builds ALL
-  // images before the backend container is healthy, so the course API may be
-  // unreachable (or return an empty catalog) during the Astro static build.
-  // Seeded slugs keep the known detail routes available in that mode; a live
-  // backend still supplies the authoritative list.
-  try {
-    const catalog = await fetchCourseListWithFallback();
-    const slugs = new Set([
-      ...SEEDED_FALLBACK_SLUGS.courses,
-      ...catalog.data.map((course) => course.slug),
-    ]);
-    return Array.from(slugs, (courseSlug) => ({ params: { slug: courseSlug } }));
-  } catch {
-    // Final route-only guard for an unavailable catalog.
-    return SEEDED_FALLBACK_SLUGS.courses.map((slug) => ({ params: { slug } }));
-  }
+  const catalog = await fetchCourseList();
+  return catalog.data.map((course) => ({ params: { slug: course.slug } }));
 }
 
 const { slug } = Astro.params;
@@ -39,7 +25,7 @@ try {
 }
 let course: CourseDetail | undefined;
 try {
-    course = await fetchCourseDetailWithFallback(slug!);
+    course = await fetchCourseDetail(slug!);
   } catch {
     // Unknown slugs still render the normal ContentError fallback.
   }

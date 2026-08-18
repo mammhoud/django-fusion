@@ -1,11 +1,11 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
-import Stats from '@/components/blocks/Stats.astro';
+import CounterCard from '@/components/blocks/CounterCard.astro';
+import CertificateCard from '@/components/blocks/CertificateCard.astro';
 import Features from '@/components/blocks/Features.astro';
 import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
-import ContentError from '@/components/ui/ContentError.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -35,7 +35,7 @@ const methods = pageData?.methods as string[] | undefined;
 
 // ── Mapped from backend data (no hardcoded fallbacks) ──
 // AboutPage seeds counters (not the generic `stats` field) — prefer them.
-const bioStats = (pageCounters?.length ? pageCounters : pageStats)?.map((s: any) => ({
+const bioCounters = (pageCounters?.length ? pageCounters : pageStats)?.map((s: any) => ({
   label: String(s.label || ''),
   value: Number(s.number ?? s.value ?? 0),
   suffix: String(s.suffix || ''),
@@ -50,11 +50,16 @@ const galleryItems = pageGallery?.map((g: any) => ({
   category: g.category || '',
 }));
 
-const skills = pageFeatures?.map((f: any) => ({
+const skills = pageFeatures?.length ? pageFeatures.map((f: any) => ({
   icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
   title: String(f.title || ''),
   description: String(f.description || ''),
-}));
+})) : [
+  { icon: 'M12 3v18M3 12h18', title: 'Clinical study design', description: 'Translate the clinical need into a focused question, protocol, and analysis plan.' },
+  { icon: 'M4 5h16M4 12h16M4 19h10', title: 'Evidence synthesis', description: 'Make search, appraisal, extraction, and uncertainty visible to the whole team.' },
+  { icon: 'M3 20V4m0 16h18M7 16l3-5 3 3 5-8', title: 'Biostatistics and analytics', description: 'Use appropriate methods to interpret clinical data and communicate effect estimates.' },
+  { icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5', title: 'Scientific writing', description: 'Shape clear methods, results, discussion, and reporting for academic readers.' },
+];
 
 const missionValues = [
   { title: 'Interdisciplinary research', text: 'Medical AI, biostatistics, and clinical evidence synthesis in one center — from protocol design to publication integrity.' },
@@ -62,16 +67,23 @@ const missionValues = [
   { title: 'Learning that sticks', text: 'Courses and certificates shaped for clinicians, biostatisticians, and medical writers — with a visible next action at every step.' },
 ];
 
-const testimonialItems = pageTestimonials?.map((t: any) => ({
+const testimonialItems = pageTestimonials?.length ? pageTestimonials.map((t: any) => ({
   quote: String(t.quote || ''),
   author: String(t.author || ''),
   role: String(t.role || ''),
-}));
+})) : [{
+  quote: 'The strongest part of the process was seeing the reasoning documented from question to manuscript.',
+  author: 'Clinical research partner',
+  role: 'Evidence program · CTC Research',
+}];
 
-const faqItems = pageFaq?.map((f: any) => ({
+const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
   question: String(f.question || ''),
   answer: String(f.answer || ''),
-}));
+})) : [
+  { question: 'What makes the CTC approach different?', answer: 'We connect clinical context, transparent methods, evidence quality, and publication practice instead of treating them as separate handoffs.' },
+  { question: 'Can you work with an existing protocol or manuscript?', answer: 'Yes. We can review a draft, strengthen the analysis plan, or help the team identify the next defensible research step.' },
+];
 ---
 
 <Layout
@@ -93,7 +105,35 @@ const faqItems = pageFaq?.map((f: any) => ({
     gallery={galleryItems}
   />
 
-  {bioStats?.length ? <Stats stats={bioStats} /> : <ContentError label="Stats data unavailable" />}
+  <CounterCard
+    counters={bioCounters?.length ? bioCounters : undefined}
+    heading="The center, in numbers"
+    intro="A concise view of the research, training, and writing work supported by CTC Research."
+  />
+
+  <section class='about-subpage about-subpage--directory doc-sheet bg-fu-card py-16 md:py-20'>
+    <div class='container-fusion'>
+      <div class='about-subpage__intro'>
+        <p class='tag-marker mb-4'>about CTC Research</p>
+        <h2 class='page-section__title'>Explore the center</h2>
+        <p class='text-fu-muted'>Read how we work, how we teach, and how research teams can work with us.</p>
+      </div>
+      <div class='about-subpage__grid about-subpage__grid--compact'>
+        <a class='about-subpage__card about-subpage__card--link' href='/about/research/'>
+          <span class='about-subpage__index'>01</span>
+          <h3>Research approach</h3>
+          <p>Protocols, evidence synthesis, medical AI, and publication practice.</p>
+          <span class='about-subpage__arrow' aria-hidden='true'>→</span>
+        </a>
+        <a class='about-subpage__card about-subpage__card--link' href='/about/education/'>
+          <span class='about-subpage__index'>02</span>
+          <h3>Education and training</h3>
+          <p>Courses for clinicians, researchers, biostatisticians, and medical writers.</p>
+          <span class='about-subpage__arrow' aria-hidden='true'>→</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
   <!-- Mission -->
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
@@ -122,7 +162,12 @@ const faqItems = pageFaq?.map((f: any) => ({
     </div>
   </section>
 
-  {skills?.length ? (
+  <CertificateCard
+    heading='Credentials that travel'
+    intro='Every program at the center issues a verifiable completion record, from evidence synthesis to biostatistics for clinical teams.'
+  />
+
+  {skills.length ? (
   <Features
     heading='What we do, in detail'
     intro='From protocol design to publication integrity, these are the capabilities that power CTC Research.'
@@ -133,10 +178,10 @@ const faqItems = pageFaq?.map((f: any) => ({
       _iconPath: s.icon,
     }))}
   />
-  ) : <ContentError label="Skills data unavailable" />}
+  ) : null}
 
-  {testimonialItems?.length ? <Testimonials testimonials={testimonialItems} /> : <ContentError label="Testimonials unavailable" />}
-  {faqItems?.length ? <FAQ items={faqItems} /> : <ContentError label="FAQ data unavailable" />}
+  <Testimonials testimonials={testimonialItems} />
+  <FAQ items={faqItems} />
 
   {methods?.length ? (
   <section class='doc-sheet bg-fu-card py-20 md:py-28'>

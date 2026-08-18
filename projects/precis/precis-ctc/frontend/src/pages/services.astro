@@ -4,7 +4,6 @@ import Hero from '@/components/blocks/Hero.astro';
 import Timeline from '@/components/blocks/Timeline.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -23,7 +22,7 @@ const pageCta = pageData?.cta;
 const pageServices = (pageData?.services as any[] | undefined);
 const pageProcess = (pageData?.process as any[] | undefined);
 
-const serviceItems = pageServices?.map((s: any) => ({
+const serviceItems = (pageServices || []).map((s: any) => ({
   icon: String(s.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
   title: String(s.title || ''),
   description: String(s.description || ''),
@@ -32,8 +31,8 @@ const serviceItems = pageServices?.map((s: any) => ({
   cta_href: String(s.cta_href || ''),
 }));
 
-const processSteps = pageProcess?.map((p: any) => ({
-  date: '',
+const processSteps = (pageProcess || []).map((p: any) => ({
+  date: String(p.date || ''),
   title: String(p.title || ''),
   description: String(p.description || ''),
   icon: String(p.icon || ''),
@@ -50,22 +49,22 @@ const processSteps = pageProcess?.map((p: any) => ({
   pageSlug="services"
 >
   <Hero
-    eyebrow={pageHero?.badge || 'services · built as you go'}
-    heading={pageHero?.title || 'Services'}
-    accent='built as you go'
-    intro={pageHero?.subtitle || 'Server-rendered sites, HTMX integrations, and Alpine-powered UX. From brief to shipped in four steps — each one delivers working HTML.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See our products', href: '/products' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
-    status='200 OK · text/html · the offering, in one response'
+    eyebrow={pageHero?.badge || 'services · evidence support'}
+    heading={pageHero?.title || 'Research services'}
+    accent='for clinical teams'
+    intro={pageHero?.subtitle || 'Protocol development, evidence synthesis, medical writing, and responsible analytics for research teams that need clear methods and publishable results.'}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Discuss a study', href: '/contact/' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Explore courses', href: '/courses/' }}
+    status='200 OK · clinical evidence services'
   />
 
-  {serviceItems?.length ? (
+  {serviceItems.length ? (
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
         <p class='tag-marker mb-4'>what we do</p>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Sites that ship as documents</h2>
-        <p class='text-fu-muted'>Server-rendered HTML first. Every engagement below delivers a finished page — no heavy SPA, no hydration waterfall.</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>A clear route from question to evidence</h2>
+        <p class='text-fu-muted'>Each service keeps the research question, analysis plan, and final communication aligned from the first protocol review to the submitted manuscript.</p>
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
         {serviceItems.map((service, i) => (
@@ -92,16 +91,16 @@ const processSteps = pageProcess?.map((p: any) => ({
       </div>
     </div>
   </section>
-  ) : <ContentError label="Services data unavailable" />}
+  ) : null}
 
-  {processSteps?.length ? (
+  {processSteps.length ? (
     <Timeline
-      eyebrow='build as you go'
-      title='From brief to shipped, in four steps'
-      description='No big-bang rewrite. We ship incrementally — each step delivers working HTML you can put in front of users.'
+      eyebrow='research workflow'
+      title='From protocol to publication'
+      description='A transparent workflow keeps scope, evidence quality, and reporting decisions visible to the whole study team.'
       events={processSteps}
     />
-  ) : <ContentError label="Process data unavailable" />}
+  ) : null}
 
   <CTA
     heading={pageCta?.title || 'Advance health through research'}

@@ -15069,11 +15069,11 @@ msgstr "Registrera dig"
 
 #: apps/templates/home/main.html
 msgid "Courses with visible progress"
-msgstr "Kurser med synlig framsteg"
+msgstr "Kurser med synliga framsteg"
 
 #: apps/templates/home/main.html
 msgid "Follow serious learning paths with clear content, progress, and a next useful action."
-msgstr "Follow serious learning paths med clear content, progress, and a next useful action."
+msgstr "Följ seriösa lärvägar med tydligt innehåll, synliga framsteg och ett användbart nästa steg."
 
 #: apps/templates/home/main.html
 msgid "Open the catalog"

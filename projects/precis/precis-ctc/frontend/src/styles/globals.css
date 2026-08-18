@@ -823,6 +823,237 @@
     @apply mt-6 sm:mt-7 flex items-center justify-center gap-3 sm:gap-4;
   }
 
+  /* ── Event Card BEM block (archive theme) ───────────────────────── */
+  .fu-event-card {
+    display: flex;
+    flex-direction: column;
+    background: hsl(var(--fu-card));
+    border: 2px solid hsl(var(--fu-ink));
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    opacity: 0;
+    transform: translateY(14px);
+    overflow: hidden;
+  }
+  .fu-event-card.reveal-visible { opacity: 1; transform: translateY(0); }
+  .fu-event-card:hover { box-shadow: 4px 4px 0 0 var(--fu-link); }
+  .fu-event-card__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: hsl(var(--fu-line) / 0.4);
+  }
+  .fu-event-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  .group:hover .fu-event-card__img { transform: scale(1.05); }
+  .fu-event-card__placeholder {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: hsl(var(--fu-link) / 0.25);
+  }
+  .fu-event-card__date {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 3.25rem;
+    padding: 0.5rem 0.4rem;
+    background: hsl(var(--fu-paper));
+    border: 2px solid hsl(var(--fu-ink));
+    text-align: center;
+  }
+  .fu-event-card__day {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1;
+    color: hsl(var(--fu-ink));
+  }
+  .fu-event-card__month {
+    margin-top: 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: hsl(var(--fu-link));
+  }
+  .fu-event-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+  .fu-event-card__type {
+    @apply mb-3 self-start border-2 border-fu-ink bg-fu-paper px-2.5 py-0.5 font-mono text-[0.62rem] uppercase tracking-[0.16em] text-fu-link;
+  }
+  .fu-event-card__meta {
+    @apply mb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-fu-muted;
+  }
+  .fu-event-card__meta li {
+    @apply inline-flex items-center gap-1.5 font-mono text-[0.68rem] uppercase tracking-[0.06em];
+  }
+  .fu-event-card__meta-icon { width: 0.9rem; height: 0.9rem; }
+  .fu-event-card__title {
+    @apply mb-2 font-display text-lg font-semibold leading-snug text-fu-ink transition-colors;
+  }
+  .group:hover .fu-event-card__title { color: hsl(var(--fu-link)); }
+  .fu-event-card__text {
+    @apply mb-4 text-sm leading-relaxed text-fu-muted;
+  }
+  .fu-event-card__cta {
+    @apply mt-auto inline-flex items-center gap-2 self-start font-mono text-[0.75rem] font-semibold uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-link-dark;
+  }
+  .fu-event-card__cta-icon { width: 0.9rem; height: 0.9rem; }
+
+  /* ── Counter Card BEM block (archive theme) ─────────────────────── */
+  .fu-counter {
+    position: relative;
+    border-top: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  @media (min-width: 768px) { .fu-counter { padding-top: 6rem; padding-bottom: 6rem; } }
+  .fu-counter__header {
+    @apply mx-auto mb-10 max-w-2xl text-center;
+  }
+  .fu-counter__grid {
+    @apply grid grid-cols-2 gap-5 md:grid-cols-4;
+  }
+  .fu-counter__item {
+    @apply border-2 border-fu-ink bg-fu-card p-6 text-center transition-all;
+  }
+  .fu-counter__item:hover { box-shadow: 4px 4px 0 0 var(--fu-ink); }
+  .fu-counter__icon {
+    @apply mx-auto mb-4 flex h-11 w-11 items-center justify-center border-2 border-fu-ink bg-fu-paper text-fu-link;
+  }
+  .fu-counter__icon svg { width: 1.25rem; height: 1.25rem; }
+  .fu-counter__value {
+    @apply font-mono text-3xl font-semibold tracking-tight text-fu-ink;
+  }
+  .fu-counter__label {
+    @apply mt-2 block font-mono text-[0.68rem] uppercase tracking-[0.12em] text-fu-muted;
+  }
+
+  /* ── Certificate Card BEM block (archive theme) ─────────────────── */
+  .fu-certificate {
+    position: relative;
+    border-top: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  @media (min-width: 768px) { .fu-certificate { padding-top: 6rem; padding-bottom: 6rem; } }
+  .fu-certificate__header {
+    @apply mx-auto mb-10 max-w-2xl text-center;
+  }
+  .fu-certificate__grid {
+    @apply grid grid-cols-1 gap-5 md:grid-cols-3;
+  }
+  .fu-certificate__card {
+    @apply flex items-start gap-4 border-2 border-fu-ink bg-fu-card p-6 transition-all;
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  .fu-certificate__card.reveal-visible { opacity: 1; transform: translateY(0); }
+  .fu-certificate__card:hover { box-shadow: 4px 4px 0 0 var(--fu-link); }
+  .fu-certificate__seal {
+    @apply flex h-12 w-12 flex-none items-center justify-center border-2 border-fu-ink bg-fu-paper text-fu-link;
+  }
+  .fu-certificate__seal svg { width: 1.4rem; height: 1.4rem; }
+  .fu-certificate__body { @apply min-w-0; }
+  .fu-certificate__status {
+    @apply mb-2 inline-block font-mono text-[0.62rem] uppercase tracking-[0.16em];
+  }
+  .fu-certificate__status--active { color: hsl(var(--fu-link)); }
+  .fu-certificate__status--upcoming { color: hsl(var(--fu-muted)); }
+  .fu-certificate__status--archived { color: hsl(var(--fu-muted) / 0.6); }
+  .fu-certificate__title {
+    @apply mb-1 font-display text-[1.05rem] font-semibold leading-snug text-fu-ink;
+  }
+  .fu-certificate__issuer {
+    @apply mb-2 font-mono text-[0.68rem] uppercase tracking-[0.12em] text-fu-muted;
+  }
+  .fu-certificate__text {
+    @apply text-sm leading-relaxed text-fu-muted;
+  }
+
+  /* ── About subpage directory BEM block ──────────────────────────── */
+  .about-subpage__intro {
+    max-width: 42rem;
+    margin-bottom: 2.5rem;
+  }
+  .about-subpage__grid {
+    @apply grid grid-cols-1 gap-5 md:grid-cols-3;
+  }
+  .about-subpage__grid--compact {
+    @apply md:grid-cols-2;
+    max-width: 60rem;
+  }
+  .about-subpage__card {
+    position: relative;
+    border: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-card));
+    padding: 1.5rem;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .about-subpage__card:hover {
+    box-shadow: 4px 4px 0 0 var(--fu-link);
+    transform: translate(-1px, -1px);
+  }
+  .about-subpage__card h3 {
+    @apply mb-2 font-display text-lg font-semibold text-fu-ink;
+  }
+  .about-subpage__card p {
+    @apply text-sm leading-relaxed text-fu-muted;
+  }
+  .about-subpage__index {
+    @apply mb-6 block font-mono text-[0.68rem] uppercase tracking-[0.16em] text-fu-link;
+  }
+  .about-subpage__card--link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  .about-subpage__arrow {
+    display: block;
+    margin-top: 1.25rem;
+    color: hsl(var(--fu-link));
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+  }
+  .about-subpage__split {
+    @apply grid grid-cols-1 gap-10 md:grid-cols-2 md:items-start;
+  }
+  .about-subpage__list {
+    @apply grid gap-3;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .about-subpage__list li {
+    border-top: 1px solid hsl(var(--fu-line));
+    padding: 0.85rem 0;
+    color: hsl(var(--fu-ink));
+  }
+  .about-subpage__list li::before {
+    content: "+";
+    display: inline-block;
+    width: 1.5rem;
+    color: hsl(var(--fu-link));
+    font-family: var(--font-mono);
+  }
+
   /* ── FAQ BEM block ──────────────────────────────────────────────── */
   .faq {
     position: relative;
@@ -1573,6 +1804,79 @@
   .htmx-indicator__pulse--slow {
     background: hsl(var(--fu-mark));
   }
+}
+
+.documents-hero__inner,
+.documents-library__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.documents-hero__copy { max-width: 52rem; }
+.documents-hero__signal {
+  display: grid;
+  min-width: 9rem;
+  gap: .35rem;
+  border-left: 2px solid hsl(var(--fu-ink));
+  padding-left: 1rem;
+}
+.documents-hero__signal-value {
+  color: hsl(var(--fu-link));
+  font-family: var(--font-mono);
+  font-size: 3rem;
+  line-height: 1;
+}
+.documents-hero__signal-label,
+.documents-library__count,
+.documents-card__meta,
+.documents-card__authors,
+.documents-card__status {
+  color: hsl(var(--fu-muted));
+  font-family: var(--font-mono);
+  font-size: .68rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.documents-guidance__header { max-width: 38rem; }
+.documents-guidance__steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.documents-guidance__step {
+  display: grid;
+  gap: 1.25rem;
+  border-top: 2px solid hsl(var(--fu-ink));
+  padding: 1.25rem 0;
+  color: hsl(var(--fu-ink));
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+}
+.documents-guidance__index { color: hsl(var(--fu-link)); font-family: var(--font-mono); font-size: .7rem; }
+.documents-library__header { margin-bottom: 3rem; }
+.documents-library__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; }
+.documents-card {
+  display: flex;
+  min-height: 22rem;
+  flex-direction: column;
+  border: 2px solid hsl(var(--fu-ink));
+  background: hsl(var(--fu-card));
+  padding: 1.5rem;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.documents-card:hover { transform: translateY(-.25rem); box-shadow: .35rem .35rem 0 hsl(var(--fu-link)); }
+.documents-card__meta { display: flex; justify-content: space-between; gap: 1rem; color: hsl(var(--fu-link)); }
+.documents-card__title { margin: 1.5rem 0 .75rem; color: hsl(var(--fu-ink)); font-family: var(--font-display); font-size: 1.35rem; line-height: 1.15; }
+.documents-card__abstract { color: hsl(var(--fu-muted)); font-size: .92rem; line-height: 1.7; }
+.documents-card__authors { margin-top: auto; padding-top: 1.5rem; letter-spacing: .08em; }
+.documents-card__link, .documents-card__status { margin-top: 1rem; color: hsl(var(--fu-link)); text-decoration: none; }
+@media (max-width: 760px) {
+  .documents-hero__inner, .documents-library__header { align-items: flex-start; flex-direction: column; }
+  .documents-guidance__steps, .documents-library__grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

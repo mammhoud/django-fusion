@@ -237,6 +237,28 @@ def _extract_seeded_blocks(specific, data: dict) -> None:
                     data["methods"] = _plain(methods)
                 break
 
+    # Services page: reusable Wagtail service snippets are the source of
+    # truth for the Astro /services/ cards. Do not duplicate this editorial
+    # content in the frontend.
+    if specific.__class__.__name__ == "ServicesPage":
+        try:
+            from apps.handlers.models.manage.service import Service
+
+            data["services"] = [
+                {
+                    "title": service.name,
+                    "description": service.description or service.overview,
+                    "category": service.category,
+                    "icon": service.icon,
+                    "deliverables": [],
+                    "cta_label": "Discuss this service",
+                    "cta_href": "/contact/",
+                }
+                for service in Service.objects.filter(is_active=True, is_visible=True).order_by("name")
+            ]
+        except Exception:
+            logger.exception("Service listing unavailable")
+
     # Events page: active/visible Event rows so the Astro /events/ route
     # renders the seeded calendar instead of a 404/fallback.
     if specific.__class__.__name__ == "EventPage":
@@ -406,6 +428,44 @@ def content_languages_api(request: HttpRequest) -> JsonResponse:
     })
 
 
+_DOCUMENT_GUIDANCE = {
+    "en": {"title": "How to use the research library", "body": "Start with the document that matches your stage of work. Read the abstract first, then open the source record and record the method decisions that apply to your study.", "steps": ["Frame the question", "Check the method and limits", "Apply the guidance to your protocol"]},
+    "sv": {"title": "Så använder du forskningsbiblioteket", "body": "Börja med dokumentet som passar ditt arbete. Läs sammanfattningen och dokumentera sedan de metodbeslut som gäller för din studie.", "steps": ["Formulera frågan", "Kontrollera metod och begränsningar", "Tillämpa vägledningen i protokollet"]},
+    "fr": {"title": "Comment utiliser la bibliothèque de recherche", "body": "Choisissez le document correspondant à votre étape de travail. Lisez le résumé, puis notez les décisions méthodologiques utiles à votre étude.", "steps": ["Formuler la question", "Vérifier la méthode et les limites", "Appliquer le guide au protocole"]},
+    "de": {"title": "So nutzen Sie die Forschungsbibliothek", "body": "Wählen Sie das Dokument passend zu Ihrer Arbeitsphase. Lesen Sie die Zusammenfassung und halten Sie die relevanten methodischen Entscheidungen fest.", "steps": ["Die Frage präzisieren", "Methode und Grenzen prüfen", "Die Anleitung im Protokoll anwenden"]},
+    "es": {"title": "Cómo usar la biblioteca de investigación", "body": "Empieza con el documento que corresponde a tu etapa de trabajo. Lee el resumen y registra las decisiones metodológicas útiles para tu estudio.", "steps": ["Definir la pregunta", "Revisar método y límites", "Aplicar la guía al protocolo"]},
+    "ar": {"title": "كيفية استخدام مكتبة الأبحاث", "body": "ابدأ بالوثيقة المناسبة لمرحلة عملك. اقرأ الملخص ثم سجّل القرارات المنهجية التي تنطبق على دراستك.", "steps": ["تحديد السؤال", "مراجعة المنهج والحدود", "تطبيق الإرشاد على البروتوكول"]},
+    "pt-br": {"title": "Como usar a biblioteca de pesquisa", "body": "Comece pelo documento adequado à sua etapa de trabalho. Leia o resumo e registre as decisões metodológicas úteis para o seu estudo.", "steps": ["Formular a pergunta", "Verificar método e limites", "Aplicar o guia ao protocolo"]},
+}
+
+
+def research_publications_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/research/publications/ — localized Wagtail documents."""
+    language = _requested_language(request)
+    from apps.content.models.publication import Publication
+
+    documents = [
+        {
+            "id": publication.pk,
+            "title": publication.title,
+            "slug": publication.slug,
+            "abstract": str(publication.abstract),
+            "authors": publication.authors,
+            "category": publication.category.name if publication.category else "",
+            "language": publication.language,
+            "published_at": publication.published_at.isoformat() if publication.published_at else None,
+            "external_url": publication.external_url,
+        }
+        for publication in Publication.objects.filter(is_published=True, language=language).select_related("category")
+    ]
+    return JsonResponse({
+        "documents": documents,
+        "total": len(documents),
+        "language": language,
+        "guidance": _DOCUMENT_GUIDANCE[language],
+    })
+
+
 # Frontend route table — the Astro app is the renderer, so navigation only
 # ever links to routes it actually builds. Wagtail page slugs are mapped onto
 # the closest frontend route. The map also drops locale-prefixed `child.url`
@@ -453,6 +513,13 @@ _FRAGMENT_TEMPLATES = {
 def navigation_api(request: HttpRequest) -> JsonResponse:
     language = _requested_language(request)
     items = [{"label": "Home", "href": "/", "active": request.path == "/"}]
+    try:
+        from apps.content.models.publication import Publication
+
+        if Publication.objects.filter(is_published=True, language=language).exists():
+            items.append({"label": "Documents", "href": "/documents/", "active": request.path.startswith("/documents")})
+    except Exception:
+        logger.exception("Research document navigation unavailable")
     try:
         from wagtail.models import Locale
 

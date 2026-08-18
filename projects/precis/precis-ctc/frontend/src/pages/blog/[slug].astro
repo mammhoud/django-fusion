@@ -5,7 +5,7 @@ import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
-import { cachedSiteSettings, cachedNavigation, fetchBlogPosts, fetchBlogPost, SEEDED_FALLBACK_SLUGS } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, fetchBlogPosts, fetchBlogPost } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData, BlogPostData } from '@/lib/api';
 
 export async function getStaticPaths() {
@@ -18,7 +18,7 @@ export async function getStaticPaths() {
   } catch {
     // The backend may be starting after the Astro build.
   }
-  return SEEDED_FALLBACK_SLUGS.blog.map((slug) => ({ params: { slug } }));
+  return [];
 }
 
 const { slug } = Astro.params;
@@ -32,40 +32,23 @@ try {
   ]);
 } catch { /* use fallbacks */ }
 
-// Adapt Precis's standalone BlogPost payload to the shared article layout
-// contract. This deliberately does not treat a non-Wagtail blog record as a
-// `/apis/pages/<slug>/` page. Seeded routes also keep a readable document shell
-// during a backend-first restart; live BlogPost data replaces it automatically.
-const resolvedPost: BlogPostData = postData || {
-  id: 0,
-  slug: slug || '',
-  title: (slug || 'blog post').replace(/[-_]+/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
-  content: '<p>This CTC Research editorial document is temporarily using its resilient static shell. The published article will appear as soon as the content service is available.</p>',
-  excerpt: 'A CTC Research editorial document.',
-  author: { name: 'CTC Research editorial team', id: null },
-  published_date: null,
-  featured_image_url: null,
-  categories: [],
-  tags: [],
-  reading_time: 1,
-  likes_count: 0,
-  meta_description: 'A CTC Research editorial document.',
-  related_posts: [],
-};
-const pageData: PageData = {
-  id: resolvedPost.id,
-  slug: resolvedPost.slug,
-  title: resolvedPost.title,
+// Adapt the live BlogPost payload to the shared article layout contract.
+// No article body is synthesized in Astro; an unavailable backend payload
+// renders the backend-owned content error below.
+const pageData: PageData | undefined = postData ? {
+  id: postData.id,
+  slug: postData.slug,
+  title: postData.title,
   type: 'BlogPost',
   show_in_nav: false,
-  seo_title: resolvedPost.title,
-  search_description: resolvedPost.meta_description || resolvedPost.excerpt,
-  body: resolvedPost.content,
-  excerpt: resolvedPost.excerpt,
-  category: resolvedPost.categories[0]?.name || '',
-  read_time: `${resolvedPost.reading_time} min read`,
-  post_date: resolvedPost.published_date || '',
-};
+  seo_title: postData.title,
+  search_description: postData.meta_description || postData.excerpt,
+  body: postData.content,
+  excerpt: postData.excerpt,
+  category: postData.categories[0]?.name || '',
+  read_time: `${postData.reading_time} min read`,
+  post_date: postData.published_date || '',
+} : undefined;
 const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const body = String(pageData?.body || '');
@@ -118,8 +101,10 @@ const excerpt = String(pageData?.excerpt || '');
         <div
           class='mx-auto max-w-2xl'
           data-slug={slug}
+          data-live={postData ? 'true' : 'false'}
           x-data="{
             slug: $root.dataset.slug || '',
+            live: $root.dataset.live === 'true',
             authed: false,
             loading: true,
             comment: '',
@@ -127,12 +112,12 @@ const excerpt = String(pageData?.excerpt || '');
             busy: false,
             async init() {
               try {
-                const [statusRes, commentsRes] = await Promise.all([
-                  fetch('/apis/auth/status/', { credentials: 'include', headers: { Accept: 'application/json' } }),
-                  fetch(`/apis/blog/${this.slug}/comments/`, { headers: { Accept: 'application/json' } }),
-                ]);
+                const statusRes = await fetch('/apis/auth/status/', { credentials: 'include', headers: { Accept: 'application/json' } });
                 if (statusRes.ok) this.authed = Boolean((await statusRes.json()).authenticated);
-                if (commentsRes.ok) this.comments = (await commentsRes.json()).comments || [];
+                if (this.live) {
+                  const commentsRes = await fetch(`/apis/blog/${this.slug}/comments/`, { headers: { Accept: 'application/json' } });
+                  if (commentsRes.ok) this.comments = (await commentsRes.json()).comments || [];
+                }
               } catch (error) { /* public content remains usable offline */ }
               finally { this.loading = false; }
             },

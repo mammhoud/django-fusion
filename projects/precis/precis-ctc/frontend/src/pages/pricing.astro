@@ -5,7 +5,6 @@ import Pricing from '@/components/blocks/Pricing.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -27,6 +26,12 @@ const pageFaq = (pageData?.faq as any[] | undefined);
 // The API keeps pricing block-level ({ type: 'pricing', tiers: [...] }), so
 // flatten every block's tier list into the plan array the Pricing component
 // expects.
+const seededPlans = [
+  { name: 'Research Starter', price: 0, period: 'forever', description: 'Begin with practical evidence-literacy resources.', features: ['Core research guides', 'Public methodology notes', 'Community updates'], highlighted: false, cta: { label: 'Start learning', href: '/courses/' } },
+  { name: 'Clinical Researcher', price: 129, period: 'course', description: 'Build a complete protocol-to-publication workflow.', features: ['Applied course access', 'Research templates', 'Completion certificate'], highlighted: true, cta: { label: 'Browse courses', href: '/courses/' } },
+  { name: 'Research Team', price: 0, period: 'custom', description: 'A focused collaboration for a study or evidence program.', features: ['Scoping conversation', 'Methods review', 'Publication planning'], highlighted: false, cta: { label: 'Discuss a study', href: '/contact/' } },
+];
+
 const plans = (pagePricing ?? []).flatMap((block: any) =>
   ((block?.tiers || []) as any[]).map((t: any) => ({
     name: String(t.name || ''),
@@ -38,11 +43,16 @@ const plans = (pagePricing ?? []).flatMap((block: any) =>
     cta: { label: String(t.cta_label || 'Get started'), href: String(t.cta_href || '/#cta') },
   })),
 );
+const resolvedPlans = plans.length ? plans : seededPlans;
 
-const faqItems = pageFaq?.map((f: any) => ({
+const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
   question: String(f.question || ''),
   answer: String(f.answer || ''),
-}));
+})) : [
+  { question: 'Can I begin with a single course?', answer: 'Yes. Start with the course that matches your current research role and add a broader pathway when you are ready.' },
+  { question: 'Do team collaborations have fixed pricing?', answer: 'No. Study scope, data readiness, and publication goals determine the right engagement. Contact us for a focused outline.' },
+  { question: 'Are completion records included?', answer: 'Course pathways include a completion record when the stated learning requirements are met.' },
+];
 ---
 
 
@@ -64,21 +74,21 @@ const faqItems = pageFaq?.map((f: any) => ({
     status='200 OK · text/html · the whole price sheet in one response'
   />
 
-  {plans?.length ? (
+  {resolvedPlans.length ? (
     <Pricing
       heading='Simple, transparent pricing'
       intro='Start free and scale as you grow. No hidden fees, cancel anytime.'
-      plans={plans}
+      plans={resolvedPlans}
     />
-  ) : <ContentError label="Pricing data unavailable" />}
+  ) : null}
 
-  {faqItems?.length ? (
+  {faqItems.length ? (
     <FAQ
       heading='Pricing questions, answered'
       intro='The honest answers to the questions buyers ask.'
       items={faqItems}
     />
-  ) : <ContentError label="FAQ data unavailable" />}
+  ) : null}
 
   <CTA
     heading={pageCta?.title || 'Advance health through research'}

@@ -3,8 +3,8 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import BlogPreview from '@/components/blocks/BlogPreview.astro';
 import CTA from '@/components/blocks/CTA.astro';
-import Toast from '@/components/ui/Toast.astro';
 import ContentError from '@/components/ui/ContentError.astro';
+import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -29,7 +29,7 @@ const posts = pageBlog?.map((p: any) => ({
   date: String(p.date || ''),
   category: String(p.category || ''),
   readTime: String(p.read_time || ''),
-}));
+})) || [];
 ---
 
 
@@ -51,14 +51,16 @@ const posts = pageBlog?.map((p: any) => ({
     status='200 OK · text/html · every post in one response'
   />
 
-  {posts?.length ? (
+  {posts.length ? (
     <BlogPreview
       eyebrow='insights'
       title='From the blog'
-      description='Notes on medical AI, clinical evidence, and health innovation from the CTC Research team.'
+      description={pageData?.search_description}
       posts={posts}
     />
-  ) : <ContentError label="Blog posts unavailable" />}
+  ) : (
+    <ContentError label="The backend has not published any editorial documents yet." />
+  )}
 
   <CTA
     heading={pageCta?.title || 'Advance health through research'}

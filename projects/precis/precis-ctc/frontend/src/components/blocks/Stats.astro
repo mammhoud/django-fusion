@@ -11,12 +11,12 @@ interface Props {
   stats?: Stat[];
 }
 
-// Network facts — the numbers that matter to a technical evaluator.
+// Center metrics — the numbers that matter to a research partner.
 const defaultStats: Stat[] = [
-  { label: 'Total page weight', value: 30, suffix: 'KB' },
-  { label: 'Client-side framework', value: 0, suffix: 'KB' },
-  { label: 'Time to first byte', value: '<0.1', suffix: 's' },
-  { label: 'HTML, not JSON', value: 100, suffix: '%' },
+  { label: 'Studies supported', value: 140, suffix: '+' },
+  { label: 'Active research programs', value: 12, suffix: '' },
+  { label: 'Researchers trained', value: 2400, suffix: '+' },
+  { label: 'Median manuscript turnaround', value: 6, suffix: ' wks' },
 ];
 
 const { stats = defaultStats } = Astro.props;

@@ -7,6 +7,17 @@ Serves: GET /apis/research/publications
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+
+PUBLICATION_LANGUAGE_CHOICES = (
+    ("en", _("English")),
+    ("sv", _("Swedish")),
+    ("fr", _("French")),
+    ("de", _("German")),
+    ("es", _("Spanish")),
+    ("ar", _("Arabic")),
+    ("pt-br", _("Portuguese (Brazil)")),
+)
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import RichTextField
 from wagtail.search import index
@@ -26,7 +37,7 @@ class PublicationCategory(models.Model):
     ]
 
     class Meta:
-        app_label = "content"
+        app_label = "pages"
         verbose_name = _("publication category")
         verbose_name_plural = _("publication categories")
         ordering = ["sort_order", "name"]
@@ -41,12 +52,13 @@ class Publication(index.Indexed, models.Model):
     abstract = RichTextField(blank=True, default="", features=["bold", "italic", "link"])
     authors = models.CharField(max_length=500, blank=True, default="")
     category = models.ForeignKey(PublicationCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name="publications")
+    language = models.CharField(max_length=10, choices=PUBLICATION_LANGUAGE_CHOICES, default="en", db_index=True)
     published_at = models.DateTimeField(default=timezone.now)
     is_published = models.BooleanField(default=True, db_index=True)
     external_url = models.URLField(blank=True, default="")
 
     panels = [
-        MultiFieldPanel([FieldPanel("title"), FieldPanel("slug"), FieldPanel("authors"), FieldPanel("category")], heading="Details"),
+        MultiFieldPanel([FieldPanel("title"), FieldPanel("slug"), FieldPanel("language"), FieldPanel("authors"), FieldPanel("category")], heading="Details"),
         FieldPanel("abstract"),
         MultiFieldPanel([FieldPanel("published_at"), FieldPanel("is_published"), FieldPanel("external_url")], heading="Publishing"),
     ]
@@ -58,7 +70,7 @@ class Publication(index.Indexed, models.Model):
     ]
 
     class Meta:
-        app_label = "content"
+        app_label = "pages"
         verbose_name = _("publication")
         verbose_name_plural = _("publications")
         ordering = ["-published_at"]

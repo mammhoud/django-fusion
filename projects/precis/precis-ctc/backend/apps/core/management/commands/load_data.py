@@ -236,6 +236,18 @@ class Command(BaseCommand):
         else:
             self.stdout.write(self.style.WARNING("🔍 (skipped)"))
 
+        # ── Step 5c: Wagtail research documents ─────────────────
+        self.stdout.write(self.style.HTTP_INFO("⏳ Research documents … "), ending="")
+        if not dry_run:
+            research_fixture = backend_dir / "assets" / "fixtures" / "research_publications.json"
+            try:
+                call_command("loaddata", str(research_fixture), verbosity=0)
+            except Exception as exc:
+                raise CommandError("Failed to load research publication fixtures") from exc
+            self.stdout.write(self.style.SUCCESS("✅\n"))
+        else:
+            self.stdout.write(self.style.WARNING("🔍 (skipped)"))
+
         # ── Step 6: Default Wagtail Site ────────────────────────
         self.stdout.write(self.style.HTTP_INFO("⏳ Default Site … "), ending="")
         if not dry_run:
@@ -273,7 +285,7 @@ class Command(BaseCommand):
             f"  • Existing data: {'replaced' if replace_existing else 'preserved'}\n"
         )
         self.stdout.write(
-            "  • Fixture: loaded (dump-data + LMS + medical research catalog fixtures)\n"
+            "  • Fixture: loaded (dump-data + LMS + medical research catalog + research documents)\n"
         )
         self.stdout.write("  • Wagtail Site: configured\n")
         self.stdout.write(self.style.SUCCESS("🎉 Done!\n"))

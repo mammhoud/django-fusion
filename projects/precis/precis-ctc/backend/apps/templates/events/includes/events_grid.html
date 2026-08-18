@@ -1,55 +1,41 @@
 {% load i18n %}
 
-<div class="row g-4">
+<div class="ctc-event-grid">
     {% for event in page_items %}
-        <div class="col-md-6 col-lg-4">
-            <article class="event-card h-100 p-4 border rounded shadow-sm">
-                {% if event.event_type %}
-                    <span class="badge bg-primary mb-2">{{ event.get_event_type_display|default:event.event_type }}</span>
+        <article class="ctc-event-card">
+            {% if event.event_type %}
+                <span class="ctc-event-card__type">{{ event.get_event_type_display|default:event.event_type }}</span>
+            {% endif %}
+            <h2 class="ctc-event-card__title">{{ event.title }}</h2>
+            {% if event.description %}
+                <p class="ctc-event-card__description">{{ event.description|truncatewords:28 }}</p>
+            {% endif %}
+            <ul class="ctc-event-card__meta">
+                {% if event.start_date %}
+                    <li>{% trans "Date" %}: {{ event.start_date|date:"DATE_FORMAT" }}</li>
                 {% endif %}
-                <h2 class="event-card__title h5">{{ event.title }}</h2>
-                {% if event.description %}
-                    <p class="text-muted">{{ event.description|truncatewords:28 }}</p>
+                {% if event.location %}
+                    <li>{% trans "Location" %}: {{ event.location }}</li>
                 {% endif %}
-                <ul class="event-card__meta list-unstyled small text-muted mb-0">
-                    {% if event.start_date %}
-                        <li class="mb-1">
-                            <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>{{ event.start_date|date:"DATE_FORMAT" }}
-                        </li>
-                    {% endif %}
-                    {% if event.location %}
-                        <li>
-                            <i class="bi bi-geo-alt me-2" aria-hidden="true"></i>{{ event.location }}
-                        </li>
-                    {% endif %}
-                </ul>
-            </article>
-        </div>
+            </ul>
+        </article>
     {% empty %}
-        <p class="text-muted text-center w-100">{% trans "No upcoming events." %}</p>
+        <p class="ctc-event-grid__empty">{% trans "No upcoming events." %}</p>
     {% endfor %}
 </div>
 
 {% if has_pagination %}
-    <nav class="mt-5" aria-label="{% trans 'Pagination' %}">
-        <ul class="pagination justify-content-center">
-            {% if page_items.has_previous %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_items.previous_page_number }}">{% trans "Previous" %}</a>
-                </li>
-            {% endif %}
-            <li class="page-item disabled">
-                <span class="page-link">
-                    {% blocktrans with current=page_items.number total=page_items.paginator.num_pages %}
-                        Page {{ current }} of {{ total }}
-                    {% endblocktrans %}
-                </span>
-            </li>
-            {% if page_items.has_next %}
-                <li class="page-item">
-                    <a class="page-link" href="?page={{ page_items.next_page_number }}">{% trans "Next" %}</a>
-                </li>
-            {% endif %}
-        </ul>
+    <nav class="ctc-pagination" aria-label="{% trans 'Pagination' %}">
+        {% if page_items.has_previous %}
+            <a class="ctc-pagination__link" href="?page={{ page_items.previous_page_number }}">{% trans "Previous" %}</a>
+        {% endif %}
+        <span class="ctc-pagination__status">
+            {% blocktrans with current=page_items.number total=page_items.paginator.num_pages %}
+                Page {{ current }} of {{ total }}
+            {% endblocktrans %}
+        </span>
+        {% if page_items.has_next %}
+            <a class="ctc-pagination__link" href="?page={{ page_items.next_page_number }}">{% trans "Next" %}</a>
+        {% endif %}
     </nav>
 {% endif %}

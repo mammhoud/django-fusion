@@ -118,6 +118,10 @@ LMS_FIXTURE_DIR = (
     Path(__file__).resolve().parent.parent
     / "apps" / "learning" / "fixtures"
 )
+RESEARCH_FIXTURE_PATH = (
+    Path(__file__).resolve().parent.parent
+    / "assets" / "fixtures" / "research_publications.json"
+)
 
 # Expected LMS fixture content (spot checks — actual titles in courses.json)
 EXPECTED_COURSES = {
@@ -190,6 +194,9 @@ class TestFixtureData(TestCase):
             path = LMS_FIXTURE_DIR / name
             assert path.exists(), f"missing LMS fixture: {path}"
             call_command("loaddata", str(path), verbosity=0)
+
+        assert RESEARCH_FIXTURE_PATH.exists(), f"missing research fixture: {RESEARCH_FIXTURE_PATH}"
+        call_command("loaddata", str(RESEARCH_FIXTURE_PATH), verbosity=0)
 
         cls.client = Client()
 
@@ -721,6 +728,20 @@ class TestFixtureData(TestCase):
             "/api/events/00000000-0000-0000-0000-000000000000/"
         )
         assert response.status_code == 404
+
+    # ── API — research documents ──────────────────────────────────
+
+    def test_research_documents_are_localized_wagtail_snippets(self):
+        response = self.client.get("/apis/research/publications/?lang=en")
+        assert response.status_code == 200
+        body = response.json()
+        assert body["total"] >= 1
+        assert body["documents"][0]["language"] == "en"
+        assert body["guidance"]["steps"]
+
+        arabic = self.client.get("/apis/research/publications/?lang=ar")
+        assert arabic.status_code == 200
+        assert arabic.json()["documents"][0]["language"] == "ar"
 
     # ── API — health & branding ────────────────────────────────────
 

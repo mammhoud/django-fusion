@@ -210,14 +210,14 @@ superuser: ## Create superuser (interactive)
 
 test: ## Run comprehensive tests
 	@echo -e "$(BLUE)Running tests...$(NC)"
-	@$(UV_RUN) python -m tests.runner --verbose
+	@$(UV_RUN) pytest tests -q
 	@echo -e "$(GREEN)✅ Tests done$(NC)"
 
 test-quick: ## Run tests (less output)
-	@$(UV_RUN) python -m tests.runner
+	@$(UV_RUN) pytest tests -q
 
 test-url: ## Test custom URL (make test-url URL=http://...)
-	@$(UV_RUN) python -m tests.runner --base-url $(URL) --verbose
+	@BASE_URL=$(URL) $(UV_RUN) pytest tests -q
 
 populate-data: ## Populate test data + pages
 	@$(UV_RUN) python -m tests.data_populator --verbose

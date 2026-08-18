@@ -7,21 +7,14 @@ import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import MediaGallery from '@/components/ui/MediaGallery.astro';
 import Toast from '@/components/ui/Toast.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList, SEEDED_FALLBACK_SLUGS } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
-  // Keep the frontend build independent from backend startup order.
-  try {
-    const list = await fetchPageList();
-    const slugs = list.pages
-      .filter((p) => p.type === 'ProductPage')
-      .map((p) => p.slug);
-    if (slugs.length) return slugs.map((slug) => ({ params: { slug } }));
-  } catch {
-    // The backend may be starting after the Astro build.
-  }
-  return SEEDED_FALLBACK_SLUGS.products.map((slug) => ({ params: { slug } }));
+  const list = await fetchPageList();
+  return list.pages
+    .filter((p) => p.type === 'ProductPage')
+    .map((page) => ({ params: { slug: page.slug } }));
 }
 
 const { slug } = Astro.params;

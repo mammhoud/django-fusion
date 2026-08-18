@@ -134,6 +134,7 @@ urlpatterns = [
     path("apis/site/settings/", landing_api.site_settings_api, name="landing-site-settings"),
     path("apis/navigation/", landing_api.navigation_api, name="landing-navigation"),
     path("apis/content/languages/", landing_api.content_languages_api, name="landing-content-languages"),
+    path("apis/research/publications/", landing_api.research_publications_api, name="landing-research-publications"),
     path("apis/contact/", landing_api.contact_api, name="landing-contact"),
     path("apis/auth/status/", landing_api.auth_status_api, name="landing-auth-status"),
     path("apis/blog/<slug:slug>/comments/", blog_api.blog_comments_api, name="landing-blog-comments"),

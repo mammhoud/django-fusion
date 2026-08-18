@@ -1,0 +1,31 @@
+// CTC Research backend theme tokens.
+// Archived reference: .archives/ctc-research.bak/assets/static/styles/colors/_palette.scss
+// Keep semantic tokens here so backend-rendered fragments use the same clinical
+// Blue/Teal vocabulary as the Astro shell.
+
+:root {
+  --ctc-primary: #00a1b3;
+  --ctc-primary-dark: #007a88;
+  --ctc-secondary: #008080;
+  --ctc-accent: #6c63ff;
+  --ctc-paper: #f5f7fa;
+  --ctc-surface: #ffffff;
+  --ctc-ink: #1a1d23;
+  --ctc-muted: #5c6675;
+  --ctc-line: #d0d7de;
+  --ctc-shadow: 4px 4px 0 #1a1d23;
+}
+
+.ctc-theme {
+  color: var(--ctc-ink);
+  background: var(--ctc-paper);
+}
+
+.ctc-theme__link {
+  color: var(--ctc-primary-dark);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--ctc-primary);
+  }
+}

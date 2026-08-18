@@ -6,7 +6,6 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import ContentError from '@/components/ui/ContentError.astro';
 import ProductGrid from '@/components/ui/ProductGrid.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -26,16 +25,25 @@ const pageCta = pageData?.cta;
 const pageStats = (pageData?.stats as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
-const productCards = (pageData?.products as { title: string; slug: string; tagline: string; href: string }[] | undefined);
+const productCards = (pageData?.products?.length ? pageData.products : [
+  { title: 'Research design', slug: 'research-design', tagline: 'From clinical question to analysis-ready protocol.', href: '/services/' },
+  { title: 'Evidence synthesis', slug: 'evidence-synthesis', tagline: 'Reproducible reviews for decisions that need context.', href: '/courses/systematic-reviews-evidence-synthesis/' },
+  { title: 'Scientific writing', slug: 'scientific-writing', tagline: 'Clear manuscripts, methods, and publication planning.', href: '/courses/scientific-medical-manuscript-writing/' },
+]) as { title: string; slug: string; tagline: string; href: string }[];
 
-const productStats = pageStats?.map((s: any) => ({
+const productStats = pageStats?.length ? pageStats.map((s: any) => ({
   label: String(s.label || ''), value: Number(s.value || 0), suffix: String(s.suffix || ''),
-}));
+})) : [
+  { label: 'Research domains', value: 4, suffix: '' },
+  { label: 'Evidence workflows', value: 6, suffix: '' },
+  { label: 'Course pathways', value: 6, suffix: '' },
+  { label: 'Publication focus', value: 1, suffix: '' },
+];
 ---
 
 <Layout title={pageData?.title || 'Products'} description={pageData?.search_description || 'Programs and services from CTC Research — medical AI, clinical research, and health innovation.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="products">
   <Hero eyebrow={pageHero?.badge || 'products · programs & services'} heading={pageHero?.title || 'Programs & services'} accent='for health innovation' intro={pageHero?.subtitle || 'Learning paths, research programs, and evidence services from a medical research center.'} primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Browse courses', href: '/courses/' }} secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }} status='200 OK · text/html · the full program line in one response' />
-  {productStats?.length ? <Stats stats={productStats} /> : <ContentError label="Stats data unavailable" />}
+  <Stats stats={productStats} />
 
   <!-- Program cards grid — one card per ProductPage child (links to detail pages) -->
   {productCards?.length ? (

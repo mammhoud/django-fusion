@@ -1,0 +1,93 @@
+---
+// CertificateCard — BEM block for credentials, certifications, and
+// completion badges issued by the research center.
+// Adapted from .archives/theme/components/CertificateCard.html (Histudy LMS),
+// re-skinned to the CTC Blue/Teal clinical theme.
+interface Certificate {
+  title: string;
+  issuer?: string;
+  description?: string;
+  status?: 'active' | 'upcoming' | 'archived';
+  iconPath?: string;
+}
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  certificates?: Certificate[];
+}
+
+const defaultCertificates: Certificate[] = [
+  {
+    title: 'Certificate in Evidence Synthesis',
+    issuer: 'CTC Research',
+    description: 'Systematic reviews and meta-analysis for clinical decision support.',
+    status: 'active',
+    iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+  },
+  {
+    title: 'Medical AI in Practice',
+    issuer: 'CTC Research',
+    description: 'Responsible machine learning for diagnostics and health outcomes.',
+    status: 'active',
+    iconPath: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z',
+  },
+  {
+    title: 'Biostatistics for Clinical Teams',
+    issuer: 'CTC Research',
+    description: 'Study design, power, and reporting for non-statisticians.',
+    status: 'active',
+    iconPath: 'M3 3v18h18M7 14l4-4 4 4 5-6',
+  },
+];
+
+const {
+  heading = 'Credentials that travel',
+  intro = 'Issue a verifiable completion record for every program at the center.',
+  certificates = defaultCertificates,
+} = Astro.props;
+
+const statusLabel: Record<string, string> = {
+  active: 'available',
+  upcoming: 'coming soon',
+  archived: 'archived',
+};
+---
+
+<section class="fu-certificate">
+  <div class="container-fusion">
+    <div class="fu-certificate__header">
+      <p class="tag-marker mb-4">credentials</p>
+      <h2 class="page-section__title">{heading}</h2>
+      <p class="text-fu-muted">{intro}</p>
+    </div>
+
+    <div class="fu-certificate__grid">
+      {certificates.map((c, i) => (
+        <div
+          class="fu-certificate__card group"
+          x-data
+          x-intersect="$el.classList.add('reveal-visible')"
+          style={`--reveal-delay: ${i * 70}ms`}
+        >
+          <div class="fu-certificate__seal" aria-hidden="true">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+              <path stroke-linecap="round" stroke-linejoin="round" d={c.iconPath || 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'} />
+            </svg>
+          </div>
+
+          <div class="fu-certificate__body">
+            {c.status && (
+              <span class={`fu-certificate__status fu-certificate__status--${c.status}`}>
+                {statusLabel[c.status] || c.status}
+              </span>
+            )}
+            <h3 class="fu-certificate__title">{c.title}</h3>
+            {c.issuer && <p class="fu-certificate__issuer">{c.issuer}</p>}
+            {c.description && <p class="fu-certificate__text">{c.description}</p>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

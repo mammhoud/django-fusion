@@ -1,0 +1,117 @@
+[
+  {
+    "model": "pages.publicationcategory",
+    "pk": 1,
+    "fields": {
+      "name": "Research guidance",
+      "slug": "research-guidance",
+      "description": "Practical documents for clinical research, evidence synthesis, and academic writing.",
+      "sort_order": 1
+    }
+  },
+  {
+    "model": "pages.publication",
+    "pk": 1,
+    "fields": {
+      "title": "Writing a transparent clinical research protocol",
+      "slug": "transparent-clinical-research-protocol-en",
+      "abstract": "<p>A concise guide to framing the question, pre-specifying outcomes, and making protocol decisions auditable.</p>",
+      "authors": "CTC Research editorial group",
+      "language": "en",
+      "category": 1,
+      "published_at": "2026-08-18T09:00:00Z",
+      "is_published": true,
+      "external_url": ""
+    }
+  },
+  {
+    "model": "pages.publication",
+    "pk": 2,
+    "fields": {
+      "title": "Skriva ett transparent kliniskt forskningsprotokoll",
+      "slug": "transparent-clinical-research-protocol-sv",
+      "abstract": "<p>En praktisk vägledning för tydliga forskningsfrågor, förhandsdefinierade utfall och spårbara metodbeslut.</p>",
+      "authors": "CTC Researchs redaktion",
+      "language": "sv",
+      "category": 1,
+      "published_at": "2026-08-18T09:00:00Z",
+      "is_published": true,
+      "external_url": ""
+    }
+  },
+  {
+    "model": "pages.publication",
+    "pk": 3,
+    "fields": {
+      "title": "Rédiger un protocole de recherche clinique transparent",
+      "slug": "transparent-clinical-research-protocol-fr",
+      "abstract": "<p>Un guide pratique pour formuler la question, prédéfinir les critères et rendre les décisions méthodologiques vérifiables.</p>",
+      "authors": "Rédaction CTC Research",
+      "language": "fr",
+      "category": 1,
+      "published_at": "2026-08-18T09:00:00Z",
+      "is_published": true,
+      "external_url": ""
+    }
+  },
+  {
+    "model": "pages.publication",
+    "pk": 4,
+    "fields": {
+      "title": "Ein transparentes klinisches Forschungsprotokoll schreiben",
+      "slug": "transparent-clinical-research-protocol-de",
+      "abstract": "<p>Eine kurze Anleitung für präzise Fragen, vorab definierte Endpunkte und nachvollziehbare methodische Entscheidungen.</p>",
+      "authors": "Redaktion von CTC Research",
+      "language": "de",
+      "category": 1,
+      "published_at": "2026-08-18T09:00:00Z",
+      "is_published": true,
+      "external_url": ""
+    }
+  },
+  {
+    "model": "pages.publication",
+    "pk": 5,
+    "fields": {
+      "title": "Escribir un protocolo de investigación clínica transparente",
+      "slug": "transparent-clinical-research-protocol-es",
+      "abstract": "<p>Una guía práctica para definir la pregunta, especificar los resultados y hacer auditables las decisiones del protocolo.</p>",
+      "authors": "Equipo editorial de CTC Research",
+      "language": "es",
+      "category": 1,
+      "published_at": "2026-08-18T09:00:00Z",
+      "is_published": true,
+      "external_url": ""
+    }
+  },
+  {
+    "model": "pages.publication",
+    "pk": 6,
+    "fields": {
+      "title": "كتابة بروتوكول بحث سريري شفاف",
+      "slug": "transparent-clinical-research-protocol-ar",
+      "abstract": "<p>دليل عملي لصياغة السؤال وتحديد النتائج مسبقاً وجعل قرارات البروتوكول قابلة للتدقيق.</p>",
+      "authors": "فريق تحرير CTC Research",
+      "language": "ar",
+      "category": 1,
+      "published_at": "2026-08-18T09:00:00Z",
+      "is_published": true,
+      "external_url": ""
+    }
+  },
+  {
+    "model": "pages.publication",
+    "pk": 7,
+    "fields": {
+      "title": "Escrever um protocolo de pesquisa clínica transparente",
+      "slug": "transparent-clinical-research-protocol-pt-br",
+      "abstract": "<p>Um guia prático para formular a pergunta, definir desfechos e tornar as decisões metodológicas verificáveis.</p>",
+      "authors": "Equipe editorial da CTC Research",
+      "language": "pt-br",
+      "category": 1,
+      "published_at": "2026-08-18T09:00:00Z",
+      "is_published": true,
+      "external_url": ""
+    }
+  }
+]
