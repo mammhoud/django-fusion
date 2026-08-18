@@ -445,6 +445,15 @@ def workflows_api(request):
     return JsonResponse({"results": results, "count": len(results)})
 
 
+@login_required
+def reports_api(request):
+    """Report catalog for the webapp /reports/ surface."""
+    from .reports import report_catalog
+
+    catalog = report_catalog()
+    return JsonResponse({"results": catalog, "count": len(catalog)})
+
+
 def integrations_api(request):
     return JsonResponse({"results": platform_catalog(), "count": len(platform_catalog())})
 

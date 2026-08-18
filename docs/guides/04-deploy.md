@@ -51,7 +51,7 @@ Internet
 2. **Stage 2:** Flip to **production** CA, enable for all sites
 3. **Stage 3:** Delete self-signed cert fallback
 
-> ⚠️ **Warning:** The ACME store at `applications/proxy/acme/acme.json` must have `0600` permissions and is gitignored. Never commit it.
+> ⚠️ **Warning:** The ACME store at `applications/proxy/configs/acme.json` must have `0600` permissions and is gitignored. Never commit it.
 
 ### Required Env Vars
 

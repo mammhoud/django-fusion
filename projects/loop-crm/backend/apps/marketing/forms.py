@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import Workspace
 from apps.core.tenancy import current_workspace_id
@@ -44,9 +45,9 @@ class PostComposerForm(forms.ModelForm):
         channel = cleaned.get("channel")
         if workspace:
             if campaign and campaign.workspace_id != workspace.pk:
-                self.add_error("campaign", "The campaign must belong to the selected workspace.")
+                self.add_error("campaign", _("The campaign must belong to the selected workspace."))
             if channel and channel.workspace_id != workspace.pk:
-                self.add_error("channel", "The channel must belong to the selected workspace.")
+                self.add_error("channel", _("The channel must belong to the selected workspace."))
         return cleaned
 
     def save(self, commit=True):
@@ -64,11 +65,11 @@ class PostLifecycleForm(forms.Form):
     """Explicit lifecycle action; no endpoint can silently skip approval."""
 
     ACTIONS = [
-        ("submit", "Submit for approval"),
-        ("approve", "Approve"),
-        ("schedule", "Schedule"),
-        ("publish", "Publish now"),
-        ("reset", "Return to draft"),
+        ("submit", _("Submit for approval")),
+        ("approve", _("Approve")),
+        ("schedule", _("Schedule")),
+        ("publish", _("Publish now")),
+        ("reset", _("Return to draft")),
     ]
 
     action = forms.ChoiceField(choices=ACTIONS)

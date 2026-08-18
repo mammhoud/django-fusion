@@ -71,6 +71,14 @@ MODULES: tuple[dict[str, Any], ...] = (
         ),
     },
     {
+        "id": "reports",
+        "label": "Reports",
+        "href": "/reports/",
+        "icon": "reports",
+        "description": "The catalog of revenue, pipeline, publishing, employee, and billing reports.",
+        "children": (),
+    },
+    {
         "id": "tasks",
         "label": "Tasks",
         "href": "/tasks/",
@@ -94,6 +102,7 @@ MODULES: tuple[dict[str, Any], ...] = (
             {"id": "saved-views", "label": "Saved views", "href": "/settings/saved-views/"},
             {"id": "import", "label": "Import", "href": "/settings/import/"},
             {"id": "audit", "label": "Audit log", "href": "/settings/audit/"},
+            {"id": "plan", "label": "Plan & billing", "href": "/settings/plan/"},
         ),
     },
 )

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import Workspace
 from apps.marketing.models import Campaign
@@ -34,7 +35,7 @@ class WorkspaceScopedForm(forms.ModelForm):
         profile = _request_profile(getattr(self, "request", None))
         member_workspace = getattr(profile, "workspace_id", None)
         if member_workspace is not None and workspace.pk != member_workspace:
-            raise forms.ValidationError("Choose a record from your current workspace.")
+            raise forms.ValidationError(_("Choose a record from your current workspace."))
         return workspace
 
 
@@ -112,7 +113,7 @@ class ContactForm(WorkspaceScopedForm):
         workspace = cleaned.get("workspace")
         company = cleaned.get("company")
         if workspace and company and company.workspace_id != workspace.pk:
-            self.add_error("company", "The company must belong to the selected workspace.")
+            self.add_error("company", _("The company must belong to the selected workspace."))
         return cleaned
 
     def save(self, commit=True):
@@ -174,13 +175,13 @@ class DealForm(WorkspaceScopedForm):
         if workspace:
             for field_name, related in (("company", company), ("contact", contact), ("pipeline", pipeline), ("campaign", campaign)):
                 if related and related.workspace_id != workspace.pk:
-                    self.add_error(field_name, "This record must belong to the selected workspace.")
+                    self.add_error(field_name, _("This record must belong to the selected workspace."))
             if stage and stage.pipeline.workspace_id != workspace.pk:
-                self.add_error("stage", "The stage must belong to the selected workspace.")
+                self.add_error("stage", _("The stage must belong to the selected workspace."))
         if company and contact and contact.company_id != company.pk:
-            self.add_error("contact", "The contact must belong to the selected company.")
+            self.add_error("contact", _("The contact must belong to the selected company."))
         if pipeline and stage and stage.pipeline_id != pipeline.pk:
-            self.add_error("stage", "The stage must belong to the selected pipeline.")
+            self.add_error("stage", _("The stage must belong to the selected pipeline."))
         return cleaned
 
     def save(self, commit=True):

@@ -292,7 +292,7 @@ gunicorn \
 
 ### Enable Traefik Routing
 
-Create `applications/proxy/traefik/dynamic/cypercloud.yml`:
+Create `applications/proxy/configs/traefik/dynamic/cypercloud.yml`:
 
 ```yaml
 # Tinker router configuration

@@ -8,10 +8,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ACME_ROOT="${TRAEFIK_ACME_DIR:-/etc/traefik/acme}"
 
 if [ ! -d "$ACME_ROOT" ]; then
-    if [ -d "${SCRIPT_DIR}/acme" ]; then
-        ACME_ROOT="${SCRIPT_DIR}/acme"
-    elif [ -d "${SCRIPT_DIR}/../acme" ]; then
-        ACME_ROOT="${SCRIPT_DIR}/../acme"
+    if [ -d "${SCRIPT_DIR}/../configs" ]; then
+        ACME_ROOT="${SCRIPT_DIR}/../configs"
     fi
 fi
 

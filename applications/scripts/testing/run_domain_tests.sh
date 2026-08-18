@@ -272,7 +272,7 @@ test_traefik_config() {
   # Check router count. The Traefik API is only exposed through the secure
   # dashboard router, so fall back to counting router definitions in the
   # dynamic configuration directory.
-  router_count=$(find /home/structa.cloud/applications/proxy/traefik/dynamic -name '*.yml' -o -name '*.yaml' 2>/dev/null | wc -l)
+  router_count=$(find /home/structa.cloud/applications/proxy/configs/traefik/dynamic -name '*.yml' -o -name '*.yaml' 2>/dev/null | wc -l)
   if [ "$router_count" -gt 0 ]; then
     log_success "Traefik router configs loaded: $router_count files"
   else
@@ -288,9 +288,9 @@ test_traefik_config() {
 test_acme_setup() {
   section "TEST 8: ACME / Let's Encrypt Setup"
 
-  if [ -f "/home/structa.cloud/applications/proxy/acme/acme.json" ]; then
+  if [ -f "/home/structa.cloud/applications/proxy/configs/acme.json" ]; then
     log_success "ACME storage file exists"
-    perms=$(stat -c %a /home/structa.cloud/applications/proxy/acme/acme.json)
+    perms=$(stat -c %a /home/structa.cloud/applications/proxy/configs/acme.json)
     if [ "$perms" = "600" ]; then
       log_success "ACME file permissions correct (600)"
     else
@@ -301,8 +301,8 @@ test_acme_setup() {
   fi
 
   # Check dynamic config
-  if [ -f "/home/structa.cloud/applications/proxy/traefik/dynamic.yml" ]; then
-    if grep -q "certificatesResolvers:" /home/structa.cloud/applications/proxy/traefik/dynamic.yml; then
+  if [ -f "/home/structa.cloud/applications/proxy/configs/traefik/dynamic.yml" ]; then
+    if grep -q "certificatesResolvers:" /home/structa.cloud/applications/proxy/configs/traefik/dynamic.yml; then
       log_success "ACME configuration found in Traefik"
     else
       log_failure "ACME configuration not found"

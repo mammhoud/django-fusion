@@ -7,8 +7,8 @@
 <a class="loop-app-brand" href="/" aria-label="Loop CRM overview"><span class="loop-app-mark">{% loop_icon 'loop' 20 %}</span><span><strong>Loop</strong><small>revenue workspace</small></span></a>
 <nav aria-label="Workspace modules">
   {% for item in navigation %}
-    <div class="loop-app-nav-group">
-      <span class="loop-app-nav-label">{% if forloop.first %}Workspace{% elif item.id == 'workspace' %}Administration{% else %}{{ item.label }}{% endif %}</span>
+    <div class="loop-app-nav-group" data-nav-group>
+      <button type="button" class="loop-app-nav-label" data-nav-group-toggle aria-expanded="true"><span>{% if forloop.first %}Workspace{% elif item.id == 'workspace' %}Administration{% else %}{{ item.label }}{% endif %}</span>{% if item.children %}<span class="loop-app-nav-toggle" aria-hidden="true">▾</span>{% endif %}</button>
       <a class="loop-app-nav-link{% if item.active %} is-active{% endif %}" href="{{ item.href }}" hx-target="#loop-app-content" hx-select="#loop-app-content" hx-swap="outerHTML"{% if item.active %} aria-current="page"{% endif %}>
         <span class="loop-app-nav-icon" aria-hidden="true">{% loop_icon item.icon %}</span><span>{{ item.label }}</span>
       </a>

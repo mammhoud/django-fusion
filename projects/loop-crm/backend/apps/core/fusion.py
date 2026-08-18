@@ -7,6 +7,7 @@ hierarchy and active-state data for every render road.
 from __future__ import annotations
 
 from django.urls import path
+from django.utils.translation import gettext_lazy as _
 from django_fusion.routes.core.base import menu_path
 from django_fusion.routes.core.sites import Application, Module
 
@@ -40,34 +41,34 @@ from .views import (
 
 
 class LoopCrmApplication(Application):
-    title = "Loop CRM"
+    title = _("Loop CRM")
     icon = "hub"
     app_name = "loop_crm"
 
     urlpatterns = [
-        menu_path("", DashboardView.as_view(), name="dashboard", icon="dashboard", title="Overview"),
+        menu_path("", DashboardView.as_view(), name="dashboard", icon="dashboard", title=_("Overview")),
         path("overview/", DashboardView.as_view(), name="overview"),
-        menu_path("crm/", ModuleView.as_view(module_id="crm", page_title="CRM", page_kicker="Sales", page_description="The relationship graph and pipeline operating system."), name="crm", icon="account_tree", title="CRM"),
+        menu_path("crm/", ModuleView.as_view(module_id="crm", page_title=_("CRM"), page_kicker=_("Sales"), page_description=_("The relationship graph and pipeline operating system.")), name="crm", icon="account_tree", title=_("CRM")),
         path("crm/companies/", CompanyListView.as_view(), name="crm_companies"),
         path("crm/contacts/", ContactListView.as_view(), name="crm_contacts"),
-        path("crm/pipelines/", ResourceListView.as_view(resource="pipelines", module_id="crm", page_title="Pipelines", page_kicker="CRM · pipelines", page_description="Configurable stages, probabilities, and forecasting views.", empty_message="No pipelines yet."), name="crm_pipelines"),
+        path("crm/pipelines/", ResourceListView.as_view(resource="pipelines", module_id="crm", page_title=_("Pipelines"), page_kicker=_("CRM · pipelines"), page_description=_("Configurable stages, probabilities, and forecasting views."), empty_message=_("No pipelines yet.")), name="crm_pipelines"),
         path("crm/deals/", DealListView.as_view(), name="crm_deals"),
-        path("crm/activities/", ResourceListView.as_view(resource="activities", module_id="crm", page_title="Activities", page_kicker="CRM · activities", page_description="Calls, emails, meetings, notes, tasks, and social touches across every deal.", empty_message="No activities yet."), name="crm_activities"),
-        menu_path("marketing/", ModuleView.as_view(module_id="marketing", page_title="Marketing", page_kicker="Growth", page_description="Plan, approve, publish, and measure every channel from one calendar."), name="marketing", icon="campaign", title="Marketing"),
+        path("crm/activities/", ResourceListView.as_view(resource="activities", module_id="crm", page_title=_("Activities"), page_kicker=_("CRM · activities"), page_description=_("Calls, emails, meetings, notes, tasks, and social touches across every deal."), empty_message=_("No activities yet.")), name="crm_activities"),
+        menu_path("marketing/", ModuleView.as_view(module_id="marketing", page_title=_("Marketing"), page_kicker=_("Growth"), page_description=_("Plan, approve, publish, and measure every channel from one calendar.")), name="marketing", icon="campaign", title=_("Marketing")),
         path("marketing/calendar/", ContentCalendarView.as_view(), name="marketing_calendar"),
-        path("marketing/campaigns/", ResourceListView.as_view(resource="campaigns", module_id="marketing", page_title="Campaigns", page_kicker="Marketing · campaigns", page_description="Group content, spend, performance, and influenced deals.", empty_message="No campaigns yet."), name="marketing_campaigns"),
+        path("marketing/campaigns/", ResourceListView.as_view(resource="campaigns", module_id="marketing", page_title=_("Campaigns"), page_kicker=_("Marketing · campaigns"), page_description=_("Group content, spend, performance, and influenced deals."), empty_message=_("No campaigns yet.")), name="marketing_campaigns"),
         path("marketing/channels/", ChannelListView.as_view(), name="marketing_channels"),
         path("marketing/media/", MediaListView.as_view(), name="marketing_media"),
         path("marketing/approvals/", ApprovalsView.as_view(), name="marketing_approvals"),
-        menu_path("finance/", FinanceDashboardView.as_view(), name="finance", icon="account_balance", title="Finance"),
+        menu_path("finance/", FinanceDashboardView.as_view(), name="finance", icon="account_balance", title=_("Finance")),
         path("finance/invoices/", InvoiceListView.as_view(), name="finance_invoices"),
         path("finance/payments/", PaymentListView.as_view(), name="finance_payments"),
         path("finance/revenue/", RevenueListView.as_view(), name="finance_revenue"),
-        menu_path("attribution/", ModuleView.as_view(module_id="attribution", page_title="Attribution", page_kicker="RevOps", page_description="See which content and conversations create pipeline revenue."), name="attribution", icon="insights", title="Attribution"),
-        path("attribution/touchpoints/", ResourceListView.as_view(resource="touchpoints", module_id="attribution", page_title="Touchpoints", page_kicker="Attribution · touchpoints", page_description="Every social interaction credited toward a deal.", empty_message="No touchpoints yet."), name="attribution_touchpoints"),
+        menu_path("attribution/", ModuleView.as_view(module_id="attribution", page_title=_("Attribution"), page_kicker=_("RevOps"), page_description=_("See which content and conversations create pipeline revenue.")), name="attribution", icon="insights", title=_("Attribution")),
+        path("attribution/touchpoints/", ResourceListView.as_view(resource="touchpoints", module_id="attribution", page_title=_("Touchpoints"), page_kicker=_("Attribution · touchpoints"), page_description=_("Every social interaction credited toward a deal."), empty_message=_("No touchpoints yet.")), name="attribution_touchpoints"),
         path("attribution/reports/", ReportsView.as_view(), name="attribution_reports"),
-        menu_path("tasks/", TaskCenterView.as_view(site_name="loop-crm", template_name="dashboard/tasks.html"), name="tasks", icon="bolt", title="Tasks"),
-        menu_path("settings/", ModuleView.as_view(module_id="workspace", page_title="Workspace", page_kicker="Workspace", page_description="Configure people, automations, integrations, and audit history."), name="settings", icon="settings", title="Workspace"),
+        menu_path("tasks/", TaskCenterView.as_view(site_name="loop-crm", template_name="dashboard/tasks.html"), name="tasks", icon="bolt", title=_("Tasks")),
+        menu_path("settings/", ModuleView.as_view(module_id="workspace", page_title=_("Workspace"), page_kicker=_("Workspace"), page_description=_("Configure people, automations, integrations, and audit history.")), name="settings", icon="settings", title=_("Workspace")),
         path("settings/members/", MemberListView.as_view(), name="settings_members"),
         path("settings/workflows/", WorkflowListView.as_view(), name="settings_workflows"),
         path("settings/integrations/", IntegrationsView.as_view(), name="settings_integrations"),
@@ -82,7 +83,7 @@ class LoopCrmApplication(Application):
 
     def application_context(self, request) -> dict:
         return {
-            "site_name": "Loop CRM",
+            "site_name": _("Loop CRM"),
             "navigation": navigation_context(request.path),
         }
 
@@ -98,7 +99,7 @@ class LoopCrmModule(Module):
     per-page ``menu_path`` / ``path`` declarations.
     """
 
-    title = "Loop CRM"
+    title = _("Loop CRM")
     icon = "hub"
     urlpatterns = loop_crm_application.urls[0]
 

@@ -3,7 +3,7 @@
 # ============================================================
 # Coder owns workspace lifecycle and Terraform template execution. Workspace
 # workspace containers are provisioned by the Coder templates under
-# applications/templates/ (the template runs the repo's compose devcontainer),
+# applications/workspaces/ (the template runs the repo's compose devcontainer),
 #
 # PostgreSQL is created by applications/databases/docker-compose.yml. Both
 # stacks attach to the external `common` network, so this file intentionally
@@ -59,7 +59,7 @@ services:
         ipv4_address: 172.18.0.16
       traefik-net: {}
     # The canonical Coder routers live in the Traefik file provider
-    # (applications/proxy/traefik/dynamic/coder.yml). Avoid duplicate Docker
+    # (applications/proxy/configs/traefik/dynamic/coder.yml). Avoid duplicate Docker
     # provider routers with different TLS behavior.
     labels:
       traefik.enable: "false"

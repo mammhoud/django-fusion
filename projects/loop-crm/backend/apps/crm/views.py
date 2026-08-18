@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
@@ -67,9 +68,9 @@ def deal_rows(request: HttpRequest) -> list[Deal]:
 class CompanyListView(LoopPageView):
     template_name = "dashboard/companies.html"
     module_id = "crm"
-    page_title = "Companies"
-    page_kicker = "CRM · companies"
-    page_description = "Build the account graph with firmographics, ownership, and the context behind each relationship."
+    page_title = _("Companies")
+    page_kicker = _("CRM · companies")
+    page_description = _("Build the account graph with firmographics, ownership, and the context behind each relationship.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -87,9 +88,9 @@ class CompanyListView(LoopPageView):
 class ContactListView(LoopPageView):
     template_name = "dashboard/contacts.html"
     module_id = "crm"
-    page_title = "Contacts"
-    page_kicker = "CRM · contacts"
-    page_description = (
+    page_title = _("Contacts")
+    page_kicker = _("CRM · contacts")
+    page_description = _(
         "Keep people connected to the companies, roles, and conversations that move a deal forward."
     )
 
@@ -109,9 +110,9 @@ class ContactListView(LoopPageView):
 class DealListView(LoopPageView):
     template_name = "dashboard/deals.html"
     module_id = "crm"
-    page_title = "Deals"
-    page_kicker = "CRM · deals"
-    page_description = "Track qualified revenue from first conversation to a close, with pipeline stages and campaign context intact."
+    page_title = _("Deals")
+    page_kicker = _("CRM · deals")
+    page_description = _("Track qualified revenue from first conversation to a close, with pipeline stages and campaign context intact.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

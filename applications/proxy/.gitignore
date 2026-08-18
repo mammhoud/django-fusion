@@ -3,22 +3,20 @@
 .env
 
 # Runtime ACME storage — contains Let's Encrypt account keys and live certs.
-# The directory itself is committed (with .gitkeep) so that bind mounts
-# resolve, but the JSON inside is not.
-acme/acme.json
-acme/acme.json.tmp
-acme/backups/
+# The configs/ directory itself is committed (with .gitkeep) so that bind
+# mounts resolve, but the JSON inside is not.
+configs/acme.json
+configs/acme.json.tmp
 
 # Manual cert/ACME backups — tarballs contain private keys.
-backups/
+data/backups/
 
-# Legacy self-signed certificates under proxy/certs/.
+# Self-signed certificates under data/certs/.
 # These are local-dev / fallback artifacts; production certs come from
-# Let's Encrypt via Traefik (see proxy/LETSENCRYPT.md).
+# Let's Encrypt via Traefik (see LETSENCRYPT.md).
 # Keep the .gitkeep so the directory still resolves for bind mounts.
-certs/
-!certs/.gitkeep
+data/certs/
+!data/certs/.gitkeep
 
 # Persistent application data; keep credentials and user files out of Git.
-affine-data/
-
+data/affine-data/

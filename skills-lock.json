@@ -79,6 +79,12 @@
       "skillPath": "data/skills/explore-data/SKILL.md",
       "computedHash": "eeb0f7d4b8a834f773253a3038ca41b38b5ce2c1706dd0a4f3f7b4a38ce819e3"
     },
+    "human-review": {
+      "source": "petergyang/human-review",
+      "sourceType": "github",
+      "skillPath": "src/SKILL.md",
+      "computedHash": "0b033e8f1acba7ba075bd5d30629f0050d3cb11b4f50a2337f500f6b0c347c62"
+    },
     "mcp-builder": {
       "source": "anthropics/skills",
       "sourceType": "github",
@@ -120,6 +126,12 @@
       "sourceType": "github",
       "skillPath": "privacy-legal/skills/use-case-triage/SKILL.md",
       "computedHash": "fa2a40b3cc80783b4efd2d5f7f1f9bb99c799826530cdc98b2cbc178ea22ccb9"
+    },
+    "website-screenshot": {
+      "source": "html2png/skills",
+      "sourceType": "github",
+      "skillPath": "website-screenshot/SKILL.md",
+      "computedHash": "284b5cc7874a7ec1979c94f713272c08009e09b031c7489172c17d5f1542ec52"
     }
   }
 }

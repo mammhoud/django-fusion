@@ -9,6 +9,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import StoreProvider from '@/components/StoreProvider';
 import { useLiveSync } from '@/lib/useLiveSync';
 import type { RootState } from '@/store';
 
@@ -51,7 +52,7 @@ function Cell({ value, type }: { value: string; type: TableHeader['type'] }) {
   return <span className={type === 'money' ? 'loop-res-table__money' : undefined}>{value}</span>;
 }
 
-export default function ResourceTable({ resource, title, kicker }: ResourceTableProps) {
+function Table({ resource, title, kicker }: ResourceTableProps) {
   const apiPrefix = useAppSelector((state) => state.config.apiPrefix);
   const fallbackPrefix = useAppSelector((state) => state.config.fallbackApiPrefix);
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading');
@@ -166,5 +167,17 @@ export default function ResourceTable({ resource, title, kicker }: ResourceTable
         </table>
       </div>
     </section>
+  );
+}
+
+// StoreProvider is the bridge each data-heavy island mounts around itself
+// (Astro can't nest <slot/> inside a React component, so the provider lives in
+// the island, not the layout). Without it, `useSelector` throws during the
+// static build because there is no Redux context to read from.
+export default function ResourceTable(props: ResourceTableProps) {
+  return (
+    <StoreProvider>
+      <Table {...props} />
+    </StoreProvider>
   );
 }

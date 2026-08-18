@@ -19,6 +19,7 @@ from decimal import Decimal
 from django.utils import timezone
 
 from apps.attribution.models import AttributionModel, AttributionTouchpoint
+from apps.billing.models import BillingAccount, Plan
 from apps.core.models import UserProfile, Workspace
 from apps.crm.models import Company, Contact, Deal, Pipeline, PipelineStage
 from apps.finance.models import Invoice, Payment, RevenueEvent
@@ -211,6 +212,18 @@ def seed_workspace(workspace: Workspace, owner) -> dict[str, int]:
     )
     counts["finance"] = 3  # invoice, payment, revenue event
 
+    # ── Billing (plan catalog + trial account) ──────────────────────────
+    seed_plans()
+    starter = Plan.objects.filter(slug="starter").first()
+    BillingAccount.objects.get_or_create(
+        workspace=workspace,
+        defaults={
+            "plan": starter,
+            "status": "trial",
+            "trial_ends_at": timezone.now() + timezone.timedelta(days=14),
+        },
+    )
+
     # ── Attribution ─────────────────────────────────────────────────────
     AttributionModel.objects.get_or_create(
         workspace=workspace, name="Linear", defaults={"model_type": "linear", "is_active": True}
@@ -237,6 +250,40 @@ def seed_workspace(workspace: Workspace, owner) -> dict[str, int]:
 
 # Demo account contract — single source of truth shared by seed_demo, the
 # login-page demo panel, and the container entrypoint.
+PLAN_SEED = [
+    {
+        "slug": "starter",
+        "name": "Starter",
+        "price_cents": 4900,
+        "period": "monthly",
+        "seat_limit": 5,
+        "feature_flags": {"attribution": False, "finance_ledger": False, "workflow_automation": True},
+    },
+    {
+        "slug": "growth",
+        "name": "Growth",
+        "price_cents": 14900,
+        "period": "monthly",
+        "seat_limit": 25,
+        "feature_flags": {"attribution": True, "finance_ledger": True, "workflow_automation": True},
+    },
+    {
+        "slug": "scale",
+        "name": "Scale",
+        "price_cents": 49900,
+        "period": "monthly",
+        "seat_limit": 100,
+        "feature_flags": {"attribution": True, "finance_ledger": True, "workflow_automation": True},
+    },
+]
+
+
+def seed_plans() -> None:
+    """Create (or keep) the Plan catalog — idempotent, never clobbers edits."""
+    for entry in PLAN_SEED:
+        Plan.objects.get_or_create(slug=entry["slug"], defaults=entry)
+
+
 DEMO_WORKSPACE_SLUG = "demo-workspace"
 DEMO_EMAIL = "demo@loop.dev"
 DEMO_PASSWORD = "demo-pass-123"

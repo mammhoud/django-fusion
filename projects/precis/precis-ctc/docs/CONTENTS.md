@@ -12,6 +12,12 @@ professional-learning site; visitor-facing pages should prefer evidence,
 research context, investigator profiles, publications, events, and media over
 software demonstrations or source-code panels.
 
+> **Technique reference:** worked recipes for adding publications, courses,
+> components, pages, and OpenAPI endpoints live in
+> [`LEARNING_CASES.md`](LEARNING_CASES.md). The publishing workflow and review
+> gates are in [`../../../../docs/precis-ctc/publishing-and-production.md`](../../../../docs/precis-ctc/publishing-and-production.md);
+> audience and positioning are in [`../../../../docs/precis-ctc/content-strategy.md`](../../../../docs/precis-ctc/content-strategy.md).
+
 ## 1. Rendering model
 
 ```text

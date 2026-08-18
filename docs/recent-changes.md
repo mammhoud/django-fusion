@@ -7,6 +7,32 @@ Documentation for features and changes added in the most recent development sess
 
 ---
 
+## Session 2026-08-18 (follow-up) — Loop-CRM build fix, i18n sweep, Stripe billing, webapp, docs
+
+Completes the interrupted work carried in `changelogs/session-2026-08-18.md`:
+
+- **Static build fixed** — `ResourceTable.tsx` now wraps its inner table in
+  `StoreProvider` (matching PipelineBoard/RevOpsDashboard), so the
+  react-redux SSR error is gone and `npm run build` ships all 38 pages.
+- **Backend test gap fixed** — the pipelines schema-aware-table test now seeds
+  a pipeline so the typed `data-column-type` headers actually render.
+- **Backend i18n sweep** — `gettext_lazy` on `attribution`/`core`/`pos` models,
+  all four `forms.py`, `fusion.py` page titles/kickers/descriptions, and the
+  view class attributes; `make i18n` extracts en/ar catalogs (requires GNU
+  gettext, not present in this environment).
+- **Stripe billing (`apps/billing`)** — `Plan`/`BillingAccount`/`Seat` models,
+  `gates.py` feature/seat gating, checkout/portal/webhook services (empty
+  `STRIPE_SECRET_KEY` disables billing), `/apis/billing/plans/` +
+  `/apis/billing/account/`, `payment_succeeded` → `finance.RevenueEvent`
+  (`kind=subscription`, idempotent via `external_ref`), demo trial seed, and
+  15 tests. Stripe env vars added to `configs/env.py` + `.env.example`.
+- **Webapp enhancements** — `/settings/plan/` (BillingPlan island) and
+  `/reports/` (ReportCatalog island) routes; collapsible sidenav groups
+  persisted to sessionStorage; nav entries for Reports + Plan & billing.
+- **Docs** — `projects/loop-crm/docs/FUSION_FORMS_TABLES.md` + README sync.
+
+---
+
 ## Session 2026-08-18 — Loop-CRM redesign, fusion tables, Redis-free login, Nx/configs wiring
 
 See the [full session changelog](changelogs/session-2026-08-18.md) for the complete

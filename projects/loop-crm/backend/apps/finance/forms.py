@@ -4,6 +4,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from django import forms
+from django.utils.translation import gettext_lazy as _
 
 from apps.crm.models import Company, Contact, Deal
 
@@ -68,14 +69,14 @@ class InvoiceForm(forms.ModelForm):
             for name in ("company", "contact", "deal"):
                 related = cleaned.get(name)
                 if related and related.workspace_id != workspace_id:
-                    self.add_error(name, "This record must belong to the selected workspace.")
+                    self.add_error(name, _("This record must belong to the selected workspace."))
         company = cleaned.get("company")
         contact = cleaned.get("contact")
         deal = cleaned.get("deal")
         if company and contact and contact.company_id != company.pk:
-            self.add_error("contact", "The contact must belong to the selected company.")
+            self.add_error("contact", _("The contact must belong to the selected company."))
         if company and deal and deal.company_id != company.pk:
-            self.add_error("deal", "The deal must belong to the selected company.")
+            self.add_error("deal", _("The deal must belong to the selected company."))
         return cleaned
 
     def save(self, commit=True):
@@ -114,9 +115,13 @@ class PaymentForm(forms.ModelForm):
         invoice = cleaned.get("invoice")
         amount = cleaned.get("amount")
         if workspace and invoice and invoice.workspace_id != workspace.pk:
-            self.add_error("invoice", "The invoice must belong to the selected workspace.")
+            self.add_error("invoice", _("The invoice must belong to the selected workspace."))
         if invoice and amount is not None and amount > invoice.outstanding:
-            self.add_error("amount", f"Payment cannot exceed the outstanding balance of {invoice.outstanding}.")
+            self.add_error(
+                "amount",
+                _("Payment cannot exceed the outstanding balance of %(outstanding)s.")
+                % {"outstanding": invoice.outstanding},
+            )
         return cleaned
 
     def save(self, commit=True):

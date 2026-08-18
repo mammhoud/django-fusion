@@ -21,11 +21,11 @@ Internet → Traefik (port 443, SSL)
 
 | File | Purpose | Level |
 |------|---------|-------|
-| `docker-compose.yml` | Proxy service definition | 🔴 |
-| `traefik/traefik.yml` | Static config (entrypoints, providers) | 🔴 |
-| `traefik/dynamic.yml` | Dynamic config (routers, services, middleware) | 🔴 |
-| `acme/acme.json` | Let's Encrypt cert store (mode 0600) | 🔴 |
-| `.env` | Cloudflare credentials, env vars | ⚪ |
+| `docker-compose.traefik.yml` | Proxy service definition | 🔴 |
+| `configs/traefik/dynamic.yml` | Static config (entrypoints, providers, ACME resolver) | 🔴 |
+| `configs/traefik/dynamic/*.yml` | Dynamic config (routers, services, middleware) | 🔴 |
+| `configs/acme.json` | Let's Encrypt cert store (mode 0600) | 🔴 |
+| `.env` | Let's Encrypt email, env vars | ⚪ |
 | `.env.example` | Template for `.env` | ⚪ |
 
 ## SSL Rollout Stages
@@ -51,23 +51,20 @@ make reload          # Reload config without downtime
 ## Environment Variables
 
 ```env
-CF_DNS_API_TOKEN=dns-token-here    # Cloudflare API token for DNS-01 challenge
-# OR (legacy)
-CF_API_EMAIL=you@example.com
-CF_API_KEY=your-api-key
+LETSENCRYPT_EMAIL=admin@structa.cloud    # Let's Encrypt account email (HTTP-01)
 ```
 
 ## Adding a New Site Router
 
 ```yaml
-# In traefik/dynamic.yml
+# In configs/traefik/dynamic/<site>.yml
 http:
   routers:
     new-site:
       rule: "Host(`newsite.structa.cloud`)"
       service: new-site-service
       tls:
-        certResolver: letsencrypt
+        certResolver: letsencrypt-http
 
   services:
     new-site-service:

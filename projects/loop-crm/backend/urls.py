@@ -13,6 +13,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images import urls as wagtailimages_urls
 
 from apps.core import views as core_views
+from apps.core.api import reports_api as core_views_reports
 from apps.core.api import resource_api
 from apps.core.bolt_api import bolt
 from apps.core.fusion import loop_crm_module
@@ -47,6 +48,8 @@ urlpatterns = [
     path("fragments/marketing/channels/connect/", marketing_views.channel_connect, name="channel_connect"),
     path("fragments/marketing/channels/<int:pk>/disconnect/", marketing_views.channel_disconnect, name="channel_disconnect"),
     path("fragments/marketing/channels/<int:pk>/refresh/", marketing_views.channel_refresh, name="channel_refresh"),
+    # Report catalog for the webapp /reports/ surface.
+    path("apis/reports/", core_views_reports, name="reports_api"),
     # ── Public landing road — Wagtail-managed pages for the Astro frontend.
     # Astro fetches /apis/pages/<slug>/ and renders; the backend never serves
     # public HTML (the trailing Wagtail catch-all below is preview-only).
@@ -58,6 +61,8 @@ urlpatterns = [
     path("api/v1/", include("apps.attribution.urls")),
     path("api/v1/", include("apps.finance.urls")),
     path("api/v1/", include("apps.pos.urls")),
+    # SaaS billing roads — checkout/portal/webhook + public plan catalog.
+    path("", include("apps.billing.urls")),
     # Generic detail road for every registered resource: GET/PATCH/DELETE
     # ``/api/v1/<resource>/<pk>/``. Declared after the explicit app URLs so the
     # specific routes (``deals/<pk>/stage/``, ``revenue/trend/``) win first.

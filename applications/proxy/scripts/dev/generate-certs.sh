@@ -2,16 +2,16 @@
 #
 # Traefik Production Certificate Generation Script
 # Generates self-signed certificates with proper CN (Common Name) for all domains
-# Certificates are written to applications/proxy/certs/ as PEM/crt/key bundles for Traefik.
+# Certificates are written to applications/proxy/data/certs/ as PEM/crt/key bundles for Traefik.
 #
 # Usage: ./generate-certs.sh [production|staging]
 #
 
 set -e
 
-TRAEFIK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CERT_DIR="${TRAEFIK_DIR}/certs"
-BACKUP_DIR="${TRAEFIK_DIR}/certs"
+TRAEFIK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+CERT_DIR="${TRAEFIK_DIR}/data/certs"
+BACKUP_DIR="${TRAEFIK_DIR}/data/certs"
 
 # Colors
 GREEN='\033[0;32m'

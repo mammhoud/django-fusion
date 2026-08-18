@@ -113,6 +113,7 @@ class RevenueEvent(models.Model):
         ("refund", _("Refund")),
         ("pos_sale", _("POS sale")),
         ("pos_refund", _("POS refund")),
+        ("subscription", _("Subscription")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="revenue_events")

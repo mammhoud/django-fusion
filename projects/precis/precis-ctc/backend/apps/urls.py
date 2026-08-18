@@ -33,7 +33,9 @@ try:
 except ImportError:  # pragma: no cover - older django-fusion
     fusion_introspection_urls = None
 from django_fusion.designer import urls as fusion_designer_urls
+from django_fusion.plugins.apis.openapi import openapi_docs, openapi_json
 
+from apps.core.openapi import spec as openapi_spec
 from apps.core.routes import module
 from apps.pages.blog import api as blog_api
 from apps.pages.pages import landing_api
@@ -128,6 +130,9 @@ urlpatterns = [
     path("api/fusion/health", HealthCheckView.as_view(), name="fusion-health-no-slash"),
     path("api/fusion/health/", HealthCheckView.as_view(), name="fusion-health"),
     path("fusion/mcp/designer/", include(fusion_designer_urls)),
+    # OpenAPI documentation for the public API surface (OpenAPI 3.1).
+    path("apis/openapi.json", openapi_json, {"spec": openapi_spec}, name="openapi-json"),
+    path("apis/docs/", openapi_docs, {"spec": openapi_spec, "spec_url": "/apis/openapi.json"}, name="openapi-docs"),
     # Astro/AHA landing contract. The existing LMS `/api/` contract remains
     # untouched; these `/apis/` and `/fragment/` routes are additive.
     path("apis/render-mode/", landing_api.render_mode_api, name="landing-render-mode"),

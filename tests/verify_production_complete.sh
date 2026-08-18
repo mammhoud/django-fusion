@@ -191,19 +191,19 @@ echo "═" | tee -a "$REPORT"
 echo "7️⃣ SSL/TLS CERTIFICATE CHECK" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-if [ -f /root/site/websites/applications/proxy/traefik/acme/acme.json ]; then
+if [ -f /root/site/websites/applications/proxy/configs/acme.json ]; then
     test_pass "Traefik ACME store (acme.json) exists"
 else
-    test_warn "ACME store not found at /root/site/websites/applications/proxy/traefik/acme/acme.json"
+    test_warn "ACME store not found at /root/site/websites/applications/proxy/configs/acme.json"
 fi
 
-if [ -d /root/site/websites/applications/proxy/traefik/acme ]; then
-    ACME_PERMS=$(stat -c %a /root/site/websites/applications/proxy/traefik/acme/acme.json 2>/dev/null || echo "?")
+if [ -f /root/site/websites/applications/proxy/configs/acme.json ]; then
+    ACME_PERMS=$(stat -c %a /root/site/websites/applications/proxy/configs/acme.json 2>/dev/null || echo "?")
     test_pass "ACME store permissions: ${ACME_PERMS} (expect 600)"
 fi
 
-if [ -d /root/site/websites/applications/proxy/traefik/certs ]; then
-    CERT_COUNT=$(find /root/site/websites/applications/proxy/traefik/certs -maxdepth 1 -type f 2>/dev/null | wc -l)
+if [ -d /root/site/websites/applications/proxy/data/certs ]; then
+    CERT_COUNT=$(find /root/site/websites/applications/proxy/data/certs -maxdepth 1 -type f 2>/dev/null | wc -l)
     test_pass "Legacy self-signed fallback files: $CERT_COUNT (deleted in Stage 3)"
 else
     test_warn "Legacy self-signed cert directory not found"
@@ -219,7 +219,7 @@ echo "8️⃣ CONFIGURATION FILES CHECK" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
 CONFIG_FILES=(
-    "/root/site/websites/applications/proxy/traefik/traefik.yml"
+    "/root/site/websites/applications/proxy/configs/traefik/dynamic.yml"
     "/root/site/websites/applications/proxy/docker-compose.traefik.yml"
     "/root/site/websites/applications/proxy/docker-compose.warehouse.yml"
     "/root/site/websites/applications/proxy/docker-compose.nginx.yml"

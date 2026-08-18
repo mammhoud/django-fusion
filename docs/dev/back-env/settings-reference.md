@@ -391,7 +391,7 @@ TEMPLATES = [
 3. [ ] Add `settings.development.yml` and `settings.production.yml`
 4. [ ] Register in `projects/configs/settings/` if needed
 5. [ ] Add WEBSITE alias in `projects/Makefile`
-6. [ ] Add Traefik router in `applications/proxy/traefik/dynamic/`
+6. [ ] Add Traefik router in `applications/proxy/configs/traefik/dynamic/`
 7. [ ] Add Docker Compose override in `projects/compose/docker-compose.applications.yml`
 8. [ ] Add to `.dockerignore` patterns
 9. [ ] Run `make migrate WEBSITE=<site>` and `make collectstatic WEBSITE=<site>`

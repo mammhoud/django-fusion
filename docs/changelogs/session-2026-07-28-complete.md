@@ -5,8 +5,8 @@
 ### Completed
 | Task | Files | Status |
 |------|-------|--------|
-| **Traefik SSL Certs** | `applications/proxy/traefik/dynamic/certs.yml`, `Makefile`, `scripts/validate-traefik-config.py` | ✅ |
-| **LMS Traefik Port Fix** | `applications/proxy/traefik/dynamic/precis-lms.yml` (3001→3002) | ✅ |
+| **Traefik SSL Certs** | `applications/proxy/configs/traefik/dynamic/certs.yml`, `Makefile`, `scripts/validate-traefik-config.py` | ✅ |
+| **LMS Traefik Port Fix** | `applications/proxy/configs/traefik/dynamic/precis-lms.yml` (3001→3002) | ✅ |
 | **Dead Admin Modules** | `projects/cms-fusion/backend/apps/core/admin/__init__.py`, `projects/precis-lms/backend/apps/core/admin/__init__.py` | ✅ Deleted |
 | **Empty Dir Cleanup** | ~36 empty dirs across CMS + LMS | ✅ Deleted |
 | **FusionAssets Component** | `FusionAssets.tsx`, `FusionAssets.test.tsx`, `fusion-theme.scss` | ✅ |

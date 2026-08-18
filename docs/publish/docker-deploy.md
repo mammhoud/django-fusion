@@ -110,7 +110,7 @@ make deploy-ci            # CI-only gate (no actual deploy)
 
 1. Create `projects/<name>/docker-compose.yml`
 2. Add to `applications/compose/docker-compose.applications.yml` includes
-3. Add Traefik router in `applications/proxy/traefik/dynamic/`
+3. Add Traefik router in `applications/proxy/configs/traefik/dynamic/`
 4. Add health check: `Host: 127.0.0.1` → `<port>/health/`
 5. `make deploy-app` picks it up automatically
 

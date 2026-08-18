@@ -1,6 +1,6 @@
 # Let's Encrypt (HTTP-01) Deployment Runbook
 
-**Scope:** `applications/proxy/traefik/*` and `applications/proxy/docker-compose.traefik.yml`
+**Scope:** `applications/proxy/configs/traefik/*` and `applications/proxy/docker-compose.traefik.yml`
 (the `default-proxy` Traefik stack).
 
 **Provider:** Let's Encrypt — HTTP-01 challenge (`letsencrypt-http`). **No DNS
@@ -48,7 +48,7 @@ fixes every subdomain at once.
    - apex `AAAA` → `2a02:4780:28:4cb8::1` (this host's IPv6), **or delete the
      AAAA record entirely** so Let's Encrypt uses IPv4.
    - each product subdomain → `CNAME structa.cloud`
-2. `applications/proxy/acme/acme.json` exists with mode `0600` (run
+2. `applications/proxy/configs/acme.json` exists with mode `0600` (run
    `./scripts/production/manage-certs.sh bootstrap-acme`).
 3. Inbound TCP 80/443 open on the host firewall / hosting security group.
 4. A valid contact email for the Let's Encrypt account (used for expiry
@@ -77,24 +77,24 @@ NXDOMAIN is printed and the command exits non-zero.
 applications/proxy/
 ├── .env.example                  # template — copy to .env (optional; no tokens needed)
 ├── .env                          # gitignored; LETSENCRYPT_EMAIL + DB passwords
-├── .gitignore                    # excludes .env and acme/*.json
-├── acme/
-│   ├── .gitkeep                  # keeps the dir tracked
-│   └── acme.json                 # gitignored; mode 0600; LE store
-├── certs/                        # local mkcert/self-signed fallback for .localhost
+├── .gitignore                    # excludes .env and configs/acme.json
+├── configs/
+│   ├── acme.json                 # gitignored; mode 0600; LE store
+│   └── traefik/
+│       ├── dynamic.yml           # static config — certificatesResolvers
+│       └── dynamic/
+│           ├── space.yml         # space.structa.cloud / space.localhost
+│           ├── coder.yml         # coder.structa.cloud / coder.localhost
+│           ├── code.yml          # code.structa.cloud redirect alias
+│           ├── docs.yml          # docs.structa.cloud
+│           └── ...               # one file per product host
+├── data/
+│   └── certs/                    # local mkcert/self-signed fallback for .localhost
 ├── scripts/
 │   ├── check-dns-records.py      # pre-issuance DNS gate
 │   ├── validate-traefik-config.py
 │   └── production/manage-certs.sh # bootstrap-acme, status, check-expiry
-├── traefik/
-│   ├── dynamic.yml               # static config — certificatesResolvers
-│   └── dynamic/
-│       ├── space.yml             # space.structa.cloud / space.localhost
-│       ├── coder.yml             # coder.structa.cloud / coder.localhost
-│       ├── code.yml              # code.structa.cloud redirect alias
-│       ├── docs.yml              # docs.structa.cloud
-│       └── ...                   # one file per product host
-└── docker-compose.traefik.yml    # local compose — mounts ./acme
+└── docker-compose.traefik.yml    # local compose — mounts ./configs/acme.json
 ```
 
 ---
@@ -108,7 +108,7 @@ cd <repo-root>
 cp applications/proxy/.env.example applications/proxy/.env
 $EDITOR applications/proxy/.env           # set LETSENCRYPT_EMAIL (no token required)
 
-# 2. Bootstrap ACME storage (creates ./acme/acme.json, mode 0600)
+# 2. Bootstrap ACME storage (creates ./configs/acme.json, mode 0600)
 ./applications/proxy/scripts/production/manage-certs.sh bootstrap-acme
 
 # 3. Start the proxy

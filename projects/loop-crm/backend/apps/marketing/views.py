@@ -8,6 +8,7 @@ from django.db import OperationalError, ProgrammingError
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 
 from apps.core.realtime import safe_publish_workspace_event
@@ -25,9 +26,9 @@ class ApprovalsView(LoopPageView):
 
     template_name = "dashboard/approvals.html"
     module_id = "marketing"
-    page_title = "Approvals"
-    page_kicker = "Marketing · review"
-    page_description = "Posts waiting for approval. Approve to move them to the schedule, or send them back to draft."
+    page_title = _("Approvals")
+    page_kicker = _("Marketing · review")
+    page_description = _("Posts waiting for approval. Approve to move them to the schedule, or send them back to draft.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -72,10 +73,10 @@ class MediaListView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     module_id = "marketing"
-    page_title = "Media library"
-    page_kicker = "Marketing · media"
-    page_description = "Uploaded images and videos attachable to posts."
-    empty_message = "No media assets have been uploaded yet."
+    page_title = _("Media library")
+    page_kicker = _("Marketing · media")
+    page_description = _("Uploaded images and videos attachable to posts.")
+    empty_message = _("No media assets have been uploaded yet.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -115,9 +116,9 @@ class ContentCalendarView(LoopPageView):
 
     template_name = "dashboard/content_calendar.html"
     module_id = "marketing"
-    page_title = "Content calendar"
-    page_kicker = "Marketing · calendar"
-    page_description = "Compose, review, schedule, and publish content without hiding its lifecycle."
+    page_title = _("Content calendar")
+    page_kicker = _("Marketing · calendar")
+    page_description = _("Compose, review, schedule, and publish content without hiding its lifecycle.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -138,9 +139,9 @@ class ChannelListView(LoopPageView):
 
     template_name = "dashboard/channels.html"
     module_id = "marketing"
-    page_title = "Channels"
-    page_kicker = "Marketing · channels"
-    page_description = "Connect provider accounts and see their publish and analytics capabilities."
+    page_title = _("Channels")
+    page_kicker = _("Marketing · channels")
+    page_description = _("Connect provider accounts and see their publish and analytics capabilities.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -271,6 +271,11 @@ class NavigationContractTests(TestCase):
 
     def test_domain_subpages_render_real_list_screens(self):
         self._login()
+        # The pipelines screen is the schema-aware-table contract check: seed
+        # one pipeline so the table (not the empty state) renders its typed
+        # column headers.
+        workspace = Workspace.objects.create(name="List screens", slug="list-screens")
+        Pipeline.objects.create(workspace=workspace, name="New business", is_default=True)
         for path in [
             "/crm/pipelines/",
             "/crm/activities/",

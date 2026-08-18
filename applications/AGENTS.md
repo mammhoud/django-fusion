@@ -19,8 +19,7 @@ applications/
 ├── docker-compose.yml       # Coder control-plane Compose stack
 ├── docker-compose.tasks.yml # shared-worker + shared-scheduler compose
 ├── scripts/                  # dev, staging, testing, production automation
-├── agents/                   # FastAPI MCP/introspection server and agent skills
-├── templates/                # infrastructure templates (e.g. Terraform)
+├── workspaces/               # Coder workspace templates (Terraform)
 ├── examples/                 # deployment/consumer examples
 └── tmp/                      # local investigation scripts; not product code
 ```
@@ -92,8 +91,9 @@ credentials before using them.
 
 ## Kilo/MCP
 
-`applications/agents/` is a lightweight FastAPI MCP server. Read
-`applications/agents/AGENTS.md` before changing endpoints, agent definitions, or
-skills. Keep imports lightweight and avoid configuring Django or loading AI
-models at module import time. Endpoint additions should include readiness,
-error, and optional-dependency behavior where relevant.
+The MCP server and agent definitions live at `.agents/mcp/` (formerly
+`applications/agents/`). Read `.agents/mcp/AGENTS.md` before changing
+endpoints, agent definitions, or skills. Keep imports lightweight and avoid
+configuring Django or loading AI models at module import time. Endpoint
+additions should include readiness, error, and optional-dependency behavior
+where relevant.

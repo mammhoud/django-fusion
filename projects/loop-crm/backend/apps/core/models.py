@@ -9,6 +9,7 @@ marketing apps.
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Workspace(models.Model):
@@ -28,6 +29,8 @@ class Workspace(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = _("workspace")
+        verbose_name_plural = _("workspaces")
 
     def __str__(self) -> str:
         return self.name
@@ -42,13 +45,13 @@ class UserProfile(models.Model):
     """
 
     ROLE_CHOICES = [
-        ("super_admin", "Super Admin"),
-        ("sales_manager", "Sales Manager"),
-        ("sales_rep", "Sales Rep"),
-        ("marketing_manager", "Marketing Manager"),
-        ("marketing_specialist", "Marketing Specialist"),
-        ("revops_manager", "RevOps Manager"),
-        ("viewer", "Viewer"),
+        ("super_admin", _("Super Admin")),
+        ("sales_manager", _("Sales Manager")),
+        ("sales_rep", _("Sales Rep")),
+        ("marketing_manager", _("Marketing Manager")),
+        ("marketing_specialist", _("Marketing Specialist")),
+        ("revops_manager", _("RevOps Manager")),
+        ("viewer", _("Viewer")),
     ]
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
@@ -67,6 +70,10 @@ class UserProfile(models.Model):
     def is_marketing_user(self) -> bool:
         return self.role in {"super_admin", "marketing_manager", "marketing_specialist"}
 
+    class Meta:
+        verbose_name = _("user profile")
+        verbose_name_plural = _("user profiles")
+
     def __str__(self) -> str:
         return f"{self.user} ({self.get_role_display()})"
 
@@ -75,12 +82,12 @@ class AuditLog(models.Model):
     """Append-only audit trail — every mutation in the workspace is recorded."""
 
     ACTION_CHOICES = [
-        ("create", "Create"),
-        ("update", "Update"),
-        ("delete", "Delete"),
-        ("view", "View"),
-        ("login", "Login"),
-        ("logout", "Logout"),
+        ("create", _("Create")),
+        ("update", _("Update")),
+        ("delete", _("Delete")),
+        ("view", _("View")),
+        ("login", _("Login")),
+        ("logout", _("Logout")),
     ]
 
     user = models.ForeignKey(
@@ -99,6 +106,8 @@ class AuditLog(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = _("audit log entry")
+        verbose_name_plural = _("audit log entries")
         indexes = [
             models.Index(fields=["workspace", "created_at"]),
             models.Index(fields=["model_name", "object_id"]),
@@ -114,10 +123,10 @@ class WorkflowDefinition(models.Model):
     """
 
     STATUS_CHOICES = [
-        ("draft", "Draft"),
-        ("active", "Active"),
-        ("paused", "Paused"),
-        ("archived", "Archived"),
+        ("draft", _("Draft")),
+        ("active", _("Active")),
+        ("paused", _("Paused")),
+        ("archived", _("Archived")),
     ]
 
     workspace = models.ForeignKey(
@@ -151,6 +160,8 @@ class WorkflowDefinition(models.Model):
 
     class Meta:
         ordering = ["name"]
+        verbose_name = _("workflow definition")
+        verbose_name_plural = _("workflow definitions")
         constraints = [
             models.UniqueConstraint(
                 fields=["workspace", "slug"],
@@ -175,11 +186,11 @@ class WorkflowRun(models.Model):
     """An auditable execution record for a workflow definition."""
 
     STATUS_CHOICES = [
-        ("queued", "Queued"),
-        ("running", "Running"),
-        ("succeeded", "Succeeded"),
-        ("failed", "Failed"),
-        ("cancelled", "Cancelled"),
+        ("queued", _("Queued")),
+        ("running", _("Running")),
+        ("succeeded", _("Succeeded")),
+        ("failed", _("Failed")),
+        ("cancelled", _("Cancelled")),
     ]
 
     definition = models.ForeignKey(
@@ -204,6 +215,8 @@ class WorkflowRun(models.Model):
 
     class Meta:
         ordering = ["-queued_at"]
+        verbose_name = _("workflow run")
+        verbose_name_plural = _("workflow runs")
         indexes = [
             models.Index(fields=["workspace", "status"]),
             models.Index(fields=["definition", "queued_at"]),
@@ -225,12 +238,12 @@ class TaskExecution(models.Model):
     """
 
     STATUS_CHOICES = [
-        ("queued", "Queued"),
-        ("started", "Started"),
-        ("finished", "Finished"),
-        ("failed", "Failed"),
-        ("cancelled", "Cancelled"),
-        ("retrying", "Retrying"),
+        ("queued", _("Queued")),
+        ("started", _("Started")),
+        ("finished", _("Finished")),
+        ("failed", _("Failed")),
+        ("cancelled", _("Cancelled")),
+        ("retrying", _("Retrying")),
     ]
 
     job_id = models.CharField(max_length=255, db_index=True, blank=True, null=True)
@@ -246,6 +259,8 @@ class TaskExecution(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = _("task execution")
+        verbose_name_plural = _("task executions")
         indexes = [
             models.Index(fields=["site_name", "-created_at"]),
             models.Index(fields=["task_name", "-created_at"]),
@@ -265,8 +280,8 @@ class SavedView(models.Model):
     """
 
     VIEW_TYPES = [
-        ("list", "List"),
-        ("kanban", "Kanban"),
+        ("list", _("List")),
+        ("kanban", _("Kanban")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="saved_views")
@@ -281,6 +296,8 @@ class SavedView(models.Model):
 
     class Meta:
         ordering = ["resource", "name"]
+        verbose_name = _("saved view")
+        verbose_name_plural = _("saved views")
         constraints = [
             models.UniqueConstraint(
                 fields=["workspace", "user", "resource", "name"],
@@ -319,6 +336,8 @@ class Webhook(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = _("webhook")
+        verbose_name_plural = _("webhooks")
         indexes = [models.Index(fields=["workspace", "is_active"])]
 
     def __str__(self) -> str:
@@ -334,8 +353,8 @@ class EmailAccount(models.Model):
     """
 
     PROVIDER_CHOICES = [
-        ("gmail", "Gmail"),
-        ("outlook", "Outlook"),
+        ("gmail", _("Gmail")),
+        ("outlook", _("Outlook")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="email_accounts")
@@ -359,6 +378,8 @@ class EmailAccount(models.Model):
 
     class Meta:
         ordering = ["provider", "email"]
+        verbose_name = _("email account")
+        verbose_name_plural = _("email accounts")
         constraints = [
             models.UniqueConstraint(
                 fields=["workspace", "provider", "email"],
@@ -380,8 +401,8 @@ class EmailMessage(models.Model):
     """
 
     DIRECTIONS = [
-        ("inbound", "Inbound"),
-        ("outbound", "Outbound"),
+        ("inbound", _("Inbound")),
+        ("outbound", _("Outbound")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="email_messages")
@@ -404,6 +425,8 @@ class EmailMessage(models.Model):
 
     class Meta:
         ordering = ["-received_at"]
+        verbose_name = _("email message")
+        verbose_name_plural = _("email messages")
         constraints = [
             models.UniqueConstraint(
                 fields=["account", "external_id"],
@@ -423,10 +446,10 @@ class WebhookDelivery(models.Model):
     """One delivery attempt (or dead-letter terminal state) for a webhook."""
 
     STATUS_CHOICES = [
-        ("queued", "Queued"),
-        ("succeeded", "Succeeded"),
-        ("failed", "Failed"),
-        ("dead", "Dead letter"),
+        ("queued", _("Queued")),
+        ("succeeded", _("Succeeded")),
+        ("failed", _("Failed")),
+        ("dead", _("Dead letter")),
     ]
 
     webhook = models.ForeignKey(Webhook, on_delete=models.CASCADE, related_name="deliveries")
@@ -441,6 +464,8 @@ class WebhookDelivery(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        verbose_name = _("webhook delivery")
+        verbose_name_plural = _("webhook deliveries")
         indexes = [
             models.Index(fields=["webhook", "status"]),
             models.Index(fields=["webhook", "event"]),

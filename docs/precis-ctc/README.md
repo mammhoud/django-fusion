@@ -20,8 +20,14 @@ routes. It is not the same runtime as the unified `precis-main` product.
 - [Setup and build](../../projects/precis/precis-ctc/docs/SETUP_AND_BUILD.md)
 - [Environment and redeploy](../../projects/precis/precis-ctc/docs/ENVIRONMENT.md)
 - [Enhancement register](../../projects/precis/precis-ctc/docs/ENHANCEMENTS.md)
+- [Learning cases & techniques](../../projects/precis/precis-ctc/docs/LEARNING_CASES.md)
 - [Publish plan](../plans/repository/ctc-research-publish-2026-08-18.md)
 - [Cross-module workflows](../plans/repository/precis-ctc-workflows.md)
+
+## Content & publishing
+
+- [Content strategy, ICP & market research](content-strategy.md)
+- [Publishing workflow & production notes](publishing-and-production.md)
 
 ## Architecture at a glance
 

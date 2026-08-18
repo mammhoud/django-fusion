@@ -87,6 +87,9 @@ INSTALLED_APPS = [
     "apps.attribution",
     "apps.finance",
     "apps.pos",
+    # SaaS billing (Plan / BillingAccount / Seat) — separate from the finance
+    # product ledger; gates the workspace's plan + Stripe subscription state.
+    "apps.billing",
     # Wagtail landing pages + StreamField section blocks.
     "apps.pages",
     "apps.content",
@@ -397,6 +400,17 @@ OUTLOOK_CLIENT_SECRET = os.environ.get("OUTLOOK_CLIENT_SECRET", "")
 # Override the email OAuth callback host; falls back to SOCIAL_REDIRECT_BASE
 # and then to the request host.
 EMAIL_REDIRECT_BASE = os.environ.get("EMAIL_REDIRECT_BASE", "")
+
+# ── Stripe SaaS billing ──────────────────────────────────────────────────
+# Empty STRIPE_SECRET_KEY disables checkout/portal/webhook with an honest
+# "billing not configured" state; the seeded trial keeps local dev working.
+# STRIPE_WEBHOOK_SECRET is only required to verify inbound webhook events.
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+# Canonical public site URL used to build Stripe checkout/portal redirects.
+PUBLIC_SITE_URL = os.environ.get("PUBLIC_SITE_URL", "http://127.0.0.1:4321")
+
 FUSION_BOLT_AUTH_HEADER = os.environ.get("FUSION_BOLT_AUTH_HEADER", "Authorization")
 FUSION_BOLT_JWT_ISSUER = os.environ.get("FUSION_BOLT_JWT_ISSUER", "loop-crm")
 FUSION_BOLT_JWT_AUDIENCE = os.environ.get("FUSION_BOLT_JWT_AUDIENCE", "")

@@ -1,8 +1,8 @@
 # ============================================================
 # Proxy – Traefik (default-proxy)
 # ============================================================
-# Static config: ./traefik/dynamic.yml
-# Dynamic routers: ./traefik/dynamic/*.yml
+# Static config: ./configs/traefik/dynamic.yml
+# Dynamic routers: ./configs/traefik/dynamic/*.yml
 # ============================================================
 
 x-proxy-common: &proxy-common
@@ -35,14 +35,14 @@ services:
       - 'host.docker.internal:host-gateway'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
-      - ./traefik/dynamic:/etc/traefik/dynamic:ro
-      - ./certs:/etc/traefik/certs:ro
+      - ./configs/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./configs/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./data/certs:/etc/traefik/certs:ro
       # ACME storage for Let's Encrypt (HTTP-01, no DNS tokens). The file MUST
       # exist with mode 0600 before the container starts — run
       # `./scripts/manage-certs.sh bootstrap-acme` to create it. See
       # applications/proxy/LETSENCRYPT.md.
-      - ./acme:/etc/traefik/acme:rw
+      - ./configs/acme.json:/etc/traefik/acme/acme.json:rw
     environment:
       - TRAEFIK_LOG_LEVEL=INFO
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@structa.cloud}

@@ -13,6 +13,7 @@ export const ICON_PATHS: Record<string, string> = {
   attribution:
     '<circle cx="12" cy="12" r="9"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="1.15" fill="currentColor" stroke="none"/>',
   tasks: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  reports: '<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
   workspace:
     '<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3"/><circle cx="12" cy="4" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="14" cy="20" r="2"/>',
   loop: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20.5 3.5v4.5H16"/>',

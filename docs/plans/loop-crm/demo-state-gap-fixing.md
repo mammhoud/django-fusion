@@ -76,7 +76,7 @@ Read these before implementing or reviewing this plan — they are the context t
 | Frontend design tokens | [`projects/loop-crm/frontend/DESIGN.md`](../../../projects/loop-crm/frontend/DESIGN.md) | The Loop visual language every new page must follow (Task 7 output; also constrains Task 5 page shells) |
 | Backend settings | [`projects/loop-crm/backend/configs/default/__init__.py`](../../../projects/loop-crm/backend/configs/default/__init__.py) | Where `DEMO_MODE` and `LOGIN_REDIRECT_URL` live (Task 1, Task 3) |
 | Demo dataset + contract | [`projects/loop-crm/backend/apps/core/demo.py`](../../../projects/loop-crm/backend/apps/core/demo.py) | Single source of truth for demo constants (Task 1, Task 3) |
-| Deployment/proxy config | [`applications/proxy/traefik/dynamic/crm.yml`](../../../applications/proxy/traefik/dynamic/crm.yml) | The routing split (backend priority 200 vs frontend priority 100) that causes the Task 5 404s |
+| Deployment/proxy config | [`applications/proxy/configs/traefik/dynamic/crm.yml`](../../../applications/proxy/configs/traefik/dynamic/crm.yml) | The routing split (backend priority 200 vs frontend priority 100) that causes the Task 5 404s |
 | Seed-demo tests | [`projects/loop-crm/backend/apps/core/tests_seed_demo.py`](../../../projects/loop-crm/backend/apps/core/tests_seed_demo.py) | The test surface for demo determinism, superuser promotion, and demo-state context (Tasks 1, 3) |
 | Entrypoint / compose | [`projects/loop-crm/backend/entrypoint.sh`](../../../projects/loop-crm/backend/entrypoint.sh) · [`projects/loop-crm/docker-compose.yml`](../../../projects/loop-crm/docker-compose.yml) | The demo-state boot path (Task 4) |
 

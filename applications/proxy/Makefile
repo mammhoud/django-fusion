@@ -9,8 +9,8 @@ SHELL := /bin/bash
 
 # Default values for local development.
 PROXY_DIR           := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-CERTS_DIR           := $(PROXY_DIR)certs
-DYNAMIC_DIR         := $(PROXY_DIR)traefik/dynamic
+CERTS_DIR           := $(PROXY_DIR)data/certs
+DYNAMIC_DIR         := $(PROXY_DIR)configs/traefik/dynamic
 DYNAMIC_CERTS_FILE  := $(DYNAMIC_DIR)/certs.yml
 COMPOSE_FILE        := $(PROXY_DIR)docker-compose.traefik.yml
 DEFAULT_PROXY_NAME  := default-proxy

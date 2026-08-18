@@ -434,3 +434,64 @@ button, a { -webkit-tap-highlight-color: transparent; }
     animation: none;
   }
 }
+
+/* ── Billing plan (/settings/plan/) ──────────────────────────────────────── */
+.loop-billing { margin-top: 2.6rem; }
+.loop-billing__state { display:flex; flex-wrap:wrap; gap:.5rem 1.2rem; align-items:baseline; padding:1.1rem 1.2rem; border:1px solid var(--loop-line); background:var(--loop-panel); }
+.loop-billing__kicker { color:var(--loop-accent); font:600 .6rem "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
+.loop-billing__kicker::before { content:">> "; color:var(--loop-dim); }
+.loop-billing__plan { color:var(--loop-ink); font-size:1.35rem; font-weight:700; letter-spacing:-.03em; }
+.loop-billing__status { padding:.2rem .55rem; border:1px solid var(--loop-line); color:var(--loop-muted); font:600 .62rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
+.loop-billing__status--active { color:var(--loop-terminal-green); }
+.loop-billing__status--trial { color:var(--loop-accent-bright); }
+.loop-billing__meta { margin-left:auto; color:var(--loop-dim); font:500 .66rem "JetBrains Mono",monospace; }
+.loop-billing__notice { margin:1rem 0 0; padding:.85rem 1rem; border:1px solid var(--loop-line); border-left:3px solid var(--loop-accent); color:var(--loop-muted); font-size:.85rem; }
+.loop-billing__grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin-top:1rem; }
+.loop-billing__card { display:flex; flex-direction:column; padding:1.2rem; border:1px solid var(--loop-line); background:var(--loop-bg-deep); }
+.loop-billing__card.is-current { border-color:var(--loop-accent); }
+.loop-billing__card-head { display:flex; flex-direction:column; gap:.3rem; }
+.loop-billing__card h3 { margin:0; color:var(--loop-ink); font-size:1.1rem; text-transform:uppercase; letter-spacing:-.02em; }
+.loop-billing__price { margin-top:1rem; color:var(--loop-accent-bright); font:700 1.8rem/1 "JetBrains Mono",monospace; letter-spacing:-.04em; }
+.loop-billing__price small { margin-left:.3rem; color:var(--loop-dim); font:500 .65rem "JetBrains Mono",monospace; letter-spacing:.04em; }
+.loop-billing__features { margin:1rem 0; padding:0; list-style:none; color:var(--loop-muted); font-size:.8rem; }
+.loop-billing__features li { padding:.25rem 0; border-bottom:1px solid var(--loop-line-soft); }
+.loop-billing__features li::before { content:"+"; margin-right:.4rem; color:var(--loop-dim); }
+.loop-billing__current { margin-top:auto; padding:.5rem .8rem; border:1px solid var(--loop-line); text-align:center; color:var(--loop-terminal-green); font:600 .62rem "JetBrains Mono",monospace; letter-spacing:.1em; text-transform:uppercase; }
+.loop-billing__cta { display:block; margin-top:auto; padding:.5rem .8rem; border:1px solid var(--loop-accent); background:var(--loop-accent); color:var(--loop-bg); text-align:center; text-decoration:none; font:600 .62rem "JetBrains Mono",monospace; letter-spacing:.1em; text-transform:uppercase; transition:background .2s ease,border-color .2s ease; }
+.loop-billing__cta:hover { background:var(--loop-accent-bright); border-color:var(--loop-accent-bright); }
+.loop-billing__cta[aria-disabled="true"] { border-color:var(--loop-line); background:var(--loop-panel); color:var(--loop-dim); cursor:not-allowed; }
+.loop-billing__manage { display:inline-block; margin-top:1.2rem; color:var(--loop-accent); text-decoration:none; font:600 .66rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
+.loop-billing__manage:hover { color:var(--loop-accent-bright); }
+.loop-billing__skeleton { display:grid; gap:1px; border:1px solid var(--loop-line); background:var(--loop-line); }
+.loop-billing__skeleton i { height:5rem; background:var(--loop-bg-deep); animation:loop-shimmer 1.2s linear infinite; }
+@media (max-width:900px) { .loop-billing__grid { grid-template-columns:1fr; } .loop-billing__meta { margin-left:0; width:100%; } }
+
+/* ── Report catalog (/reports/) ─────────────────────────────────────────── */
+.loop-reports { margin-top: 2.6rem; }
+.loop-reports__grid { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:1rem; }
+.loop-reports__card { position:relative; display:flex; grid-column:span 4; flex-direction:column; padding:1.2rem; border:1px solid var(--loop-line); background:var(--loop-bg-deep); color:inherit; text-decoration:none; transition:border-color .2s ease,background .2s ease,transform .2s ease; }
+.loop-reports__card:hover { border-color:var(--loop-accent); background:var(--loop-panel); transform:translateY(-2px); }
+.loop-reports__card.is-pending { opacity:.55; }
+.loop-reports__head { display:flex; justify-content:space-between; gap:.6rem; align-items:baseline; }
+.loop-reports__kicker { color:var(--loop-accent); font:600 .58rem "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
+.loop-reports__state { padding:.14rem .45rem; border:1px solid var(--loop-line); color:var(--loop-terminal-green); font:600 .58rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
+.loop-reports__state.is-pending { color:var(--loop-dim); }
+.loop-reports__card h3 { margin:1rem 0 .4rem; color:var(--loop-ink); font-size:1.05rem; text-transform:uppercase; letter-spacing:-.02em; }
+.loop-reports__card p { margin:0 0 1.4rem; color:var(--loop-muted); font-size:.8rem; line-height:1.55; }
+.loop-reports__arrow { margin-top:auto; color:var(--loop-accent-bright); font:500 1.1rem "JetBrains Mono",monospace; }
+.loop-reports__empty { padding:1.4rem; border:1px solid var(--loop-line); background:var(--loop-panel); }
+.loop-reports__empty strong { display:block; color:var(--loop-ink); }
+.loop-reports__empty p { margin:.4rem 0 0; color:var(--loop-muted); }
+.loop-reports__skeleton { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+.loop-reports__skeleton i { height:9rem; background:var(--loop-panel); animation:loop-shimmer 1.2s linear infinite; }
+@media (max-width:900px) { .loop-reports__card { grid-column:span 6; } .loop-reports__skeleton { grid-template-columns:1fr; } }
+@media (max-width:600px) { .loop-reports__card { grid-column:span 12; } }
+
+/* ── Sidenav collapsible groups ─────────────────────────────────────────── */
+.loop-app-nav-group[data-collapsed="true"] .loop-app-nav-children { display:none; }
+.loop-app-nav-group[data-collapsed="true"] .loop-app-nav-link { opacity:.6; }
+button.loop-app-nav-label { display:flex; width:100%; justify-content:space-between; align-items:center; gap:.5rem; margin:0 .6rem .42rem; padding:0; border:0; background:none; color:var(--loop-dim); font:600 .58rem/1.2 "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; text-align:left; cursor:pointer; }
+.loop-app-nav-label > span:first-child { flex:1; }
+.loop-app-nav-toggle { margin-left:auto; padding:0 .2rem; border:0; background:none; color:var(--loop-dim); font:600 .8rem "JetBrains Mono",monospace; line-height:1; cursor:pointer; transition:color .2s ease,transform .2s ease; }
+.loop-app-nav-toggle:hover { color:var(--loop-accent-bright); }
+.loop-app-nav-group[data-collapsed="true"] .loop-app-nav-toggle { transform:rotate(-90deg); }

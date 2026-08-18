@@ -216,11 +216,11 @@ docker-compose down
 #### Prerequisites
 1. DNS A records point to this server (187.77.166.222)
 2. Port 80 reachable from internet
-3. `applications/proxy/acme/acme.json` exists (mode 0600)
+3. `applications/proxy/configs/acme.json` exists (mode 0600)
 
 #### Configuration
 
-**File:** `/home/structa.cloud/applications/proxy/traefik/dynamic.yml`
+**File:** `/home/structa.cloud/applications/proxy/configs/traefik/dynamic.yml`
 
 ```yaml
 certificatesResolvers:
@@ -235,7 +235,7 @@ certificatesResolvers:
 
 #### Enable for a site
 
-**File:** `/home/structa.cloud/applications/proxy/traefik/dynamic/ctc-research.yml`
+**File:** `/home/structa.cloud/applications/proxy/configs/traefik/dynamic/ctc-research.yml`
 
 ```yaml
 routers:
@@ -283,7 +283,7 @@ LETSENCRYPT_EMAIL=structa.cloud@gmail.com
 
 #### 3. Enable in static config
 
-**File:** `/home/structa.cloud/applications/proxy/traefik/dynamic.yml`
+**File:** `/home/structa.cloud/applications/proxy/configs/traefik/dynamic.yml`
 
 ```yaml
 certificatesResolvers:
@@ -314,7 +314,7 @@ docker restart default-proxy
 
 **Status:** ✅ Active (fallback only)
 
-If Let's Encrypt fails, Traefik falls back to self-signed certs in `applications/proxy/traefik/dynamic/certs.yml`:
+If Let's Encrypt fails, Traefik falls back to self-signed certs in `applications/proxy/configs/traefik/dynamic/certs.yml`:
 
 ```yaml
 tls:
@@ -467,7 +467,7 @@ make help
 echo | openssl s_client -connect ctc-research.com:443 -servername ctc-research.com 2>/dev/null | openssl x509 -noout -dates
 
 # Check Let's Encrypt store
-cat /home/structa.cloud/applications/proxy/acme/acme.json | python3 -m json.tool | grep -A 10 'precis-ctc'
+cat /home/structa.cloud/applications/proxy/configs/acme.json | python3 -m json.tool | grep -A 10 'precis-ctc'
 
 # Restart proxy to reload configs
 docker restart default-proxy
@@ -604,9 +604,9 @@ docker exec precis-ctc-website python manage.py collectstatic --noinput
    ```
 2. Delete/backup acme.json:
    ```bash
-   mv /home/structa.cloud/applications/proxy/acme/acme.json /home/structa.cloud/applications/proxy/acme/acme.json.backup
-   touch /home/structa.cloud/applications/proxy/acme/acme.json
-   chmod 600 /home/structa.cloud/applications/proxy/acme/acme.json
+   mv /home/structa.cloud/applications/proxy/configs/acme.json /home/structa.cloud/applications/proxy/configs/acme.json.backup
+   touch /home/structa.cloud/applications/proxy/configs/acme.json
+   chmod 600 /home/structa.cloud/applications/proxy/configs/acme.json
    ```
 3. Restart and test:
    ```bash

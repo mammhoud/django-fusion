@@ -2,6 +2,8 @@
 import Layout from '@/layouts/Layout.astro';
 import AppShell from '@/components/AppShell.astro';
 import PipelineBoard from '@/components/board/PipelineBoard';
+import BillingPlan from '@/components/dashboard/BillingPlan';
+import ReportCatalog from '@/components/dashboard/ReportCatalog';
 import RevOpsDashboard from '@/components/dashboard/RevOpsDashboard';
 import ResourceTable from '@/components/dashboard/ResourceTable';
 
@@ -43,6 +45,8 @@ export function getStaticPaths() {
     { path: '/settings/custom-objects/', title: 'Custom objects', kicker: 'Workspace · data model', description: 'Add a new record type without a migration, using declarative fields with validated JSON rows.', module: 'workspace' },
     { path: '/settings/saved-views/', title: 'Saved views', kicker: 'Workspace · views', description: 'Your persisted list and kanban view configurations for every resource.', module: 'workspace' },
     { path: '/settings/import/', title: 'Import', kicker: 'Workspace · data', description: 'Import companies, contacts, and deals from a CSV upload, validated and workspace-scoped.', module: 'workspace' },
+    { path: '/settings/plan/', title: 'Plan & billing', kicker: 'Workspace · billing', description: 'Subscription state, plan limits, seat usage, and the Stripe customer portal.', module: 'billing' },
+    { path: '/reports/', title: 'Reports', kicker: 'RevOps · reports', description: 'The catalog of revenue, pipeline, publishing, employee, and billing reports.', module: 'reports' },
   ];
   return pages.map((page) => ({
     params: { path: page.path === '/' ? undefined : page.path.replace(/^\//, '').replace(/\/$/, '') },
@@ -79,6 +83,10 @@ const cards = page.module === 'overview'
     ]
   : page.module === 'marketing'
     ? [{ label: 'Content operations', value: 'Approval queue + publishing calendar', copy: 'Draft, review, schedule, publish, and retry without coupling the UI to a provider.', href: '/marketing/calendar/' }, { label: 'Provider surface', value: '12 platform families', copy: 'Explicit connector capabilities keep integrations replaceable.', href: '/settings/integrations/' }]
+    : page.module === 'billing'
+      ? [{ label: 'Subscription', value: 'Plan → checkout → active', copy: 'The workspace plan gates seats and features; checkout and the Stripe portal drive the lifecycle.', href: '/apis/billing/plans/' }]
+      : page.module === 'reports'
+        ? [{ label: 'Report surface', value: 'Revenue, pipeline, people, billing', copy: 'Every report is backed by live workspace data — no fabricated aggregates.', href: '/attribution/reports/' }]
     : page.module === 'workspace'
       ? [{ label: 'Automation', value: 'Cross-module workflows', copy: 'Dramatiq is the single execution boundary for publishing, analytics, and attribution.', href: '/settings/workflows/' }]
       : page.module === 'finance'
@@ -89,6 +97,8 @@ const cards = page.module === 'overview'
   <AppShell title={page.title} kicker={page.kicker} description={page.description} path={page.path}>
     {page.path === '/overview/' && <RevOpsDashboard client:load />}
     {page.path === '/crm/deals/' && <PipelineBoard client:load />}
+    {page.path === '/settings/plan/' && <BillingPlan client:load />}
+    {page.path === '/reports/' && <ReportCatalog client:load />}
     {page.path !== '/overview/' && page.path !== '/crm/deals/' && (
     <section class="loop-page-cards" aria-label={`${page.title} highlights`}>
       {cards.map((card) => (

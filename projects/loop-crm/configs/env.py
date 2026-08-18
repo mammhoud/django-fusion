@@ -75,6 +75,11 @@ ENV_VARS: tuple[tuple[str, Any, str], ...] = (
     ("OUTLOOK_CLIENT_ID", "", "Outlook connector client id."),
     ("OUTLOOK_CLIENT_SECRET", "", "Outlook connector client secret."),
 
+    # ── Stripe SaaS billing ───────────────────────────────────────────────
+    ("STRIPE_SECRET_KEY", "", "Stripe secret key (empty disables checkout/portal/webhook)."),
+    ("STRIPE_PUBLISHABLE_KEY", "", "Stripe publishable key (public, for the checkout client)."),
+    ("STRIPE_WEBHOOK_SECRET", "", "Stripe webhook signing secret (verifies inbound events)."),
+
     # ── Demo state ────────────────────────────────────────────────────────
     ("DEMO_MODE", "0", "1 exposes the seeded demo account on the login page. Never in production."),
 

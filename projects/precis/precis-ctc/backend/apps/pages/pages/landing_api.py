@@ -439,28 +439,82 @@ _DOCUMENT_GUIDANCE = {
 }
 
 
+def _publication_document(publication) -> dict:
+    """Serialize one Publication row into the frontend document shape."""
+    return {
+        "id": publication.pk,
+        "title": publication.title,
+        "slug": publication.slug,
+        "abstract": str(publication.abstract),
+        "authors": publication.authors,
+        "category": publication.category.name if publication.category else "",
+        "language": publication.language,
+        "published_at": publication.published_at.isoformat() if publication.published_at else None,
+        "external_url": publication.external_url,
+    }
+
+
 def research_publications_api(request: HttpRequest) -> JsonResponse:
-    """GET /apis/research/publications/ — localized Wagtail documents."""
+    """GET /apis/research/publications/ — localized Wagtail documents.
+
+    Supports the django-fusion query surface (see DF-019):
+    ``?category=`` (category slug/name), ``?q=`` (search), ``?ordering=``,
+    ``?limit=`` / ``?page=`` / ``?offset=``.
+    """
     language = _requested_language(request)
     from apps.content.models.publication import Publication
 
-    documents = [
-        {
-            "id": publication.pk,
-            "title": publication.title,
-            "slug": publication.slug,
-            "abstract": str(publication.abstract),
-            "authors": publication.authors,
-            "category": publication.category.name if publication.category else "",
-            "language": publication.language,
-            "published_at": publication.published_at.isoformat() if publication.published_at else None,
-            "external_url": publication.external_url,
-        }
-        for publication in Publication.objects.filter(is_published=True, language=language).select_related("category")
-    ]
+    queryset = Publication.objects.filter(is_published=True, language=language).select_related("category")
+
+    category = (request.GET.get("category") or "").strip()
+    if category:
+        queryset = queryset.filter(
+            category__slug=category
+        ) | queryset.filter(category__name=category)
+        queryset = queryset.distinct()
+
+    query = (request.GET.get("q") or request.GET.get("search") or "").strip()
+    if query:
+        from django.db.models import Q
+
+        queryset = queryset.filter(
+            Q(title__icontains=query)
+            | Q(authors__icontains=query)
+            | Q(abstract__icontains=query)
+        )
+
+    ordering = (request.GET.get("ordering") or "").strip()
+    if ordering in {"published_at", "-published_at", "title", "-title"}:
+        queryset = queryset.order_by(ordering)
+
+    # Pagination (defaults: 100 per page, page 1).
+    try:
+        limit = int(request.GET.get("limit", 100))
+    except (TypeError, ValueError):
+        limit = 100
+    limit = max(1, min(limit, 500))
+    try:
+        offset = int(request.GET.get("offset", 0))
+    except (TypeError, ValueError):
+        offset = 0
+    try:
+        page = int(request.GET.get("page", 1))
+    except (TypeError, ValueError):
+        page = 1
+    if "offset" in request.GET:
+        page = (offset // limit) + 1
+    elif "page" in request.GET:
+        page = max(1, page)
+        offset = (page - 1) * limit
+
+    total = queryset.count()
+    documents = [_publication_document(publication) for publication in queryset[offset:offset + limit]]
     return JsonResponse({
         "documents": documents,
-        "total": len(documents),
+        "total": total,
+        "count": len(documents),
+        "page": page,
+        "page_size": limit,
         "language": language,
         "guidance": _DOCUMENT_GUIDANCE[language],
     })

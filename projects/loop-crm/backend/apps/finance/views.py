@@ -7,6 +7,7 @@ from django.db import OperationalError, ProgrammingError
 from django.db.models.functions import TruncMonth
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 
 from apps.core.realtime import safe_publish_workspace_event
@@ -71,9 +72,9 @@ def revenue_rows(request):
 class FinanceDashboardView(LoopPageView):
     template_name = "dashboard/finance.html"
     module_id = "finance"
-    page_title = "Finance"
-    page_kicker = "Finance · revenue control"
-    page_description = "Turn closed pipeline into invoices, payments, and recognized revenue without losing campaign context."
+    page_title = _("Finance")
+    page_kicker = _("Finance · revenue control")
+    page_description = _("Turn closed pipeline into invoices, payments, and recognized revenue without losing campaign context.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,23 +83,23 @@ class FinanceDashboardView(LoopPageView):
 
 
 class InvoiceListView(FinanceDashboardView):
-    page_title = "Invoices"
-    page_kicker = "Finance · invoices"
-    page_description = (
+    page_title = _("Invoices")
+    page_kicker = _("Finance · invoices")
+    page_description = _(
         "Issue customer invoices from real companies and deals, then keep payment state current."
     )
 
 
 class RevenueListView(FinanceDashboardView):
-    page_title = "Revenue"
-    page_kicker = "Finance · recognized revenue"
-    page_description = "Review revenue events created from won pipeline and trace them back to campaigns and invoices."
+    page_title = _("Revenue")
+    page_kicker = _("Finance · recognized revenue")
+    page_description = _("Review revenue events created from won pipeline and trace them back to campaigns and invoices.")
 
 
 class PaymentListView(FinanceDashboardView):
-    page_title = "Payments"
-    page_kicker = "Finance · payments"
-    page_description = (
+    page_title = _("Payments")
+    page_kicker = _("Finance · payments")
+    page_description = _(
         "Record receipts against issued invoices and keep outstanding balances honest."
     )
 

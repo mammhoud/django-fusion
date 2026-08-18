@@ -20,8 +20,8 @@ const breadcrumbs = breadcrumbsFor(path, title);
       <a class="loop-app-brand" href="/" aria-label="Loop CRM overview"><span class="loop-app-mark" set:html={iconSvg('loop', 22)} /><span><strong>Loop</strong><small>revenue workspace</small></span></a>
       <nav aria-label="Workspace modules">
         {navigation.map((module, index) => (
-          <div class="loop-app-nav-group">
-            <span class="loop-app-nav-label">{index === 0 ? 'Workspace' : module.id === 'workspace' ? 'Administration' : module.label}</span>
+          <div class="loop-app-nav-group" data-nav-group>
+            <button type="button" class="loop-app-nav-label" data-nav-group-toggle aria-expanded="true"><span>{index === 0 ? 'Workspace' : module.id === 'workspace' ? 'Administration' : module.label}</span>{module.children.length > 0 && <span class="loop-app-nav-toggle" aria-hidden="true">▾</span>}</button>
             <a class:list={['loop-app-nav-link', module.active && 'is-active']} href={module.href} aria-current={module.active ? 'page' : undefined}>
               <span class="loop-app-nav-icon" aria-hidden="true" set:html={iconSvg(module.icon)} /><span>{module.label}</span>{module.active && <i aria-hidden="true" />}
             </a>
@@ -84,6 +84,37 @@ const breadcrumbs = breadcrumbsFor(path, title);
     const cached = sessionStorage.getItem(navigationCacheKey);
     if (target && cached) target.innerHTML = cached;
   };
+
+  // Collapsible nav groups — persisted per group id in sessionStorage.
+  const collapseCacheKey = 'loop-crm:navigation:collapsed';
+  const readCollapsed = (): Record<string, boolean> => {
+    try { return JSON.parse(sessionStorage.getItem(collapseCacheKey) || '{}'); } catch { return {}; }
+  };
+  const applyCollapsedState = () => {
+    const collapsed = readCollapsed();
+    navigationTarget()?.querySelectorAll<HTMLElement>('[data-nav-group]').forEach((group) => {
+      const toggle = group.querySelector('[data-nav-group-toggle]');
+      const label = toggle?.querySelector('span:first-child')?.textContent?.trim() || '';
+      const isCollapsed = collapsed[label] === true;
+      group.setAttribute('data-collapsed', String(isCollapsed));
+      toggle?.setAttribute('aria-expanded', String(!isCollapsed));
+    });
+  };
+  const toggleGroup = (group: HTMLElement) => {
+    const toggle = group.querySelector('[data-nav-group-toggle]');
+    const label = toggle?.querySelector('span:first-child')?.textContent?.trim() || '';
+    if (!label) return;
+    const collapsed = readCollapsed();
+    collapsed[label] = group.getAttribute('data-collapsed') !== 'true';
+    sessionStorage.setItem(collapseCacheKey, JSON.stringify(collapsed));
+    group.setAttribute('data-collapsed', String(collapsed[label]));
+    toggle?.setAttribute('aria-expanded', String(!collapsed[label]));
+  };
+  document.addEventListener('click', (event) => {
+    const toggle = (event.target as HTMLElement)?.closest?.('[data-nav-group-toggle]');
+    if (toggle) toggleGroup(toggle.closest('[data-nav-group]') as HTMLElement);
+  });
+  applyCollapsedState();
   const setActiveState = (pathname: string) => {
     const target = navigationTarget();
     if (!target) return;
@@ -116,6 +147,7 @@ const breadcrumbs = breadcrumbsFor(path, title);
     if (detail?.target?.id === 'loop-app-navigation-content') {
       persistNavigator();
       setActiveState(window.location.pathname);
+      applyCollapsedState();
     }
     if (detail?.target?.id === 'loop-app-content') refreshNavigator();
   });

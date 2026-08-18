@@ -14,7 +14,7 @@
 #   ./manage-certs.sh [command] [options]
 #
 # Commands:
-#   bootstrap-acme         Create applications/proxy/acme/ with a 0600 acme.json placeholder
+#   bootstrap-acme         Create applications/proxy/configs/acme.json (0600) placeholder
 #   status                 Show Traefik ACME storage + certs on disk
 #   check-expiry           Check expiry of any LE certs in acme.json
 #   generate-self-signed   Generate self-signed certificates for all domains (legacy)
@@ -30,8 +30,8 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CERTS_DIR="${SCRIPT_DIR}/../certs"
-BACKUP_DIR="${SCRIPT_DIR}/../certs"
+CERTS_DIR="${SCRIPT_DIR}/../data/certs"
+BACKUP_DIR="${SCRIPT_DIR}/../data/backups"
 COMPOSE_FILE="${SCRIPT_DIR}/../../../docker-compose.yml"
 
 # Colors for output
@@ -317,16 +317,15 @@ validate_certificates() {
 }
 
 ################################################################################
-# Bootstrap ACME storage (applications/proxy/acme/acme.json, mode 0600)
+# Bootstrap ACME storage (applications/proxy/configs/acme.json, mode 0600)
 ################################################################################
 
 bootstrap_acme() {
-  local acme_dir="${SCRIPT_DIR}/../acme"
-  local acme_file="${acme_dir}/acme.json"
+  local acme_file="${SCRIPT_DIR}/../configs/acme.json"
 
   log_info "Bootstrapping ACME storage at ${acme_file}..."
 
-  mkdir -p "$acme_dir"
+  mkdir -p "$(dirname "$acme_file")"
   if [ ! -f "$acme_file" ]; then
     : > "$acme_file"
   fi
@@ -341,7 +340,7 @@ bootstrap_acme() {
 ################################################################################
 
 status_certificates() {
-  local acme_file="${SCRIPT_DIR}/../acme/acme.json"
+  local acme_file="${SCRIPT_DIR}/../configs/acme.json"
   echo ""
   log_info "ACME / Let's Encrypt status"
   echo "────────────────────────────────────────────────────────────"
@@ -445,7 +444,7 @@ SSL Certificate Management Script for Traefik
 Usage:  ./manage-certs.sh [command] [options]
 
 Primary (Let's Encrypt / ACME) commands:
-  bootstrap-acme         Create applications/proxy/acme/acme.json (mode 0600) before first start
+  bootstrap-acme         Create applications/proxy/configs/acme.json (mode 0600) before first start
   status                 Show ACME storage contents + per-site cert status
   check-expiry           Check expiry of LE certs in acme.json (uses jq if available)
 
@@ -487,7 +486,7 @@ Supported Domains (CN + SANs):
 Certificate Information:
   • Primary:  Let's Encrypt (HTTP-01, no tokens) — auto-renewed by Traefik
   • Fallback: Self-signed (365 days) — managed by this script
-  • Storage:  ./acme/acme.json (LE)  and  ./certs/ (self-signed)
+  • Storage:  ./configs/acme.json (LE)  and  ./data/certs/ (self-signed)
 
 HELP
       ;;

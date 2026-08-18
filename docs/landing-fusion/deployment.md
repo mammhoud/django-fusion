@@ -65,7 +65,7 @@ docker compose -f projects/precis/precis-landing/docker-compose.yml down
 The Traefik dynamic config routes by Host and PathPrefix:
 
 ```yaml
-# applications/proxy/traefik/dynamic/precis-landing.yml
+# applications/proxy/configs/traefik/dynamic/precis-landing.yml
 http:
   routers:
     precis-landing-www:

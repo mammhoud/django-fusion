@@ -117,14 +117,14 @@ Every doc uses these tags:
 |------|-----|
 | Add a Docker service | Create `docker-compose.custom.yml` in `applications/compose/` |
 | Add SSL certificate | `manage-certs.sh bootstrap-acme` |
-| Add site router | Edit `proxy/traefik/dynamic.yml` |
+| Add site router | Edit `proxy/configs/traefik/dynamic/<site>.yml` |
 | Database backup scripts | Add to `applications/scripts/` |
 
 ### 🔴 What You Should NOT Change
 
 | Area | Why |
 |------|-----|
-| `proxy/traefik/traefik.yml` | Entrypoint definitions — breaks routing |
+| `proxy/configs/traefik/dynamic.yml` | Entrypoint definitions — breaks routing |
 | `databases/docker-compose.yml` | Core DB services |
 | Proxy ACME flow | Stages must be followed in order |
 

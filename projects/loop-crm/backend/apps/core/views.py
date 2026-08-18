@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from django.views.generic import TemplateView
 from django_fusion.tasks.views import TaskCenterView as FusionTaskCenterView
@@ -143,9 +144,9 @@ class LoopPageView(LoginRequiredMixin, TemplateView):
 
 class DashboardView(LoopPageView):
     template_name = "dashboard/index.html"
-    page_title = "Revenue workspace"
-    page_kicker = "Loop CRM"
-    page_description = "From social impression to closed deal — one source of truth."
+    page_title = _("Revenue workspace")
+    page_kicker = _("Loop CRM")
+    page_description = _("From social impression to closed deal — one source of truth.")
 
 
 class ModuleView(LoopPageView):
@@ -162,9 +163,9 @@ class TaskCenterView(FusionTaskCenterView):
 
     template_name = "dashboard/tasks.html"
     site_name = "loop-crm"
-    page_title = "Tasks"
-    page_kicker = "Operations · background jobs"
-    page_description = "Workflow, attribution, publishing, and finance jobs — the shared audit trail merged with the website-local record."
+    page_title = _("Tasks")
+    page_kicker = _("Operations · background jobs")
+    page_description = _("Workflow, attribution, publishing, and finance jobs — the shared audit trail merged with the website-local record.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -186,9 +187,9 @@ class MemberListView(LoopPageView):
 
     template_name = "dashboard/members.html"
     module_id = "workspace"
-    page_title = "Members & roles"
-    page_kicker = "Workspace · access"
-    page_description = "See the live role and capability boundary for every workspace member."
+    page_title = _("Members & roles")
+    page_kicker = _("Workspace · access")
+    page_description = _("See the live role and capability boundary for every workspace member.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -247,9 +248,9 @@ class WorkflowListView(LoopPageView):
 
     template_name = "dashboard/workflows.html"
     module_id = "workspace"
-    page_title = "Workflows"
-    page_kicker = "Workspace · automation"
-    page_description = "Define triggers, review the action plan, and queue an auditable run."
+    page_title = _("Workflows")
+    page_kicker = _("Workspace · automation")
+    page_description = _("Define triggers, review the action plan, and queue an auditable run.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -501,9 +502,9 @@ class CustomFieldsView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     module_id = "workspace"
-    page_title = "Custom fields"
-    page_kicker = "Workspace · custom fields"
-    page_description = "Built-in and workspace-defined field metadata for companies, contacts, deals, campaigns, and posts."
+    page_title = _("Custom fields")
+    page_kicker = _("Workspace · custom fields")
+    page_description = _("Built-in and workspace-defined field metadata for companies, contacts, deals, campaigns, and posts.")
     empty_message = "No custom fields are defined."
 
     def get_context_data(self, **kwargs):
@@ -534,9 +535,9 @@ class IntegrationsView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     module_id = "workspace"
-    page_title = "Integrations"
-    page_kicker = "Workspace · integrations"
-    page_description = "The social platform surface Loop-CRM can publish to, with the capabilities each connector advertises."
+    page_title = _("Integrations")
+    page_kicker = _("Workspace · integrations")
+    page_description = _("The social platform surface Loop-CRM can publish to, with the capabilities each connector advertises.")
     empty_message = "No integrations are available."
 
     def get_context_data(self, **kwargs):
@@ -557,9 +558,9 @@ class EmailInboxView(LoopPageView):
 
     template_name = "dashboard/email_inbox.html"
     module_id = "workspace"
-    page_title = "Email inbox"
-    page_kicker = "Workspace · email"
-    page_description = "Connect Gmail or Outlook to sync inbound messages into the CRM timeline, matched to contacts and deals."
+    page_title = _("Email inbox")
+    page_kicker = _("Workspace · email")
+    page_description = _("Connect Gmail or Outlook to sync inbound messages into the CRM timeline, matched to contacts and deals.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -583,9 +584,9 @@ class ReportsView(LoopPageView):
 
     template_name = "dashboard/reports.html"
     module_id = "attribution"
-    page_title = "Revenue reports"
-    page_kicker = "Attribution · reports"
-    page_description = "Campaign revenue, pipeline value, and attribution touchpoints — workspace-scoped."
+    page_title = _("Revenue reports")
+    page_kicker = _("Attribution · reports")
+    page_description = _("Campaign revenue, pipeline value, and attribution touchpoints — workspace-scoped.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -625,9 +626,9 @@ class CustomObjectsView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     module_id = "workspace"
-    page_title = "Custom objects"
-    page_kicker = "Workspace · data model"
-    page_description = "Add a new record type without a migration — declarative fields with validated JSON rows."
+    page_title = _("Custom objects")
+    page_kicker = _("Workspace · data model")
+    page_description = _("Add a new record type without a migration — declarative fields with validated JSON rows.")
     empty_message = "No custom objects are defined yet."
 
     def get_context_data(self, **kwargs):
@@ -658,9 +659,9 @@ class CustomObjectRecordsView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     module_id = "workspace"
-    page_title = "Custom object records"
-    page_kicker = "Workspace · data model"
-    page_description = "Workspace-scoped rows for a custom object type."
+    page_title = _("Custom object records")
+    page_kicker = _("Workspace · data model")
+    page_description = _("Workspace-scoped rows for a custom object type.")
     empty_message = "No records for this object yet."
 
     def get_context_data(self, **kwargs):
@@ -689,9 +690,9 @@ class ImportView(LoopPageView):
 
     template_name = "dashboard/import.html"
     module_id = "workspace"
-    page_title = "Import"
-    page_kicker = "Workspace · data"
-    page_description = "Import companies, contacts, and deals from a CSV upload — validated and workspace-scoped."
+    page_title = _("Import")
+    page_kicker = _("Workspace · data")
+    page_description = _("Import companies, contacts, and deals from a CSV upload — validated and workspace-scoped.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -733,9 +734,9 @@ class SavedViewsView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     module_id = "workspace"
-    page_title = "Saved views"
-    page_kicker = "Workspace · views"
-    page_description = "Your persisted list and kanban view configurations for every resource."
+    page_title = _("Saved views")
+    page_kicker = _("Workspace · views")
+    page_description = _("Your persisted list and kanban view configurations for every resource.")
     empty_message = "You have not saved any views yet."
 
     def get_context_data(self, **kwargs):
@@ -765,9 +766,9 @@ class AuditLogView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     module_id = "workspace"
-    page_title = "Audit log"
-    page_kicker = "Workspace · audit"
-    page_description = "The write-once record of workspace mutations, newest first."
+    page_title = _("Audit log")
+    page_kicker = _("Workspace · audit")
+    page_description = _("The write-once record of workspace mutations, newest first.")
     empty_message = "No audit events have been recorded."
 
     def get_context_data(self, **kwargs):

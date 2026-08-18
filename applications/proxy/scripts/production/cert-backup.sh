@@ -7,8 +7,8 @@
 
 set -e
 
-TRAEFIK_ACME_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/acme"
-BACKUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/certs"
+TRAEFIK_ACME_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/configs"
+BACKUP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/data/backups"
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 DATED_BACKUP_DIR="${BACKUP_DIR}/${TIMESTAMP}_certs"
 
@@ -270,7 +270,7 @@ Examples:
   $0 list
 
   # Restore from a specific backup
-  $0 restore /root/site/websites/applications/proxy/certs/20260602_121530_certs
+  $0 restore /root/site/websites/applications/proxy/data/backups/20260602_121530_certs
 
   # Keep only the last 5 backups
   $0 cleanup 5

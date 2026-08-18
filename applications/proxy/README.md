@@ -77,7 +77,7 @@ The migration container exiting with code 0 is expected. `shared-proxy`,
 
 ## Certificate operations
 
-Traefik stores ACME state in `acme/acme.json`, which must remain mode 0600 and
-is ignored by Git. Use the existing certificate scripts for backup and
+Traefik stores ACME state in `configs/acme.json`, which must remain mode 0600
+and is ignored by Git. Use the existing certificate scripts for backup and
 inspection. Never commit ACME state, DNS API tokens, database passwords, or
 AFFiNE private configuration.

@@ -16,8 +16,12 @@ provider-neutral connector surface, cross-module workflow actions, and
 Dramatiq publishing boundary are in place. Multi-tenant isolation is enforced
 end-to-end: every read/mutation path is workspace-scoped through
 `apps/core/tenancy.py`, dashboard pages and data APIs require login, and the
-kanban move mutation is CSRF-protected. Provider OAuth credentials and
-concrete API adapters are intentionally the next integration boundary (see `docs/plans/loop-crm/merge-plan.md`).
+kanban move mutation is CSRF-protected. A Wagtail-managed public landing
+(`/cms/` editor → `/apis/pages/<slug>/` JSON → Astro), Stripe-backed SaaS
+billing (`apps/billing`: checkout/portal/webhook, `/apis/billing/plans/`),
+a `/reports/` catalog, and a `/settings/plan/` billing surface are shipped.
+Provider OAuth credentials and concrete API adapters are intentionally the
+next integration boundary (see `docs/plans/loop-crm/merge-plan.md`).
 
 ## Layout
 
@@ -30,6 +34,10 @@ loop-crm/
 │   │   ├── marketing/       # Campaign, SocialChannel, Post, Analytics
 │   │   ├── attribution/     # Touchpoints + multi-touch weighting engines
 │   │   ├── finance/         # Invoice, Payment, RevenueEvent + finance screens
+│   │   ├── pos/             # Formint POS ingestion ledger
+│   │   ├── billing/         # SaaS billing: Plan, BillingAccount, Seat + Stripe
+│   │   ├── pages/           # Wagtail landing pages (public JSON road)
+│   │   ├── content/         # Wagtail StreamField section blocks
 │   │   └── tasks/           # Dramatiq actors (publish, aggregate, attribute)
 │   └── templates/           # base.html + dashboard
 ├── frontend/                # Astro 5 + Tailwind 4 + HTMX + Alpine + Redux + GSAP
@@ -140,6 +148,17 @@ that feeds the RevOps dashboard's recognized-revenue card. The Task Center lives
 history. Playwright covers the CRM navigation shell, workflow mutations, and
 content lifecycle.
 
+The **public landing** is Wagtail-managed and rendered by Astro from
+`/apis/pages/<slug>/` (editor at `/cms/`); the **billing** surface is
+`/settings/plan/` (account + plan catalog) backed by `apps/billing`, with
+`/billing/checkout/`, `/billing/portal/`, `/billing/webhook/stripe/`, and the
+public `/apis/billing/plans/` catalog. The **report catalog** lives at
+`/reports/` (`/apis/reports/`). See
+[`docs/FUSION_FORMS_TABLES.md`](docs/FUSION_FORMS_TABLES.md) for the
+fusion forms/tables usage and
+[`docs/plans/loop-crm/wagtail-landing-plan.md`](../../docs/plans/loop-crm/wagtail-landing-plan.md)
+for the billing/landing architecture.
+
 ## Docker deployment
 
 The production Compose file runs the backend on the shared `common` and
@@ -165,5 +184,7 @@ Do not use the example secret values in a public deployment. DNS for
 ## Documentation
 
 - [**docs/SETUP_AND_BUILD.md**](docs/SETUP_AND_BUILD.md) — full step-by-step setup & build guide
+- [**docs/FUSION_FORMS_TABLES.md**](docs/FUSION_FORMS_TABLES.md) — django-fusion forms/tables usage in Loop-CRM
+- [**docs/DESIGN_SYSTEM.md**](docs/DESIGN_SYSTEM.md) — the Tactical Telemetry design system
 - See the merge plan for the full 18-week roadmap and the Twenty/Postiz
   feature-merging matrix.

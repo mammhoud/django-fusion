@@ -45,6 +45,7 @@ export const NAVIGATION: NavigationModule[] = [
     { id: 'touchpoints', label: 'Touchpoints', href: '/attribution/touchpoints/' },
     { id: 'reports', label: 'Revenue reports', href: '/attribution/reports/' },
   ] },
+  { id: 'reports', label: 'Reports', href: '/reports/', icon: 'reports', description: 'The catalog of revenue, pipeline, publishing, employee, and billing reports.', children: [] },
   { id: 'tasks', label: 'Tasks', href: '/tasks/', icon: 'tasks', description: 'Background job history — workflows, attribution, publishing, and finance.', children: [] },
   { id: 'workspace', label: 'Workspace', href: '/settings/', icon: 'workspace', description: 'Members, workflows, integrations, and audit history.', children: [
     { id: 'members', label: 'Members & roles', href: '/settings/members/' },
@@ -56,6 +57,7 @@ export const NAVIGATION: NavigationModule[] = [
     { id: 'saved-views', label: 'Saved views', href: '/settings/saved-views/' },
     { id: 'import', label: 'Import', href: '/settings/import/' },
     { id: 'audit', label: 'Audit log', href: '/settings/audit/' },
+    { id: 'plan', label: 'Plan & billing', href: '/settings/plan/' },
   ] },
 ];
 

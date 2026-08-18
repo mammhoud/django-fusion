@@ -1,6 +1,10 @@
 # django-fusion — Unified Background Tasks & MCP Integration Plan
 
-> **Status:** Dramatiq migration implemented; MCP and production hardening remain
+> **Status:** Dramatiq migration implemented; MCP HTTP surface hardened
+> (bearer-token auth, staff/DEBUG fallbacks, rate limiting, JSON-RPC validation,
+> audit logging — see §6.4, `django_fusion/tasks/mcp_views.py`,
+> `tests/test_tasks_mcp_auth.py`). Production observability (§13) and
+> deployment-host verification remain.
 > **Owner:** django-fusion core team
 > **Created:** 2026-08-10
 > **Scope:** `libs/django-fusion/`, `projects/precis/precis-lms/`, `projects/precis/landi/`, `projects/formints/`
@@ -823,7 +827,15 @@ def handle_task_workers():
 
 ### 6.4 MCP Server Registration
 
-**⚠️ Boundary and production gate:** django-fusion MCP tools must NOT be registered into `ceptor-ai`'s MCP server. ceptor-ai explicitly avoids Django imports (see `applications/agents/commands/ceptor-ai.md`). Instead, django-fusion serves its own MCP endpoint at `/fusion/mcp/` within the Django application. The current Django view surface is an implementation scaffold: production exposure is blocked until authentication, authorization, rate limiting, request validation, audit logging, and transport/client compatibility are verified.
+**⚠️ Boundary and production gate:** django-fusion MCP tools must NOT be registered into `ceptor-ai`'s MCP server. ceptor-ai explicitly avoids Django imports (see `applications/agents/commands/ceptor-ai.md`). Instead, django-fusion serves its own MCP endpoint at `/fusion/mcp/` within the Django application.
+
+> **Implemented 2026-08-18.** The production gate is now enforced in
+> `django_fusion/tasks/mcp_views.py`: an explicit `FUSION_MCP_TOKEN` bearer
+> token (the only accepted credential outside `DEBUG`), a staff-session and
+> `DEBUG` development fallback, a cache-backed per-caller rate limit
+> (`FUSION_MCP_RATE_LIMIT`, default 60/minute), strict JSON-RPC 2.0 body
+> validation, and an audit log line per call. Coverage lives in
+> `tests/test_tasks_mcp_auth.py`.
 
 ```python
 # django_fusion/tasks/mcp_views.py
