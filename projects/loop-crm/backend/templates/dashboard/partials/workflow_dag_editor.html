@@ -13,7 +13,7 @@
       </div>
     </div>
     <p class="loop-hint" style="margin:.35rem 0 0;">Drag a node to move it. Drag from a node's right port to another's left port to connect them. Click an edge to remove it.</p>
-    <div class="loop-dag-canvas" id="dag-canvas" style="position:relative;margin-top:1rem;height:26rem;overflow:auto;border:1px solid var(--line);border-radius:.8rem;background:radial-gradient(circle at 30% 20%,#10211f 0,transparent 26rem),#0d131b;">
+    <div class="loop-dag-canvas" id="dag-canvas" style="position:relative;margin-top:1rem;height:26rem;overflow:auto;border:1px solid var(--line);background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(234,234,234,.02) 2px 4px),#0d0d0d;">
       <svg id="dag-edges" style="position:absolute;inset:0;width:100%;height:100%;" aria-hidden="true"></svg>
       <div id="dag-nodes" style="position:absolute;inset:0;"></div>
       <div class="loop-dag-empty" id="dag-empty" style="display:none;position:absolute;inset:0;place-items:center;">Add a node to start building the flow.</div>
@@ -26,20 +26,20 @@
 {% if workflows %}
 <style>
   .loop-dag-canvas { --node-w: 11rem; --node-h: 5.75rem; }
-  .loop-dag-node { position:absolute; width:var(--node-w); min-height:var(--node-h); padding:.6rem .75rem .6rem 1rem; border:1px solid var(--line); border-radius:.6rem; background:#131c26; box-shadow:0 .5rem 1.2rem rgba(3,17,19,.4); cursor:grab; user-select:none; touch-action:none; }
+  .loop-dag-node { position:absolute; width:var(--node-w); min-height:var(--node-h); padding:.6rem .75rem .6rem 1rem; border:1px solid var(--line); background:#121212; cursor:grab; user-select:none; touch-action:none; }
   .loop-dag-node:active { cursor:grabbing; }
   .loop-dag-node__label { display:block; color:var(--accent); font:700 .6rem ui-monospace,SFMono-Regular,monospace; letter-spacing:.09em; text-transform:uppercase; }
   .loop-dag-node__value { display:block; margin-top:.3rem; color:var(--ink); font-size:.82rem; }
-  .loop-dag-node--trigger { border-color:#3c786f; background:#102421; }
-  .loop-dag-node__remove { position:absolute; top:-.55rem; right:-.55rem; width:1.15rem; height:1.15rem; border:1px solid #744444; border-radius:999px; background:#2a1717; color:#ffaaa1; font:700 .7rem/1 ui-monospace,monospace; cursor:pointer; }
-  .loop-dag-node .dag-node-select { width:100%; margin-top:.35rem; border:1px solid #334252; border-radius:.4rem; background:#0d141c; color:var(--ink); padding:.35rem .45rem; font:600 .72rem ui-monospace,SFMono-Regular,monospace; cursor:pointer; }
-  .loop-dag-port { position:absolute; top:50%; width:.8rem; height:.8rem; border-radius:999px; background:#0d141c; border:2px solid #73d1bb; transform:translateY(-50%); cursor:crosshair; z-index:2; }
+  .loop-dag-node--trigger { border-color:var(--accent); background:#1a0f0f; }
+  .loop-dag-node__remove { position:absolute; top:-.55rem; right:-.55rem; width:1.15rem; height:1.15rem; border:1px solid #744444; background:#2a1717; color:#ffaaa1; font:700 .7rem/1 ui-monospace,monospace; cursor:pointer; }
+  .loop-dag-node .dag-node-select { width:100%; margin-top:.35rem; border:1px solid #3a3a3a; background:#0d0d0d; color:var(--ink); padding:.35rem .45rem; font:600 .72rem ui-monospace,SFMono-Regular,monospace; cursor:pointer; }
+  .loop-dag-port { position:absolute; top:50%; width:.8rem; height:.8rem; background:#0d0d0d; border:2px solid var(--accent); transform:translateY(-50%); cursor:crosshair; z-index:2; }
   .loop-dag-port--out { right:-.45rem; }
   .loop-dag-port--in { left:-.45rem; }
-  .loop-dag-port:hover { background:#73d1bb; }
-  .loop-dag-edge { fill:none; stroke:#3c786f; stroke-width:2; stroke-dasharray:1 6; cursor:pointer; }
+  .loop-dag-port:hover { background:var(--accent); }
+  .loop-dag-edge { fill:none; stroke:#5a5a5a; stroke-width:2; stroke-dasharray:1 6; cursor:pointer; }
   .loop-dag-edge--hit { fill:none; stroke:transparent; stroke-width:14; cursor:pointer; }
-  .loop-dag-edge--temp { fill:none; stroke:#73d1bb; stroke-width:2; stroke-dasharray:4 4; pointer-events:none; }
+  .loop-dag-edge--temp { fill:none; stroke:var(--accent); stroke-width:2; stroke-dasharray:4 4; pointer-events:none; }
   .loop-dag-empty { color:#718394; font-size:.8rem; display:grid; }
   .loop-hint { color:#718394; font-size:.72rem; }
 </style>

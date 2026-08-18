@@ -1,7 +1,1 @@
-<form id="contact-form" class="loop-form" method="post" action="/fragments/crm/contacts/create/" hx-post="/fragments/crm/contacts/create/" hx-target="#contact-form" hx-select="#contact-form" hx-swap="outerHTML" hx-indicator="#contact-form-loading">
-  {% csrf_token %}
-  <div class="loop-form__header"><div><span class="loop-card__label">People graph</span><h2>Add a contact</h2></div><span id="contact-form-loading" class="loop-loading loop-loading--inline htmx-indicator" role="status">Saving</span></div>
-  {% if contact_form.non_field_errors %}<div class="loop-form__error">{{ contact_form.non_field_errors }}</div>{% endif %}
-  {% for field in contact_form %}<label class="loop-form__field" for="{{ field.id_for_label }}"><span>{{ field.label }}</span>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<strong class="loop-form__error">{{ error }}</strong>{% endfor %}</label>{% endfor %}
-  <button class="loop-button loop-button--primary" type="submit">Save contact <span aria-hidden="true">↗</span></button>
-</form>
+{% comp "form" form=contact_form form_id="contact-form" kicker="People graph" heading="Add a contact" hx_post="/fragments/crm/contacts/create/" hx_target="#contact-form" hx_select="#contact-form" hx_swap="outerHTML" hx_indicator="#contact-form-loading" loading_label="Saving" submit_label="Save contact" /%}

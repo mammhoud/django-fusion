@@ -1,4 +1,5 @@
 """Render-first finance pages and tenant-scoped HTMX mutations."""
+
 from __future__ import annotations
 
 from django.contrib.auth.decorators import login_required
@@ -15,6 +16,7 @@ from . import export
 from .forms import InvoiceForm, PaymentForm
 from .models import Invoice, Payment, RevenueEvent
 from .services import revenue_trend_results, trend_aggregates
+from .tables import invoice_table, payment_table, revenue_table
 
 
 def _workspace_id(request: HttpRequest) -> int | None:
@@ -31,21 +33,37 @@ def _scoped(queryset, request):
 
 def invoice_rows(request):
     try:
-        return list(_scoped(Invoice.objects.select_related("company", "deal").order_by("-issued_on"), request)[:50])
+        return list(
+            _scoped(
+                Invoice.objects.select_related("company", "deal").order_by("-issued_on"), request
+            )[:50]
+        )
     except (OperationalError, ProgrammingError):
         return []
 
 
 def payment_rows(request):
     try:
-        return list(_scoped(Payment.objects.select_related("invoice", "invoice__company").order_by("-paid_on"), request)[:50])
+        return list(
+            _scoped(
+                Payment.objects.select_related("invoice", "invoice__company").order_by("-paid_on"),
+                request,
+            )[:50]
+        )
     except (OperationalError, ProgrammingError):
         return []
 
 
 def revenue_rows(request):
     try:
-        return list(_scoped(RevenueEvent.objects.select_related("deal", "campaign", "invoice").order_by("-recognized_on"), request)[:50])
+        return list(
+            _scoped(
+                RevenueEvent.objects.select_related("deal", "campaign", "invoice").order_by(
+                    "-recognized_on"
+                ),
+                request,
+            )[:50]
+        )
     except (OperationalError, ProgrammingError):
         return []
 
@@ -66,7 +84,9 @@ class FinanceDashboardView(LoopPageView):
 class InvoiceListView(FinanceDashboardView):
     page_title = "Invoices"
     page_kicker = "Finance · invoices"
-    page_description = "Issue customer invoices from real companies and deals, then keep payment state current."
+    page_description = (
+        "Issue customer invoices from real companies and deals, then keep payment state current."
+    )
 
 
 class RevenueListView(FinanceDashboardView):
@@ -78,7 +98,9 @@ class RevenueListView(FinanceDashboardView):
 class PaymentListView(FinanceDashboardView):
     page_title = "Payments"
     page_kicker = "Finance · payments"
-    page_description = "Record receipts against issued invoices and keep outstanding balances honest."
+    page_description = (
+        "Record receipts against issued invoices and keep outstanding balances honest."
+    )
 
 
 def _finance_context(request):
@@ -88,6 +110,9 @@ def _finance_context(request):
         "revenue_events": revenue_rows(request),
         "invoice_form": InvoiceForm(request=request),
         "payment_form": PaymentForm(request=request),
+        "invoice_table": invoice_table(invoice_rows(request)),
+        "payment_table": payment_table(payment_rows(request)),
+        "revenue_table": revenue_table(revenue_rows(request)),
     }
 
 
@@ -96,7 +121,9 @@ def _finance_context(request):
 def invoice_create(request: HttpRequest) -> HttpResponse:
     form = InvoiceForm(request.POST, request=request)
     if not form.is_valid():
-        return render(request, "dashboard/partials/invoice_form.html", {"invoice_form": form}, status=422)
+        return render(
+            request, "dashboard/partials/invoice_form.html", {"invoice_form": form}, status=422
+        )
     invoice = form.save()
     safe_publish_workspace_event(
         invoice.workspace_id, "resource.created", {"resource": "invoices", "pk": invoice.pk}
@@ -109,13 +136,17 @@ def invoice_create(request: HttpRequest) -> HttpResponse:
 def payment_create(request: HttpRequest) -> HttpResponse:
     form = PaymentForm(request.POST, request=request)
     if not form.is_valid():
-        return render(request, "dashboard/partials/payment_form.html", {"payment_form": form}, status=422)
+        return render(
+            request, "dashboard/partials/payment_form.html", {"payment_form": form}, status=422
+        )
     payment = form.save()
     safe_publish_workspace_event(
         payment.workspace_id, "resource.created", {"resource": "payments", "pk": payment.pk}
     )
     safe_publish_workspace_event(
-        payment.invoice.workspace_id, "resource.updated", {"resource": "invoices", "pk": payment.invoice_id}
+        payment.invoice.workspace_id,
+        "resource.updated",
+        {"resource": "invoices", "pk": payment.invoice_id},
     )
     return render(request, "dashboard/partials/payment_success.html", _finance_context(request))
 

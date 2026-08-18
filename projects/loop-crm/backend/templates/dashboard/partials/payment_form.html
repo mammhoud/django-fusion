@@ -1,6 +1,1 @@
-<form id="payment-form" class="loop-form" method="post" action="/fragments/finance/payments/create/" hx-post="/fragments/finance/payments/create/" hx-target="#payment-form" hx-select="#payment-form" hx-swap="outerHTML" hx-indicator="#payment-form-loading">
-  {% csrf_token %}<div class="loop-form__header"><div><span class="loop-card__label">New receipt</span><h2>Record a payment</h2></div><span id="payment-form-loading" class="loop-loading htmx-indicator" role="status">Saving</span></div>
-  {% if payment_form.non_field_errors %}<div class="loop-form__error">{{ payment_form.non_field_errors }}</div>{% endif %}
-  {% for field in payment_form %}<label class="loop-form__field" for="{{ field.id_for_label }}"><span>{{ field.label }}</span>{{ field }}{% for error in field.errors %}<strong class="loop-form__error">{{ error }}</strong>{% endfor %}</label>{% endfor %}
-  <button class="loop-button loop-button--primary" type="submit">Record payment <span aria-hidden="true">↗</span></button>
-</form>
+{% comp "form" form=payment_form form_id="payment-form" kicker="New receipt" heading="Record a payment" hx_post="/fragments/finance/payments/create/" hx_target="#payment-form" hx_select="#payment-form" hx_swap="outerHTML" hx_indicator="#payment-form-loading" loading_label="Saving" submit_label="Record payment" /%}

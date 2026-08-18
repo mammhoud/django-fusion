@@ -48,6 +48,10 @@ INSTALLED_APPS = [
     # replaces django-cotton: components, ``{% comp %}``, fragments and the
     # dual render-first / data-API pipeline come from here.
     "django_fusion",
+    # django-fusion component system: registers the built-in {% comp %}
+    # templates (table, form, pagination, modal, …) so project-level
+    # templates/fusion/components/*.html overrides can shadow them.
+    "django_fusion.comp",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",

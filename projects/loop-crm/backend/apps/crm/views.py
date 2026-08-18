@@ -1,4 +1,5 @@
 """Render-first CRM screens and HTMX create interactions."""
+
 from __future__ import annotations
 
 import json
@@ -17,6 +18,7 @@ from apps.core.views import LoopPageView
 
 from .forms import CompanyForm, ContactForm, DealForm
 from .models import Company, Contact, Deal, Pipeline, PipelineStage
+from .tables import company_table, contact_table, deal_table
 
 
 def _member_workspace_id(request: HttpRequest) -> int | None:
@@ -50,7 +52,9 @@ def contact_rows(request: HttpRequest) -> list[Contact]:
 
 
 def deal_rows(request: HttpRequest) -> list[Deal]:
-    queryset = Deal.objects.select_related("workspace", "company", "contact", "pipeline", "stage", "owner")
+    queryset = Deal.objects.select_related(
+        "workspace", "company", "contact", "pipeline", "stage", "owner"
+    )
     workspace_id = _member_workspace_id(request)
     if workspace_id is not None:
         queryset = queryset.filter(workspace_id=workspace_id)
@@ -69,7 +73,13 @@ class CompanyListView(LoopPageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"companies": company_rows(self.request), "company_form": CompanyForm(request=self.request)})
+        context.update(
+            {
+                "companies": company_rows(self.request),
+                "company_form": CompanyForm(request=self.request),
+                "company_table": company_table(company_rows(self.request)),
+            }
+        )
         return context
 
 
@@ -78,11 +88,19 @@ class ContactListView(LoopPageView):
     module_id = "crm"
     page_title = "Contacts"
     page_kicker = "CRM · contacts"
-    page_description = "Keep people connected to the companies, roles, and conversations that move a deal forward."
+    page_description = (
+        "Keep people connected to the companies, roles, and conversations that move a deal forward."
+    )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"contacts": contact_rows(self.request), "contact_form": ContactForm(request=self.request)})
+        context.update(
+            {
+                "contacts": contact_rows(self.request),
+                "contact_form": ContactForm(request=self.request),
+                "contact_table": contact_table(contact_rows(self.request)),
+            }
+        )
         return context
 
 
@@ -95,16 +113,33 @@ class DealListView(LoopPageView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context.update({"deals": deal_rows(self.request), "deal_form": DealForm(request=self.request)})
+        context.update(
+            {
+                "deals": deal_rows(self.request),
+                "deal_form": DealForm(request=self.request),
+                "deal_table": deal_table(deal_rows(self.request)),
+            }
+        )
         return context
 
 
 def _crm_context(request: HttpRequest, kind: str) -> dict:
     if kind == "companies":
-        return {"companies": company_rows(request), "company_form": CompanyForm(request=request)}
+        rows = company_rows(request)
+        return {
+            "companies": rows,
+            "company_form": CompanyForm(request=request),
+            "company_table": company_table(rows),
+        }
     if kind == "contacts":
-        return {"contacts": contact_rows(request), "contact_form": ContactForm(request=request)}
-    return {"deals": deal_rows(request), "deal_form": DealForm(request=request)}
+        rows = contact_rows(request)
+        return {
+            "contacts": rows,
+            "contact_form": ContactForm(request=request),
+            "contact_table": contact_table(rows),
+        }
+    rows = deal_rows(request)
+    return {"deals": rows, "deal_form": DealForm(request=request), "deal_table": deal_table(rows)}
 
 
 @require_POST
@@ -112,12 +147,16 @@ def _crm_context(request: HttpRequest, kind: str) -> dict:
 def company_create(request: HttpRequest) -> HttpResponse:
     form = CompanyForm(request.POST, request=request)
     if not form.is_valid():
-        return render(request, "dashboard/partials/company_form.html", {"company_form": form}, status=422)
+        return render(
+            request, "dashboard/partials/company_form.html", {"company_form": form}, status=422
+        )
     company = form.save()
     safe_publish_workspace_event(
         company.workspace_id, "resource.created", {"resource": "companies", "pk": company.pk}
     )
-    return render(request, "dashboard/partials/company_success.html", _crm_context(request, "companies"))
+    return render(
+        request, "dashboard/partials/company_success.html", _crm_context(request, "companies")
+    )
 
 
 @require_POST
@@ -125,12 +164,16 @@ def company_create(request: HttpRequest) -> HttpResponse:
 def contact_create(request: HttpRequest) -> HttpResponse:
     form = ContactForm(request.POST, request=request)
     if not form.is_valid():
-        return render(request, "dashboard/partials/contact_form.html", {"contact_form": form}, status=422)
+        return render(
+            request, "dashboard/partials/contact_form.html", {"contact_form": form}, status=422
+        )
     contact = form.save()
     safe_publish_workspace_event(
         contact.workspace_id, "resource.created", {"resource": "contacts", "pk": contact.pk}
     )
-    return render(request, "dashboard/partials/contact_success.html", _crm_context(request, "contacts"))
+    return render(
+        request, "dashboard/partials/contact_success.html", _crm_context(request, "contacts")
+    )
 
 
 @require_POST
@@ -172,7 +215,8 @@ def _deal_payload(deal: Deal) -> dict:
         "company": deal.company.name,
         "company_id": deal.company_id,
         "value": str(deal.value),
-        "owner": getattr(deal.owner, "get_full_name", lambda: "")() or getattr(deal.owner, "username", ""),
+        "owner": getattr(deal.owner, "get_full_name", lambda: "")()
+        or getattr(deal.owner, "username", ""),
         "expected_close_date": deal.expected_close_date.isoformat(),
         "campaign": deal.campaign.name if deal.campaign_id else None,
     }
@@ -190,7 +234,9 @@ def pipeline_board_api(request: HttpRequest) -> JsonResponse:
     if request.method != "GET":
         return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
     workspace_id = _workspace_scope(request)
-    pipelines = Pipeline.objects.prefetch_related("stages", "deals__company", "deals__owner", "deals__campaign").order_by("order")
+    pipelines = Pipeline.objects.prefetch_related(
+        "stages", "deals__company", "deals__owner", "deals__campaign"
+    ).order_by("order")
     if workspace_id is not None:
         pipelines = pipelines.filter(workspace_id=workspace_id)
     results = []
@@ -204,7 +250,9 @@ def pipeline_board_api(request: HttpRequest) -> JsonResponse:
                 "stages": [
                     {
                         **_stage_payload(stage),
-                        "deals": [_deal_payload(deal_rows[stage.pk])] if stage.pk in deal_rows else [],
+                        "deals": [_deal_payload(deal_rows[stage.pk])]
+                        if stage.pk in deal_rows
+                        else [],
                     }
                     for stage in stages
                 ],
@@ -244,6 +292,8 @@ def deal_move_api(request: HttpRequest, pk: int) -> JsonResponse:
     except ValueError as exc:
         return JsonResponse({"detail": str(exc)}, status=400)
     safe_publish_workspace_event(
-        deal.workspace_id, "resource.updated", {"resource": "deals", "pk": deal.pk, "stage_id": stage.pk}
+        deal.workspace_id,
+        "resource.updated",
+        {"resource": "deals", "pk": deal.pk, "stage_id": stage.pk},
     )
     return JsonResponse({"ok": True, "deal": _deal_payload(deal), "stage_id": stage.pk})

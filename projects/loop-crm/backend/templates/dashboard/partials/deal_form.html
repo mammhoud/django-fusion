@@ -1,7 +1,1 @@
-<form id="deal-form" class="loop-form" method="post" action="/fragments/crm/deals/create/" hx-post="/fragments/crm/deals/create/" hx-target="#deal-form" hx-select="#deal-form" hx-swap="outerHTML" hx-indicator="#deal-form-loading">
-  {% csrf_token %}
-  <div class="loop-form__header"><div><span class="loop-card__label">Revenue graph</span><h2>Add a deal</h2></div><span id="deal-form-loading" class="loop-loading loop-loading--inline htmx-indicator" role="status">Saving</span></div>
-  {% if deal_form.non_field_errors %}<div class="loop-form__error">{{ deal_form.non_field_errors }}</div>{% endif %}
-  {% for field in deal_form %}<label class="loop-form__field" for="{{ field.id_for_label }}"><span>{{ field.label }}</span>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% for error in field.errors %}<strong class="loop-form__error">{{ error }}</strong>{% endfor %}</label>{% endfor %}
-  <button class="loop-button loop-button--primary" type="submit">Save deal <span aria-hidden="true">↗</span></button>
-</form>
+{% comp "form" form=deal_form form_id="deal-form" kicker="Revenue graph" heading="Add a deal" hx_post="/fragments/crm/deals/create/" hx_target="#deal-form" hx_select="#deal-form" hx_swap="outerHTML" hx_indicator="#deal-form-loading" loading_label="Saving" submit_label="Save deal" /%}

@@ -1,6 +1,1 @@
-<form id="invoice-form" class="loop-form" method="post" action="/fragments/finance/invoices/create/" hx-post="/fragments/finance/invoices/create/" hx-target="#invoice-form" hx-select="#invoice-form" hx-swap="outerHTML" hx-indicator="#invoice-form-loading">
-  {% csrf_token %}<div class="loop-form__header"><div><span class="loop-card__label">New receivable</span><h2>Issue an invoice</h2></div><span id="invoice-form-loading" class="loop-loading htmx-indicator" role="status">Saving</span></div>
-  {% if invoice_form.non_field_errors %}<div class="loop-form__error">{{ invoice_form.non_field_errors }}</div>{% endif %}
-  {% for field in invoice_form %}<label class="loop-form__field" for="{{ field.id_for_label }}"><span>{{ field.label }}</span>{{ field }}{% for error in field.errors %}<strong class="loop-form__error">{{ error }}</strong>{% endfor %}</label>{% endfor %}
-  <button class="loop-button loop-button--primary" type="submit">Issue invoice <span aria-hidden="true">↗</span></button>
-</form>
+{% comp "form" form=invoice_form form_id="invoice-form" kicker="New receivable" heading="Issue an invoice" hx_post="/fragments/finance/invoices/create/" hx_target="#invoice-form" hx_select="#invoice-form" hx_swap="outerHTML" hx_indicator="#invoice-form-loading" loading_label="Saving" submit_label="Issue invoice" /%}
