@@ -31,6 +31,7 @@
   - [Loop-CRM](loop-crm/)
     - [Design System](loop-crm/design-system.md)
     - [Setup & Build](loop-crm/setup-and-build.md)
+    - [Landing, Billing & i18n Plan](plans/loop-crm/wagtail-landing-plan.md)
     - [Features](cypercloud/features.md)
     - [Infrastructure](cypercloud/infrastructure.md)
   - [Formint POS](pos/)

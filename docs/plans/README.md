@@ -21,6 +21,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Loop-CRM | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | Precis LMS + Syntara merge | [`repository/precis-syntara-merge.md`](repository/precis-syntara-merge.md) | Fold Syntara (Cypercloud AI chat) into the Precis LMS main site as Precis Assistant |
 | Loop-CRM finance + workflows + integrations | [`loop-crm/formint-integration-finance-workflows.md`](loop-crm/formint-integration-finance-workflows.md) | Formint POS financial data → Loop-CRM finance module; workflow + connector expansion |
+| Loop-CRM Wagtail landing + billing + webapp | [`loop-crm/wagtail-landing-plan.md`](loop-crm/wagtail-landing-plan.md) | Wagtail-managed public landing (precis-landing pattern), Stripe subscriptions, sidenav/guided UX, employees + report catalog, shared-locale i18n, license removal |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Lifecycle | [`document-lifecycle.md`](document-lifecycle.md) | Status, ownership, archive, deletion, and rollback policy |
 | Claims | [`marketing-claims.md`](marketing-claims.md) | Evidence-backed product and marketing claims |
@@ -70,6 +71,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Webpack enhancement + env configs | 2026-08-10 | Project-customizable webpack, precis-landing/precis .env.example, project workspace configs |
 
 | Analyzer + Skeleton + Asset APIs plan created | 2026-08-10 | Dynamic skeleton loading, per-page ordered components, component-level asset APIs, Astro minimal JS bridge |
+| Loop-CRM Wagtail landing + billing + shared locale plan | 2026-08-18 | Proposed — Wagtail landing (precis-landing pattern), Stripe billing, sidenav/guided UX, employees/reports, `projects/assets/locale` consolidation |
 | Loop-CRM tenancy + auth gating | 2026-08-14 | Workspace-scoped reads/mutations, login-gated pages/APIs, CSRF-protected kanban move, tenant-isolation tests |
 | Loop-CRM CRUD + channels + allauth + real screens | 2026-08-14 | Tenant-scoped REST CRUD + msgspec schemas on both roads, Channels manager + Mastodon/Bluesky adapters, complete allauth flows, data-backed module tables, motion/design pass |
 | Loop-CRM finance + workflows + integrations plan | 2026-08-14 | Formint↔Loop-CRM integration audit; POS financial-data ingestion into the finance module; workflow action/template expansion; webhooks/email/Slack/social/export connectors |
