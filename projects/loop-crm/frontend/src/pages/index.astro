@@ -79,7 +79,7 @@ const tiers = [
             <Button asChild size="lg"><a href="/accounts/signup/">Start free</a></Button>
             <Button asChild size="lg" variant="outline"><a href="/accounts/login/">Sign in to your workspace</a></Button>
           </div>
-          <p class="loop-hero__note">Open source (AGPL-3.0) · built from the Twenty and Postiz DNA</p>
+          <p class="loop-hero__note">Built from the Twenty and Postiz DNA · Django + Dramatiq runtime</p>
         </div>
         <div class="loop-hero__visual">
           <PipelineDemo client:load />
@@ -89,7 +89,6 @@ const tiers = [
       <section class="loop-dna" aria-label="Project heritage">
         <div class="loop-dna__item"><span class="loop-dna__key">CRM DNA</span><strong>Twenty</strong></div>
         <div class="loop-dna__item"><span class="loop-dna__key">Publishing DNA</span><strong>Postiz</strong></div>
-        <div class="loop-dna__item"><span class="loop-dna__key">License</span><strong>AGPL-3.0</strong></div>
         <div class="loop-dna__item"><span class="loop-dna__key">Runtime</span><strong>Django + Dramatiq</strong></div>
       </section>
 
@@ -169,7 +168,7 @@ const tiers = [
       </div>
       <div class="loop-footer__col"><h4>Product</h4><a href="/crm/">CRM</a><a href="/marketing/">Publishing</a><a href="/finance/">Finance</a><a href="/attribution/">Attribution</a></div>
       <div class="loop-footer__col"><h4>Company</h4><a href="https://github.com/mammhoud/structa.cloud" target="_blank" rel="noreferrer">Source</a><a href="/accounts/login/">Sign in</a><a href="/accounts/signup/">Create account</a></div>
-      <div class="loop-footer__col"><h4>Legal</h4><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><span>AGPL-3.0</span></div>
+      <div class="loop-footer__col"><h4>Legal</h4><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></div>
       <p class="loop-footer__bottom">Loop CRM · structa.cloud · open source since 2026</p>
     </footer>
   </body>
@@ -202,7 +201,7 @@ const tiers = [
   .loop-hero__note { margin:1.4rem 0 0; color:var(--loop-dim); font:500 .62rem "JetBrains Mono",monospace; letter-spacing:.06em; }
   .loop-hero__visual { animation:loop-rise .7s .12s cubic-bezier(.16,1,.3,1) both; }
 
-  .loop-dna { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); border-top:1px solid var(--loop-line-soft); border-bottom:1px solid var(--loop-line-soft); }
+  .loop-dna { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid var(--loop-line-soft); border-bottom:1px solid var(--loop-line-soft); }
   .loop-dna__item { display:flex; flex-direction:column; gap:.3rem; padding:1.2rem clamp(1rem,3vw,2.5rem); border-right:1px solid var(--loop-line-soft); }
   .loop-dna__item:last-child { border-right:0; }
   .loop-dna__key { color:var(--loop-dim); font:600 .56rem "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
@@ -293,6 +292,7 @@ const tiers = [
     .loop-dna { grid-template-columns:repeat(2,1fr); }
     .loop-dna__item:nth-child(2) { border-right:0; }
     .loop-dna__item:nth-child(-n+2) { border-bottom:1px solid var(--loop-line-soft); }
+    .loop-dna__item:nth-child(3) { grid-column:1 / -1; border-right:0; }
     .loop-nav__links { display:none; }
     .loop-footer { grid-template-columns:1fr 1fr; }
   }

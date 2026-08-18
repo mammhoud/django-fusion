@@ -3,7 +3,6 @@
 > **Status:** Most of the merge is shipped: realtime SSE/WebSocket, webhooks + email/Slack connectors, finance CSV export, pagination/filtering, Activities + Media screens, custom objects (runtime schema), saved views, approval/report queues, CSV import, and a no-code step workflow editor. Remaining open work: the 6 credential-blocked social publish adapters + their OAuth connect flows, the AI hub (Phase 4) and full per-resource Bolt OpenAPI. See §12 for the ordered roadmap.
 > **Source projects:** [twentyhq/twenty](https://github.com/twentyhq/twenty) (CRM) · [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) (social scheduling)
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
-> **License:** AGPL-3.0
 > **Last reviewed:** 2026-08-15
 
 Loop-CRM merges Twenty's CRM (custom objects, pipelines, workflows) with

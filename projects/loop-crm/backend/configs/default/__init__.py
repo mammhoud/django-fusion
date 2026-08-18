@@ -63,6 +63,23 @@ INSTALLED_APPS = [
     "django_tables2",
     # django-dramatiq wires Dramatiq into Django (provides `rundramatiq`).
     "django_dramatiq",
+    # Wagtail — editor-managed public landing pages (precis-landing pattern).
+    # Wagtail serves no public HTML itself: Astro owns every public URL and
+    # consumes ``/apis/pages/<slug>/``; the /cms/ admin + page previews are
+    # the only backend surfaces.
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail",
+    "modelcluster",
+    "taggit",
     # Loop-CRM domain apps.
     "apps.core",
     "apps.crm",
@@ -70,6 +87,9 @@ INSTALLED_APPS = [
     "apps.attribution",
     "apps.finance",
     "apps.pos",
+    # Wagtail landing pages + StreamField section blocks.
+    "apps.pages",
+    "apps.content",
     # Worker implementations live in plugins.workers; no legacy task app is
     # needed because TaskExecution belongs to core in Loop-CRM.
 ]
@@ -94,6 +114,16 @@ MIDDLEWARE = [
 ROOT_URLCONF = "urls"
 
 SITE_ID = int(os.environ.get("SITE_ID", "1"))
+
+# ── Wagtail (public landing content, precis-landing pattern) ───────────────
+# The Wagtail admin lives at /cms/ (Django admin stays at /admin/). Pages are
+# seeded by ``seed_pages`` (``make backend-seed-pages``) and consumed by the
+# Astro frontend through GET /apis/pages/<slug>/. Wagtail never renders
+# public HTML for the app shell — the trailing catch-all in urls.py only
+# serves page previews for editors.
+WAGTAIL_SITE_NAME = "Loop CRM"
+WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "http://127.0.0.1:8000")
+
 LOGIN_URL = "/accounts/login/"
 # After sign-in the user belongs inside the workspace, not on the marketing
 # landing (which still shows "Sign in" / "Start free").
