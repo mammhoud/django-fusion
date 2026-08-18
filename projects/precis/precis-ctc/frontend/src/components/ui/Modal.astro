@@ -7,15 +7,19 @@ interface Props {
 
 const { title, id } = Astro.props;
 const modalId = id ?? null;
+
+// Alpine state built in frontmatter — Astro does NOT interpolate `${...}`
+// inside quoted attributes, so the id must be baked in at build time.
+const xData = `{
+  open: false,
+  id: ${modalId ? `'${modalId}'` : 'null'},
+  openFromEvent(detail) { if (this.id && detail === this.id) this.open = true; }
+}`;
 ---
 
 <div
   class="fixed inset-0 z-[60] flex items-center justify-center p-4"
-  x-data="{
-    open: false,
-    id: ${modalId ? `'${modalId}'` : 'null'},
-    openFromEvent(detail) { if (this.id && detail === this.id) this.open = true; }
-  }"
+  x-data={xData}
   @open-modal.window="openFromEvent($event.detail)"
   @keydown.escape.window="open = false"
   x-cloak

@@ -32,6 +32,16 @@ const hasEditorialHero = Boolean(pageHero?.title && pageHero?.subtitle && pageHe
 const pageStats = (pageData?.stats as any[] | undefined);
 const methods = pageData?.methods as string[] | undefined;
 
+// Media gallery items for the hero panel — from the seeded AboutPage gallery
+// (media_items), localized. Rendered only when the backend provides them.
+const heroGallery = (pageData?.gallery as any[] | undefined)?.map((g: any) => ({
+  src: g.image?.image?.url || g.image?.url || '',
+  alt: g.image?.alternative_text || g.caption || '',
+  embedUrl: g.video?.embed_url || '',
+  caption: String(g.caption || '').replace(/<[^>]+>/g, ''),
+  category: g.category || '',
+})).filter((g) => Boolean(g.src || g.embedUrl));
+
 // ── Fallbacks (used when backend is unreachable at build time) ──
 const techStats = pageStats?.map((s: any) => ({
   label: String(s.label || ''),
@@ -72,6 +82,7 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
     primaryCta={hasEditorialHero && pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Start your learning path', href: '/courses/' }}
     secondaryCta={hasEditorialHero && pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
     status='200 OK · text/html · the center, in one response'
+    gallery={heroGallery}
   />
 
   <!-- Why-choose methods — seeded on HomePage.CTA (why_choose_section) and

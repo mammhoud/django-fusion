@@ -90,6 +90,7 @@ const faqItems = pageFaq?.map((f: any) => ({
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore courses', href: '/courses/' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Meet the team', href: '/team/' }}
     status='200 OK · text/html · the center, in one response'
+    gallery={galleryItems}
   />
 
   {bioStats?.length ? <Stats stats={bioStats} /> : <ContentError label="Stats data unavailable" />}

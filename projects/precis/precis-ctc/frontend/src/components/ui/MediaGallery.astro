@@ -1,0 +1,110 @@
+---
+/**
+ * MediaGallery — a media grid panel for medical/research imagery.
+ *
+ * Renders a responsive gallery (images + optional video embeds) with
+ * captions and category chips. Fed from backend page data
+ * (`pageData.gallery` — AboutPage gallery media_items), so nothing is
+ * hardcoded; when no items are provided it renders nothing (callers
+ * decide the fallback). Lightbox toggling is Alpine (`x-data`), the same
+ * pattern as the rest of the site.
+ */
+interface GalleryItem {
+  src: string;
+  alt: string;
+  caption: string;
+  category: string;
+  embedUrl?: string;
+}
+
+interface Props {
+  items: GalleryItem[];
+  /** Compact 2-column layout for hero panels (defaults to 3-col grid). */
+  compact?: boolean;
+  /** Hide the caption block below each item (hero panels). */
+  bare?: boolean;
+}
+
+const { items = [], compact = false, bare = false } = Astro.props;
+const columns = compact ? 'sm:grid-cols-2' : 'sm:grid-cols-2 md:grid-cols-3';
+---
+
+{items.length ? (
+  <div class={`grid grid-flow-dense grid-cols-1 gap-5 ${columns}`} aria-label="Media gallery">
+    {items.map((item, i) => (
+      <figure
+        class="group relative overflow-hidden rounded-xl border border-fu-line bg-fu-card"
+        x-data="{ open: false }"
+        style={`transition-delay: ${i * 60}ms`}
+      >
+        <div class="aspect-square overflow-hidden bg-fu-line/40">
+          {item.src ? (
+            <button
+              type="button"
+              class="block h-full w-full cursor-zoom-in"
+              @click="open = true"
+              aria-label={item.alt || item.caption || 'Open media in lightbox'}
+            >
+              <img
+                src={item.src}
+                alt={item.alt || item.caption || ''}
+                loading="lazy"
+                class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
+            </button>
+          ) : item.embedUrl ? (
+            <a
+              href={item.embedUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex h-full w-full items-center justify-center bg-fu-ink/5 text-fu-teal"
+              aria-label="Play video"
+            >
+              <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </a>
+          ) : null}
+        </div>
+
+        {!bare && (item.caption || item.category) ? (
+          <figcaption class="p-4">
+            {item.category ? (
+              <span class="mb-2 inline-block rounded-full bg-fu-teal/10 px-3 py-1 text-xs font-medium text-fu-teal">{item.category}</span>
+            ) : null}
+            {item.caption ? <p class="text-sm text-fu-muted">{item.caption}</p> : null}
+          </figcaption>
+        ) : null}
+
+        <!-- Lightbox -->
+        <div
+          x-show="open"
+          x-cloak
+          @keydown.escape.window="open = false"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-fu-ink/90 p-6 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label={item.alt || item.caption || 'Media lightbox'}
+        >
+          <button
+            type="button"
+            class="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-fu-paper/30 text-fu-paper hover:bg-fu-paper/10"
+            @click="open = false"
+            aria-label="Close lightbox"
+          >
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5l16 16M4 21L20 5"/></svg>
+          </button>
+          <figure class="max-h-[85vh] max-w-4xl">
+            {item.src ? (
+              <img src={item.src} alt={item.alt || item.caption || ''} class="mx-auto max-h-[75vh] w-auto rounded-lg object-contain" />
+            ) : null}
+            {(item.caption || item.category) ? (
+              <figcaption class="mt-4 text-center text-sm text-fu-paper/80">
+                {item.category ? <span class="mr-2 rounded-full bg-fu-teal/20 px-3 py-0.5 text-xs text-fu-teal">{item.category}</span> : null}
+                {item.caption}
+              </figcaption>
+            ) : null}
+          </figure>
+        </div>
+      </figure>
+    ))}
+  </div>
+) : null}

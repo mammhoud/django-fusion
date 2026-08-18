@@ -18,44 +18,42 @@ const {
 } = Astro.props;
 
 const shareUrl = url || '';
-const encodedUrl = encodeURIComponent(shareUrl);
-const encodedTitle = encodeURIComponent(title);
-const encodedText = encodeURIComponent(text);
+
+// Alpine state built in frontmatter — Astro does NOT interpolate `${...}`
+// inside quoted attributes, so values are baked in at build time here.
+const xData = `{
+  copied: false,
+  async share(platform) {
+    if (platform === 'copy') {
+      await navigator.clipboard.writeText(this.shareUrl);
+      this.copied = true;
+      setTimeout(() => this.copied = false, 2000);
+      return;
+    }
+    if (platform === 'native') {
+      try {
+        await navigator.share({ title: this.shareTitle, text: this.shareText, url: this.shareUrl });
+      } catch {}
+      return;
+    }
+    const urls = {
+      twitter: 'https://twitter.com/intent/tweet?url=' + this.encodedUrl + '&text=' + this.encodedTitle,
+      linkedin: 'https://linkedin.com/sharing/share-offsite/?url=' + this.encodedUrl,
+      facebook: 'https://facebook.com/sharer/sharer.php?u=' + this.encodedUrl,
+      email: 'mailto:?subject=' + this.encodedTitle + '&body=' + this.encodedText + '%0A%0A' + this.encodedUrl,
+    };
+    window.open(urls[platform], '_blank', 'noopener,noreferrer,width=600,height=400');
+  },
+  get shareUrl() { return '${shareUrl}' || window.location.href; },
+  get shareTitle() { return '${title}' || document.title; },
+  get shareText() { return '${text}'; },
+  get encodedUrl() { return encodeURIComponent(this.shareUrl); },
+  get encodedTitle() { return encodeURIComponent(this.shareTitle); },
+  get encodedText() { return encodeURIComponent(this.shareText); },
+}`;
 ---
 
-<div
-  x-data="{
-    copied: false,
-    async share(platform) {
-      if (platform === 'copy') {
-        await navigator.clipboard.writeText(this.$data.shareUrl);
-        this.copied = true;
-        setTimeout(() => this.copied = false, 2000);
-        return;
-      }
-      if (platform === 'native') {
-        try {
-          await navigator.share({ title: this.$data.shareTitle, text: this.$data.shareText, url: this.$data.shareUrl });
-        } catch {}
-        return;
-      }
-      const urls = {
-        twitter: `https://twitter.com/intent/tweet?url=${this.$data.encodedUrl}&text=${this.$data.encodedTitle}`,
-        linkedin: `https://linkedin.com/sharing/share-offsite/?url=${this.$data.encodedUrl}`,
-        facebook: `https://facebook.com/sharer/sharer.php?u=${this.$data.encodedUrl}`,
-        email: `mailto:?subject=${this.$data.encodedTitle}&body=${this.$data.encodedText}%0A%0A${this.$data.encodedUrl}`,
-      };
-      window.open(urls[platform], '_blank', 'noopener,noreferrer,width=600,height=400');
-    },
-    get shareUrl() { return '${shareUrl}' || window.location.href; },
-    get shareTitle() { return '${title}' || document.title; },
-    get shareText() { return '${text}'; },
-    get encodedUrl() { return encodeURIComponent(this.shareUrl); },
-    get encodedTitle() { return encodeURIComponent(this.shareTitle); },
-    get encodedText() { return encodeURIComponent(this.shareText); },
-  }"
-  class="flex flex-wrap items-center gap-2"
->
+<div x-data={xData} class="flex flex-wrap items-center gap-2">
   <span class="mr-1 font-mono text-[0.65rem] uppercase tracking-[0.12em] text-fu-muted">Share</span>
 
   {platforms.map((platform) => (

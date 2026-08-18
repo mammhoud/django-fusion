@@ -5,6 +5,7 @@ import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import MediaGallery from '@/components/ui/MediaGallery.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList, SEEDED_FALLBACK_SLUGS } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
@@ -38,7 +39,7 @@ const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const pageTech = (pageData?.tech as any[] | undefined);
 const pageEditions = (pageData?.editions as any[] | undefined);
-const pageSnippets = (pageData?.snippets as any[] | undefined);
+const pageGallery = (pageData?.gallery as any[] | undefined);
 const pageFeatures = (pageData?.features as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
 
@@ -52,10 +53,15 @@ const editions = pageEditions?.map((e: any) => ({
   cta: { label: String(e.cta_label || 'Get started'), href: String(e.cta_href || '/#cta') },
   highlighted: Boolean(e.featured),
 }));
-const snippets = pageSnippets?.map((s: any) => ({
-  title: String(s.title || ''),
-  language: String(s.language || ''),
-  code: String(s.code || ''),
+
+// Media gallery — the product reference section renders media (images /
+// videos) from the seeded gallery instead of raw code snippets.
+const galleryItems = pageGallery?.map((g: any) => ({
+  src: g.image?.image?.url || g.image?.url || '',
+  alt: g.image?.alternative_text || g.caption || '',
+  embedUrl: g.video?.embed_url || '',
+  caption: String(g.caption || '').replace(/<[^>]+>/g, ''),
+  category: g.category || '',
 }));
 const capabilities = pageFeatures?.map((f: any) => ({
   icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
@@ -138,25 +144,15 @@ const faqItems = pageFaq?.map((f: any) => ({
     </section>
   ) : null}
 
-  {snippets?.length ? (
-    <section id='snippets' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+  {galleryItems?.length ? (
+    <section id='gallery' class='doc-sheet bg-fu-paper py-20 md:py-24'>
       <div class='container-fusion'>
         <div class='mx-auto mb-14 max-w-2xl text-center'>
           <p class='tag-marker mb-4'>reference</p>
-          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Models &amp; snippets</h2>
-          <p class='text-fu-muted'>Reference patterns for CTC Research programs.</p>
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Program media</h2>
+          <p class='text-fu-muted'>Snapshots and media from CTC Research programs.</p>
         </div>
-        <div class='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-          {snippets.map((snip) => (
-            <figure class='card overflow-hidden'>
-              <figcaption class='flex items-center justify-between border-b border-fu-line bg-fu-card px-4 py-2.5'>
-                <span class='font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-ink'>{snip.title}</span>
-                {snip.language && <span class='font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{snip.language}</span>}
-              </figcaption>
-              <pre class='overflow-x-auto bg-[#0d0d0d] p-4 font-mono text-[0.78rem] leading-relaxed' style='color:#e6e6e6;'><code>{snip.code}</code></pre>
-            </figure>
-          ))}
-        </div>
+        <MediaGallery items={galleryItems} />
       </div>
     </section>
   ) : null}

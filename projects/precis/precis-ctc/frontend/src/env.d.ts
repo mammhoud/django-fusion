@@ -28,6 +28,14 @@ declare global {
       store(name: 'toast'): ToastStore;
     } & Record<string, unknown>;
     gtag?: (...args: unknown[]) => void;
+    /** Headless allauth login/session endpoints injected by LoginModal. */
+    __FUSION_AUTH?: {
+      login: string;
+      session: string;
+      logout: string;
+      apiBase: string;
+      providers: { id: string; label: string; icon: string }[];
+    };
   }
 }
 

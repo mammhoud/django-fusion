@@ -4,11 +4,15 @@
  */
 interface Props { threshold?: number; }
 const { threshold = 400 } = Astro.props;
+
+// Build the Alpine state in frontmatter: Astro does NOT interpolate `${...}`
+// inside quoted attributes, so the value must be assembled here.
+const xData = `{ visible: false, threshold: ${threshold} }`;
 ---
 
 <button
   type="button"
-  x-data="{ visible: false, threshold: ${threshold} }"
+  x-data={xData}
   x-init="() => { const cb = () => { visible = window.scrollY > threshold }; window.addEventListener('scroll', cb, { passive: true }); }"
   x-show="visible"
   x-transition:enter="transition ease-out duration-200"

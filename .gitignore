@@ -69,3 +69,6 @@ base_library.zip
 applications/proxy/affine-data/
 .hypothesis
 .pnpm-store
+.nx
+*.sqlite3
+db.sqlite3

@@ -1,13 +1,24 @@
 ---
 import Skeleton from '@/components/ui/Skeleton.astro';
+import MediaGallery from '@/components/ui/MediaGallery.astro';
 
 // ═══════════════════════════════════════════════════════════════════
-// Precis LMS hero — brand-kit treatment (high-end-visual-design §3B)
+// CTC Research hero — brand-kit treatment (high-end-visual-design §3B)
 // Editorial Luxury × Asymmetric Editorial Split: massive Fraunces serif
-// on the left, interactive double-bezel View-Source panel on the right.
+// on the left, a media/evidence panel on the right.
 // Motion: spring cubic-bezier reveals; the evidence line sweeps in.
-// Signature element preserved: the View Source toggle.
+// The right-hand panel is a media gallery when `gallery` items are
+// provided (from the seeded AboutPage gallery), otherwise a medical
+// evidence panel — never a code block.
 // ═══════════════════════════════════════════════════════════════════
+
+interface GalleryItem {
+  src: string;
+  alt: string;
+  caption: string;
+  category: string;
+  embedUrl?: string;
+}
 
 interface Props {
   eyebrow?: string;
@@ -17,6 +28,10 @@ interface Props {
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
   status?: string;
+  /** Optional media gallery items for the right-hand panel. */
+  gallery?: GalleryItem[];
+  /** Optional evidence points shown when no gallery is provided. */
+  evidence?: { value: string; label: string }[];
 }
 
 const {
@@ -28,25 +43,15 @@ const {
   primaryCta = { label: 'Start building', href: '/#cta' },
   secondaryCta = { label: 'Read the docs', href: '/about' },
   status = '200 OK · text/html · 0 KB client JS',
+  gallery = [],
+  evidence = [
+    { value: '17+', label: 'years of research' },
+    { value: '6', label: 'course programs' },
+    { value: '7', label: 'languages' },
+  ],
 } = Astro.props;
 
-const sourceMarkup = [
-  '<!doctype html>',
-  '<html lang="en">',
-  '  <head>',
-  '    <meta charset="utf-8" />',
-  '    <title>CTC Research</title>',
-  '    <meta name="description" content="A medical research center — clinical evidence, biostatistics, and responsible medical AI." />',
-  '  </head>',
-  '  <body>',
-  '    <header>',
-  `      <h1>${heading} ${accent}</h1>`,
-  `      <p>${intro.replace(/&nbsp;/g, ' ')}</p>`,
-  `      <a href="${primaryCta.href}">${primaryCta.label}</a>`,
-  '    </header>',
-  '  </body>',
-  '</html>',
-].join('\n');
+const showGallery = gallery.length > 0;
 ---
 
 <section class="hero">
@@ -120,48 +125,37 @@ const sourceMarkup = [
       </p>
     </div>
 
-    <!-- ── View Source toggle: the signature, in a double-bezel frame ── -->
+    <!-- ── Right-hand panel: media gallery OR medical evidence (no code) ── -->
     <div
       class="hero__source-toggle"
-      x-data="{ showSource: false }"
-      x-intersect="$el.classList.add('reveal-visible')"
+      x-data x-intersect="$el.classList.add('reveal-visible')"
       style="transition-delay: 320ms"
     >
       <div class="bezel">
         <div class="bezel__core">
-          <div class="hero__source-bar">
-            <p class="tag-marker !text-fu-teal">view-source:ctc-research</p>
-            <button
-              type="button"
-              class="btn-secondary !h-9 !px-4 !py-0 font-mono text-xs uppercase tracking-wider"
-              @click="showSource = !showSource"
-              :aria-expanded="showSource.toString()"
-              aria-controls="hero-source"
-            >
-              <svg x-show="!showSource" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6v6m-9 3l9-9"/>
-              </svg>
-              <svg x-show="showSource" x-cloak class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 5l16 16M4 21L20 5"/>
-              </svg>
-              <span x-text="showSource ? 'Back to rendered' : 'View source'"></span>
-            </button>
-          </div>
-
-          <!-- Rendered state -->
-          <div id="hero-source" x-show="!showSource">
-            <div class="source-panel" aria-hidden="true">
-              <code><span class="tok-com">&lt;!-- the hero, as it ships to the browser --&gt;</span></code>
+          {showGallery ? (
+            <div class="hero__gallery">
+              <p class="tag-marker !text-fu-teal">media · ctc research</p>
+              <MediaGallery items={gallery} compact bare />
             </div>
-          </div>
-
-          <!-- Source state -->
-          <div x-show="showSource" x-cloak>
-            <pre class="source-panel" role="region" aria-label="Source of this hero section"><code>{sourceMarkup}</code></pre>
-            <p class="mt-2 text-center font-mono text-[0.7rem] uppercase tracking-wider text-fu-muted">
-              That&apos;s it. One HTTP response, no framework.
-            </p>
-          </div>
+          ) : (
+            <div class="hero__evidence">
+              <p class="tag-marker !text-fu-teal">evidence · ctc research</p>
+              <p class="hero__evidence-title">A center built on method</p>
+              <p class="hero__evidence-text">
+                Clinical trial design, biostatistics, evidence synthesis, and
+                responsible medical AI — protocols reduced to reproducible method.
+              </p>
+              <div class="hero__evidence-grid">
+                {evidence.map((point) => (
+                  <div class="hero__evidence-item">
+                    <span class="hero__evidence-value">{point.value}</span>
+                    <span class="hero__evidence-label">{point.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
