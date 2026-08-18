@@ -19,7 +19,7 @@ NC := \033[0m
         frontend-dev frontend-build frontend-check \
         build up down logs restart front-logs back-logs worker-logs status \
         clean-docker rebuild-backend rebuild-frontend clean \
-        install-assets build-assets build-assets-dev skeleton-manifest redeploy
+        install-assets build-assets build-assets-dev assets-full skeleton-manifest redeploy
 
 help:
 	@echo "$(PROJECT) — Django/Wagtail + Astro medical research center"
@@ -27,7 +27,7 @@ help:
 	@echo "  Dev:     make run-dev | frontend-dev"
 	@echo "  Docker:  make build | up | down | logs | restart | status"
 	@echo "  Redeploy: make redeploy   (front + back + worker + scheduler)"
-	@echo "  Assets:  make install-assets | build-assets | build-assets-dev"
+	@echo "  Assets:  make install-assets | build-assets | build-assets-dev | assets-full"
 	@echo "  Skeleton: make skeleton-manifest"
 	@echo "  Clean:   make clean | clean-docker"
 
@@ -69,6 +69,12 @@ build-assets: skeleton-manifest
 
 build-assets-dev:
 	npx webpack --config webpack/precis.config.js --mode=development
+
+# ── One-step asset pipeline ─────────────────────────────────────────
+# Install npm deps, rebuild the Django webpack bundles, then collect
+# everything into the shared static tree in a single invocation.
+assets-full: install-assets build-assets collectstatic
+	@echo "$(GREEN)✅ Assets rebuilt and collected$(NC)"
 
 # ── Skeleton Manifest ─────────────────────────────────────────────────
 # Runs the Django management command to produce a static JSON manifest
@@ -123,7 +129,7 @@ redeploy: check frontend-check
 	$(DC) build backend worker scheduler frontend
 	$(DC) up -d --force-recreate backend worker scheduler frontend
 	@echo "$(GREEN)✅ Redeploy complete — stack status:$(NC)"
-	docker compose ps
+	$(DC) ps
 
 # ── Clean Docker resources ─────────────────────────────────────────────
 clean:
@@ -131,5 +137,5 @@ clean:
 
 clean-docker:
 	@echo "$(CYAN)🧹 Cleaning Docker resources for $(PROJECT)...$(NC)"
-	-docker compose down -v --remove-orphans 2>/dev/null || true
+	-$(DC) down -v --remove-orphans 2>/dev/null || true
 	@echo "$(GREEN)✅ Clean complete$(NC)"

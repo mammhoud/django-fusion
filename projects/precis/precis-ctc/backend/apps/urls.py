@@ -142,6 +142,7 @@ urlpatterns = [
     path("apis/assets/", landing_api.assets_api, name="landing-assets"),
     path("fragment/contact/", landing_api.contact_submit_api, name="landing-contact-submit"),
     path("fragment/ping/", landing_api.htmx_ping_api, name="landing-ping"),
+    path("fragment/pages/<slug:slug>/", landing_api.page_fragment_api, name="landing-page-fragment"),
     path("api/newsletter/subscribe/", landing_api.newsletter_subscribe_api, name="landing-newsletter"),
     path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),

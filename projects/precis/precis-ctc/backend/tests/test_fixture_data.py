@@ -87,7 +87,7 @@ EN_CHILD_SLUGS = ["about", "contact", "team", "all-courses", "events", "services
 # Titles from the fixture (English locale)
 EXPECTED_TITLES = {
     "home": "Home Page",
-    "about": "About CTC Research",
+    "about": "About",
     "contact": "Contact",
     "team": "Our Team",
     "all-courses": "Courses",
@@ -435,7 +435,7 @@ class TestFixtureData(TestCase):
         assert response.status_code == 200
         body = json.loads(response.content)
         assert body["data"]["slug"] == "about"
-        assert body["data"]["title"] == "About CTC Research"
+        assert body["data"]["title"] == "About"
 
     def test_unknown_page_data_returns_404(self):
         response = self.client.get("/api/pages/does-not-exist/data/")
@@ -487,6 +487,26 @@ class TestFixtureData(TestCase):
         assert data["page_slug"] == "home"
         assert "fragment_url" in data
         assert isinstance(data["fusion_render_first"], bool)
+
+    def test_home_fragment_page_route_renders_html(self):
+        """GET /fragment/pages/home/ renders the content-only HTML fragment.
+
+        This is the frontend's RenderModeSwitch/LiveFragment HTML road — it
+        must return HTML (not the JSON pointer from /api/pages/<slug>/fragment/)
+        and must never embed the full layout or the learning teaser.
+        """
+        response = self.client.get("/fragment/pages/home/", HTTP_HX_REQUEST="true")
+        assert response.status_code == 200, response.status_code
+        assert response["Content-Type"].startswith("text/html")
+        body = response.content.decode()
+        assert "<html" not in body.lower(), "fragment must not embed the document shell"
+        assert "[ LEARNING / PREVIEW ]" not in body, (
+            "home fragment must not carry the learning teaser"
+        )
+
+    def test_fragment_page_route_unknown_slug_returns_404(self):
+        response = self.client.get("/fragment/pages/does-not-exist/", HTTP_HX_REQUEST="true")
+        assert response.status_code == 404
 
     # ── Home learning section — single distinct teaser (once-only) ──
 
