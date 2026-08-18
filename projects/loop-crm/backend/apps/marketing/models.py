@@ -7,6 +7,7 @@ engine can weigh marketing touchpoints against closed deals.
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import Workspace
 
@@ -15,18 +16,18 @@ class SocialChannel(models.Model):
     """A connected social platform account (OAuth token stored server-side)."""
 
     PLATFORMS = [
-        ("linkedin", "LinkedIn"),
-        ("twitter", "Twitter / X"),
-        ("instagram", "Instagram"),
-        ("facebook", "Facebook"),
-        ("tiktok", "TikTok"),
-        ("youtube", "YouTube"),
-        ("reddit", "Reddit"),
-        ("discord", "Discord"),
-        ("slack", "Slack"),
-        ("bluesky", "Bluesky"),
-        ("mastodon", "Mastodon"),
-        ("whatsapp", "WhatsApp"),
+        ("linkedin", _("LinkedIn")),
+        ("twitter", _("Twitter / X")),
+        ("instagram", _("Instagram")),
+        ("facebook", _("Facebook")),
+        ("tiktok", _("TikTok")),
+        ("youtube", _("YouTube")),
+        ("reddit", _("Reddit")),
+        ("discord", _("Discord")),
+        ("slack", _("Slack")),
+        ("bluesky", _("Bluesky")),
+        ("mastodon", _("Mastodon")),
+        ("whatsapp", _("WhatsApp")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="social_channels")
@@ -44,6 +45,8 @@ class SocialChannel(models.Model):
         constraints = [
             models.UniqueConstraint(fields=["workspace", "platform", "account_name"], name="uniq_channel_account"),
         ]
+        verbose_name = _("social channel")
+        verbose_name_plural = _("social channels")
 
     def __str__(self) -> str:
         return f"{self.get_platform_display()} — {self.account_name}"
@@ -65,6 +68,8 @@ class Campaign(models.Model):
     class Meta:
         ordering = ["-created_at"]
         indexes = [models.Index(fields=["workspace", "start_date"])]
+        verbose_name = _("campaign")
+        verbose_name_plural = _("campaigns")
 
     def __str__(self) -> str:
         return self.name
@@ -86,13 +91,13 @@ class Post(models.Model):
     """A schedulable social post. Publishing is delegated to a Dramatiq actor."""
 
     STATUSES = [
-        ("draft", "Draft"),
-        ("pending_approval", "Pending approval"),
-        ("approved", "Approved"),
-        ("scheduled", "Scheduled"),
-        ("publishing", "Publishing"),
-        ("published", "Published"),
-        ("failed", "Failed"),
+        ("draft", _("Draft")),
+        ("pending_approval", _("Pending approval")),
+        ("approved", _("Approved")),
+        ("scheduled", _("Scheduled")),
+        ("publishing", _("Publishing")),
+        ("published", _("Published")),
+        ("failed", _("Failed")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="posts")
@@ -115,6 +120,8 @@ class Post(models.Model):
             models.Index(fields=["workspace", "scheduled_at"]),
             models.Index(fields=["workspace", "campaign"]),
         ]
+        verbose_name = _("post")
+        verbose_name_plural = _("posts")
 
     TRANSITIONS = {
         "draft": {"pending_approval"},
@@ -129,9 +136,9 @@ class Post(models.Model):
     def transition_to(self, status: str, *, save: bool = True) -> None:
         """Move through the Postiz-style lifecycle without skipping review."""
         if status not in dict(self.STATUSES):
-            raise ValidationError({"status": "Unknown publishing state."})
+            raise ValidationError({"status": _("Unknown publishing state.")})
         if status != self.status and status not in self.TRANSITIONS.get(self.status, set()):
-            raise ValidationError({"status": f"Cannot move a {self.status} post to {status}."})
+            raise ValidationError({"status": _("Cannot move a %(status)s post to %(new_status)s.") % {"status": self.status, "new_status": status}})
         self.status = status
         if status == "published" and self.published_at is None:
             from django.utils import timezone
@@ -161,4 +168,4 @@ class PostAnalytics(models.Model):
         return self.likes + self.comments + self.shares
 
     def __str__(self) -> str:
-        return f"analytics for {self.post}"
+        return _("analytics for %(post)s") % {"post": self.post}

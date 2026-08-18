@@ -7,6 +7,7 @@ to a marketing campaign — the attribution glue between marketing and sales.
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 from apps.core.models import Workspace
 
@@ -31,6 +32,8 @@ class Company(models.Model):
     class Meta:
         ordering = ["name"]
         indexes = [models.Index(fields=["workspace", "name"])]
+        verbose_name = _("company")
+        verbose_name_plural = _("companies")
 
     def __str__(self) -> str:
         return self.name
@@ -53,6 +56,8 @@ class Contact(models.Model):
     class Meta:
         ordering = ["last_name", "first_name"]
         indexes = [models.Index(fields=["workspace", "email"])]
+        verbose_name = _("contact")
+        verbose_name_plural = _("contacts")
 
     @property
     def full_name(self) -> str:
@@ -73,6 +78,8 @@ class Pipeline(models.Model):
 
     class Meta:
         ordering = ["order"]
+        verbose_name = _("pipeline")
+        verbose_name_plural = _("pipelines")
 
     def __str__(self) -> str:
         return self.name
@@ -80,12 +87,12 @@ class Pipeline(models.Model):
 
 class PipelineStage(models.Model):
     STAGE_TYPES = [
-        ("lead", "Lead"),
-        ("qualified", "Qualified"),
-        ("proposal", "Proposal"),
-        ("negotiation", "Negotiation"),
-        ("closed_won", "Closed Won"),
-        ("closed_lost", "Closed Lost"),
+        ("lead", _("Lead")),
+        ("qualified", _("Qualified")),
+        ("proposal", _("Proposal")),
+        ("negotiation", _("Negotiation")),
+        ("closed_won", _("Closed Won")),
+        ("closed_lost", _("Closed Lost")),
     ]
 
     pipeline = models.ForeignKey(Pipeline, on_delete=models.CASCADE, related_name="stages")
@@ -99,6 +106,8 @@ class PipelineStage(models.Model):
 
     class Meta:
         ordering = ["order"]
+        verbose_name = _("pipeline stage")
+        verbose_name_plural = _("pipeline stages")
 
     @property
     def is_won(self) -> bool:
@@ -138,6 +147,8 @@ class Deal(models.Model):
             models.Index(fields=["workspace", "company"]),
             models.Index(fields=["workspace", "campaign"]),
         ]
+        verbose_name = _("deal")
+        verbose_name_plural = _("deals")
 
     @property
     def is_won(self) -> bool:
@@ -146,7 +157,7 @@ class Deal(models.Model):
     def transition_to_stage(self, stage: PipelineStage, *, save: bool = True) -> None:
         """Move a deal and queue the close workflow when it becomes won."""
         if stage.pipeline_id != self.pipeline_id:
-            raise ValueError("The stage must belong to the deal pipeline.")
+            raise ValueError(_("The stage must belong to the deal pipeline."))
         was_won = self.is_won
         self.stage = stage
         if stage.is_won and self.actual_close_date is None:
@@ -177,12 +188,12 @@ class Deal(models.Model):
 
 class Activity(models.Model):
     ACTIVITY_TYPES = [
-        ("call", "Call"),
-        ("email", "Email"),
-        ("meeting", "Meeting"),
-        ("note", "Note"),
-        ("task", "Task"),
-        ("social", "Social Interaction"),
+        ("call", _("Call")),
+        ("email", _("Email")),
+        ("meeting", _("Meeting")),
+        ("note", _("Note")),
+        ("task", _("Task")),
+        ("social", _("Social Interaction")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="activities")
@@ -203,6 +214,8 @@ class Activity(models.Model):
             models.Index(fields=["workspace", "deal"]),
             models.Index(fields=["workspace", "activity_type"]),
         ]
+        verbose_name = _("activity")
+        verbose_name_plural = _("activities")
 
 
 class CustomFieldDefinition(models.Model):
@@ -214,22 +227,22 @@ class CustomFieldDefinition(models.Model):
     """
 
     OBJECT_TYPES = [
-        ("company", "Company"),
-        ("contact", "Contact"),
-        ("deal", "Deal"),
-        ("campaign", "Campaign"),
-        ("post", "Post"),
+        ("company", _("Company")),
+        ("contact", _("Contact")),
+        ("deal", _("Deal")),
+        ("campaign", _("Campaign")),
+        ("post", _("Post")),
     ]
     FIELD_TYPES = [
-        ("text", "Text"),
-        ("textarea", "Long text"),
-        ("number", "Number"),
-        ("boolean", "Boolean"),
-        ("date", "Date"),
-        ("url", "URL"),
-        ("email", "Email"),
-        ("select", "Select"),
-        ("multi_select", "Multi-select"),
+        ("text", _("Text")),
+        ("textarea", _("Long text")),
+        ("number", _("Number")),
+        ("boolean", _("Boolean")),
+        ("date", _("Date")),
+        ("url", _("URL")),
+        ("email", _("Email")),
+        ("select", _("Select")),
+        ("multi_select", _("Multi-select")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="custom_field_definitions")
@@ -255,14 +268,16 @@ class CustomFieldDefinition(models.Model):
         indexes = [
             models.Index(fields=["workspace", "object_type", "is_active"]),
         ]
+        verbose_name = _("custom field")
+        verbose_name_plural = _("custom fields")
 
     def clean(self) -> None:
         from django.core.exceptions import ValidationError
 
         if self.field_type in {"select", "multi_select"} and not isinstance(self.options, list):
-            raise ValidationError({"options": "Select options must be a JSON list."})
+            raise ValidationError({"options": _("Select options must be a JSON list.")})
         if self.field_type not in {"select", "multi_select"} and self.options:
-            raise ValidationError({"options": "Only select fields may define options."})
+            raise ValidationError({"options": _("Only select fields may define options.")})
 
     def __str__(self) -> str:
         return f"{self.workspace} · {self.object_type} · {self.label}"
@@ -278,15 +293,15 @@ class CustomObjectDefinition(models.Model):
     """
 
     FIELD_TYPE_CHOICES = [
-        ("text", "Text"),
-        ("textarea", "Long text"),
-        ("number", "Number"),
-        ("boolean", "Boolean"),
-        ("date", "Date"),
-        ("url", "URL"),
-        ("email", "Email"),
-        ("select", "Select"),
-        ("multi_select", "Multi-select"),
+        ("text", _("Text")),
+        ("textarea", _("Long text")),
+        ("number", _("Number")),
+        ("boolean", _("Boolean")),
+        ("date", _("Date")),
+        ("url", _("URL")),
+        ("email", _("Email")),
+        ("select", _("Select")),
+        ("multi_select", _("Multi-select")),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="custom_object_definitions")
@@ -305,6 +320,8 @@ class CustomObjectDefinition(models.Model):
             models.UniqueConstraint(fields=["workspace", "key"], name="uniq_custom_object_workspace_key"),
         ]
         indexes = [models.Index(fields=["workspace", "is_active"])]
+        verbose_name = _("custom object")
+        verbose_name_plural = _("custom objects")
 
     def __str__(self) -> str:
         return f"{self.name} ({self.key})"
@@ -323,6 +340,8 @@ class CustomObjectRecord(models.Model):
     class Meta:
         ordering = ["-updated_at"]
         indexes = [models.Index(fields=["workspace", "definition"])]
+        verbose_name = _("custom object record")
+        verbose_name_plural = _("custom object records")
 
     def __str__(self) -> str:
         return f"{self.definition.name} #{self.pk}"

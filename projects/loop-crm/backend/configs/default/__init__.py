@@ -82,6 +82,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -408,10 +409,21 @@ DRAMATIQ_BROKER = {
     ],
 }
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "en-us")
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+#: Languages with compiled catalogs under ``backend/locale/``. ``en`` is the
+#: source language; add a language here once its catalog is compiled with
+#: ``make i18n`` (backend Makefile) so the locale switcher can offer it.
+LANGUAGES = [
+    ("en", "English"),
+    ("ar", "العربية"),
+]
+
+#: Compiled gettext catalogs (``locale/<lang>/LC_MESSAGES/django.mo``).
+LOCALE_PATHS = [BASE_DIR / "locale"]
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static"

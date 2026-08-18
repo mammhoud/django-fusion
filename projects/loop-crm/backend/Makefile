@@ -1,7 +1,7 @@
 # loop-crm backend — Django + django-fusion (unified sales + marketing)
 # Mirrors the precis-landing backend Makefile verb set so `make -C backend`
 # behaves identically across the workspace.
-.PHONY: help dev server worker scheduler install migrate static collectstatic superuser seed-demo shell check test format lint fix
+.PHONY: help dev server worker scheduler install migrate static collectstatic superuser seed seed-demo shell check test format lint fix i18n makemessages compilemessages
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -17,6 +17,7 @@ MANAGE := $(UV_RUN) python manage.py
 help: ## Show backend commands
 	@echo "=== Loop-CRM Backend (Django + django-fusion) ==="
 	@echo "Site: loop-crm"
+	@echo "  Nx: nx-* aliases delegate to the workspace Nx graph; run `make help` at projects/loop-crm"
 	@awk 'BEGIN {FS = ":.*##"; printf ""} /^[a-zA-Z_-]+:.*?##/ { printf "  %-16s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 dev: ## Run Django dev server
@@ -45,6 +46,8 @@ collectstatic: ## Collect static files
 superuser: ## Create superuser (interactive)
 	@$(MANAGE) createsuperuser
 
+seed: seed-demo ## Alias for seed-demo
+
 seed-demo: ## Seed the demo workspace + demo accounts (idempotent, superuser)
 	@$(MANAGE) seed_demo --superuser
 
@@ -65,3 +68,11 @@ lint: ## Lint with ruff
 
 fix: ## Auto-fix lint issues
 	@$(UV_RUN) ruff check --fix .
+
+makemessages: ## Extract translatable strings into locale/ .po files
+	@$(MANAGE) makemessages -l en -l ar --no-wrap
+
+compilemessages: ## Compile .po files into .mo catalogs
+	@$(MANAGE) compilemessages -l en -l ar
+
+i18n: makemessages compilemessages ## Extract + compile translations
