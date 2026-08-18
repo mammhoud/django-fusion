@@ -2,9 +2,15 @@
 
 The browser road is owned by the django-fusion Application registry. The
 versioned JSON road remains explicit and domain-scoped under ``/api/v1/``.
+Wagtail owns the /cms/ editor surface and a trailing preview-only catch-all;
+public URLs stay on the Astro frontend.
 """
 from django.contrib import admin
 from django.urls import include, path
+from wagtail import urls as wagtail_urls
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.images import urls as wagtailimages_urls
 
 from apps.core import views as core_views
 from apps.core.api import resource_api
@@ -17,6 +23,11 @@ from apps.marketing import views as marketing_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    # Wagtail editor surface — /cms/ (admin) + /documents/ + /images/.
+    # Django admin stays at /admin/ (no prefix collision).
+    path("cms/", include(wagtailadmin_urls)),
+    path("documents/", include(wagtaildocs_urls)),
+    path("images/", include(wagtailimages_urls)),
     path("accounts/", include("allauth.urls")),
     loop_crm_module.url_pattern,
     path("fragments/navigation/", core_views.navigation_fragment, name="navigation_fragment"),
@@ -59,3 +70,9 @@ urlpatterns = [
 # runtime is installed. Keep the Django JSON road above for compatibility.
 if bolt is not None and getattr(bolt, "urls", None) is not None:
     urlpatterns.append(path("bolt/", bolt.urls))
+
+# Wagtail preview road — intentionally LAST. Astro owns every public URL;
+# this catch-all only serves live Wagtail pages so editor previews from
+# /cms/ resolve (unknown paths fall through to Wagtail's 404). The
+# /apis/pages/<slug>/ JSON road is the contract Astro actually consumes.
+urlpatterns += [path("", include(wagtail_urls))]
