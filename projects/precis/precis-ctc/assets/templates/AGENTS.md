@@ -1,8 +1,8 @@
 # Precis Asset Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-lms/assets/templates/`
+**Scope:** `projects/precis/precis-main/assets/templates/`
 
-Read `projects/precis/precis-lms/backend/AGENTS.md` and the root `AGENTS.md` first. These
+Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. These
 are Precis-owned asset templates, not automatically shared templates for every
 Structa Cloud product.
 

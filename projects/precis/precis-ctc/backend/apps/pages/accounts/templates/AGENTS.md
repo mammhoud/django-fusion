@@ -1,8 +1,8 @@
 # Precis Account App Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-lms/backend/apps/pages/accounts/templates/`
+**Scope:** `projects/precis/precis-main/backend/apps/pages/accounts/templates/`
 
-Read `projects/precis/precis-lms/backend/AGENTS.md` and the root `AGENTS.md` first. These
+Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. These
 are account/registration templates owned by the Precis accounts feature.
 
 Preserve allauth context, CSRF, validation errors, redirects, translations,

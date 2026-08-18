@@ -11,21 +11,21 @@ AGENTS.md files act as **behavioral instructions** for AI coding assistants (Cla
 ```
 Root /AGENTS.md — Monorepo-wide conventions, safety rules, ownership
   ├── projects/AGENTS.md — Project-level conventions
-  │   ├── projects/precis/precis-lms/AGENTS.md — Precis LMS project
-  │   └── projects/precis/precis-lms/backend/AGENTS.md — Precis LMS backend
-  │   │   ├── projects/precis/precis-lms/backend/apps/pages/blog/templates/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/backend/apps/pages/profile/templates/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/backend/apps/pages/accounts/templates/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/backend/apps/learning/templates/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/backend/apps/templates/AGENTS.md
-  │   │   └── projects/precis/precis-lms/backend/templates/AGENTS.md
-  │   ├── projects/precis/precis-lms/assets/templates/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/assets/templates/blog/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/assets/templates/pages/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/assets/templates/lms/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/assets/templates/components/AGENTS.md
-  │   │   ├── projects/precis/precis-lms/assets/templates/profile/AGENTS.md
-  │   │   └── projects/precis/precis-lms/assets/templates/plugins/AGENTS.md
+  │   ├── projects/precis/precis-main/AGENTS.md — Precis LMS project
+  │   └── projects/precis/precis-main/backend/AGENTS.md — Precis LMS backend
+  │   │   ├── projects/precis/precis-main/backend/apps/pages/blog/templates/AGENTS.md
+  │   │   ├── projects/precis/precis-main/backend/apps/pages/profile/templates/AGENTS.md
+  │   │   ├── projects/precis/precis-main/backend/apps/pages/accounts/templates/AGENTS.md
+  │   │   ├── projects/precis/precis-main/backend/apps/learning/templates/AGENTS.md
+  │   │   ├── projects/precis/precis-main/backend/apps/templates/AGENTS.md
+  │   │   └── projects/precis/precis-main/backend/templates/AGENTS.md
+  │   ├── projects/precis/precis-main/assets/templates/AGENTS.md
+  │   │   ├── projects/precis/precis-main/assets/templates/blog/AGENTS.md
+  │   │   ├── projects/precis/precis-main/assets/templates/pages/AGENTS.md
+  │   │   ├── projects/precis/precis-main/assets/templates/lms/AGENTS.md
+  │   │   ├── projects/precis/precis-main/assets/templates/components/AGENTS.md
+  │   │   ├── projects/precis/precis-main/assets/templates/profile/AGENTS.md
+  │   │   └── projects/precis/precis-main/assets/templates/plugins/AGENTS.md
   │   ├── projects/precis/precis-landing/AGENTS.md
   │   ├── projects/syntara/AGENTS.md
   │   │   └── projects/syntara/templates/AGENTS.md
@@ -59,8 +59,8 @@ When an AI agent works on a file, it loads all AGENTS.md files from the root dow
 | File | Scope | Key Rules |
 |------|-------|-----------|
 | `projects/AGENTS.md` | Project-level dispatcher conventions | Makefile delegation, WEBSITE= selection |
-| `projects/precis/precis-lms/AGENTS.md` | Precis LMS project | Full product surface — backend, frontend, assets, templates, deployment |
-| `projects/precis/precis-lms/backend/AGENTS.md` | Precis LMS backend | App ownership, URL flow, template resolution order |
+| `projects/precis/precis-main/AGENTS.md` | Precis LMS project | Full product surface — backend, frontend, assets, templates, deployment |
+| `projects/precis/precis-main/backend/AGENTS.md` | Precis LMS backend | App ownership, URL flow, template resolution order |
 | `projects/precis/precis-landing/AGENTS.md` | Landing-Fusion project | Astro/Django dual rendering, content contracts, testing |
 | `projects/syntara/AGENTS.md` | Syntara / Cypercloud | AI streaming, template catalog, provider boundaries |
 | `projects/formints/AGENTS.md` | Formint multi-edition POS | Edition map, cloud rules, community rules, cross-cutting |
@@ -70,19 +70,19 @@ When an AI agent works on a file, it loads all AGENTS.md files from the root dow
 
 | File | Scope | Key Rules |
 |------|-------|-----------|
-| `projects/precis/precis-lms/backend/apps/pages/blog/templates/AGENTS.md` | Blog templates | Blog-specific component and fragment conventions |
-| `projects/precis/precis-lms/backend/apps/pages/profile/templates/AGENTS.md` | Profile templates | Profile page structure and template rules |
-| `projects/precis/precis-lms/backend/apps/pages/accounts/templates/AGENTS.md` | Auth/account templates | Allauth integration, verification templates |
-| `projects/precis/precis-lms/backend/apps/learning/templates/AGENTS.md` | Learning templates | Course catalog, enrollment, progress templates |
-| `projects/precis/precis-lms/backend/apps/templates/AGENTS.md` | App-level shared templates | Shared component overrides and conventions |
-| `projects/precis/precis-lms/backend/templates/AGENTS.md` | Backend root templates | Site-root shells, error pages, admin overrides |
-| `projects/precis/precis-lms/assets/templates/AGENTS.md` | Asset templates root | Template organization and resolution order |
-| `projects/precis/precis-lms/assets/templates/blog/AGENTS.md` | Asset blog templates | Blog asset template conventions |
-| `projects/precis/precis-lms/assets/templates/pages/AGENTS.md` | Asset page templates | Page template conventions |
-| `projects/precis/precis-lms/assets/templates/lms/AGENTS.md` | Asset LMS templates | LMS-specific template conventions |
-| `projects/precis/precis-lms/assets/templates/components/AGENTS.md` | Asset components | Reusable component conventions |
-| `projects/precis/precis-lms/assets/templates/profile/AGENTS.md` | Asset profile templates | Profile template conventions |
-| `projects/precis/precis-lms/assets/templates/plugins/AGENTS.md` | Asset plugin templates | Plugin template conventions |
+| `projects/precis/precis-main/backend/apps/pages/blog/templates/AGENTS.md` | Blog templates | Blog-specific component and fragment conventions |
+| `projects/precis/precis-main/backend/apps/pages/profile/templates/AGENTS.md` | Profile templates | Profile page structure and template rules |
+| `projects/precis/precis-main/backend/apps/pages/accounts/templates/AGENTS.md` | Auth/account templates | Allauth integration, verification templates |
+| `projects/precis/precis-main/backend/apps/learning/templates/AGENTS.md` | Learning templates | Course catalog, enrollment, progress templates |
+| `projects/precis/precis-main/backend/apps/templates/AGENTS.md` | App-level shared templates | Shared component overrides and conventions |
+| `projects/precis/precis-main/backend/templates/AGENTS.md` | Backend root templates | Site-root shells, error pages, admin overrides |
+| `projects/precis/precis-main/assets/templates/AGENTS.md` | Asset templates root | Template organization and resolution order |
+| `projects/precis/precis-main/assets/templates/blog/AGENTS.md` | Asset blog templates | Blog asset template conventions |
+| `projects/precis/precis-main/assets/templates/pages/AGENTS.md` | Asset page templates | Page template conventions |
+| `projects/precis/precis-main/assets/templates/lms/AGENTS.md` | Asset LMS templates | LMS-specific template conventions |
+| `projects/precis/precis-main/assets/templates/components/AGENTS.md` | Asset components | Reusable component conventions |
+| `projects/precis/precis-main/assets/templates/profile/AGENTS.md` | Asset profile templates | Profile template conventions |
+| `projects/precis/precis-main/assets/templates/plugins/AGENTS.md` | Asset plugin templates | Plugin template conventions |
 | `projects/syntara/templates/AGENTS.md` | Syntara templates | AI chat/editor component templates |
 
 ### Library Level

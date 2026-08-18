@@ -51,7 +51,7 @@ CONFIG_DIR = Path(__file__).resolve().parents[1] / "Env"
 def _resolve_workspace_dir() -> Path:
     """Resolve the monorepo root from this settings package.
 
-    Host layout:      <repo>/projects/precis/precis-lms/backend/configs/settings/conf.py
+    Host layout:      <repo>/projects/precis/precis-main/backend/configs/settings/conf.py
     Container layout: /app/precis-lms/configs/settings/conf.py
 
     ``parents[6]`` works on the host (7 levels down) but overruns inside the
@@ -74,7 +74,7 @@ def _resolve_workspace_dir() -> Path:
 
 # This local config package is owned by Precis. Keep workspace-level dotenv
 # lookup at the repository root; the site registry itself lives under
-# ``projects/precis/precis-lms/backend/configs/Env``.
+# ``projects/precis/precis-main/backend/configs/Env``.
 WORKSPACE_DIR = _resolve_workspace_dir()
 SITE_DIR = active_site_dir()
 _MISSING = object()

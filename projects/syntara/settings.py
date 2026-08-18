@@ -17,7 +17,6 @@ _WORKSPACE_DIR = _SITE_DIR.parent
 
 for _path in (
     _WORKSPACE_DIR,
-    _WORKSPACE_DIR / "libs" / "ceptor-ai" / "src",
     _WORKSPACE_DIR / "libs" / "django-fusion" / "src",
 ):
     _path_str = str(_path)

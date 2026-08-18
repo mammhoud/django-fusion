@@ -62,12 +62,12 @@ AI agents load ALL AGENTS.md files from root to leaf — later files override ea
 | Location | Scope |
 |----------|-------|
 | [Root AGENTS.md](../AGENTS.md) | Monorepo-wide conventions, template paths, Makefile delegation |
-| `projects/precis/precis-lms/AGENTS.md` | LMS site conventions, plugins, components |
+| `projects/precis/precis-main/AGENTS.md` | LMS site conventions, plugins, components |
 | `projects/vresume/AGENTS.md` (when present; compatibility site) | Portfolio/VResume site structure, page templates |
 | `projects/syntara/templates/AGENTS.md` (when present) | AI chat customizer conventions |
-| `projects/precis/precis-lms/assets/templates/AGENTS.md` | Precis template organization and resolution order |
-| `projects/precis/precis-lms/assets/templates/components/AGENTS.md` | Precis component inventory |
-| `projects/precis/precis-lms/assets/templates/plugins/AGENTS.md` | Precis plugin template conventions |
+| `projects/precis/precis-main/assets/templates/AGENTS.md` | Precis template organization and resolution order |
+| `projects/precis/precis-main/assets/templates/components/AGENTS.md` | Precis component inventory |
+| `projects/precis/precis-main/assets/templates/plugins/AGENTS.md` | Precis plugin template conventions |
 | `libs/django-fusion/AGENTS.md` | Component system, routing, canonical imports |
 | `libs/ceptor-ai/AGENTS.md` (when present) | AI assistant, MCP server, chat client |
 | `applications/agents/AGENTS.md` | Kilo MCP server, tool definitions |

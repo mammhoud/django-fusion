@@ -26,7 +26,7 @@ END $$;
 --    INITDB_MULTIPLE_DATABASES env var, so we leave it for that script to own.
 -- -----------------------------------------------------------------------------
 -- Databases follow the project-tree naming convention (db_<tree>):
---   db_precis_lms      → projects/precis/precis-lms
+--   db_precis_lms      → projects/precis/precis-main
 --   db_precis_ctc      → projects/precis/precis-ctc
 --   db_precis_landing  → projects/precis/precis-landing
 --   db_loop_crm        → projects/loop-crm

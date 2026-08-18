@@ -42,11 +42,11 @@ MkDocs site.
 
 ### Architecture Doc
 - Follow `docs/ARCHITECTURE.md` style: context/goals, diagrams, key decisions and trade-offs, data flow and integration points.
-- Cite local paths (`projects/precis/precis-lms/backend/`, `libs/django-fusion/`) — the repo map in the root `AGENTS.md` is the source of truth.
+- Cite local paths (`projects/precis/precis-main/backend/`, `libs/django-fusion/`) — the repo map in the root `AGENTS.md` is the source of truth.
 
 ### Runbook (`docs/operations/playbooks/` if created, or `docs/guides/`)
 - When to use → prerequisites/access → step-by-step → rollback → escalation.
-- Include the actual commands from the Makefile dispatcher (`cd projects && make check WEBSITE=precis-lms`, `make run-dev WEBSITE=precis-landing`, etc.).
+- Include the actual commands from the Makefile dispatcher (`cd projects && make check WEBSITE=precis-main`, `make run-dev WEBSITE=precis-landing`, etc.).
 
 ### API Docs (per product, e.g. `docs/landing-fusion/backend-api.md`)
 - Endpoint reference with request/response examples, auth, error codes, rate limits, pagination.
@@ -61,7 +61,7 @@ MkDocs site.
 2. **`<!-- AI-generated: review needed -->`** marker on AI-written sections that need human verification.
 3. **Code blocks with language hints** for all snippets (`yaml`, `python`, `astro`, `nginx`, `bash`).
 4. **Link, don't duplicate.** Reference other docs instead of copying content; keep `docs/_sidebar.md` in sync.
-5. **Keep docs paths synchronized with the real tree and Makefile aliases.** If a product is renamed or migrated, document BOTH the canonical path and the compatibility alias (e.g. `precis/precis-lms` canonical vs `WEBSITE=precis-lms` alias). Do not document stale legacy paths as current.
+5. **Keep docs paths synchronized with the real tree and Makefile aliases.** If a product is renamed or migrated, document BOTH the canonical path and the compatibility alias (e.g. `precis/precis-main` canonical vs `WEBSITE=precis-main` alias). Do not document stale legacy paths as current.
 6. **No secrets.** Never print tokens, passwords, or full `.env` files — use `.env.example` names without values.
 
 ## 5. Writing Principles

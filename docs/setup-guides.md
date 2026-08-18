@@ -14,7 +14,7 @@ build, Docker, and common issues.
 | Project | Guide | Stack | Dev ports |
 |---------|-------|-------|-----------|
 | **Precis (unified)** | [`projects/precis/precis-main/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :8074 · frontend :4321 |
-| **Precis LMS** | [`projects/precis/precis-lms/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-lms/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :5071 · frontend :3002 |
+| **Precis LMS** | [`projects/precis/precis-main/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :5071 · frontend :3002 |
 | **Landing-Fusion** | [`projects/precis/precis-landing/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-landing/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :8074 · frontend :4321 |
 | **CTC Research** | [`projects/precis/precis-ctc/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-ctc/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :5070 · frontend :3002 |
 | **Syntara / Cypercloud** | [`projects/syntara/docs/SETUP_AND_BUILD.md`](../projects/syntara/docs/SETUP_AND_BUILD.md) | Django + Ceptor-AI + Monaco + HTMX | app :5073 · webpack HMR :5093 |
@@ -27,7 +27,7 @@ build, Docker, and common issues.
 | I want to work on… | Start with |
 |--------------------|------------|
 | The marketing + LMS product | [Precis (unified)](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) |
-| The standalone learning platform | [Precis LMS](../projects/precis/precis-lms/docs/SETUP_AND_BUILD.md) |
+| The standalone learning platform | [Precis LMS](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) |
 | The landing/marketing slice | [Landing-Fusion](../projects/precis/precis-landing/docs/SETUP_AND_BUILD.md) |
 | The medical research center site | [CTC Research](../projects/precis/precis-ctc/docs/SETUP_AND_BUILD.md) |
 | The AI chat / template customizer | [Syntara / Cypercloud](../projects/syntara/docs/SETUP_AND_BUILD.md) |

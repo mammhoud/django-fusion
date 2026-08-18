@@ -303,7 +303,7 @@ projects/
 │   ├── email_tasks.py      # send_newsletter, send_contact_form_notification
 │   └── content_tasks.py    # warm_page_cache, generate_blog_preview_images
 │
-├── precis/precis-lms/backend/apps/tasks/
+├── precis/precis-main/backend/apps/tasks/
 │   ├── email_tasks.py      # send_enrollment_confirmation, send_certificate
 │   ├── course_tasks.py     # sync_course_completion_rates, send_weekly_digest
 │   └── content_tasks.py    # process_uploaded_video, generate_ai_description
@@ -418,7 +418,7 @@ projects/webpack/
 projects/precis/precis-landing/webpack/
 └── precis-landing.config.js # Extends base, per-project entries/output
 │
-projects/precis/precis-lms/webpack/
+projects/precis/precis-main/webpack/
 └── precis.config.js         # Extends base, per-project entries/output
 ```
 

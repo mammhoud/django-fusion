@@ -149,15 +149,15 @@ class StreamChatView(SingleObjectMixin, View):
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Ceptor AI Stream — uses CeptorAIService (ceptor_stubs-backed)
+#  Ceptor AI Stream — uses the in-project CeptorAIService
 # ═══════════════════════════════════════════════════════════════
 
 @method_decorator(csrf_exempt, name="dispatch")
 class CeptorAIStreamChatView(SingleObjectMixin, View):
     """SSE endpoint that streams completions via CeptorAIService.
 
-    Uses the local ``ceptor_stubs`` AIIntegrationRegistry to call OpenAI,
-    Claude, Gemini, etc. directly — no external chat server required.
+    Uses the in-project AIIntegrationRegistry to call Ollama, OpenAI, Claude,
+    Gemini, etc. directly — no external chat server or stub package required.
     Model is selected via the ``model_id`` query parameter:
 
     - ``ceptor-openai`` → OpenAI (requires ``OPENAI_API_KEY`` env var)
@@ -225,7 +225,7 @@ class CeptorAIStreamChatView(SingleObjectMixin, View):
                         yield f"data: {json.dumps({'type': 'token', 'content': chunk})}\n\n"
 
             except ImportError:
-                yield f"data: {json.dumps({'type': 'error', 'content': 'ceptor-ai is not installed. Install with: pip install ceptor-ai'})}\n\n"
+                yield f"data: {json.dumps({'type': 'error', 'content': 'Ceptor AI service is not available.'})}\n\n"
                 return
             except Exception as e:
                 yield f"data: {json.dumps({'type': 'error', 'content': f'Ceptor AI error: {str(e)}'})}\n\n"
@@ -338,15 +338,15 @@ class CeptorStreamChatView(SingleObjectMixin, View):
                 )
                 full_response = reply["text"]
 
-                # Simulate token-by-token streaming since ChatBubble returns
-                # complete reply — split into word-level tokens for smooth UI
+                # ChatBubble returns a complete reply — split into word-level
+                # tokens for a smooth streaming UI
                 words = full_response.split(" ")
                 for i, word in enumerate(words):
                     token = word + (" " if i < len(words) - 1 else "")
                     yield f"data: {json.dumps({'type': 'token', 'content': token})}\n\n"
 
             except ImportError:
-                yield f"data: {json.dumps({'type': 'error', 'content': 'ceptor-stubs are not available.'})}\n\n"
+                yield f"data: {json.dumps({'type': 'error', 'content': 'Ceptor chat service is not available.'})}\n\n"
                 return
             except Exception as e:
                 yield f"data: {json.dumps({'type': 'error', 'content': f'Ceptor chat error: {str(e)}'})}\n\n"

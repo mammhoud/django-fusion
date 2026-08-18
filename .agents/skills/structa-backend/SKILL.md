@@ -16,7 +16,7 @@ how to validate changes.
 
 ## 2. Where Code Belongs (ownership)
 
-- **Product code** → the owning product under `projects/<product>/` (e.g. `projects/precis/precis-lms/backend/`, `projects/precis/precis-ctc/backend/`).
+- **Product code** → the owning product under `projects/<product>/` (e.g. `projects/precis/precis-main/backend/`, `projects/precis/precis-ctc/backend/`).
 - **Shared Django settings** → `projects/precis/configs/` ONLY when multiple products genuinely consume the same behavior.
 - **Shared framework behavior** → `libs/django-fusion/` (component registry, viewsets, fragments, forms, tables, routing).
 - **Product app layout** — prefer existing boundaries: `models`, `services`, `handlers`, `api`, `components`, `management`, `domain`. Do not grow large view functions into service layers.
@@ -75,16 +75,16 @@ commands against a shared environment without explicit user direction.
 
 ```bash
 # Python/Django lint + system check
-cd projects/precis/precis-lms/backend && make check   # ruff check + manage.py check
+cd projects/precis/precis-main/backend && make check   # ruff check + manage.py check
 python manage.py check
 
 # Focused tests
-cd projects/precis/precis-lms/backend && make test
+cd projects/precis/precis-main/backend && make test
 cd libs/django-fusion && uv run pytest                # framework tests
 
 # Dispatcher-level
-cd projects && make check WEBSITE=precis-lms
-make test WEBSITE=precis-lms
+cd projects && make check WEBSITE=precis-main
+make test WEBSITE=precis-main
 ```
 
 Report any checks you couldn't run. Never run migrations or fixture loads
@@ -93,7 +93,7 @@ against shared environments without explicit permission.
 ## 6. Change Checklist (backend)
 
 - [ ] Read the nearest `AGENTS.md` (root → projects → product → backend).
-- [ ] Confirmed the owning product and current path (check `projects/Makefile` aliases; e.g. `WEBSITE=precis-lms` → `projects/precis/precis-lms/`).
+- [ ] Confirmed the owning product and current path (check `projects/Makefile` aliases; e.g. `WEBSITE=precis-main` → `projects/precis/precis-main/`).
 - [ ] Searched for existing helpers/components/routes/services with `rg` before adding new ones.
 - [ ] Imported real symbols from `django_fusion.*` — no re-export shims.
 - [ ] Kept business logic in services/managers/domain, not in view functions or templates.

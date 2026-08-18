@@ -937,7 +937,7 @@
     {
       "id": "project.precis",
       "name": "Precis LMS",
-      "path": "projects/precis/precis-lms/",
+      "path": "projects/precis/precis-main/",
       "description": "The production learning platform for courses, enrollment, payments, progress, certificates, profiles, and multilingual Wagtail content.",
       "stack": [
         "Django 5.2",
@@ -957,12 +957,12 @@
         "test-engineer",
         "code-reviewer"
       ],
-      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired precis-lms paths. Read projects/precis/precis-lms/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
+      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired precis-lms paths. Read projects/precis/precis-main/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
       "checks": [
-        "cd projects/precis/precis-lms/backend && make check",
-        "cd projects/precis/precis-lms/backend && make test",
-        "cd projects/precis/precis-lms/frontend && npm run check",
-        "cd projects/precis/precis-lms/frontend && npm run build"
+        "cd projects/precis/precis-main/backend && make check",
+        "cd projects/precis/precis-main/backend && make test",
+        "cd projects/precis/precis-main/frontend && npm run check",
+        "cd projects/precis/precis-main/frontend && npm run build"
       ],
       "related_skills": [
         "skill.website-redesign-audit",

@@ -8,7 +8,7 @@
 
 | Product | Canonical Path | Main Responsibility | Domain |
 |---|---|---|---|
-| **Precis LMS** | `projects/precis/precis-lms/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
+| **Precis LMS** | `projects/precis/precis-main/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
 | **Landing-Fusion** | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
 | **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
 | **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |

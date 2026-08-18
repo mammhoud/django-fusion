@@ -1,19 +1,19 @@
 # Precis Legacy Plugin Template Scope — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-lms/assets/templates/plugins/`
+**Scope:** `projects/precis/precis-main/assets/templates/plugins/`
 
-Read `projects/precis/precis-lms/backend/AGENTS.md` and the root `AGENTS.md` first. This
+Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. This
 folder is a legacy/template compatibility scope inside Precis assets. It is not
 the canonical location for new Django app templates.
 
 ## Canonical ownership for new work
 
-- Auth/account templates: `projects/precis/precis-lms/backend/apps/auth/` or the owning
+- Auth/account templates: `projects/precis/precis-main/backend/apps/auth/` or the owning
   account feature under `backend/apps/pages/`.
-- Learning templates: `projects/precis/precis-lms/backend/apps/learning/`.
+- Learning templates: `projects/precis/precis-main/backend/apps/learning/`.
 - Blog/profile/product/page templates: the corresponding
   `backend/apps/pages/<feature>/templates/` directory.
-- Site-root overrides: `projects/precis/precis-lms/backend/templates/`.
+- Site-root overrides: `projects/precis/precis-main/backend/templates/`.
 - Generic framework components: `libs/django-fusion/`.
 
 Only modify this directory when an existing Precis loader or compatibility

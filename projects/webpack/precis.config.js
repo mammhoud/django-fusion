@@ -1,5 +1,5 @@
 /**
- * Per-project webpack config — Precis LMS (`projects/precis/precis-lms`).
+ * Per-project webpack config — Precis LMS (`projects/precis/precis-main`).
  *
  * Extends `projects/webpack/base.config.js` (the `createConfig` factory) so the
  * Precis site builds its own bundles instead of relying on the deprecated
@@ -9,11 +9,11 @@
  *   - assets/static/styles/main.scss  → `main` bundle (CSS)
  *   - assets/static/js/app.js         → `app` bundle (JS)
  *
- * Output lands in `projects/precis/precis-lms/assets/bundles/main/` and is published
+ * Output lands in `projects/precis/precis-main/assets/bundles/main/` and is published
  * under `/static/bundles/main/`, matching the per-site `BUNDLE_DIR_NAME` in
- * `projects/precis/precis-lms/backend/configs/base/assets.py`.
+ * `projects/precis/configs/base/assets.py`.
  *
- * Usage (from `projects/precis/precis-lms/assets/`):
+ * Usage (from `projects/precis/precis-main/assets/`):
  *   npm ci --include=dev --legacy-peer-deps
  *   npx webpack --config ../../webpack/precis.config.js --mode production
  */
@@ -25,7 +25,7 @@ const createConfig = require('./base.config');
 
 module.exports = createConfig({
   name: 'precis',
-  projectRoot: path.resolve(__dirname, '..', 'precis', 'main'),
+  projectRoot: path.resolve(__dirname, '..', 'precis', 'precis-main'),
   outputPath: 'assets/bundles/main',
   outputPublic: '/static/bundles/main/',
   aliases: {

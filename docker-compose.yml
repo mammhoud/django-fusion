@@ -9,7 +9,7 @@
 #
 # The former `applications/compose/docker-compose.applications.yml` is gone:
 # per-site Django containers moved to project-level compose files
-# (projects/precis/precis-lms/docker-compose.yml, projects/precis/precis-landing/docker-compose.yml),
+# (projects/precis/precis-main/docker-compose.yml, projects/precis/precis-landing/docker-compose.yml),
 # and Coder now lives in applications/databases/docker-compose.yml.
 
 include:

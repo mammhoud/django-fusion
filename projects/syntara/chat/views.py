@@ -392,38 +392,34 @@ class CeptorHealthView(View):
     def get(self, request):
         from django.http import JsonResponse
 
+        from . import ceptor as ceptor_module
+        from .ceptor import CeptorChatService, get_ai_service, get_mcp_service
+
         status = {
-            "package": "ceptor-stubs",
-            "installed": False,
-            "version": None,
+            "package": "syntara.chat.ceptor",
+            "installed": True,
+            "version": getattr(ceptor_module, "__version__", "in-project"),
             "services": {},
         }
 
-        try:
-            import ceptor_stubs  # noqa: F401
-
-            status["installed"] = True
-            status["version"] = "inline-stubs"
-        except ImportError:
-            pass
-
         # Check AI backends
         try:
-            from .ceptor import get_ai_service
-
-            ai = get_ai_service()
-            status["services"]["ai_backends"] = ai.list_backends()
+            status["services"]["ai_backends"] = get_ai_service().list_backends()
         except Exception:
             status["services"]["ai_backends"] = []
 
         # Check MCP tools
         try:
-            from .ceptor import get_mcp_service
-
-            mcp = get_mcp_service()
-            status["services"]["mcp_tools"] = mcp.list_tools()
+            status["services"]["mcp_tools"] = get_mcp_service().list_tools()
         except Exception:
             status["services"]["mcp_tools"] = []
+
+        # Check chat-server / local-AI availability
+        try:
+            chat = CeptorChatService()
+            status["services"]["chat_available"] = chat.is_available()
+        except Exception:
+            status["services"]["chat_available"] = False
 
         return JsonResponse(status)
 
@@ -542,7 +538,7 @@ class CeptorAICompleteView(View):
 
         except ImportError:
             return JsonResponse(
-                {"error": "ceptor-stubs are not available."},
+                {"error": "Ceptor AI service is not available."},
                 status=503,
             )
         except Exception as e:

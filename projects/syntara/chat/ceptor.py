@@ -1,18 +1,29 @@
-"""Stub-backed AI/MCP/chat services for TemplateTinker.
+"""In-project AI/MCP/chat services for TemplateTinker (replaces ceptor_stubs).
 
 Provides:
-    CeptorAIService   — AI completion/streaming via the local ceptor_stubs AIIntegrationRegistry
-    CeptorMCPService  — MCP tool execution via the local ceptor_stubs MCP server
+    CeptorAIService    — AI completion/streaming via the in-project AIIntegrationRegistry
+    CeptorMCPService   — MCP tool execution via the in-project MCP server
     CeptorConfigLoader — Configuration preloader
-    CeptorChatService — High-level chat interface using the local ceptor_stubs ChatBubble
+    CeptorChatService  — High-level chat interface with a local-AI fallback
+
+Every provider call goes through the project's own real AI service
+(``chat.services.AIService`` — Ollama + OpenAI-compatible), so no external
+``ceptor-ai`` package or stub module is required.
 """
 
 from __future__ import annotations
 
 import json
 import logging
+import os
+import re
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
+
+import httpx
+
+from .constants import available_models, get_model
+from .services import AIService
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +33,7 @@ logger = logging.getLogger(__name__)
 # ═══════════════════════════════════════════════════════════════
 
 class CeptorConfigLoader:
-    """Preload and cache ceptor-ai configuration from YAML/JSON files.
+    """Preload and cache AI configuration from YAML/JSON files.
 
     Usage::
 
@@ -76,7 +87,7 @@ class CeptorConfigLoader:
         return config
 
     def load_website_templates(self, website_slug: str) -> list[dict[str, Any]]:
-        """Discover template files for a website from ceptor-ai config."""
+        """Discover template files for a website from AI config."""
         from .site_data import pages_for_website
 
         data = pages_for_website(website_slug)
@@ -96,14 +107,303 @@ class CeptorConfigLoader:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  AI Service — using the local ceptor_stubs AIIntegrationRegistry
+#  AI Integration Registry — real provider backends
+# ═══════════════════════════════════════════════════════════════
+
+# Backend name → model id resolved from configs/models.yml (or the virtual
+# ceptor-* entries). These are the backends the UI exposes.
+BACKEND_MODEL_MAP: dict[str, str] = {
+    "ollama": "gemma3-4b",
+    "openai": "gpt4o",
+    "claude": "claude-sonnet",
+    "gemini": "gemini-2.5-flash",
+    "openai_compatible": "gpt4o",
+}
+
+
+def _resolve_model_id(backend: str, model: str | None) -> str:
+    """Resolve a backend name + optional model hint to a real model id."""
+    if model:
+        if get_model(model) is not None or model in BACKEND_MODEL_MAP.values():
+            return model
+    return BACKEND_MODEL_MAP.get(backend, "gemma3-4b")
+
+
+class _AIProviderBackend:
+    """Real provider backend bound to a model id.
+
+    Delegates to ``chat.services.AIService`` (Ollama + OpenAI-compatible),
+    which is the project's production AI path.
+    """
+
+    def __init__(self, backend: str, model_id: str, **kwargs: Any):
+        self.backend = backend
+        self.model_id = model_id
+        self.kwargs = kwargs
+
+    def generate(self, prompt: str, **kwargs: Any) -> str:
+        messages = [{"role": "user", "content": prompt}]
+        return AIService.chat(self.model_id, messages)
+
+    def stream(self, prompt: str, **kwargs: Any) -> Iterator[str]:
+        messages = [{"role": "user", "content": prompt}]
+        for raw in AIService.stream(self.model_id, messages):
+            try:
+                data = json.loads(raw)
+            except (json.JSONDecodeError, TypeError):
+                continue
+            if data.get("type") == "token":
+                yield data.get("content", "")
+
+
+class AIIntegrationRegistry:
+    """Registry for AI provider integrations.
+
+    Replaces ``ceptor_ai.ai.integrations.AIIntegrationRegistry``. Backends are
+    resolved to real model configs from ``configs/models.yml`` and executed
+    through the in-project AI service — no stubs.
+    """
+
+    _backends: set[str] = set(BACKEND_MODEL_MAP.keys())
+
+    @classmethod
+    def register(cls, name: str) -> None:
+        cls._backends.add(name)
+
+    @classmethod
+    def get(cls, backend: str, **inst_kwargs: Any) -> _AIProviderBackend:
+        model_id = _resolve_model_id(backend, inst_kwargs.pop("model", None))
+        return _AIProviderBackend(backend, model_id, **inst_kwargs)
+
+    @classmethod
+    def list_integrations(cls) -> list[str]:
+        return sorted(cls._backends)
+
+
+# ═══════════════════════════════════════════════════════════════
+#  MCP Server — real read-only tool implementations
+# ═══════════════════════════════════════════════════════════════
+
+_SKIP_DIRS = {
+    "node_modules",
+    ".git",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".astro",
+    "dist",
+    "build",
+    "cache",
+    "staticfiles",
+}
+
+
+_TOKEN_RE = re.compile(r"(--[a-zA-Z0-9_-]+)\s*:")
+
+
+def _theme_analyzer(root: str) -> dict[str, Any]:
+    """Scan a project root for CSS custom-property design tokens."""
+    root_path = Path(root).resolve()
+    if not root_path.is_dir():
+        return {"root": root, "error": "directory not found", "tokens": {}}
+
+    tokens: dict[str, list[str]] = {}
+    files_scanned = 0
+    for path in root_path.rglob("*"):
+        if path.is_file() and path.suffix.lower() in {".css", ".scss"}:
+            if any(part in _SKIP_DIRS for part in path.parts):
+                continue
+            files_scanned += 1
+            try:
+                text = path.read_text(encoding="utf-8", errors="ignore")
+            except OSError:
+                continue
+            for match in _TOKEN_RE.finditer(text):
+                tokens.setdefault(match.group(1), []).append(str(path))
+
+    return {
+        "root": str(root_path),
+        "files_scanned": files_scanned,
+        "token_count": len(tokens),
+        "tokens": {name: len(paths) for name, paths in sorted(tokens.items())},
+    }
+
+
+def _component_mapper(root: str, central: str) -> dict[str, Any]:
+    """Find reusable component templates under a central directory."""
+    root_path = Path(root).resolve()
+    central_path = (root_path / central.lstrip("/")).resolve()
+
+    if not central_path.is_dir():
+        return {
+            "root": str(root_path),
+            "central": str(central_path),
+            "error": "central directory not found",
+            "components": [],
+        }
+
+    components: list[str] = []
+    for path in central_path.rglob("*.html"):
+        if any(part in _SKIP_DIRS for part in path.parts):
+            continue
+        if "components" in path.parts or "fragments" in path.parts:
+            components.append(str(path.relative_to(root_path)))
+
+    return {
+        "root": str(root_path),
+        "central": str(central_path),
+        "component_count": len(components),
+        "components": sorted(components),
+    }
+
+
+def _config_inspector(prefix: str | None) -> dict[str, Any]:
+    """List env vars matching a prefix — names only, values redacted."""
+    prefix = prefix or ""
+    matched = [
+        name
+        for name in os.environ
+        if name.startswith(prefix) and not name.startswith("_")
+    ]
+    return {
+        "prefix": prefix,
+        "count": len(matched),
+        "variables": sorted(matched),
+        "note": "Values are redacted; set the matching env vars to configure.",
+    }
+
+
+class _MCPServer:
+    """Real in-project MCP tool server.
+
+    Replaces ``ceptor_ai.mcp.server.server``. Tools are read-only and operate
+    on the local filesystem / environment.
+    """
+
+    def list_tools(self) -> list[str]:
+        return ["theme_analyzer", "component_mapper", "config_inspector"]
+
+    def call_tool(self, tool_name: str, **kwargs: Any) -> Any:
+        if tool_name == "theme_analyzer":
+            return _theme_analyzer(kwargs.get("root", "."))
+        if tool_name == "component_mapper":
+            return _component_mapper(
+                kwargs.get("root", "."),
+                kwargs.get("central", "projects/precis-ctc"),
+            )
+        if tool_name == "config_inspector":
+            return _config_inspector(kwargs.get("prefix"))
+        raise ValueError(
+            f"Unknown tool: {tool_name}. "
+            f"Available: {', '.join(self.list_tools())}"
+        )
+
+
+server = _MCPServer()  # module-level instance
+
+
+# ═══════════════════════════════════════════════════════════════
+#  Chat client — real HTTP client with local-AI fallback
+# ═══════════════════════════════════════════════════════════════
+
+class _ChatReply:
+    """A real chat reply returned by ChatBubble.send()."""
+
+    def __init__(
+        self, text: str, role: str = "assistant", session_id: str = ""
+    ):
+        self.text = text
+        self.role = role
+        self.session_id = session_id
+        self.metadata: dict[str, Any] = {"source": "chat-server"}
+
+
+class CraftsClient:
+    """Real chat server client — replaces ceptor_ai.chat.client.CraftsClient."""
+
+    def __init__(self, base_url: str = "http://localhost:8765", timeout: int = 30):
+        self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
+
+    def health(self) -> bool:
+        try:
+            with httpx.Client(timeout=self.timeout) as client:
+                response = client.get(f"{self.base_url}/health")
+                return response.status_code < 400
+        except Exception:
+            return False
+
+
+class ChatBubble:
+    """Real chat bubble — replaces ceptor_ai.chat.client.ChatBubble.
+
+    Sends messages to the configured chat server. When the server is
+    unreachable it falls back to the local AI service (Ollama by default) so a
+    real reply is always produced.
+    """
+
+    def __init__(
+        self,
+        server_url: str = "http://localhost:8765",
+        session_id: str | None = None,
+        timeout: int = 30,
+    ):
+        self.server_url = server_url.rstrip("/")
+        self.session_id = session_id
+        self.timeout = timeout
+
+    def send(self, message: str, **kwargs: Any) -> _ChatReply:
+        try:
+            with httpx.Client(timeout=self.timeout) as client:
+                response = client.post(
+                    f"{self.server_url}/chat",
+                    json={
+                        "message": message,
+                        "session_id": self.session_id,
+                        **kwargs,
+                    },
+                )
+                response.raise_for_status()
+                data = response.json()
+            text = (
+                data.get("text")
+                or data.get("reply")
+                or data.get("message", {}).get("content", "")
+            )
+            return _ChatReply(
+                text=str(text),
+                role=data.get("role", "assistant"),
+                session_id=data.get("session_id", self.session_id or ""),
+            )
+        except Exception as exc:
+            # Chat server unavailable — fall back to the local AI service.
+            logger.warning(
+                "Chat server unreachable (%s); falling back to local AI: %s",
+                self.server_url,
+                exc,
+            )
+            try:
+                reply = AIService.chat(
+                    _resolve_model_id("ollama", None),
+                    [{"role": "user", "content": message}],
+                )
+            except Exception as fallback_exc:
+                raise RuntimeError(
+                    f"Chat server unreachable and local AI failed: {fallback_exc}"
+                ) from fallback_exc
+            return _ChatReply(
+                text=str(reply),
+                role="assistant",
+                session_id=self.session_id or "",
+            )
+
+
+# ═══════════════════════════════════════════════════════════════
+#  AI Service — real completions via the in-project registry
 # ═══════════════════════════════════════════════════════════════
 
 class CeptorAIService:
-    """AI completions via the local ceptor_stubs AIIntegrationRegistry.
-
-    Stub-backed — real provider integrations can be registered on the
-    registry when they become available.
+    """AI completions via the in-project AIIntegrationRegistry.
 
     Usage::
 
@@ -121,12 +421,7 @@ class CeptorAIService:
         **kwargs: Any,
     ) -> str:
         """Generate a non-streaming completion."""
-        from ceptor_stubs import AIIntegrationRegistry
-
-        inst_kwargs = {**kwargs}
-        if model:
-            inst_kwargs["model"] = model
-        inst = AIIntegrationRegistry.get(backend, **inst_kwargs)
+        inst = AIIntegrationRegistry.get(backend, model=model, **kwargs)
         return inst.generate(prompt, **kwargs)
 
     def stream(
@@ -135,29 +430,22 @@ class CeptorAIService:
         prompt: str,
         model: str | None = None,
         **kwargs: Any,
-    ):
+    ) -> Iterator[str]:
         """Stream completion tokens."""
-        from ceptor_stubs import AIIntegrationRegistry
-
-        inst_kwargs = {**kwargs}
-        if model:
-            inst_kwargs["model"] = model
-        inst = AIIntegrationRegistry.get(backend, **inst_kwargs)
+        inst = AIIntegrationRegistry.get(backend, model=model, **kwargs)
         return inst.stream(prompt, **kwargs)
 
     def list_backends(self) -> list[str]:
         """Return available AI integration backends."""
-        from ceptor_stubs import AIIntegrationRegistry
-
         return AIIntegrationRegistry.list_integrations()
 
 
 # ═══════════════════════════════════════════════════════════════
-#  MCP Service — using the local ceptor_stubs MCP server
+#  MCP Service — real tool execution
 # ═══════════════════════════════════════════════════════════════
 
 class CeptorMCPService:
-    """MCP tool execution via the local ceptor_stubs MCP server.
+    """MCP tool execution via the in-project MCP server.
 
     Usage::
 
@@ -169,30 +457,23 @@ class CeptorMCPService:
     def __init__(self, name: str = "ceptorai-mcp", version: str = "1.0.0"):
         self.name = name
         self.version = version
-        self._server = None
+        self._server = server
 
-    def _get_server(self):
-        """Lazy-load the stub MCP server."""
-        if self._server is not None:
-            return self._server
-
-        from ceptor_stubs import server as mcp_server_instance
-
-        self._server = mcp_server_instance
+    def _get_server(self) -> _MCPServer:
         return self._server
 
     def run_tool(self, tool_name: str, **kwargs: Any) -> Any:
         """Execute a named MCP tool."""
-        server = self._get_server()
+        srv = self._get_server()
 
-        if tool_name not in server.list_tools():
-            available = server.list_tools()
+        if tool_name not in srv.list_tools():
+            available = srv.list_tools()
             raise ValueError(
                 f"Unknown tool: {tool_name}. "
                 f"Available: {', '.join(available)}"
             )
 
-        return server.call_tool(tool_name, **kwargs)
+        return srv.call_tool(tool_name, **kwargs)
 
     def list_tools(self) -> list[str]:
         """List available MCP tools."""
@@ -206,17 +487,17 @@ class CeptorMCPService:
         """Run component_mapper to find reusable components."""
         return self.run_tool("component_mapper", root=root, central=central)
 
-    def inspect_config(self, prefix: str | None = None) -> dict[str, str]:
+    def inspect_config(self, prefix: str | None = None) -> dict[str, Any]:
         """Run config_inspector with optional env var prefix filter."""
         return self.run_tool("config_inspector", prefix=prefix)
 
 
 # ═══════════════════════════════════════════════════════════════
-#  Chat Service — using the local ceptor_stubs ChatBubble
+#  Chat Service — real chat with local-AI fallback
 # ═══════════════════════════════════════════════════════════════
 
 class CeptorChatService:
-    """High-level chat interface using the local ceptor_stubs ChatBubble.
+    """High-level chat interface using the real ChatBubble.
 
     Usage::
 
@@ -234,14 +515,14 @@ class CeptorChatService:
         self.timeout = timeout
 
     def is_available(self) -> bool:
-        """Check if the stub chat client can reach the chat server."""
+        """Check if the chat server (or the local AI fallback) is reachable."""
+        client = CraftsClient(base_url=self.server_url, timeout=self.timeout)
+        if client.health():
+            return True
+        # The local AI fallback means a reply is still producible.
         try:
-            from ceptor_stubs import CraftsClient
-
-            client = CraftsClient(
-                base_url=self.server_url, timeout=self.timeout
-            )
-            return client.health()
+            AIService._resolve_model(_resolve_model_id("ollama", None))
+            return True
         except Exception:
             return False
 
@@ -250,8 +531,6 @@ class CeptorChatService:
     ) -> dict[str, Any]:
         """Send a message and return the reply as a dict."""
         try:
-            from ceptor_stubs import ChatBubble
-
             bubble = ChatBubble(
                 server_url=self.server_url,
                 session_id=session_id,

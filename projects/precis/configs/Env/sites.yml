@@ -3,7 +3,7 @@ default:
   websites:
     lms:
       # Precis is the canonical LMS project directory, relative to projects/.
-      path: precis/precis-lms
+      path: precis/precis-main
       aliases: [structa, core, demo, structa.cloud, precis-lms]
       domain: structa.cloud
       port: 5071
@@ -26,7 +26,7 @@ default:
     shared:
       # Infrastructure-only sentinel for the shared worker/scheduler. It is
       # not a public website and must never be selected by a browser request.
-      path: precis/precis-lms/backend
+      path: precis/precis-main/backend
       aliases: [shared, www, shared-worker, shared-scheduler, tasks]
       domain: localhost
       port: 5080
