@@ -41,7 +41,8 @@ from .permissions import (
     role_of,
 )
 from .realtime import safe_publish_workspace_event
-from .resources import list_rows, resolve_resource
+from .resource_tables import resource_table
+from .resources import resolve_resource
 from .tables import MemberTable
 from .tenancy import current_workspace_id
 from .workflows import (
@@ -469,13 +470,26 @@ class ResourceListView(LoopPageView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         resource = resolve_resource(self.resource)
-        rows = list_rows(self.resource, current_workspace_id(self.request)) if resource else []
-        headers = [f for f in resource.read_fields] if resource else []
-        labels, table_rows = _table(headers, rows)
+        table = {"headers": [], "rows": []}
+        if resource:
+            queryset = resource.model.objects.all()
+            workspace_id = current_workspace_id(self.request)
+            if workspace_id is not None and any(
+                field.name == "workspace" for field in resource.model._meta.concrete_fields
+            ):
+                queryset = queryset.filter(workspace_id=workspace_id)
+            try:
+                # Render-first and both JSON roads now consume the same
+                # django-fusion RowGenerator projection. Bolt remains the
+                # canonical API boundary; this only removes presentation drift.
+                table = resource_table(queryset, self.resource)
+            except (OperationalError, ProgrammingError):
+                table = {"headers": [], "rows": []}
         context.update(
             {
-                "table_headers": [_field_label(header) for header in labels],
-                "table_rows": table_rows,
+                "table_headers": [header["label"] for header in table["headers"]],
+                "table_header_meta": table["headers"],
+                "table_rows": table["rows"],
                 "table_empty": self.empty_message,
             }
         )

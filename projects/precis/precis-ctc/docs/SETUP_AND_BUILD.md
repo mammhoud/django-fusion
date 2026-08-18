@@ -6,7 +6,7 @@
 
 CTC Research is the standalone medical research center site serving
 `ctc-research.com`. It owns its own backend, Astro frontend, Compose stack,
-and database (`db_ctc`) — it does **not** share Precis/LMS runtime state.
+and database (`db_precis_ctc`) — it does **not** share Precis/LMS runtime state.
 The medical research catalog (clinical trial design, biostatistics,
 evidence synthesis, medical AI, manuscript writing, research integrity) is
 seeded from fixtures.
@@ -65,9 +65,10 @@ make superuser          # interactive admin user
 ```
 
 The medical research catalog is loaded from
-`backend/apps/learning/fixtures/medical_research_catalog.json` and
+`backend/apps/learning/fixtures/medical_research_catalog.json`,
+`backend/apps/learning/fixtures/medical_research_curriculum.json`, and
 `backend/assets/fixtures/dump-data.json`. Run `populate-data` after
-`migrate` so the site has its course/catalog pages.
+`migrate` so the site has its course/catalog pages, modules, and lessons.
 
 ---
 
@@ -203,15 +204,60 @@ PORT=5080 make dev
 
 ### Confusing CTC with Precis LMS state
 
-CTC is standalone: its database is `db_ctc`, its settings are self-contained,
+CTC is standalone: its database is `db_precis_ctc`, its settings are self-contained,
 and its Compose stack is independent. Do not point it at Precis/LMS runtime
 databases or volumes.
 
 ---
 
+## 10. Shared assets, locales, and full-stack redeploy
+
+CTC runtime media and Django-side bundles use the shared monorepo asset tree:
+
+```text
+projects/assets/media/ctc-research/
+projects/assets/bundles/ctc-research/
+```
+
+Generate the target locale catalogs and compiled files with:
+
+```bash
+cd projects/precis/precis-ctc
+python3 scripts/generate_locales.py
+```
+
+The command reports exact, pattern, and English-fallback coverage. Review
+fallback entries with a qualified translator before publishing a locale.
+
+For the full CTC stack (backend, Dramatiq worker, scheduler, and frontend):
+
+```bash
+cd projects/precis/precis-ctc
+make redeploy
+```
+
+From the project dispatcher:
+
+```bash
+cd projects
+make redeploy-with-stack WEBSITE=precis-ctc
+```
+
+See [ENVIRONMENT.md](ENVIRONMENT.md) for variable names, shared proxy mounts,
+requirements, and safety/rollback remarks.
+
 ## See also
 
 - [Project README](../README.md) — editions, features, quick start
-- [docs/TEMPLATES.md](../docs/TEMPLATES.md) — template conventions
-- [docs/COMPONENTS.md](../docs/COMPONENTS.md) — component conventions
+- [CONTENTS.md](CONTENTS.md) — page and data map
+- [ENHANCEMENTS.md](ENHANCEMENTS.md) — completed and proposed improvements
+- [ENVIRONMENT.md](ENVIRONMENT.md) — environment and redeploy runbook
+- [TEMPLATES.md](TEMPLATES.md) — template conventions
+- [COMPONENTS.md](COMPONENTS.md) — component conventions
 - [`../../libs/django-fusion/README.md`](../../libs/django-fusion/README.md) — component library
+
+## Remarks & Notes
+
+- The backend venv must be available before running Django checks; do not install dependencies globally as a workaround.
+- `make redeploy` rebuilds and recreates containers but intentionally does not remove volumes or replace fixture data.
+- The generated `.mo` files are runtime artifacts derived from the `.po` files; regenerate them whenever catalogs change.

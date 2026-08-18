@@ -8,7 +8,7 @@
   {% if table_rows %}
   <div class="loop-table-wrap">
     <table class="loop-table">
-      <thead><tr>{% for header in table_headers %}<th>{{ header }}</th>{% endfor %}</tr></thead>
+      <thead><tr>{% if table_header_meta %}{% for header in table_header_meta %}<th data-column-key="{{ header.key }}" data-column-type="{{ header.type }}">{{ header.label }}</th>{% endfor %}{% else %}{% for header in table_headers %}<th>{{ header }}</th>{% endfor %}{% endif %}</tr></thead>
       <tbody>{% for row in table_rows %}<tr>{% for value in row %}<td>{{ value }}</td>{% endfor %}</tr>{% endfor %}</tbody>
     </table>
   </div>

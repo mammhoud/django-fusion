@@ -25,6 +25,7 @@ class Command(BaseCommand):
         "course_tags.json",
         "courses.json",
         "medical_research_catalog.json",
+        "medical_research_curriculum.json",
         "events.json",
     )
 

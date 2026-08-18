@@ -34,7 +34,26 @@ DJANGO_APPS = [
 if AppRegistry().has_any("psycopg", "psycopg2"):
     DJANGO_APPS.append("django.contrib.postgres")
 
-APPS = [*DJANGO_APPS, *EFFECTIVE_ADMIN_APPS]
+
+def _admin_theme_first(django_apps: list[str], admin_apps: list[str]) -> list[str]:
+    """Insert the admin-theme apps (unfold + contrib) before django.contrib.admin.
+
+    unfold ships themed overrides of two Django admin static files
+    (admin/js/actions.js, admin/js/admin/RelatedObjectLookups.js). For its
+    versions to be the ones collectstatic keeps, unfold must precede
+    ``django.contrib.admin`` in INSTALLED_APPS.
+    """
+    apps = list(django_apps)
+    anchor = "django.contrib.admin"
+    if anchor in apps:
+        idx = apps.index(anchor)
+        apps[idx:idx] = admin_apps
+    else:
+        apps[:0] = admin_apps
+    return apps
+
+
+APPS = _admin_theme_first(DJANGO_APPS, EFFECTIVE_ADMIN_APPS)
 
 # WAGTAIL
 WAGTAIL_APPS = [

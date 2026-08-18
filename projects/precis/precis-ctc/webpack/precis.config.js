@@ -15,8 +15,8 @@
  *   # Via the Makefile
  *   cd projects/precis && make build
  *
- * Output (shared monorepo tree, beside media):
- *   projects/assets/bundles/ctc-research/
+ * Output (site-local assets tree, mounted at /app/assets in the container):
+ *   projects/precis/precis-ctc/assets/bundles/ctc-research/
  *   ├── app.[contenthash].js
  *   ├── main.[contenthash].css
  *   ├── vendor.[contenthash].js
@@ -34,7 +34,7 @@
  */
 
 const path = require('path');
-const createConfig = require('../../webpack/base.config');
+const createConfig = require('../../../webpack/base.config');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
@@ -59,7 +59,7 @@ module.exports = createConfig({
   // dir in STATICFILES_DIRS (see backend/settings.py) so collectstatic serves
   // them from STATIC_ROOT and WEBPACK_LOADER/FUSION_ASSET_PIPELINE find the
   // stats file at projects/assets/bundles/ctc-research/bundles.json.
-  outputPath: '../../assets/bundles/ctc-research',
+  outputPath: 'assets/bundles/ctc-research',
   outputPublic: '/static/bundles/ctc-research/',
 
   // ── Resolve aliases ──────────────────────────────────────────────────
@@ -84,7 +84,7 @@ module.exports = createConfig({
 console.log(`
 ╔══════════════════════════════════════════════════════════════╗
 ║  🏥 CTC Research Webpack                                    ║
-║  Output: projects/assets/bundles/ctc-research/              ║
+║  Output: assets/bundles/ctc-research/                       ║
 ║  Public: /static/bundles/ctc-research/                      ║
 ║  django-webpack-loader → {% render_bundle 'precis' %}      ║
 ╚══════════════════════════════════════════════════════════════╝

@@ -236,11 +236,12 @@ MEDIA_ROOT = os.environ.get(
     "MEDIA_ROOT", str(_PROJECTS_DIR / "assets" / "media" / "ctc-research")
 )
 
-# Bundles: webpack writes to the shared projects/assets/bundles/ctc-research/
-# dir (beside media). Register it under the bundles/ctc-research/ URL namespace
-# so collectstatic copies it into STATIC_ROOT and the shared proxy serves it at
-# /static/bundles/ctc-research/ (nginx location already aliases that path).
-_SHARED_BUNDLES = _PROJECTS_DIR / "assets" / "bundles" / "ctc-research"
+# Bundles: webpack writes to the site-local assets/bundles/ctc-research/ dir
+# (mounted at /app/assets/bundles/ctc-research in the container). Register it
+# under the bundles/ctc-research/ URL namespace so collectstatic copies it into
+# STATIC_ROOT and the shared proxy serves it at /static/bundles/ctc-research/
+# (nginx location already aliases that path).
+_SHARED_BUNDLES = _WORKSPACE_DIR / "assets" / "bundles" / "ctc-research"
 if _SHARED_BUNDLES.exists() and "STATICFILES_DIRS" in dir():
     _bundle_entry = ("bundles/ctc-research", str(_SHARED_BUNDLES))
     if _bundle_entry not in STATICFILES_DIRS:
@@ -251,14 +252,18 @@ _ASSETS_STATIC = _WORKSPACE_DIR / "assets" / "static"
 if _ASSETS_STATIC.exists() and "STATICFILES_DIRS" in dir():
     # Mount the site-local assets at the root namespace (/static/...) so the
     # fusion bundles (css/fusion.css, js/app.js) resolve from this site's own
-    # assets/static/ — same convention as precis-landing. Keep the namespaced
-    # alias for any legacy references.
+    # assets/static/ — same convention as precis-landing. The shared configs
+    # also register this same directory under a ``site/precis-ctc/`` namespace;
+    # drop that alias because FileSystemFinder keys storages by root path, so a
+    # second entry for the same dir overwrites the root prefix and makes every
+    # file collect twice (the ``site/precis-ctc/...`` collectstatic duplicates).
     _root_entry = str(_ASSETS_STATIC)
+    STATICFILES_DIRS[:] = [
+        d for d in STATICFILES_DIRS
+        if not (isinstance(d, tuple) and str(d[1]) == _root_entry)
+    ]
     if _root_entry not in STATICFILES_DIRS:
         STATICFILES_DIRS.insert(0, _root_entry)
-    _alias_entry = ("workspace-assets", str(_ASSETS_STATIC))
-    if _alias_entry not in STATICFILES_DIRS:
-        STATICFILES_DIRS.append(_alias_entry)
 
 # FUSION_PIPELINE: point component manifest at the workspace static root.
 if "FUSION_PIPELINE" in dir() and "components" in FUSION_PIPELINE:

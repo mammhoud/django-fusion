@@ -107,7 +107,7 @@ void THEME_STORAGE_KEY;
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
 
-    <meta name="theme-color" content="#F5F2EB" />
+    <meta name="theme-color" content="#F5F7FA" />
 
     <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
       (function () {
@@ -120,7 +120,7 @@ void THEME_STORAGE_KEY;
         root.classList.remove('light', 'dark');
         root.classList.add(dark ? 'dark' : 'light');
         var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', dark ? '#0C1210' : '#F5F2EB');
+        if (meta) meta.setAttribute('content', dark ? '#0F172A' : '#F5F7FA');
       })();
     </script>
 

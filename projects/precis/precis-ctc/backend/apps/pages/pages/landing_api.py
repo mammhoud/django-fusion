@@ -15,6 +15,7 @@ import re
 from datetime import datetime
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import render
 from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from wagtail.blocks.list_block import ListValue
@@ -141,7 +142,7 @@ def _page_data(page) -> dict:
     data = {
         "id": page.pk,
         "slug": page.slug or "home",
-        "title": page.title,
+        "title": _PAGE_TITLE_OVERRIDES.get(page.slug, page.title),
         "type": specific.__class__.__name__,
         "show_in_nav": bool(getattr(specific, "show_in_nav", True)),
         "seo_title": getattr(page, "seo_title", "") or page.title,
@@ -419,6 +420,35 @@ _FRONTEND_ROUTES = {
     "events": "/events/",
 }
 
+# Navigation labels are intentionally shorter than editorial SEO/page titles.
+# Stable slugs and the full page content remain unchanged; this map keeps the
+# header, API navigation, and Astro shell aligned even before a fresh fixture
+# load updates existing Wagtail rows.
+_SHORT_PAGE_LABELS = {
+    "home": "Home",
+    "all-courses": "Courses",
+    "about": "About",
+    "contact": "Contact",
+    "services": "Services",
+    "team": "Team",
+    "events": "Events",
+}
+_PAGE_TITLE_OVERRIDES = {"contact": "Contact", "all-courses": "Courses"}
+
+# Content-only fragment template per landing slug. The Astro shell owns the
+# document, so /fragment/pages/<slug>/ renders only the matching
+# ``<page>/fragment.html`` (no outer layout) — the same contract as the
+# FusionLandingView subclasses in landing_views.py. Pages without a dedicated
+# fragment (courses, events, blog) fall back to a minimal body snippet.
+_FRAGMENT_TEMPLATES = {
+    "home": "home/fragment.html",
+    "about": "about/fragment.html",
+    "about-us": "about/fragment.html",
+    "contact": "contact/fragment.html",
+    "team": "team/fragment.html",
+    "services": "services/fragment.html",
+}
+
 
 def navigation_api(request: HttpRequest) -> JsonResponse:
     language = _requested_language(request)
@@ -446,7 +476,7 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
             if not (getattr(specific, "show_in_nav", True) or getattr(specific, "show_in_menus", True)):
                 continue
             items.append({
-                "label": child.title,
+                "label": _SHORT_PAGE_LABELS.get(child.slug, child.title),
                 "href": route,
                 "active": request.path == route.rstrip("/") or request.path.startswith(route),
             })
@@ -473,6 +503,47 @@ def page_data_api(request: HttpRequest, slug: str) -> JsonResponse:
     data["language"] = language
     data["available_languages"] = [item["code"] for item in _language_catalog()]
     return JsonResponse(data)
+
+
+def page_fragment_api(request: HttpRequest, slug: str = "home") -> HttpResponse:
+    """GET /fragment/pages/<slug>/ — render the page's content-only HTML fragment.
+
+    The Astro frontend owns the document shell, so this endpoint must never
+    return the full layout (a fragment request for ``/<slug>/`` would return
+    the Astro document again). It renders the matching ``<page>/fragment.html``
+    content region — the same contract the ``FusionLandingView`` subclasses
+    expose for HTMX swaps — which the frontend's RenderModeSwitch/LiveFragment
+    HTML road swaps into the page.
+    """
+    normalized = (slug or "home").strip("/") or "home"
+    page = _live_page(normalized, _requested_language(request))
+    if page is None:
+        return HttpResponse("Page not found", status=404)
+
+    specific = page.specific
+    template = _FRAGMENT_TEMPLATES.get(normalized)
+    if template is not None:
+        return render(
+            request,
+            template,
+            {
+                "page": specific,
+                "request": request,
+                "title": _PAGE_TITLE_OVERRIDES.get(page.slug, page.title),
+                "fragment_name": getattr(specific, "fragment_name", None)
+                or f"pages.{normalized.replace('-', '_')}",
+            },
+        )
+
+    # Pages without a dedicated content fragment (courses, events, blog) fall
+    # back to a minimal body snippet instead of the full ``base.html`` layout.
+    body = getattr(specific, "body", None)
+    title = _PAGE_TITLE_OVERRIDES.get(page.slug, page.title)
+    fragment = f'<article class="fusion-page" data-slug="{html.escape(page.slug)}"><h1>{html.escape(title)}</h1>'
+    if body:
+        fragment += str(body)
+    fragment += "</article>"
+    return HttpResponse(fragment)
 
 
 def page_list_api(request: HttpRequest) -> JsonResponse:
@@ -502,7 +573,7 @@ def contact_api(request: HttpRequest) -> JsonResponse:
 
     if page is not None:
         specific = page.specific
-        title = page.title or title
+        title = _PAGE_TITLE_OVERRIDES.get(page.slug, page.title or title)
 
         # Seeded form fields (contact_form → contact_form → fields).
         for block in getattr(specific, "contact_form", []) or []:

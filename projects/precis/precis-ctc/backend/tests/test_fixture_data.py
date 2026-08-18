@@ -87,10 +87,10 @@ EN_CHILD_SLUGS = ["about", "contact", "team", "all-courses", "events", "services
 # Titles from the fixture (English locale)
 EXPECTED_TITLES = {
     "home": "Home Page",
-    "about": "About CTC Research",
-    "contact": "Contact Us",
+    "about": "About",
+    "contact": "Contact",
     "team": "Our Team",
-    "all-courses": "AI for Scientific & Medical Writing Courses",
+    "all-courses": "Courses",
     "events": "Upcoming Events",
     "services": "Our Capabilities",
 }
@@ -111,6 +111,7 @@ LMS_FIXTURES = [
     "course_tags.json",
     "courses.json",
     "medical_research_catalog.json",
+    "medical_research_curriculum.json",
     "events.json",
 ]
 LMS_FIXTURE_DIR = (
@@ -414,6 +415,14 @@ class TestFixtureData(TestCase):
 
     # ── API — page data ────────────────────────────────────────────
 
+    def test_navigation_uses_short_page_labels(self):
+        """Editorial page titles must not make the public header verbose."""
+        response = self.client.get("/apis/navigation/")
+        assert response.status_code == 200
+        labels = {item["href"]: item["label"] for item in response.json()["nav_items"]}
+        assert labels["/contact/"] == "Contact"
+        assert labels["/courses/"] == "Courses"
+
     def test_home_page_data(self):
         response = self.client.get("/api/pages/home/data/")
         assert response.status_code == 200
@@ -426,7 +435,7 @@ class TestFixtureData(TestCase):
         assert response.status_code == 200
         body = json.loads(response.content)
         assert body["data"]["slug"] == "about"
-        assert body["data"]["title"] == "About CTC Research"
+        assert body["data"]["title"] == "About"
 
     def test_unknown_page_data_returns_404(self):
         response = self.client.get("/api/pages/does-not-exist/data/")
@@ -478,6 +487,26 @@ class TestFixtureData(TestCase):
         assert data["page_slug"] == "home"
         assert "fragment_url" in data
         assert isinstance(data["fusion_render_first"], bool)
+
+    def test_home_fragment_page_route_renders_html(self):
+        """GET /fragment/pages/home/ renders the content-only HTML fragment.
+
+        This is the frontend's RenderModeSwitch/LiveFragment HTML road — it
+        must return HTML (not the JSON pointer from /api/pages/<slug>/fragment/)
+        and must never embed the full layout or the learning teaser.
+        """
+        response = self.client.get("/fragment/pages/home/", HTTP_HX_REQUEST="true")
+        assert response.status_code == 200, response.status_code
+        assert response["Content-Type"].startswith("text/html")
+        body = response.content.decode()
+        assert "<html" not in body.lower(), "fragment must not embed the document shell"
+        assert "[ LEARNING / PREVIEW ]" not in body, (
+            "home fragment must not carry the learning teaser"
+        )
+
+    def test_fragment_page_route_unknown_slug_returns_404(self):
+        response = self.client.get("/fragment/pages/does-not-exist/", HTTP_HX_REQUEST="true")
+        assert response.status_code == 404
 
     # ── Home learning section — single distinct teaser (once-only) ──
 
@@ -593,6 +622,22 @@ class TestFixtureData(TestCase):
             assert course.requirements
             assert course.target_audience
             assert course.duration > 0
+
+    def test_medical_curriculum_has_rich_text_without_code_blocks(self):
+        """Every seeded medical course has two modules and four rich-text lessons."""
+        from apps.learning.models import Course
+
+        courses = Course.objects.filter(slug__in=EXPECTED_MEDICAL_COURSE_SLUGS)
+        assert courses.count() == len(EXPECTED_MEDICAL_COURSE_SLUGS)
+        for course in courses:
+            modules = list(course.modules.all())
+            assert len(modules) == 2, course.slug
+            lessons = [lesson for module in modules for lesson in module.lessons.all()]
+            assert len(lessons) == 4, course.slug
+            for lesson in lessons:
+                block_types = {block.block_type for block in lesson.content}
+                assert "rich_text" in block_types, lesson.slug
+                assert "code" not in block_types, lesson.slug
 
     def test_medical_course_detail_api_returns_all_learning_content(self):
         """Course detail API exposes all seeded medical learning fields."""

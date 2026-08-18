@@ -1,6 +1,6 @@
-# Precis LMS — Template Architecture
+# CTC Research — Template Architecture
 
-> **Last updated:** 2026-08-10
+> **Last updated:** 2026-08-18
 > **Template engine:** Django (DjangoTemplates) + django-fusion components + Wagtail CMS
 > **Frontend companion:** Astro 5 (see `frontend/src/layouts/Layout.astro`)
 
@@ -8,10 +8,11 @@
 
 ## 1. Overview
 
-Precis LMS uses a **multi-layout skeleton system** — different page types (landing,
-learning, auth, profile, forms) each extend a purpose-built skeleton that provides the
-header, layout shell, and script bundles for that context. All skeletons ultimately
-extend a shared `base.html`.
+CTC Research uses Django/Wagtail templates for backend-rendered pages and
+fragments, while the public page shell is Astro 5. Different backend page types
+(landing, learning, auth, profile, and forms) use purpose-built skeletons that
+provide the header, layout shell, and script bundles for that context. The Astro
+counterpart is `frontend/src/layouts/Layout.astro`.
 
 ```
 Request → URL Router → Wagtail Page / Django View
@@ -28,7 +29,7 @@ Request → URL Router → Wagtail Page / Django View
 ## 2. Template Directory Map
 
 ```
-projects/precis/precis-lms/assets/templates/
+projects/precis/precis-ctc/assets/templates/
 ├── base.html                                ← Root layout (shared by all)
 │
 ├── layout/                                  ← Skeleton layouts (one per use-case)

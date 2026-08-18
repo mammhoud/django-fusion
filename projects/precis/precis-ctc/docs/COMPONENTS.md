@@ -1,8 +1,12 @@
-# django-fusion — Component Registry & `{% comp %}` Tag
+# CTC Research — Component Registry & `{% comp %}` Tag
 
-> **Last updated:** 2026-08-10
+> **Last updated:** 2026-08-18
 > **Package:** `libs/django-fusion/src/django_fusion/comp/`
-> **Applies to:** Precis LMS, Landing-Fusion, Formints (where Django templates are used)
+> **Applies to:** Django/Wagtail templates in `projects/precis/precis-ctc/`
+
+CTC’s public marketing and LMS shell is primarily Astro (`frontend/src/components/`).
+This guide covers the backend Django/Wagtail component road. For the public Astro
+component map, see [CONTENTS.md](CONTENTS.md).
 
 ---
 
@@ -168,6 +172,10 @@ components.register_alias("header-logo", component) # {% comp "header-logo" /%}
 ---
 
 ## 5. Usage by Project
+
+The examples below describe the shared django-fusion registry. CTC uses the same
+registry for backend-rendered fragments and Wagtail/admin surfaces; it does not
+turn Astro components into Django `{% comp %}` templates.
 
 ### 5.1 Precis LMS — Heavy `{% comp %}` User
 

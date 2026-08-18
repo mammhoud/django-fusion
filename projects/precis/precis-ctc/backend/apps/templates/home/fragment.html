@@ -1,9 +1,9 @@
 {% load i18n wagtailcore_tags %}
 
 {# Content-only home fragment. Keep every component inside the loop that owns its block. #}
-{# NOTE: the learning-preview teaser lives ONLY in home/main.html —
-   intentionally NOT here, so an HTMX fragment swap can never render the
-   learning section twice on the home page. #}
+{% comment %}NOTE: the learning-preview teaser lives ONLY in home/main.html —
+intentionally NOT here, so an HTMX fragment swap can never render the
+learning section twice on the home page.{% endcomment %}
 {% for block in page.head %}
     {% if block.block_type == 'slider' %}
         {% comp "home/sections/slider.html" block=block /%}

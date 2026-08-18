@@ -96,8 +96,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "About CTC Research",
-      "draft_title": "About CTC Research",
+      "title": "About",
+      "draft_title": "About",
       "slug": "about",
       "content_type": [
         "pages",
@@ -107,7 +107,7 @@
       "owner": [
         "admin"
       ],
-      "seo_title": "About CTC Research | AI-Mediated Scientific Discovery",
+      "seo_title": "About | AI-Mediated Scientific Discovery",
       "show_in_menus": true,
       "search_description": "Learn about CTC Research, a global center of excellence for AI-mediated scientific discovery. Discover our mission to advance medicine through authentic, data-driven research and writing.",
       "latest_revision_created_at": "2026-02-23T06:28:52.831Z",
@@ -135,8 +135,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "Contact Us",
-      "draft_title": "Contact Us",
+      "title": "Contact",
+      "draft_title": "Contact",
       "slug": "contact",
       "content_type": [
         "pages",
@@ -213,8 +213,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "AI for Scientific & Medical Writing Courses",
-      "draft_title": "AI for Scientific & Medical Writing Courses",
+      "title": "Courses",
+      "draft_title": "Courses",
       "slug": "all-courses",
       "content_type": [
         "lms",
@@ -486,8 +486,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "Über CTC Research",
-      "draft_title": "Über CTC Research",
+      "title": "Über",
+      "draft_title": "Über",
       "slug": "about",
       "content_type": [
         "pages",
@@ -497,7 +497,7 @@
       "owner": [
         "admin"
       ],
-      "seo_title": "Über CTC Research | KI-vermittelte wissenschaftliche Entdeckungen",
+      "seo_title": "Über | KI-vermittelte wissenschaftliche Entdeckungen",
       "show_in_menus": true,
       "search_description": "Erfahren Sie mehr über CTC Research, ein globales Exzellenzzentrum für KI-vermittelte wissenschaftliche Entdeckungen. Entdecken Sie unsere Mission, die Medizin durch authentische, datengesteuerte Forschung und Schreiben voranzubringen.",
       "latest_revision_created_at": "2026-02-23T06:28:53.058Z",
@@ -681,8 +681,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "Sobre CTC Research",
-      "draft_title": "Sobre CTC Research",
+      "title": "Sobre",
+      "draft_title": "Sobre",
       "slug": "about",
       "content_type": [
         "pages",
@@ -692,7 +692,7 @@
       "owner": [
         "admin"
       ],
-      "seo_title": "Sobre CTC Research | Descubrimiento Científico Mediado por IA",
+      "seo_title": "Sobre | Descubrimiento Científico Mediado por IA",
       "show_in_menus": true,
       "search_description": "Conozca CTC Research, un centro de excelencia global para el descubrimiento científico mediado por IA. Descubra nuestra misión de avanzar la medicina a través de la investigación y redacción auténticas basadas en datos.",
       "latest_revision_created_at": "2026-02-23T06:28:53.690Z",
@@ -876,8 +876,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "À propos de CTC Research",
-      "draft_title": "À propos de CTC Research",
+      "title": "À propos",
+      "draft_title": "À propos",
       "slug": "about",
       "content_type": [
         "pages",
@@ -887,7 +887,7 @@
       "owner": [
         "admin"
       ],
-      "seo_title": "À propos de CTC Research | Découverte scientifique assistée par l'IA",
+      "seo_title": "À propos | Découverte scientifique assistée par l'IA",
       "show_in_menus": true,
       "search_description": "Découvrez CTC Research, un centre d'excellence mondial pour la découverte scientifique assistée par l'IA. Apprenez-en plus sur notre mission de faire progresser la médecine grâce à une recherche et une rédaction authentiques et axées sur les données.",
       "latest_revision_created_at": "2026-02-23T06:28:53.547Z",
@@ -1071,8 +1071,8 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "Sobre a CTC Research",
-      "draft_title": "Sobre a CTC Research",
+      "title": "Sobre",
+      "draft_title": "Sobre",
       "slug": "about",
       "content_type": [
         "pages",
@@ -1082,7 +1082,7 @@
       "owner": [
         "admin"
       ],
-      "seo_title": "Sobre a CTC Research | Descoberta Científica Mediada por IA",
+      "seo_title": "Sobre | Descoberta Científica Mediada por IA",
       "show_in_menus": true,
       "search_description": "Conheça a CTC Research, um centro de excelência global para descoberta científica mediada por IA. Descubra nossa missão de avançar a medicina por meio de pesquisa e redação autênticas e baseadas em dados.",
       "latest_revision_created_at": "2026-02-23T06:28:54.472Z",
@@ -3051,7 +3051,7 @@
       "form_button_color": "#0d6efd",
       "form_button_text_color": "#ffffff",
       "contact_form": "[{\"id\": \"828d1e05-3a72-42e7-b280-8e3d26cb9407\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}, {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}, {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}], \"form_id\": \"contact-form\"}}]",
-      "form_title": "<p data-block-key=\"nzsd7\">Contact Us</p>",
+      "form_title": "<p data-block-key=\"nzsd7\">Contact</p>",
       "form_intro": "",
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"cbf7v\">✨ <b>Your message has wings!</b></p><p data-block-key=\"g7cgf\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
@@ -3166,7 +3166,7 @@
     "pk": 4,
     "fields": {
       "show_page_at_footer": true,
-      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About CTC Research\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
+      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
       "facts": "[{\"id\": \"8ff6611b-b5b4-44b7-b5cb-ae288ff1a584\", \"type\": \"about\", \"value\": {\"gallery\": {\"media_items\": [{\"image\": {\"image\": 8, \"lazy_loading\": true, \"alternative_text\": \"Dr. yasir\"}, \"video\": {\"embed_url\": \"https://www.youtube.com/watch?v=ZrVMEk3dU1M\"}, \"caption\": \"\", \"category\": \"\", \"featured\": false, \"media_type\": \"image\"}], \"lazy_loading\": true, \"gallery_title\": \"Snapshots\", \"lightbox_enabled\": true, \"gallery_description\": \"\"}, \"counters\": [{\"icon\": \"fa-solid fa-award\", \"icon_background\": \"#0d6efd\", \"icon_color\": \"#ffffff\", \"number\": 20, \"number_prefix\": \"\", \"number_suffix\": \"+\", \"label\": \"Years of research\", \"description\": \"Advancing evidence-based medicine since 2006\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-graduation-cap\", \"icon_background\": \"#198754\", \"icon_color\": \"#ffffff\", \"number\": 6, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Course programs\", \"description\": \"Clinical research, medical AI, evidence synthesis\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-earth-americas\", \"icon_background\": \"#0dcaf0\", \"icon_color\": \"#ffffff\", \"number\": 7, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Languages\", \"description\": \"Courses and content in seven languages\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-flask\", \"icon_background\": \"#6f42c1\", \"icon_color\": \"#ffffff\", \"number\": 100, \"number_prefix\": \"\", \"number_suffix\": \"%\", \"label\": \"Evidence-first\", \"description\": \"Protocols built on reproducible methods\", \"animation\": true, \"animation_duration\": 2000}], \"main_title\": \"Your Partner in AI-Mediated Scientific Discovery\", \"video_link\": \"\", \"description\": \"We are a world-class institution and digital learning platform dedicated to transforming how medical research is conducted and communicated. Our interdisciplinary approach fosters collaboration between clinicians, data scientists, and medical writers to ensure that research is not only data-driven but also clearly articulated and ready for publication in top-tier journals. We empower our community to generate authentic knowledge that serves the future of medicine and clinical analysis.\", \"welcome_text\": \"WHO WE ARE\", \"background_image\": 6, \"years_experience\": 17, \"experience_description\": \"<p data-block-key=\\\"9lv6z\\\">Over two decades of pioneering research and training in data-driven medical writing.</p>\"}}]"
     }
   },
@@ -3184,7 +3184,7 @@
     "pk": 14,
     "fields": {
       "show_page_at_footer": true,
-      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About CTC Research\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
+      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
       "facts": "[{\"id\": \"8ff6611b-b5b4-44b7-b5cb-ae288ff1a584\", \"type\": \"about\", \"value\": {\"gallery\": {\"media_items\": [{\"image\": {\"image\": 8, \"lazy_loading\": true, \"alternative_text\": \"Dr. yasir\"}, \"video\": {\"embed_url\": \"https://www.youtube.com/watch?v=ZrVMEk3dU1M\"}, \"caption\": \"\", \"category\": \"\", \"featured\": false, \"media_type\": \"image\"}], \"lazy_loading\": true, \"gallery_title\": \"Snapshots\", \"lightbox_enabled\": true, \"gallery_description\": \"\"}, \"counters\": [{\"icon\": \"fa-solid fa-award\", \"icon_background\": \"#0d6efd\", \"icon_color\": \"#ffffff\", \"number\": 20, \"number_prefix\": \"\", \"number_suffix\": \"+\", \"label\": \"Jahre Forschung\", \"description\": \"Evidenzbasierte Medizin seit 2006 vorantreiben\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-graduation-cap\", \"icon_background\": \"#198754\", \"icon_color\": \"#ffffff\", \"number\": 6, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Kursprogramme\", \"description\": \"Klinische Forschung, medizinische KI, Evidenzsynthese\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-earth-americas\", \"icon_background\": \"#0dcaf0\", \"icon_color\": \"#ffffff\", \"number\": 7, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Sprachen\", \"description\": \"Kurse und Inhalte in sieben Sprachen\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-flask\", \"icon_background\": \"#6f42c1\", \"icon_color\": \"#ffffff\", \"number\": 100, \"number_prefix\": \"\", \"number_suffix\": \"%\", \"label\": \"Evidenz zuerst\", \"description\": \"Protokolle auf Basis reproduzierbarer Methoden\", \"animation\": true, \"animation_duration\": 2000}], \"main_title\": \"Your Partner in AI-Mediated Scientific Discovery\", \"video_link\": \"\", \"description\": \"We are a world-class institution and digital learning platform dedicated to transforming how medical research is conducted and communicated. Our interdisciplinary approach fosters collaboration between clinicians, data scientists, and medical writers to ensure that research is not only data-driven but also clearly articulated and ready for publication in top-tier journals. We empower our community to generate authentic knowledge that serves the future of medicine and clinical analysis.\", \"welcome_text\": \"WHO WE ARE\", \"background_image\": 6, \"years_experience\": 17, \"experience_description\": \"<p data-block-key=\\\"9lv6z\\\">Over two decades of pioneering research and training in data-driven medical writing.</p>\"}}]"
     }
   },
@@ -3193,7 +3193,7 @@
     "pk": 19,
     "fields": {
       "show_page_at_footer": true,
-      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About CTC Research\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
+      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
       "facts": "[{\"id\": \"8ff6611b-b5b4-44b7-b5cb-ae288ff1a584\", \"type\": \"about\", \"value\": {\"gallery\": {\"media_items\": [{\"image\": {\"image\": 8, \"lazy_loading\": true, \"alternative_text\": \"Dr. yasir\"}, \"video\": {\"embed_url\": \"https://www.youtube.com/watch?v=ZrVMEk3dU1M\"}, \"caption\": \"\", \"category\": \"\", \"featured\": false, \"media_type\": \"image\"}], \"lazy_loading\": true, \"gallery_title\": \"Snapshots\", \"lightbox_enabled\": true, \"gallery_description\": \"\"}, \"counters\": [{\"icon\": \"fa-solid fa-award\", \"icon_background\": \"#0d6efd\", \"icon_color\": \"#ffffff\", \"number\": 20, \"number_prefix\": \"\", \"number_suffix\": \"+\", \"label\": \"Años de investigación\", \"description\": \"Avanzando en medicina basada en evidencia desde 2006\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-graduation-cap\", \"icon_background\": \"#198754\", \"icon_color\": \"#ffffff\", \"number\": 6, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Programas de cursos\", \"description\": \"Investigación clínica, IA médica, síntesis de evidencia\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-earth-americas\", \"icon_background\": \"#0dcaf0\", \"icon_color\": \"#ffffff\", \"number\": 7, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Idiomas\", \"description\": \"Cursos y contenidos en siete idiomas\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-flask\", \"icon_background\": \"#6f42c1\", \"icon_color\": \"#ffffff\", \"number\": 100, \"number_prefix\": \"\", \"number_suffix\": \"%\", \"label\": \"Evidencia primero\", \"description\": \"Protocolos basados en métodos reproducibles\", \"animation\": true, \"animation_duration\": 2000}], \"main_title\": \"Your Partner in AI-Mediated Scientific Discovery\", \"video_link\": \"\", \"description\": \"We are a world-class institution and digital learning platform dedicated to transforming how medical research is conducted and communicated. Our interdisciplinary approach fosters collaboration between clinicians, data scientists, and medical writers to ensure that research is not only data-driven but also clearly articulated and ready for publication in top-tier journals. We empower our community to generate authentic knowledge that serves the future of medicine and clinical analysis.\", \"welcome_text\": \"WHO WE ARE\", \"background_image\": 6, \"years_experience\": 17, \"experience_description\": \"<p data-block-key=\\\"9lv6z\\\">Over two decades of pioneering research and training in data-driven medical writing.</p>\"}}]"
     }
   },
@@ -3202,7 +3202,7 @@
     "pk": 24,
     "fields": {
       "show_page_at_footer": true,
-      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About CTC Research\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
+      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
       "facts": "[{\"id\": \"8ff6611b-b5b4-44b7-b5cb-ae288ff1a584\", \"type\": \"about\", \"value\": {\"gallery\": {\"media_items\": [{\"image\": {\"image\": 8, \"lazy_loading\": true, \"alternative_text\": \"Dr. yasir\"}, \"video\": {\"embed_url\": \"https://www.youtube.com/watch?v=ZrVMEk3dU1M\"}, \"caption\": \"\", \"category\": \"\", \"featured\": false, \"media_type\": \"image\"}], \"lazy_loading\": true, \"gallery_title\": \"Snapshots\", \"lightbox_enabled\": true, \"gallery_description\": \"\"}, \"counters\": [{\"icon\": \"fa-solid fa-award\", \"icon_background\": \"#0d6efd\", \"icon_color\": \"#ffffff\", \"number\": 20, \"number_prefix\": \"\", \"number_suffix\": \"+\", \"label\": \"عاماً من البحث\", \"description\": \"نطوّر الطب القائم على الأدلة منذ 2006\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-graduation-cap\", \"icon_background\": \"#198754\", \"icon_color\": \"#ffffff\", \"number\": 6, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"برامج تعليمية\", \"description\": \"البحث السريري، الذكاء الاصطناعي الطبي، تجميع الأدلة\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-earth-americas\", \"icon_background\": \"#0dcaf0\", \"icon_color\": \"#ffffff\", \"number\": 7, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"لغات\", \"description\": \"دورات ومحتوى بسبع لغات\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-flask\", \"icon_background\": \"#6f42c1\", \"icon_color\": \"#ffffff\", \"number\": 100, \"number_prefix\": \"\", \"number_suffix\": \"%\", \"label\": \"الأدلة أولاً\", \"description\": \"بروتوكولات مبنية على طرق قابلة للتكرار\", \"animation\": true, \"animation_duration\": 2000}], \"main_title\": \"Your Partner in AI-Mediated Scientific Discovery\", \"video_link\": \"\", \"description\": \"We are a world-class institution and digital learning platform dedicated to transforming how medical research is conducted and communicated. Our interdisciplinary approach fosters collaboration between clinicians, data scientists, and medical writers to ensure that research is not only data-driven but also clearly articulated and ready for publication in top-tier journals. We empower our community to generate authentic knowledge that serves the future of medicine and clinical analysis.\", \"welcome_text\": \"WHO WE ARE\", \"background_image\": 6, \"years_experience\": 17, \"experience_description\": \"<p data-block-key=\\\"9lv6z\\\">Over two decades of pioneering research and training in data-driven medical writing.</p>\"}}]"
     }
   },
@@ -3211,7 +3211,7 @@
     "pk": 29,
     "fields": {
       "show_page_at_footer": true,
-      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About CTC Research\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
+      "head": "[{\"id\": \"d11db14e-889c-476b-9d85-cb95deb8cd20\", \"type\": \"page_title\", \"value\": {\"page_title\": \"About\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 6}}]",
       "facts": "[{\"id\": \"8ff6611b-b5b4-44b7-b5cb-ae288ff1a584\", \"type\": \"about\", \"value\": {\"gallery\": {\"media_items\": [{\"image\": {\"image\": 8, \"lazy_loading\": true, \"alternative_text\": \"Dr. yasir\"}, \"video\": {\"embed_url\": \"https://www.youtube.com/watch?v=ZrVMEk3dU1M\"}, \"caption\": \"\", \"category\": \"\", \"featured\": false, \"media_type\": \"image\"}], \"lazy_loading\": true, \"gallery_title\": \"Snapshots\", \"lightbox_enabled\": true, \"gallery_description\": \"\"}, \"counters\": [{\"icon\": \"fa-solid fa-award\", \"icon_background\": \"#0d6efd\", \"icon_color\": \"#ffffff\", \"number\": 20, \"number_prefix\": \"\", \"number_suffix\": \"+\", \"label\": \"Anos de pesquisa\", \"description\": \"Avançando a medicina baseada em evidências desde 2006\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-graduation-cap\", \"icon_background\": \"#198754\", \"icon_color\": \"#ffffff\", \"number\": 6, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Programas de cursos\", \"description\": \"Pesquisa clínica, IA médica, síntese de evidências\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-earth-americas\", \"icon_background\": \"#0dcaf0\", \"icon_color\": \"#ffffff\", \"number\": 7, \"number_prefix\": \"\", \"number_suffix\": \"\", \"label\": \"Idiomas\", \"description\": \"Cursos e conteúdos em sete idiomas\", \"animation\": true, \"animation_duration\": 2000}, {\"icon\": \"fa-solid fa-flask\", \"icon_background\": \"#6f42c1\", \"icon_color\": \"#ffffff\", \"number\": 100, \"number_prefix\": \"\", \"number_suffix\": \"%\", \"label\": \"Evidência primeiro\", \"description\": \"Protocolos baseados em métodos reproduzíveis\", \"animation\": true, \"animation_duration\": 2000}], \"main_title\": \"Your Partner in AI-Mediated Scientific Discovery\", \"video_link\": \"\", \"description\": \"We are a world-class institution and digital learning platform dedicated to transforming how medical research is conducted and communicated. Our interdisciplinary approach fosters collaboration between clinicians, data scientists, and medical writers to ensure that research is not only data-driven but also clearly articulated and ready for publication in top-tier journals. We empower our community to generate authentic knowledge that serves the future of medicine and clinical analysis.\", \"welcome_text\": \"WHO WE ARE\", \"background_image\": 6, \"years_experience\": 17, \"experience_description\": \"<p data-block-key=\\\"9lv6z\\\">Over two decades of pioneering research and training in data-driven medical writing.</p>\"}}]"
     }
   },
@@ -3230,7 +3230,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3274,7 +3274,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3296,7 +3296,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3318,7 +3318,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3340,7 +3340,7 @@
       "button_text": "Send Message",
       "success_message": "<p data-block-key=\"9d7eh\">✨ <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
       "error_message": "<p data-block-key=\"muyjm\">🔄 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
-      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
       "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
       "contact_details": "[]",
       "map": "[]",
@@ -3542,7 +3542,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3556,7 +3556,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3570,7 +3570,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3584,7 +3584,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
@@ -3598,7 +3598,7 @@
       "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
       "intro_text": "",
       "items_per_page": 9,
-      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
       "introduction": "",
       "selected_courses": []
     }
