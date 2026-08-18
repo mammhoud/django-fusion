@@ -228,8 +228,23 @@ for _sub in ("blog", "lms", "profile", "products", "pages", "accounts",
     if _sub_path.exists() and str(_sub_path) not in [str(d) for d in TEMPLATES[0]["DIRS"]]:
         TEMPLATES[0]["DIRS"].append(str(_sub_path))
 
-# Media: override the shared default (backend/assets/media) → workspace assets/media.
-MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(_WORKSPACE_DIR / "assets" / "media"))
+# Media: serve from the monorepo-shared media tree, project-named so the
+# shared Nginx proxy can map ctc-research.com → /var/www/media/ctc-research
+# (see applications/proxy/docker-compose.nginx.yml + nginx/default.conf.template).
+# The runtime container overrides this via the MEDIA_ROOT env var (/app/media).
+MEDIA_ROOT = os.environ.get(
+    "MEDIA_ROOT", str(_PROJECTS_DIR / "assets" / "media" / "ctc-research")
+)
+
+# Bundles: webpack writes to the shared projects/assets/bundles/ctc-research/
+# dir (beside media). Register it under the bundles/ctc-research/ URL namespace
+# so collectstatic copies it into STATIC_ROOT and the shared proxy serves it at
+# /static/bundles/ctc-research/ (nginx location already aliases that path).
+_SHARED_BUNDLES = _PROJECTS_DIR / "assets" / "bundles" / "ctc-research"
+if _SHARED_BUNDLES.exists() and "STATICFILES_DIRS" in dir():
+    _bundle_entry = ("bundles/ctc-research", str(_SHARED_BUNDLES))
+    if _bundle_entry not in STATICFILES_DIRS:
+        STATICFILES_DIRS.append(_bundle_entry)
 
 # Static: ensure workspace-level assets/static is in STATICFILES_DIRS.
 _ASSETS_STATIC = _WORKSPACE_DIR / "assets" / "static"
