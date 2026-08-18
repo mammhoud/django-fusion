@@ -9,6 +9,15 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 
 ### Added
 
+- **`FUSION_RENDER_MODE` + mixed mode** — the render-first boolean is now a
+  three-way string setting (`FUSION_RENDER_MODE`: `render` | `data` | `mixed`);
+  `FUSION_RENDER_FIRST` remains a deprecated bool alias. New
+  `resolve_render_mode()` chain adds an `X-Fusion-Render-Mode` header, a
+  session mode, per-route overrides (`FUSION_RENDER_MODE_ROUTES`), and
+  Accept-header negotiation for `mixed` (JSON clients get data, browsers get
+  HTML). `coerce_render_mode` / `resolve_render_mode_setting` live in
+  `django_fusion.config.conf`.
+
 - **`fusion_view` dual-mode function decorator** — decorate a plain
   function view that returns a Python object and it answers as either a
   render-first component (`template_name`, `data` in context) or a data

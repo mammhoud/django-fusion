@@ -1,15 +1,20 @@
-"""FastAPI router exposing django-fusion metadata and health checks.
+"""django-bolt router exposing django-fusion metadata and health checks.
 
 Import-safe: does not configure Django at import time.  All Django-dependent
 operations are deferred until routes are called.
 
-Mount on any FastAPI app::
+Register on a ``BoltAPI``::
 
-    from fastapi import FastAPI
+    from django_bolt import BoltAPI
+    from django_fusion.mcp.fusion_router import register_fusion_routes
+
+    api = BoltAPI()
+    register_fusion_routes(api)
+
+Or build a standalone API::
+
     from django_fusion.mcp.fusion_router import FusionMCPRouter
-
-    app = FastAPI()
-    app.include_router(FusionMCPRouter(), prefix="")
+    api = FusionMCPRouter().api
 """
 
 from __future__ import annotations
@@ -20,8 +25,8 @@ from importlib import import_module, util
 from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter
-from fastapi.responses import JSONResponse
+from django_bolt import BoltAPI
+from django_bolt.responses import Response
 
 logger = logging.getLogger(__name__)
 
@@ -41,9 +46,9 @@ def _optional_import(module_name: str) -> Any | None:
     return import_module(module_name)
 
 
-def _json_error(message: str, status_code: int, **details: Any) -> JSONResponse:
+def _json_error(message: str, status_code: int, **details: Any) -> Response:
     payload = {"ok": False, "error": message, **details}
-    return JSONResponse(status_code=status_code, content=payload)
+    return Response(payload, status_code=status_code)
 
 
 # ---------------------------------------------------------------------------
@@ -121,32 +126,20 @@ def _optional_dependencies() -> dict[str, bool]:
         "django_fusion": _find_spec("django_fusion") is not None,
         "openai": _find_spec("openai") is not None,
         "allauth": _find_spec("allauth") is not None,
-        "fastapi": True,  # we are running
+        "django_bolt": _find_spec("django_bolt") is not None,
     }
 
 
 # ---------------------------------------------------------------------------
-# Router
+# Route registration
 # ---------------------------------------------------------------------------
 
 
-class FusionMCPRouter(APIRouter):
-    """APIRouter with django-fusion status and health endpoints.
+def register_fusion_routes(api: BoltAPI) -> None:
+    """Register django-fusion status and health endpoints on *api*."""
 
-    Mount with ``app.include_router(FusionMCPRouter(), prefix=\"\")``.
-    """
-
-    def __init__(self, **kwargs: Any) -> None:
-        super().__init__(tags=["django-fusion"], **kwargs)
-        self._register_routes()
-
-    def _register_routes(self) -> None:
-        self.add_api_route("/health", self._health, methods=["GET"])
-        self.add_api_route("/django-fusion/info", self._django_fusion_info, methods=["GET"])
-        self.add_api_route("/django-fusion/viewsets", self._django_fusion_viewsets, methods=["GET"])
-        self.add_api_route("/auth/features", self._auth_features, methods=["GET"])
-
-    async def _health(self) -> dict[str, Any]:
+    @api.get("/health", tags=["django-fusion"])
+    def health() -> dict[str, Any]:
         return {
             "ok": True,
             "status": "ok",
@@ -155,17 +148,40 @@ class FusionMCPRouter(APIRouter):
             "auth": _auth_features(),
         }
 
-    async def _django_fusion_info(self) -> Any:
+    @api.get("/django-fusion/info", tags=["django-fusion"])
+    def django_fusion_info() -> Any:
         result = _django_fusion_info()
         if not result["available"]:
             return _json_error(result["error"], 503)
         return {"ok": True, **result}
 
-    async def _django_fusion_viewsets(self) -> Any:
+    @api.get("/django-fusion/viewsets", tags=["django-fusion"])
+    def django_fusion_viewsets() -> Any:
         result = _django_fusion_viewsets()
         if not result["available"]:
             return _json_error(result["error"], 503)
         return {"ok": True, **result}
 
-    async def _auth_features(self) -> Any:
+    @api.get("/auth/features", tags=["django-fusion"])
+    def auth_features() -> Any:
         return _auth_features()
+
+
+class FusionMCPRouter:
+    """Builds a :class:`django_bolt.BoltAPI` with django-fusion status endpoints.
+
+    Usage::
+
+        api = FusionMCPRouter().api
+        # …or mount onto an existing API:
+        FusionMCPRouter.register(existing_api)
+    """
+
+    def __init__(self, *, prefix: str = "", **kwargs: Any) -> None:
+        self.api = BoltAPI(prefix=prefix, **kwargs)
+        register_fusion_routes(self.api)
+
+    @staticmethod
+    def register(api: BoltAPI) -> None:
+        """Register the fusion routes onto an existing BoltAPI."""
+        register_fusion_routes(api)

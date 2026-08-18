@@ -1,6 +1,6 @@
-"""FastAPI router for the django-fusion interactive designer.
+"""django-bolt router for the django-fusion interactive designer.
 
-Safe to mount in any FastAPI app: handlers are read-only or pure-generation
+Safe to mount in any BoltAPI: handlers are read-only or pure-generation
 and never write to the filesystem or execute raw template source.
 
 Authentication mirrors ``designer/views.py``: when ``FUSION_MCP_DESIGNER_API_KEY``
@@ -8,15 +8,17 @@ Authentication mirrors ``designer/views.py``: when ``FUSION_MCP_DESIGNER_API_KEY
 a matching ``X-API-Key`` header.  When no key is configured the router falls back
 to localhost-only access (DEBUG-mode anonymous pattern).
 
-Mount with::
+Register on a ``BoltAPI``::
 
+    from django_bolt import BoltAPI
     from django_fusion.plugins.designer.mcp_router import DesignerMCPRouter
-    app.include_router(DesignerMCPRouter(api_key="secret"), prefix="")
+
+    api = DesignerMCPRouter(api_key="secret").api
 
 Or use the convenience singleton for no-auth local development::
 
     from django_fusion.plugins.designer.mcp_router import designer_router
-    app.include_router(designer_router, prefix="")
+    api = designer_router.api
 """
 
 from __future__ import annotations
@@ -27,9 +29,10 @@ import os
 from importlib import import_module
 from typing import Any
 
-from fastapi import Body, Depends, HTTPException, Request
-from fastapi.routing import APIRouter
-from fastapi.responses import JSONResponse
+from django_bolt import BoltAPI
+from django_bolt.exceptions import HTTPException
+from django_bolt.params import Depends
+from django_bolt.responses import Response
 
 from django_fusion.mcp.fusion_router import _find_spec, _json_error
 
@@ -131,28 +134,29 @@ def _resolve_api_key(api_key: str | None = None) -> str | None:
 # ---------------------------------------------------------------------------
 
 
-class _DesignerAuth:
-    """FastAPI dependency that gates designer endpoints.
+def _make_designer_auth(api_key: str | None = None):
+    """Return a django-bolt dependency gating designer endpoints.
 
     Policy (mirrors ``designer/views.py._is_allowed``):
 
     * If an API key is configured → requires a matching ``X-API-Key`` header.
-    * If no API key is configured → allows localhost only (127.0.0.1, ::1).
+    * If no API key is configured → allows localhost callers only, detected
+      from the request ``Host`` header (127.0.0.1, ::1, localhost).
     """
+    resolved = _resolve_api_key(api_key)
 
-    def __init__(self, api_key: str | None = None) -> None:
-        self._key = _resolve_api_key(api_key)
+    def _require_auth(request: dict[str, Any]) -> None:
+        headers = request.get("headers", {}) or {}
 
-    async def __call__(self, request: Request) -> None:
         # API-key mode (production / remote access)
-        if self._key:
-            provided = request.headers.get("X-API-Key", "")
-            if provided != self._key:
+        if resolved:
+            provided = headers.get("x-api-key", "")
+            if provided != resolved:
                 raise HTTPException(status_code=403, detail="Invalid or missing X-API-Key header")
             return
 
         # Localhost-only mode (development / DEBUG)
-        host = request.client.host if request.client else ""
+        host = (headers.get("host") or "").split(":", 1)[0].strip().lower()
         if host not in {"127.0.0.1", "::1", "localhost"}:
             raise HTTPException(
                 status_code=403,
@@ -162,57 +166,32 @@ class _DesignerAuth:
                 ),
             )
 
+    return _require_auth
+
+
+class _DesignerAuth:
+    """Callable dependency that gates designer endpoints (API-key or localhost)."""
+
+    def __init__(self, api_key: str | None = None) -> None:
+        self._check = _make_designer_auth(api_key)
+
+    def __call__(self, request: dict[str, Any]) -> None:
+        self._check(request)
+
 
 # ---------------------------------------------------------------------------
-# Router
+# Route registration
 # ---------------------------------------------------------------------------
 
 
-class DesignerMCPRouter(APIRouter):
-    """APIRouter exposing the django-fusion designer as MCP-friendly GET endpoints.
-
-    Parameters
-    ----------
-    api_key : str | None
-        Pre-shared key for remote access.  If ``None`` (default), the router
-        resolves ``FUSION_MCP_DESIGNER_API_KEY`` from the environment or
-        Django settings.  When no key is found, only localhost callers are
-        permitted (development-safe default).
-
-    Mount with::
-
-        app.include_router(DesignerMCPRouter(api_key="my-secret"), prefix="")
-    """
-
-    _AUTH = _DesignerAuth
-
-    def __init__(self, *, api_key: str | None = None, **kwargs: Any) -> None:
-        self._auth = self._AUTH(api_key)
-        deps = list(kwargs.pop("dependencies", []))
-        deps.append(Depends(self._auth))
-        super().__init__(tags=["designer"], dependencies=deps, **kwargs)
-        self._register_routes()
-
-    def _register_routes(self) -> None:
-        self.add_api_route("/designer/tools", self._tools_list, methods=["GET"])
-        self.add_api_route(
-            "/designer/component-catalog", self._component_catalog, methods=["GET"]
-        )
-        self.add_api_route(
-            "/designer/wagtail-field", self._wagtail_field, methods=["GET"]
-        )
-        self.add_api_route(
-            "/designer/form-scaffold", self._form_scaffold, methods=["GET"]
-        )
-        self.add_api_route(
-            "/designer/table-scaffold", self._table_scaffold, methods=["GET"]
-        )
-        self.add_api_route("/designer/preview", self._preview, methods=["GET"])
-        self.add_api_route("/designer/tools/call", self._tools_call, methods=["POST"])
+def register_designer_routes(api: BoltAPI, *, api_key: str | None = None) -> None:
+    """Register the django-fusion designer MCP endpoints on *api*."""
+    auth = _make_designer_auth(api_key)
 
     # -- tools/list ---------------------------------------------------------
 
-    async def _tools_list(self) -> Any:
+    @api.get("/designer/tools", tags=["designer"])
+    def tools_list(_auth: None = Depends(auth)) -> Any:
         tools = _get_tools()
         if not tools:
             return _json_error(
@@ -230,7 +209,8 @@ class DesignerMCPRouter(APIRouter):
 
     # -- tools/call (JSON-RPC POST) ----------------------------------------
 
-    async def _tools_call(self, body: dict[str, Any] = Body(...)) -> Any:
+    @api.post("/designer/tools/call", tags=["designer"])
+    def tools_call(request: dict[str, Any], _auth: None = Depends(auth)) -> Any:
         """JSON-RPC POST endpoint for all 8 designer tools.
 
         Accepts::
@@ -248,69 +228,69 @@ class DesignerMCPRouter(APIRouter):
         Returns MCP-compliant ``{"jsonrpc": "2.0", "id": …, "result": {…}}``
         on success or ``{"jsonrpc": "2.0", "id": …, "error": {…}}`` on failure.
         """
-        request_id = body.get("id")
+        raw = request.get("body", b"")
+        if isinstance(raw, (bytes, bytearray)):
+            raw = raw.decode("utf-8", "replace")
         try:
-            if body.get("jsonrpc") != "2.0":
-                return JSONResponse(
-                    {"jsonrpc": "2.0", "id": request_id,
-                     "error": {"message": "jsonrpc must be '2.0'"}},
-                    status_code=400,
-                )
-            if body.get("method") != "tools/call":
-                return JSONResponse(
-                    {"jsonrpc": "2.0", "id": request_id,
-                     "error": {"message": "method must be tools/call"}},
-                    status_code=400,
-                )
-            params = body.get("params", {})
-            if not isinstance(params, dict):
-                return JSONResponse(
-                    {"jsonrpc": "2.0", "id": request_id,
-                     "error": {"message": "params must be an object"}},
-                    status_code=400,
-                )
-            name = params.get("name")
-            arguments = params.get("arguments", {})
-            if not isinstance(arguments, dict):
-                return JSONResponse(
-                    {"jsonrpc": "2.0", "id": request_id,
-                     "error": {"message": "arguments must be an object"}},
-                    status_code=400,
-                )
-        except (AttributeError, TypeError):
-            return JSONResponse(
-                {"jsonrpc": "2.0", "id": request_id,
-                 "error": {"message": "Invalid JSON-RPC body"}},
+            body = json.loads(raw) if raw else {}
+        except (TypeError, ValueError):
+            body = None
+
+        request_id = (body or {}).get("id")
+        if not isinstance(body, dict):
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": "Invalid JSON-RPC body"}},
+                status_code=400,
+            )
+        if body.get("jsonrpc") != "2.0":
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": "jsonrpc must be '2.0'"}},
+                status_code=400,
+            )
+        if body.get("method") != "tools/call":
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": "method must be tools/call"}},
+                status_code=400,
+            )
+        params = body.get("params", {})
+        if not isinstance(params, dict):
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": "params must be an object"}},
+                status_code=400,
+            )
+        name = params.get("name")
+        arguments = params.get("arguments", {})
+        if not isinstance(arguments, dict):
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": "arguments must be an object"}},
                 status_code=400,
             )
 
         handler = _get_handler(name)
         if handler is None:
-            return JSONResponse(
-                {"jsonrpc": "2.0", "id": request_id,
-                 "error": {"message": f"Unknown designer tool: {name}"}},
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": f"Unknown designer tool: {name}"}},
                 status_code=404,
             )
         try:
             result = handler(**arguments)
             return {"jsonrpc": "2.0", "id": request_id, "result": result}
         except (TypeError, ValueError) as exc:
-            return JSONResponse(
-                {"jsonrpc": "2.0", "id": request_id,
-                 "error": {"message": str(exc)}},
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": str(exc)}},
                 status_code=400,
             )
         except Exception:
             logger.exception("designer.tools/call failed for %s", name)
-            return JSONResponse(
-                {"jsonrpc": "2.0", "id": request_id,
-                 "error": {"message": "Designer tool failed"}},
+            return Response(
+                {"jsonrpc": "2.0", "id": request_id, "error": {"message": "Designer tool failed"}},
                 status_code=500,
             )
 
     # -- designer.component_catalog ----------------------------------------
 
-    async def _component_catalog(self, query: str = "", limit: int = 50) -> Any:
+    @api.get("/designer/component-catalog", tags=["designer"])
+    def component_catalog(query: str = "", limit: int = 50, _auth: None = Depends(auth)) -> Any:
         handler = _get_handler("designer.component_catalog")
         if handler is None:
             return _json_error("designer.component_catalog is not available.", 503)
@@ -325,13 +305,14 @@ class DesignerMCPRouter(APIRouter):
 
     # -- designer.wagtail_field --------------------------------------------
 
-    async def _wagtail_field(
-        self,
+    @api.get("/designer/wagtail-field", tags=["designer"])
+    def wagtail_field(
         field_type: str,
         name: str,
         label: str = "",
         required: bool = False,
         help_text: str = "",
+        _auth: None = Depends(auth),
     ) -> Any:
         handler = _get_handler("designer.wagtail_field")
         if handler is None:
@@ -353,9 +334,8 @@ class DesignerMCPRouter(APIRouter):
 
     # -- designer.form_scaffold --------------------------------------------
 
-    async def _form_scaffold(
-        self, class_name: str, style_framework: str = "bootstrap"
-    ) -> Any:
+    @api.get("/designer/form-scaffold", tags=["designer"])
+    def form_scaffold(class_name: str, style_framework: str = "bootstrap", _auth: None = Depends(auth)) -> Any:
         handler = _get_handler("designer.form_scaffold")
         if handler is None:
             return _json_error("designer.form_scaffold is not available.", 503)
@@ -375,7 +355,8 @@ class DesignerMCPRouter(APIRouter):
 
     # -- designer.table_scaffold -------------------------------------------
 
-    async def _table_scaffold(self, class_name: str) -> Any:
+    @api.get("/designer/table-scaffold", tags=["designer"])
+    def table_scaffold(class_name: str, _auth: None = Depends(auth)) -> Any:
         handler = _get_handler("designer.table_scaffold")
         if handler is None:
             return _json_error("designer.table_scaffold is not available.", 503)
@@ -390,7 +371,8 @@ class DesignerMCPRouter(APIRouter):
 
     # -- designer.preview --------------------------------------------------
 
-    async def _preview(self, name: str, max_chars: int = 20000) -> Any:
+    @api.get("/designer/preview", tags=["designer"])
+    def preview(name: str, max_chars: int = 20000, _auth: None = Depends(auth)) -> Any:
         handler = _get_handler("designer.preview")
         if handler is None:
             return _json_error("designer.preview is not available.", 503)
@@ -404,5 +386,44 @@ class DesignerMCPRouter(APIRouter):
             return _json_error("Designer tool failed", 500)
 
 
-# Convenience singleton for simple mounting (no auth — localhost-only fallback)
-designer_router = DesignerMCPRouter()
+class DesignerMCPRouter:
+    """Builds a :class:`django_bolt.BoltAPI` exposing the designer as MCP endpoints.
+
+    Parameters
+    ----------
+    api_key : str | None
+        Pre-shared key for remote access.  If ``None`` (default), the router
+        resolves ``FUSION_MCP_DESIGNER_API_KEY`` from the environment or
+        Django settings.  When no key is found, only localhost callers are
+        permitted (development-safe default).
+
+    Mount with::
+
+        api = DesignerMCPRouter(api_key="my-secret").api
+    """
+
+    _AUTH = _DesignerAuth
+
+    def __init__(self, *, api_key: str | None = None, prefix: str = "", **kwargs: Any) -> None:
+        self.api = BoltAPI(prefix=prefix, **kwargs)
+        self._auth = self._AUTH(api_key)
+        register_designer_routes(self.api, api_key=api_key)
+
+    @staticmethod
+    def register(api: BoltAPI, *, api_key: str | None = None) -> None:
+        """Register the designer routes onto an existing BoltAPI."""
+        register_designer_routes(api, api_key=api_key)
+
+
+# Convenience singleton for simple mounting (no auth — localhost-only fallback).
+# Lazily constructed so importing this module does not require Django settings.
+_designer_router: Any = None
+
+
+def __getattr__(name: str) -> Any:
+    global _designer_router
+    if name == "designer_router":
+        if _designer_router is None:
+            _designer_router = DesignerMCPRouter()
+        return _designer_router
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -1,7 +1,5 @@
 """Smoke tests for canonical public import paths."""
 
-import sys
-
 import pytest
 from django.test import RequestFactory
 
@@ -89,14 +87,17 @@ def test_supports_htmx_warns_and_preserves_behavior():
         assert supports_htmx(request) is True
 
 
-def test_dispatch_job_reports_missing_optional_queue_dependency(monkeypatch):
-    """Job dispatch fails clearly when neither logging nor django-rq is available."""
+def test_dispatch_job_reports_unregistered_task():
+    """Deprecated ``dispatch_job`` fails clearly for an unregistered callable.
+
+    ``dispatch_job`` is a legacy shim over the unified Dramatiq-backed
+    ``task_registry`` (``django_fusion.tasks``). A callable that was never
+    registered with ``@task`` raises a clear ``RuntimeError`` pointing at the
+    task registry rather than the removed django-rq path.
+    """
     from django_fusion.services import jobs
 
-    monkeypatch.setattr(jobs, "_get_task_log_model", lambda: None)
-    monkeypatch.setitem(sys.modules, "django_rq", None)
-
-    with pytest.raises(RuntimeError, match="requires django-rq"):
+    with pytest.raises(RuntimeError, match="not registered"):
         jobs.dispatch_job(lambda: None)
 
 

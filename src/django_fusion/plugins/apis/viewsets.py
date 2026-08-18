@@ -105,6 +105,21 @@ class FusionApiViewset(View, APISViewMixin):
     tenant_field: str | None = "workspace_id"
     tenant_resolver: Callable[[HttpRequest], Any] | None = None
 
+    # Query-surface configuration (mirrors django-bolt's declarative query
+    # parameters so a single viewset can expose filters without hand-writing
+    # per-resource filtering logic).
+    #
+    # ``filter_fields`` — exact-match query params, e.g. ``?category=foo``.
+    # ``search_fields`` — case-insensitive substring search via ``?q=`` or
+    #                      ``?search=`` across the listed columns.
+    # ``ordering_fields`` — allowlist for ``?ordering=`` (``-name`` descends).
+    # ``page_size`` / ``max_page_size`` — ``?limit=`` / ``?page=`` / ``?offset=``.
+    filter_fields: tuple[str, ...] = ()
+    search_fields: tuple[str, ...] = ()
+    ordering_fields: tuple[str, ...] = ()
+    page_size: int = 100
+    max_page_size: int = 500
+
     # ------------------------------------------------------------------
     # Tenant scoping
     # ------------------------------------------------------------------
@@ -126,6 +141,90 @@ class FusionApiViewset(View, APISViewMixin):
             if tenant_id is not None:
                 queryset = queryset.filter(**{self.tenant_field: tenant_id})
         return queryset
+
+    # ------------------------------------------------------------------
+    # Filtering / search / ordering / pagination
+    # ------------------------------------------------------------------
+
+    def apply_filters(self, queryset, request: HttpRequest):
+        """Apply declarative query-parameter filtering to *queryset*.
+
+        * ``?field=value`` — exact match for each ``filter_fields`` entry.
+        * ``?q=`` / ``?search=`` — case-insensitive substring across
+          ``search_fields`` (OR-combined).
+
+        Only fields declared on the viewset are honoured, so an unlisted
+        parameter is ignored rather than raising ``FieldError``.
+        """
+        for field_name in self.filter_fields:
+            if not _model_has_field(self.model, field_name):
+                continue
+            value = request.GET.get(field_name)
+            if value is not None and value != "":
+                queryset = queryset.filter(**{field_name: value})
+
+        search = request.GET.get("q") or request.GET.get("search")
+        if search:
+            search_fields = [
+                name for name in self.search_fields if _model_has_field(self.model, name)
+            ]
+            if search_fields:
+                from django.db.models import Q
+
+                clause = Q()
+                for name in search_fields:
+                    clause |= Q(**{f"{name}__icontains": search})
+                queryset = queryset.filter(clause)
+        return queryset
+
+    def apply_ordering(self, queryset, request: HttpRequest):
+        """Apply an allowlisted ``?ordering=`` parameter to *queryset*."""
+        ordering = request.GET.get("ordering", "").strip()
+        if not ordering:
+            return queryset
+        order_fields = []
+        for token in ordering.split(","):
+            token = token.strip()
+            if not token:
+                continue
+            direction = "-" if token.startswith("-") else ""
+            name = token.lstrip("-")
+            if name in self.ordering_fields and _model_has_field(self.model, name):
+                order_fields.append(f"{direction}{name}")
+        if order_fields:
+            return queryset.order_by(*order_fields)
+        return queryset
+
+    def _page(self, request: HttpRequest) -> dict[str, int]:
+        """Resolve ``?limit=`` / ``?page=`` / ``?offset=`` into slice bounds.
+
+        Supports both page-style (``page``/``limit``) and offset-style
+        (``offset``/``limit``) navigation, mirroring django-bolt's query
+        parameter conventions.
+        """
+        try:
+            limit = int(request.GET.get("limit", self.page_size))
+        except (TypeError, ValueError):
+            limit = self.page_size
+        limit = max(1, min(limit, self.max_page_size))
+
+        try:
+            offset = int(request.GET.get("offset", 0))
+        except (TypeError, ValueError):
+            offset = 0
+
+        try:
+            page = int(request.GET.get("page", 1))
+        except (TypeError, ValueError):
+            page = 1
+
+        if "offset" in request.GET:
+            page = (offset // limit) + 1
+        elif "page" in request.GET:
+            page = max(1, page)
+            offset = (page - 1) * limit
+
+        return {"page": page, "limit": limit, "offset": offset}
 
     # ------------------------------------------------------------------
     # Serialization
@@ -187,8 +286,25 @@ class FusionApiViewset(View, APISViewMixin):
             if instance is None:
                 return self._not_found()
             return self.respond(request, self.serialize(instance), view_name=f"{self.__class__.__name__}.detail")
-        rows = [self.serialize(instance) for instance in self.get_queryset(request)[:100]]
-        return self.respond(request, {"results": rows, "count": len(rows)}, view_name=f"{self.__class__.__name__}.list")
+
+        queryset = self.apply_ordering(self.apply_filters(self.get_queryset(request), request), request)
+        page = self._page(request)
+        total = queryset.count()
+        rows = [
+            self.serialize(instance)
+            for instance in queryset[page["offset"]:page["offset"] + page["limit"]]
+        ]
+        return self.respond(
+            request,
+            {
+                "results": rows,
+                "count": len(rows),
+                "total": total,
+                "page": page["page"],
+                "page_size": page["limit"],
+            },
+            view_name=f"{self.__class__.__name__}.list",
+        )
 
     def post(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
         data = self._body_json(request)

@@ -27,6 +27,7 @@
 | DF-016 | [`docs/16-assets.md`](./16-assets.md) | Assets pipeline — API endpoints, template tags, Next.js integration | ✅ Exists |
 | DF-017 | [`docs/17-integration-modes.md`](./17-integration-modes.md) | Webpack/template/API modes, health/media boundaries, project organization, enhancement plan | ✅ Exists |
 | DF-018 | [`docs/18-render-contract.md`](./18-render-contract.md) | Slot & prop render contract (0.5.0 breaking changes): single-render slots, bare-context-var props, kwarg-style defaults, migration examples | ✅ Exists |
+| DF-019 | [`docs/19-openapi-and-filtering.md`](./19-openapi-and-filtering.md) | OpenAPI docs (`OpenAPISpec`, `/docs`, `/docs/openapi.json`) + viewset filtering/search/ordering/pagination, mapped from django-bolt | ✅ Exists |
 
 ## Auxiliary files (unchanged or supporting)
 

@@ -19,8 +19,9 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 # From libs/django-fusion/src/django_fusion/mcp/prompts.py, parents[5]
-# reaches the monorepo root (structa.cloud/).
-_DEFAULT_CATALOG_PATH = Path(__file__).resolve().parents[5] / "applications" / "agents" / "prompts" / "catalog.json"
+# reaches the monorepo root (structa.cloud/). The Kilo prompt catalog now
+# lives under .agents/mcp/prompts/ (formerly applications/agents/prompts/).
+_DEFAULT_CATALOG_PATH = Path(__file__).resolve().parents[5] / ".agents" / "mcp" / "prompts" / "catalog.json"
 
 
 class PromptCatalogError(RuntimeError):

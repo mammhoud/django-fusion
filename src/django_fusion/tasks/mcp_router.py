@@ -1,22 +1,25 @@
-"""FastAPI router for django-fusion task MCP tools.
+"""django-bolt router for django-fusion task MCP tools.
 
 Exposes the 8 task management tools (inspect, queues, history, retry,
-trigger, stats, purge, workers) as FastAPI endpoints so the Kilo MCP
+trigger, stats, purge, workers) as django-bolt endpoints so the Kilo MCP
 server can mount them alongside the designer and prompt catalog routers.
 
-Usage from Kilo::
+Register on a ``BoltAPI``::
 
+    from django_bolt import BoltAPI
     from django_fusion.tasks.mcp_router import TaskMCPRouter
-    app.include_router(TaskMCPRouter(), prefix="")
+
+    api = TaskMCPRouter().api
 """
 
 from __future__ import annotations
 
+import json
 import logging
 from typing import Any
 
-from fastapi import APIRouter, Request
-from fastapi.responses import JSONResponse
+from django_bolt import BoltAPI
+from django_bolt.responses import Response
 
 from django_fusion.tasks.mcp_handlers import (
     handle_task_inspect,
@@ -44,72 +47,76 @@ _HANDLERS: dict[str, Any] = {
 }
 
 
-class TaskMCPRouter(APIRouter):
-    """FastAPI router exposing django-fusion task MCP tools.
+def _read_json_body(request: dict[str, Any]) -> dict[str, Any] | None:
+    """Decode the raw request body into a JSON object, or ``None``."""
+    raw = request.get("body", b"")
+    if isinstance(raw, (bytes, bytearray)):
+        raw = raw.decode("utf-8", "replace")
+    try:
+        body = json.loads(raw) if raw else {}
+    except (TypeError, ValueError):
+        return None
+    return body if isinstance(body, dict) else None
 
-    Mounted by Kilo at ``/tasks/tools`` (tools list) and
-    ``/tasks/call`` (JSON-RPC dispatch).  All handlers delegate to the
-    django-fusion task system.
-    """
 
-    def __init__(self, *, prefix: str = ""):
-        super().__init__(prefix=prefix, tags=["tasks-mcp"])
-        self._register_routes()
+def register_task_routes(api: BoltAPI) -> None:
+    """Register the django-fusion task MCP endpoints on *api*."""
 
-    # -- route registration ------------------------------------
+    @api.get("/tasks/tools", tags=["tasks-mcp"])
+    def tools_list() -> dict[str, Any]:
+        """List all available task MCP tools with their schemas."""
+        return {
+            "tools": [
+                {
+                    "name": name,
+                    "description": spec["description"],
+                    "parameters": spec["parameters"],
+                }
+                for name, spec in MCP_TASK_TOOLS.items()
+            ]
+        }
 
-    def _register_routes(self):
-        router = self
+    @api.post("/tasks/call", tags=["tasks-mcp"])
+    def tools_call(request: dict[str, Any]) -> Any:
+        """JSON-RPC endpoint for task operations."""
+        body = _read_json_body(request)
+        if body is None:
+            return Response(status_code=400, content={"error": "Invalid JSON body"})
 
-        @router.get("/tasks/tools")
-        async def tools_list(_request: Request) -> JSONResponse:
-            """List all available task MCP tools with their schemas."""
-            return JSONResponse({
-                "tools": [
-                    {
-                        "name": name,
-                        "description": spec["description"],
-                        "parameters": spec["parameters"],
-                    }
-                    for name, spec in MCP_TASK_TOOLS.items()
-                ]
-            })
+        tool_name = body.get("params", {}).get("name")
+        arguments = body.get("params", {}).get("arguments", {})
 
-        @router.post("/tasks/call")
-        async def tools_call(request: Request) -> JSONResponse:
-            """JSON-RPC endpoint for task operations."""
-            try:
-                body = await request.json()
-            except Exception:
-                return JSONResponse(
-                    status_code=400,
-                    content={"error": "Invalid JSON body"},
-                )
+        handler = _HANDLERS.get(tool_name)
+        if handler is None:
+            return Response(
+                status_code=404,
+                content={
+                    "error": f"Unknown tool: {tool_name}",
+                    "available": sorted(_HANDLERS.keys()),
+                },
+            )
 
-            tool_name = body.get("params", {}).get("name")
-            arguments = body.get("params", {}).get("arguments", {})
+        try:
+            result = handler(**arguments)
+        except Exception as exc:
+            logger.exception("Task MCP tool %r failed", tool_name)
+            return Response(status_code=500, content={"error": str(exc)})
 
-            handler = _HANDLERS.get(tool_name)
-            if handler is None:
-                return JSONResponse(
-                    status_code=404,
-                    content={
-                        "error": f"Unknown tool: {tool_name}",
-                        "available": sorted(_HANDLERS.keys()),
-                    },
-                )
+        return {
+            "jsonrpc": "2.0",
+            "id": body.get("id"),
+            "result": result,
+        }
 
-            try:
-                result = handler(**arguments)
-            except Exception as exc:
-                logger.exception("Task MCP tool %r failed", tool_name)
-                return JSONResponse(
-                    status_code=500,
-                    content={"error": str(exc)},
-                )
 
-            return JSONResponse({
-                "jsonrpc": "2.0",
-                "id": body.get("id"),
-                "result": result,
-            })
+class TaskMCPRouter:
+    """Builds a :class:`django_bolt.BoltAPI` exposing django-fusion task MCP tools."""
+
+    def __init__(self, *, prefix: str = "", **kwargs: Any) -> None:
+        self.api = BoltAPI(prefix=prefix, **kwargs)
+        register_task_routes(self.api)
+
+    @staticmethod
+    def register(api: BoltAPI) -> None:
+        """Register the task routes onto an existing BoltAPI."""
+        register_task_routes(api)

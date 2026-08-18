@@ -6,26 +6,22 @@ import os
 from unittest.mock import patch
 
 import pytest
+
+pytest.importorskip("django_bolt")
+
+from django_bolt.exceptions import HTTPException
+from django_bolt.testing import TestClient
 from django_fusion.plugins.designer.mcp_router import DesignerMCPRouter, _DesignerAuth
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 
-def _make_app(*, api_key: str | None = None) -> FastAPI:
-    """Create a FastAPI app with DesignerMCPRouter mounted."""
-    app = FastAPI()
-    router = DesignerMCPRouter(api_key=api_key)
-    app.include_router(router, prefix="")
-    return app
-
-
-def _make_client(*, api_key: str | None = None, base_url: str = "http://127.0.0.1") -> TestClient:
-    """Create a TestClient for a designer-equipped app."""
-    return TestClient(_make_app(api_key=api_key), base_url=base_url)
+def _make_client(*, api_key: str | None = None, base_url: str = "http://testserver.local") -> TestClient:
+    """Create a django-bolt TestClient for a designer-equipped API."""
+    api = DesignerMCPRouter(api_key=api_key).api
+    return TestClient(api, base_url=base_url, read_django_settings=False)
 
 
 # ---------------------------------------------------------------------------
@@ -91,19 +87,20 @@ class TestAPIKeyMode:
 
 
 class TestLocalhostFallback:
-    """With no API key configured, non-localhost TestClient calls are rejected.
+    """With no API key configured, non-localhost callers are rejected."""
 
-    Note: TestClient always reports ``request.client.host`` as ``"testclient"``
-    regardless of ``base_url``.  Localhost resolution is tested thoroughly in
-    ``TestDesignerAuthIsolation`` below.  Here we verify the router integration.
-    """
-
-    def test_testclient_rejected_without_key(self):
-        """TestClient host ('testclient') is not localhost → 403."""
+    def test_non_localhost_rejected_without_key(self):
+        """Host header 'testserver.local' is not localhost → 403."""
         client = _make_client()  # no api_key
         resp = client.get("/designer/tools")
         assert resp.status_code == 403
         assert "API-key authentication" in resp.text
+
+    def test_localhost_allowed_without_key(self):
+        """Host header '127.0.0.1' is localhost → auth passes."""
+        client = _make_client(base_url="http://127.0.0.1")
+        resp = client.get("/designer/tools")
+        assert resp.status_code != 403
 
 
 # ---------------------------------------------------------------------------
@@ -131,12 +128,10 @@ class TestEnvVarResolution:
             assert resp2.status_code != 403
 
     @patch.dict(os.environ, {}, clear=True)
-    def test_no_key_no_env_testclient_rejected(self):
-        """With no key anywhere, TestClient (host='testclient') is rejected.
-        Localhost resolution is covered by _DesignerAuth unit tests."""
+    def test_no_key_no_env_non_localhost_rejected(self):
+        """With no key anywhere, a non-localhost host is rejected."""
         client = _make_client()
         resp = client.get("/designer/tools")
-        # TestClient host is 'testclient' — not localhost
         assert resp.status_code == 403
 
 
@@ -146,44 +141,22 @@ class TestEnvVarResolution:
 
 
 class TestDesignerAuthIsolation:
-    """Direct unit tests on _DesignerAuth without FastAPI routing."""
+    """Direct unit tests on _DesignerAuth without routing."""
 
-    @pytest.mark.anyio
-    async def test_localhost_passes_no_key(self):
-        from unittest.mock import AsyncMock
-        request = AsyncMock()
-        request.client.host = "127.0.0.1"
+    def test_localhost_passes_no_key(self):
         auth = _DesignerAuth()  # no key
-        await auth(request)  # should not raise
+        auth({"headers": {"host": "127.0.0.1:8002"}})  # should not raise
 
-    @pytest.mark.anyio
-    async def test_remote_fails_no_key(self):
-        from unittest.mock import AsyncMock
-
-        from fastapi import HTTPException
-        request = AsyncMock()
-        request.client.host = "10.0.0.1"
+    def test_remote_fails_no_key(self):
         auth = _DesignerAuth()
         with pytest.raises(HTTPException, match="API-key authentication"):
-            await auth(request)
+            auth({"headers": {"host": "10.0.0.1:8002"}})
 
-    @pytest.mark.anyio
-    async def test_remote_passes_with_key(self):
-        from unittest.mock import AsyncMock
-        request = AsyncMock()
-        request.client.host = "10.0.0.1"
-        request.headers = {"X-API-Key": "secret"}
+    def test_remote_passes_with_key(self):
         auth = _DesignerAuth(api_key="secret")
-        await auth(request)  # should not raise
+        auth({"headers": {"host": "10.0.0.1:8002", "x-api-key": "secret"}})  # should not raise
 
-    @pytest.mark.anyio
-    async def test_remote_fails_wrong_key(self):
-        from unittest.mock import AsyncMock
-
-        from fastapi import HTTPException
-        request = AsyncMock()
-        request.client.host = "10.0.0.1"
-        request.headers = {"X-API-Key": "wrong"}
+    def test_remote_fails_wrong_key(self):
         auth = _DesignerAuth(api_key="secret")
         with pytest.raises(HTTPException, match="Invalid or missing"):
-            await auth(request)
+            auth({"headers": {"host": "10.0.0.1:8002", "x-api-key": "wrong"}})

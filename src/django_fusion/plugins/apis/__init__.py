@@ -45,6 +45,7 @@ from django_fusion.plugins.apis.auth import (
     verify_token_user,
 )
 from django_fusion.plugins.apis.views import APIApplication, APISViewMixin
+from django_fusion.plugins.apis.openapi import OpenAPISpec, openapi_docs, openapi_json
 from django_fusion.plugins.apis.viewsets import (
     FusionApiViewset,
     api_viewset_registry,
@@ -99,4 +100,7 @@ __all__ = [
     "mount_refresh_endpoint",
     "mount_token_endpoint",
     "bolt",
+    "OpenAPISpec",
+    "openapi_json",
+    "openapi_docs",
 ]

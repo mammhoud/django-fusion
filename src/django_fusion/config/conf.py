@@ -23,6 +23,57 @@ _RENDER_FIRST_SETTING_NAMES = (
     "COMPONENTS_FUSION_RENDER_FIRST_DEFAULT",
 )
 
+# Canonical string-mode setting, then the legacy bool names (see the
+# FUSION_RENDER_FIRST → FUSION_RENDER_MODE rename).
+_RENDER_MODE_SETTING_NAMES = ("FUSION_RENDER_MODE",) + _RENDER_FIRST_SETTING_NAMES
+_RENDER_MODES = ("render", "data", "mixed")
+
+
+def coerce_render_mode(value) -> str | None:
+    """Normalise a setting value into ``render`` / ``data`` / ``mixed``.
+
+    Accepts the canonical strings, plus boolean values and boolean-ish strings
+    for the legacy ``FUSION_RENDER_FIRST`` shape (True → render, False → data).
+    Returns ``None`` for values that do not resolve to a known mode.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return "render" if value else "data"
+    text = str(value).strip().lower()
+    if text in _RENDER_MODES:
+        return text
+    if text in ("true", "1", "yes", "on"):
+        return "render"
+    if text in ("false", "0", "no", "off"):
+        return "data"
+    return None
+
+
+def resolve_render_mode_setting(default: str = "data") -> str:
+    """Resolve the effective render mode from Django settings.
+
+    Reads the canonical ``FUSION_RENDER_MODE`` string first (``render`` /
+    ``data`` / ``mixed``), then the legacy bool names
+    ``FUSION_RENDER_FIRST`` / ``FUSION_RENDER_FIRST_DEFAULT`` /
+    ``COMPONENTS_FUSION_RENDER_FIRST_DEFAULT``, falling back to *default*.
+    """
+    try:
+        from django.conf import settings as django_settings
+
+        for name in _RENDER_MODE_SETTING_NAMES:
+            try:
+                value = getattr(django_settings, name, None)
+            except Exception:  # noqa: BLE001
+                value = None
+            if value is not None:
+                mode = coerce_render_mode(value)
+                if mode is not None:
+                    return mode
+    except Exception:  # noqa: BLE001
+        pass
+    return default
+
 
 def resolve_render_first_setting(default: bool = False) -> bool:
     """Resolve the effective render-first default from Django settings.
@@ -30,20 +81,12 @@ def resolve_render_first_setting(default: bool = False) -> bool:
     Reads the canonical ``FUSION_RENDER_FIRST`` setting first, then the
     legacy ``FUSION_RENDER_FIRST_DEFAULT`` / ``COMPONENTS_FUSION_RENDER_FIRST_DEFAULT``
     names, falling back to *default* when nothing is configured.
-    """
-    try:
-        from django.conf import settings as django_settings
 
-        for name in _RENDER_FIRST_SETTING_NAMES:
-            try:
-                value = getattr(django_settings, name, None)
-            except Exception:  # noqa: BLE001
-                value = None
-            if value is not None:
-                return bool(value)
-    except Exception:  # noqa: BLE001
-        pass
-    return default
+    This is the deprecated boolean view of the mode; prefer
+    :func:`resolve_render_mode_setting` for new code. ``render`` and ``mixed``
+    (which serves HTML by default) map to True; only ``data`` maps to False.
+    """
+    return resolve_render_mode_setting(default="render" if default else "data") != "data"
 
 
 class DjangoComponentsSettings:
@@ -54,6 +97,7 @@ class DjangoComponentsSettings:
         self._enable_block_attrs: bool | None = None
         self._add_asset_prefix: bool | None = None
         self.render_first_default = self._resolve_render_first_default()
+        self.render_mode = self._resolve_render_mode()
 
     def get_component_directory_names(self) -> tuple[str, ...]:
         if self._component_dir_names is None:
@@ -73,6 +117,9 @@ class DjangoComponentsSettings:
 
     def _resolve_render_first_default(self) -> bool:
         return resolve_render_first_setting(default=False)
+
+    def _resolve_render_mode(self) -> str:
+        return resolve_render_mode_setting(default="data")
 
     # Backwards-compatible alias for the renamed attribute (writable, so
     # existing call sites that assign it keep working).
@@ -121,6 +168,7 @@ class DjangoComponentsSettings:
         self._enable_block_attrs = None
         self._add_asset_prefix = None
         self.render_first_default = self._resolve_render_first_default()
+        self.render_mode = self._resolve_render_mode()
 
 
 _settings = DjangoComponentsSettings()

@@ -33,13 +33,22 @@ from __future__ import annotations
 
 from django.http import HttpRequest
 
-from django_fusion.config.conf import resolve_render_first_setting
+from django_fusion.config.conf import (
+    coerce_render_mode,
+    resolve_render_first_setting,
+    resolve_render_mode_setting,
+)
 from django_fusion.routes.rendering.session import SESSION_KEY
 
 __all__ = [
     "header_render_first",
     "session_render_first",
     "resolve_render_first",
+    "header_render_mode",
+    "session_render_mode",
+    "route_render_mode",
+    "negotiate_mixed",
+    "resolve_render_mode",
 ]
 
 
@@ -113,3 +122,124 @@ def resolve_render_first(
         return bool(default)
 
     return resolve_render_first_setting(default=setting_default)
+
+
+# ── String render-mode chain (FUSION_RENDER_MODE) ──────────────────────────
+# Adds a third ``mixed`` mode to the render-first/data-API pair. ``mixed``
+# negotiates per request: JSON clients (Accept: application/json) get data,
+# everything else gets server HTML. A per-route override
+# (FUSION_RENDER_MODE_ROUTES) lets specific paths pin a mode.
+
+_MODE_HEADER = "X-Fusion-Render-Mode"
+MODE_SESSION_KEY = "fusion_render_mode"
+
+
+def header_render_mode(request: HttpRequest | None) -> str | None:
+    """Return the per-request ``X-Fusion-Render-Mode`` override, or ``None``."""
+    if request is None:
+        return None
+    try:
+        header = request.headers.get(_MODE_HEADER)
+    except Exception:  # noqa: BLE001
+        return None
+    return coerce_render_mode(header)
+
+
+def session_render_mode(request: HttpRequest | None) -> str | None:
+    """Return an explicitly stored session mode, or ``None``."""
+    if request is None:
+        return None
+    try:
+        if MODE_SESSION_KEY in request.session:
+            return coerce_render_mode(request.session[MODE_SESSION_KEY])
+    except Exception:  # noqa: BLE001
+        return None
+    return None
+
+
+def route_render_mode(request: HttpRequest | None) -> str | None:
+    """Resolve a per-route override from ``FUSION_RENDER_MODE_ROUTES``.
+
+    The setting maps a path prefix to a mode (``{"/courses/": "mixed"}``).
+    The longest matching prefix wins so more specific routes can override a
+    broader one.
+    """
+    if request is None:
+        return None
+    try:
+        from django.conf import settings
+
+        routes = getattr(settings, "FUSION_RENDER_MODE_ROUTES", None)
+    except Exception:  # noqa: BLE001
+        return None
+    if not isinstance(routes, dict):
+        return None
+    path = getattr(request, "path", "")
+    best: str | None = None
+    best_len = -1
+    for prefix, mode in routes.items():
+        if not isinstance(prefix, str) or not path.startswith(prefix):
+            continue
+        coerced = coerce_render_mode(mode)
+        if coerced is not None and len(prefix) > best_len:
+            best = coerced
+            best_len = len(prefix)
+    return best
+
+
+def negotiate_mixed(mode: str, request: HttpRequest | None) -> str:
+    """Reduce a ``mixed`` mode to ``render`` or ``data`` for this request.
+
+    API clients (``Accept: application/json``) receive ``data``; browsers and
+    every other client receive ``render`` (full server HTML).
+    """
+    if mode != "mixed":
+        return mode
+    accept = ""
+    if request is not None:
+        try:
+            accept = request.headers.get("Accept", "") or ""
+        except Exception:  # noqa: BLE001
+            accept = ""
+    return "data" if "application/json" in accept.lower() else "render"
+
+
+def resolve_render_mode(
+    request: HttpRequest | None = None,
+    *,
+    force_render_first: bool | None = None,
+    force_data_mode: bool = False,
+    default: str | None = None,
+    setting_default: str = "data",
+    negotiate: bool = True,
+) -> str:
+    """Resolve the effective render mode for *request*.
+
+    Returns ``render`` / ``data`` / ``mixed``. Priority order (first match):
+
+    1. ``force_render_first`` / ``force_data_mode`` hard overrides.
+    2. ``X-Fusion-Render-Mode: render|data|mixed`` request header.
+    3. An explicitly stored session mode (``fusion_render_mode``).
+    4. A per-route override (``FUSION_RENDER_MODE_ROUTES``).
+    5. ``default`` (an explicit per-view/component override).
+    6. The ``FUSION_RENDER_MODE`` setting (legacy bool names accepted).
+
+    When ``negotiate`` is true (default), a resolved ``mixed`` is converted
+    to a concrete ``render``/``data`` via Accept-header negotiation.
+    """
+    if force_render_first:
+        return "render"
+    if force_data_mode:
+        return "data"
+
+    mode = header_render_mode(request)
+    if mode is None:
+        mode = session_render_mode(request)
+    if mode is None:
+        mode = route_render_mode(request)
+    if mode is None and default is not None:
+        mode = coerce_render_mode(default)
+    if mode is None:
+        mode = resolve_render_mode_setting(default=setting_default)
+
+    return negotiate_mixed(mode, request) if negotiate else mode
