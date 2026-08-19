@@ -1,6 +1,39 @@
+---
+title: Repository overview
+description: The wide-angle map of Structa Cloud products, infrastructure, commands, and data flow.
+navigation:
+  title: Repository overview
+  icon: i-lucide-map
+object:
+  type: "architecture"
+  id: "docs.overview"
+attributes:
+  source_path: "overview.md"
+  canonical_route: "/docs/en/overview"
+  source_of_truth: "repository-markdown"
+  owner: "workspace"
+  status: "maintained"
+tags:
+  - structa-cloud
+  - architecture
+  - project-awareness
+  - commands
+links:
+  - label: "Project awareness"
+    to: "/docs/en/guides/00-project-awareness"
+    icon: "i-lucide-compass"
+  - label: "Full architecture"
+    to: "/docs/en/architecture"
+    icon: "i-lucide-landmark"
+---
+
 # 🏠 Repo Overview — Structa Cloud Monorepo
 
 > Wide-angle view of the full repository environment: what it is, how it fits together, and how to build, deploy, and publish new projects.
+
+<!-- AI-generated: review needed -->
+
+> **Canonical orientation:** [`guides/00-project-awareness.md`](guides/00-project-awareness.md) explains the object graph, source-of-truth rules, commands, and Docus metadata model.
 
 ---
 
@@ -16,7 +49,7 @@ The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript + Ast
 | **AI** | Ollama + OpenAI-compatible + MCP | Syntara (CeptorAI) |
 | **Infrastructure** | Docker + Traefik + Nginx + Coder | All projects |
 | **Database** | PostgreSQL 16 (prod) / SQLite (dev) | All Django projects |
-| **Build** | uv + pnpm + Cargo + Webpack | All projects |
+| **Build** | uv + package-local npm/pnpm + Cargo + Webpack | All projects |
 
 ---
 
@@ -29,6 +62,7 @@ cd projects
 make check WEBSITE=precis-main         # Checks Precis LMS
 make test WEBSITE=precis-main          # Tests Precis LMS
 make run-dev WEBSITE=precis-landing   # Landing-Fusion dev server
+make check WEBSITE=precis-ctc         # CTC Research backend/frontend checks
 make check WEBSITE=precis-landing
 make test WEBSITE=precis-landing
 ```
@@ -56,6 +90,14 @@ make install && make check && make test
 # Formint Community
 cd projects/formints/formint-community
 pnpm install && pnpm tauri dev
+
+# CTC Research
+cd projects/precis/precis-ctc
+make check && make test
+
+# Docus documentation
+cd docs
+make check && make build
 
 # django-fusion library
 cd libs/django-fusion
@@ -141,7 +183,7 @@ make logs              # Tail all service logs
 This monorepo is designed to **build, deploy, and publish multiple independent products** from shared infrastructure:
 
 1. **Single toolchain** — `uv` for Python, `pnpm` for frontend, `Cargo` for Rust
-2. **Shared settings** — `projects/configs/` provides base Django config reused across sites
+2. **Shared settings** — `projects/precis/configs/` provides base Django config reused across Precis sites
 3. **Shared assets** — `projects/assets/` has cross-site templates, static files, locale
 4. **Shared framework** — `libs/django-fusion/` provides components, routing, fragments
 5. **Shared infrastructure** — One Traefik proxy, one Nginx media server, one Postgres cluster
@@ -156,10 +198,10 @@ structa.cloud/
 ├── projects/              # All Django + desktop projects
 │   ├── Makefile           # Canonical dispatcher (WEBSITE= selection)
 │   ├── assets/            # Shared static/templates/locale
-│   ├── precis/            # Precis group (main, lnd-structa, lms-ctc, configs)
-│   │   ├── main/          #   Precis LMS
-│   │   ├── lnd-structa/   #   Landing-Fusion marketing site
-│   │   ├── lms-ctc/       #   CTC Research
+│   ├── precis/            # Precis group (precis-main, precis-landing, precis-ctc)
+│   │   ├── precis-main/   #   Precis LMS
+│   │   ├── precis-landing/   #   Landing-Fusion marketing site
+│   │   ├── precis-ctc/    #   CTC Research
 │   │   └── configs/       #   Shared Django settings
 │   ├── syntara/           # Syntara AI chat platform
 │   ├── loop-crm/          # Loop-CRM unified CRM
@@ -208,12 +250,19 @@ The codebase has been through several renames. See this guide for mapping old na
 
 > ⚠️ **Use current names in new code.** Legacy names may appear in migration docs or compatibility manifests but should not be used for new source paths.
 
+## Remarks & Notes
+
+- Use `docs/guides/00-project-awareness.md` as the operational index; this overview intentionally stays wide-angle.
+- Treat `projects/Makefile`, product `AGENTS.md`, and product Makefiles as executable sources of truth for paths and commands.
+- The diagrams describe request and build boundaries; verify route names and service names against the owning configuration before operating on them.
+
 ---
 
 ## Related Docs
 
 | Topic | Path |
 |-------|------|
+| Project awareness and commands | [`guides/00-project-awareness.md`](guides/00-project-awareness.md) |
 | Setup guide | [`guides/01-setup.md`](guides/01-setup.md) |
 | Clone a site | [`guides/06-clone-site.md`](guides/06-clone-site.md) |
 | Deployment guide | [`guides/04-deploy.md`](guides/04-deploy.md) |

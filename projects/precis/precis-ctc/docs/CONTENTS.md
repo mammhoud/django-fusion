@@ -100,7 +100,7 @@ still contain code-oriented markup; those are not public medical content.
 | `backend/apps/learning/fixtures/medical_research_catalog.json` | Courses, tags, specializations | Course metadata and research-focused descriptions |
 | `backend/apps/learning/fixtures/medical_research_curriculum.json` | 12 modules and 24 rich-text lessons across the six published courses | No code-block content; review medical/editorial copy before release |
 | `assets/locale/*/LC_MESSAGES/django.po` | Django UI translations | `en`, `fr`, `de`, `ar` are existing references; `es`, `sv`, `pt_BR` are generated full-set catalogs |
-| `projects/assets/media/ctc-research/` | Shared runtime media and Wagtail image files | Shared proxy and CTC containers use this project-named tree |
+| `projects/assets/media/ctc-research/` | Shared runtime media and Wagtail image files | Shared proxy and CTC containers use this project-named tree; see [`MEDIA_ARCHIVE.md`](MEDIA_ARCHIVE.md) for the restored archive/content copy |
 | `projects/assets/bundles/ctc-research/` | Shared webpack output and `bundles.json` | Generated; build before collectstatic or container rebuild |
 
 ## 5. Medical content rules

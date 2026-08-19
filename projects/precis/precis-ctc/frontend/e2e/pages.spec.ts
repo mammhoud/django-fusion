@@ -5,23 +5,29 @@ import { expect, test } from '@playwright/test';
  * Patterns match the live copy; `null` falls back to a non-empty h1.
  */
 const PAGES: Array<[string, RegExp | null]> = [
-  ['/about/', /about/i],
-  ['/blog/', /blog/i],
+  ['/', /clinical|research|evidence/i],
+  ['/about/', /about|research/i],
+  ['/about/research/', /research|checked/i],
+  ['/about/education/', /learn|education/i],
+  ['/blog/', /blog|insight/i],
   ['/pricing/', /pricing/i],
-  ['/features/', null], // hero copy: "Built to ship as…"
-  ['/products/', null], // hero copy: "Everything we build, shipped as…"
-  ['/services/', /capabilit|service/i],
+  ['/features/', /documents|capabilit/i],
+  ['/products/', /program|product/i],
+  ['/services/', /research|service/i],
+  ['/team/', /team|network/i],
+  ['/events/', /event|research/i],
   ['/faq/', /faq|question/i],
-  ['/contact/', /touch|contact/i],
-  ['/privacy/', /privacy/i],
-  ['/projects/', null], // hero copy: "Everything we build, shipped as…"
-  ['/profile/', /profile|sign in|progress/i],
+  ['/contact/', /contact|research/i],
+  ['/privacy/', /privacy|policy/i],
+  ['/documents/', /document|research/i],
+  ['/projects/', /program|project/i],
+  ['/profile/', /profile|learning/i],
   ['/blog/why-landing-pages-as-documents/', null],
 ];
 
 for (const [path, headingPattern] of PAGES) {
   test(`page ${path} renders 200 with a heading`, async ({ page }) => {
-    const response = await page.goto(path);
+    const response = await page.goto(path, { waitUntil: 'domcontentloaded' });
     expect(response?.status(), `${path} should be 200`).toBe(200);
     const h1 = (await page.locator('h1').first().textContent())?.trim() || '';
     expect(h1.length, `${path} should have a non-empty h1`).toBeGreaterThan(3);

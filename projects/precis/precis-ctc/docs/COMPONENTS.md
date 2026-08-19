@@ -300,3 +300,31 @@ it via `libraries` (not builtins) — so templates need `{% load components %}`.
 | `libs/django-fusion/src/django_fusion/comp/templatetags/components/__init__.py` | Template tag library — `comp`, `slot`, `prop`, `var`, `block` |
 | `projects/precis/precis-main/assets/templates/` | Primary comp user — all layout skeletons + components |
 | `projects/configs/base/templates.py` | Template config that registers `components` as builtin |
+
+## 10. Public page-component compatibility route
+
+The legacy public page paths below are routed through the same Wagtail-backed
+fragment contract as the Astro shell:
+
+```text
+/components/lms/pages/<slug>/
+→ /fragment/pages/<slug>/ behavior
+```
+
+This compatibility road is intentionally registered before the generic
+`django-fusion` component resolver. It prevents the generic full-page fallback
+from returning a server error when a deployment does not have the legacy
+layout context, while preserving the existing staff-only restrictions on the
+LMS dashboard and HTMX-only course/blog fragments.
+
+The canonical public endpoint remains:
+
+```text
+GET /fragment/pages/<slug>/
+```
+
+## Remarks & Notes
+
+- Production probing on 2026-08-18 found `/components/lms/pages/home/`, `/about/`, `/team/`, `/services/`, `/faq/`, and `/contact/` returning HTTP 500, while `/components/lms/pages/privacy/` returned HTTP 200. The compatibility route addresses the public static-page subset; deployment is required before rechecking production.
+- `/components/lms/courses/list-fragment/` remains HTMX-only and correctly returns HTTP 403 without an authenticated/HTMX request; `/components/lms/dashboard/` remains staff-only.
+- If production reports HTTP 503 rather than the observed HTTP 500, inspect the backend container health and Traefik service state separately; the route-level behavior must be rechecked after the backend rollout.

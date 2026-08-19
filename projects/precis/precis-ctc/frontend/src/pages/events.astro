@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import EventCard from '@/components/blocks/EventCard.astro';
+import PageHeader from '@/components/blocks/PageHeader.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData, EventItem } from '@/lib/api';
@@ -28,13 +29,18 @@ const subtitle = pageData?.hero?.subtitle || pageData?.search_description || '';
   pageData={pageData}
   pageSlug="events"
 >
-  <section class="mx-auto w-full max-w-6xl px-4 py-20 md:py-28">
-    <div class="mx-auto max-w-3xl text-center">
-      <p class="tag-marker mb-4">ctc research &middot; events</p>
-      <h1 class="font-display text-4xl font-light leading-[1.05] tracking-tight text-fu-ink md:text-5xl">{heading}</h1>
-      {subtitle && <p class="mt-4 text-fu-muted">{subtitle}</p>}
-    </div>
+  <PageHeader
+    eyebrow="ctc research · events"
+    title={heading}
+    intro={subtitle || 'Workshops, symposia, and academic writing sessions from the research network.'}
+    variant="archive"
+    index="07"
+    status="200 OK · research calendar"
+    primaryCta={{ label: 'Ask about events', href: '/contact/' }}
+    secondaryCta={{ label: 'Browse courses', href: '/courses/' }}
+  />
 
+  <section class="mx-auto w-full max-w-6xl px-4 py-20 md:py-28">
     {events.length ? (
       <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {events.map((ev, i) => (

@@ -1,0 +1,60 @@
+---
+interface Slide {
+  eyebrow: string;
+  title: string;
+  text: string;
+  href: string;
+  cta: string;
+  image?: string;
+  alt?: string;
+}
+
+interface Props {
+  slides: Slide[];
+}
+
+const { slides = [] } = Astro.props;
+---
+
+{slides.length ? (
+  <section class="home-slider" aria-labelledby="home-slider-title" data-testid="home-slider" x-data={`{ active: 0, total: ${slides.length}, timer: null, init() { this.timer = setInterval(() => this.next(), 7000) }, next() { this.active = (this.active + 1) % this.total }, previous() { this.active = (this.active - 1 + this.total) % this.total }, goTo(index) { this.active = index } }`}>
+    <div class="container-fusion">
+      <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+        <div>
+          <p class="tag-marker mb-3">the research agenda</p>
+          <h2 id="home-slider-title" class="page-section__title mb-0">A center in motion</h2>
+        </div>
+        <p class="max-w-md text-sm leading-relaxed text-fu-muted">Move through the connected work: a clinical question, a defensible method, and the next useful learning step.</p>
+      </div>
+
+      <div class="home-slider__frame" @mouseenter="clearInterval(timer)" @mouseleave="timer = setInterval(() => next(), 7000)">
+        <div class="home-slider__track" :style="`transform: translateX(-${active * 100}%)`">
+          {slides.map((slide, index) => (
+            <article class="home-slider__slide" data-testid="home-slide" aria-hidden={index === 0 ? 'false' : 'true'} :aria-hidden={`active !== ${index}`}>
+              <div class="home-slider__copy">
+                <p class="home-slider__index">{String(index + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')} · {slide.eyebrow}</p>
+                <h3 class="home-slider__title">{slide.title}</h3>
+                <p class="home-slider__text">{slide.text}</p>
+                <a class="btn-secondary mt-6 inline-flex w-fit" href={slide.href}>{slide.cta} <span aria-hidden="true">→</span></a>
+              </div>
+              <div class="home-slider__media">
+                {slide.image ? <img src={slide.image} alt={slide.alt || slide.title} loading={index === 0 ? 'eager' : 'lazy'} /> : <div class="home-slider__placeholder">CTC / {slide.eyebrow}</div>}
+              </div>
+            </article>
+          ))}
+        </div>
+        <div class="home-slider__controls">
+          <div class="home-slider__dots" role="tablist" aria-label="Research agenda slides">
+            {slides.map((slide, index) => (
+              <button type="button" class="home-slider__dot" role="tab" :aria-selected={`active === ${index}`} aria-current={index === 0 ? 'true' : 'false'} :aria-current={`active === ${index} ? 'true' : 'false'`} @click={`goTo(${index})`} aria-label={`Show slide ${index + 1}: ${slide.eyebrow}`}></button>
+            ))}
+          </div>
+          <div class="home-slider__arrow">
+            <button type="button" class="btn-secondary !px-3 !py-2" @click="previous()" aria-label="Previous research slide">←</button>
+            <button type="button" class="btn-primary !px-3 !py-2" @click="next()" aria-label="Next research slide">→</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+) : null}

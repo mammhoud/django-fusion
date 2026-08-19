@@ -2,7 +2,9 @@
 # Mailpit — email catcher for development and staging
 # =============================================================================
 # SMTP listener on :1025 (host + internal), web UI on :8025 (internal, routed
-# by Traefik at mail.structa.cloud). Point Django EMAIL_HOST at `mailpit` /
+# by Traefik → shared-proxy Nginx at tools.structa.cloud/mailpit/; see
+# applications/proxy/configs/traefik/dynamic/tools.yml). MP_WEBROOT keeps the
+# UI + API under the /mailpit/ prefix. Point Django EMAIL_HOST at `mailpit` /
 # port 1025 to capture outbound mail instead of sending it.
 # =============================================================================
 
@@ -17,6 +19,8 @@ services:
     image: axllent/mailpit:${MAILPIT_VERSION:-latest}
     container_name: mailpit
     restart: unless-stopped
+    environment:
+      MP_WEBROOT: /mailpit/
     ports:
       - "${MAILPIT_SMTP_PORT:-1025}:1025"
     networks:

@@ -137,8 +137,7 @@ msgstr "Wiederholungstage"
 
 #: apps/LMS/models/classes.py:79
 msgid "Comma-separated days (0=Sunday, 1=Monday, etc.) for weekly recurrence"
-msgstr ""
-"Durch Komma getrennte Tage (0=Sonntag, 1=Montag, etc.) für wöchentliche "
+msgstr "Kommagetrennte Tage (0=Sonntag, 1=Montag usw.) für wöchentliche Wiederholung"
 "Wiederholung"
 
 #: apps/LMS/models/classes.py:84
@@ -697,8 +696,7 @@ msgstr ""
 
 #: apps/LMS/models/courses/index.py:67
 msgid "Text describing the page or highlighting available courses."
-msgstr ""
-"Text zur Beschreibung der Seite oder zur Hervorhebung verfügbarer Kurse."
+msgstr "Text zur Beschreibung der Seite oder zur Hervorhebung verfügbarer Kurse."
 
 #: apps/LMS/models/courses/index.py:68 apps/handlers/models/blog/post.py:84
 msgid "Introduction"
@@ -1405,8 +1403,7 @@ msgstr "Automatisch Abonnement verlängern"
 
 #: apps/handlers/forms/billing.py:66
 msgid "Automatically renew your subscription at the end of each billing period"
-msgstr ""
-"Ihr Abonnement am Ende jedes Abrechnungszeitraums automatisch verlängern"
+msgstr "Ihr Abonnement am Ende jedes Abrechnungszeitraums automatisch verlängern"
 
 #: apps/handlers/forms/billing.py:71
 msgid "Billing Name"
@@ -1735,8 +1732,7 @@ msgstr "Mittel – Mindestens 8 Zeichen mit Buchstaben und Zahlen"
 #: apps/handlers/forms/security.py:56
 #: components/profile/settings/security.html:229
 msgid "High - Minimum 12 characters with mixed case, numbers, and symbols"
-msgstr ""
-"Hoch – Mindestens 12 Zeichen mit Groß-/Kleinschreibung, Zahlen und Symbolen"
+msgstr "Hoch – Mindestens 12 Zeichen mit gemischter Groß-/Kleinschreibung, Zahlen und Symbolen"
 
 #: apps/handlers/models/blog/index.py:23
 msgid "Optional introduction text for the blog index."
@@ -2268,8 +2264,7 @@ msgstr "Primäre Markenfarbe im Hex-Format"
 
 #: apps/handlers/models/manage/company.py:199
 msgid "Display this company in public directories and partner pages"
-msgstr ""
-"Dieses Unternehmen in öffentlichen Verzeichnissen und Partnerseiten anzeigen"
+msgstr "Dieses Unternehmen in öffentlichen Verzeichnissen und Partnerseiten anzeigen"
 
 #: apps/handlers/models/manage/company.py:206
 msgid "Strategic Partner"
@@ -4719,8 +4714,7 @@ msgstr "Wählen Sie einen Benutzernamen"
 
 #: components/auth/register.html:47
 msgid "Please enter a valid username (at least 3 characters)."
-msgstr ""
-"Bitte geben Sie einen gültigen Benutzernamen ein (mindestens 3 Zeichen)."
+msgstr "Bitte geben Sie einen gültigen Benutzernamen ein (mindestens 3 Zeichen)."
 
 #: components/auth/register.html:74
 msgid "Enter password"
@@ -4896,10 +4890,6 @@ msgid ""
 "primary\">%(email)s</span>\n"
 "                "
 msgstr ""
-"                Verifizierungslink wird gesendet an:\n"
-"                <span class=\"auth__email fw-semibold text-"
-"primary\">%(email)s</span>\n"
-"                "
 
 #: components/auth/verification_link.html:34
 msgid "A verification link has been sent to your email address."
@@ -4959,8 +4949,7 @@ msgstr "Verifizierungs-E-Mail erneut senden"
 
 #: components/auth/verification_link.html:170
 msgid "Check your spam folder if you don't see it in your inbox"
-msgstr ""
-"Überprüfen Sie Ihren Spam-Ordner, wenn Sie sie nicht im Posteingang sehen"
+msgstr "Prüfen Sie Ihren Spam-Ordner, falls Sie es nicht in Ihrem Posteingang finden"
 
 #: components/auth/verification_link.html:179
 msgid "Need assistance with verification?"
@@ -5589,8 +5578,7 @@ msgstr "Sind Sie sicher, dass Sie diesen Benutzer blockieren möchten?"
 
 #: components/profile/partials/banner-cta.html:153
 msgid "Blocked users cannot view your profile or send you messages."
-msgstr ""
-"Blockierte Benutzer können Ihr Profil nicht sehen oder Ihnen Nachrichten "
+msgstr "Gesperrte Benutzer können Ihr Profil nicht sehen oder Ihnen Nachrichten senden."
 "senden."
 
 #: components/profile/partials/banner-cta.html:180
@@ -6006,8 +5994,7 @@ msgstr "SMS-Benachrichtigungen"
 #: components/profile/settings.html:399
 #: components/profile/settings/notifications.html:149
 msgid "Standard carrier rates may apply for SMS notifications"
-msgstr ""
-"Standardgebühren des Anbieters können für SMS-Benachrichtigungen anfallen"
+msgstr "Es können normale Netzanbietertarife für SMS-Benachrichtigungen gelten"
 
 #: components/profile/settings.html:430
 msgid "Notification Actions"

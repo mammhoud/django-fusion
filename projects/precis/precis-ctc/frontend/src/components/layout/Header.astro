@@ -1,13 +1,17 @@
 ---
 import ThemeToggle from '@/components/ui/ThemeToggle.astro';
+import LanguageSwitcher from '@/components/ui/LanguageSwitcher.astro';
 
 interface Props {
   siteName?: string;
+  logoUrl?: string;
   /** Backend-fetched nav items (from /apis/navigation/). Falls back to a sensible default. */
   navItems?: { label: string; href: string; active?: boolean; external?: boolean }[];
+  /** Page family used to vary the navigation treatment without changing its contract. */
+  pageVariant?: 'home' | 'research' | 'learning' | 'archive' | 'legal' | 'network' | 'contact' | 'product';
 }
 
-const { siteName = 'CTC Research', navItems } = Astro.props;
+const { siteName = 'CTC Research', logoUrl = '/static/images/favicon-enhanced.svg', navItems, pageVariant = 'home' } = Astro.props;
 
 const pathname = Astro.url.pathname;
 const isActive = (href: string) => {
@@ -31,7 +35,8 @@ const displayNav = navItems && navItems.length > 0
 
 <!-- ═══ Fluid Island nav — floating glass pill, detached from the top (§5A) ═══ -->
 <header
-  class="fixed inset-x-0 top-4 z-[60] px-4"
+  class:list={["fixed inset-x-0 top-4 z-[60] px-4", `site-header--${pageVariant}`]}
+  data-page-variant={pageVariant}
   x-data="{
     open: false,
     authed: false,
@@ -62,20 +67,11 @@ const displayNav = navItems && navItems.length > 0
     init() { this.checkAuth(); },
   }"
 >
-  <div class="mx-auto flex w-max max-w-full items-center gap-5 rounded-full border border-fu-line/80 bg-fu-card/85 px-4 py-2.5 shadow-[0_18px_44px_-22px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-colors duration-500"
+  <div class="site-nav-island mx-auto flex w-max max-w-full items-center gap-5 rounded-full border border-fu-line/80 bg-fu-card/85 px-4 py-2.5 shadow-[0_18px_44px_-22px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-colors duration-500"
        style="transition-timing-function: cubic-bezier(0.32,0.72,0,1)">
     <!-- Protocol Mark + wordmark -->
     <a href="/" class="flex items-center gap-2.5 font-mono text-[0.92rem] font-semibold tracking-tight text-fu-ink" aria-label={siteName}>
-      <svg class="h-8 w-8" viewBox="0 0 200 200" fill="none" aria-hidden="true">
-        <circle cx="98" cy="92" r="9" stroke="#00a1b3" stroke-width="5"/>
-        <line x1="98" y1="44" x2="98" y2="120" stroke="#00a1b3" stroke-width="2" opacity=".55"/>
-        <line x1="62" y1="92" x2="120" y2="92" stroke="#00a1b3" stroke-width="2" opacity=".55"/>
-        <rect x="60" y="40" width="16" height="128" fill="#F5F7FA"/>
-        <rect x="76" y="40" width="56" height="16" fill="#F5F7FA"/>
-        <rect x="76" y="84" width="44" height="16" fill="#F5F7FA"/>
-        <line x1="36" y1="178" x2="152" y2="178" stroke="#6C63FF" stroke-width="5"/>
-        <path d="M150 170 L164 178 L150 186 Z" fill="#6C63FF"/>
-      </svg>
+      <img src={logoUrl} alt="" class="h-8 w-8 object-contain" aria-hidden="true" />
       <span class="uppercase tracking-[0.28em]">{siteName}</span>
     </a>
 
@@ -100,9 +96,10 @@ const displayNav = navItems && navItems.length > 0
       })}
     </nav>
 
-    <!-- CTA + auth + theme toggle (desktop) -->
+    <!-- CTA + auth + theme toggle + language (desktop) -->
     <div class="hidden items-center gap-2.5 md:flex">
       <span class="status-line !text-[0.62rem]"><span class="dot" aria-hidden="true"></span>online</span>
+      <LanguageSwitcher />
       <ThemeToggle />
       <!-- Loading: subtle placeholder -->
       <template x-if="authLoading">
@@ -190,8 +187,9 @@ const displayNav = navItems && navItems.length > 0
       </a>
     </div>
 
-    <!-- Mobile controls: theme toggle + morphing hamburger -->
+    <!-- Mobile controls: language + theme toggle + morphing hamburger -->
     <div class="flex items-center gap-1.5 md:hidden">
+      <LanguageSwitcher />
       <ThemeToggle />
       <button
         type="button"

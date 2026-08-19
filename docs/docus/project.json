@@ -1,0 +1,33 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "name": "docus",
+  "root": "docs/docus",
+  "projectType": "application",
+  "tags": ["type:docs", "stack:node"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production"],
+      "cache": true,
+      "options": { "command": "npm run build", "cwd": "docs/docus" }
+    },
+    "build-static": {
+      "executor": "nx:run-commands",
+      "inputs": ["production"],
+      "cache": true,
+      "options": { "command": "npm run build:static", "cwd": "docs/docus" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run dev", "cwd": "docs/docus" }
+    },
+    "preview": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run preview", "cwd": "docs/docus" }
+    },
+    "prepare-content": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run prepare-content", "cwd": "docs/docus" }
+    }
+  }
+}

@@ -2,9 +2,24 @@
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "name": "@formints/client",
   "root": "projects/formints/packages/formints-client",
+  "projectType": "library",
+  "tags": ["type:library", "stack:typescript"],
   "targets": {
-    "build": { "executor": "nx:run-commands", "options": { "command": "npm run build", "cwd": "projects/formints/packages/formints-client" } },
-    "check": { "executor": "nx:run-commands", "options": { "command": "npm run typecheck", "cwd": "projects/formints/packages/formints-client" } },
-    "test": { "executor": "nx:run-commands", "options": { "command": "npm run test", "cwd": "projects/formints/packages/formints-client" } }
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production", "^production"],
+      "cache": true,
+      "options": { "command": "npm run build", "cwd": "projects/formints/packages/formints-client" }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": { "command": "npm run typecheck", "cwd": "projects/formints/packages/formints-client" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run test", "cwd": "projects/formints/packages/formints-client" }
+    }
   }
 }

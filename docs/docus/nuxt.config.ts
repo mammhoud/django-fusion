@@ -1,26 +1,6 @@
-import { useNuxt } from '@nuxt/kit'
-
 export default defineNuxtConfig({
   extends: ['docus'],
-  modules: [
-    '@nuxtjs/i18n',
-    // Docus registers its own locale/sitemap prerender hooks. Register this
-    // final inline module after the layer modules so this deployment remains a
-    // Nuxt server build instead of crawling hundreds of content pages.
-    () => {
-      const nuxt = useNuxt()
-      nuxt.hook('nitro:config', (nitroConfig) => {
-        nitroConfig.prerender = {
-          crawlLinks: false,
-          routes: [],
-          failOnError: false,
-        }
-      })
-      nuxt.hook('prerender:routes', ({ routes }) => {
-        routes.clear()
-      })
-    },
-  ],
+  modules: ['@nuxtjs/i18n'],
 
   // The same generated site is served at /docs/ on media.structa.cloud and
   // at the root of docs.structa.cloud after Traefik removes /docs.
@@ -57,10 +37,9 @@ export default defineNuxtConfig({
     description: 'Engineering and product documentation for Structa Cloud.',
   },
 
-  // The production deployment is a Nuxt server. Docus defaults to crawling
-  // every content link during `nuxt build`, which is too expensive for this
-  // repository-sized documentation tree and is unnecessary for SSR. Keep the
-  // content database/search server-side and render routes on demand.
+  // The production deployment is a Nuxt server. Disable link crawling for
+  // static generation so a repository-sized documentation tree does not become
+  // a deployment-time prerender workload; SSR renders routes on demand.
   nitro: {
     prerender: {
       crawlLinks: false,

@@ -11,10 +11,17 @@ import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } f
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 export async function getStaticPaths() {
-  const list = await fetchPageList();
-  return list.pages
-    .filter((p) => p.type === 'ProductPage')
-    .map((page) => ({ params: { slug: page.slug } }));
+  // Build-time content is optional: Docker/CI can build the static shell
+  // before Django is running. Product detail pages are still reachable at
+  // runtime via Astro's on-demand fallback; unknown slugs render ContentError.
+  try {
+    const list = await fetchPageList();
+    const pages = list.pages.filter((p) => p.type === 'ProductPage');
+    if (pages.length) return pages.map((page) => ({ params: { slug: page.slug } }));
+  } catch {
+    // Backend unreachable during docker build — emit empty path set.
+  }
+  return [];
 }
 
 const { slug } = Astro.params;
@@ -84,6 +91,7 @@ const faqItems = pageFaq?.map((f: any) => ({
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Back to products', href: '/products/' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }}
     status='200 OK · text/html · the product, in one response'
+    variant="product"
   />
 
   {techItems?.length ? (

@@ -1,3 +1,4 @@
+
 # =============================================================================
 # Frontend container for CTC Research (Astro + HTMX + Alpine.js)
 # Build context: project root (projects/precis/precis-ctc)
@@ -32,6 +33,9 @@ WORKDIR /app/frontend
 
 COPY --from=builder /app/frontend/package*.json ./
 COPY --from=builder /app/frontend/astro.config.mjs ./astro.config.mjs
+# Astro preview checks the source tree at startup. Keep the source pages in
+# the runner image so production boot is warning-free while serving dist/.
+COPY --from=builder /app/frontend/src ./src
 COPY --from=builder /app/frontend/dist ./dist
 COPY --from=builder /app/frontend/node_modules ./node_modules
 

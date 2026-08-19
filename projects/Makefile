@@ -14,19 +14,19 @@ SERVER_TYPE ?= gunicorn
 ifeq ($(WEBSITE),ctc)
   SITE := precis-ctc
   TEST_WEBSITE := ctc
-  COMPOSE_FILE ?= docker-compose.yml
+  COMPOSE_FILE ?= precis/precis-ctc/docker-compose.yml
 else ifeq ($(WEBSITE),precis-ctc)
   SITE := precis-ctc
   TEST_WEBSITE := ctc
-  COMPOSE_FILE ?= docker-compose.yml
+  COMPOSE_FILE ?= precis/precis-ctc/docker-compose.yml
 else ifeq ($(WEBSITE),ctc-website)
   SITE := precis-ctc
   TEST_WEBSITE := ctc
-  COMPOSE_FILE ?= docker-compose.yml
+  COMPOSE_FILE ?= precis/precis-ctc/docker-compose.yml
 else ifeq ($(WEBSITE),ctc-research.com)
   SITE := precis-ctc
   TEST_WEBSITE := ctc
-  COMPOSE_FILE ?= docker-compose.yml
+  COMPOSE_FILE ?= precis/precis-ctc/docker-compose.yml
 else ifeq ($(WEBSITE),cms-full)
   SITE := cms-full
   TEST_WEBSITE := cms-full
@@ -36,21 +36,37 @@ else ifeq ($(WEBSITE),cmsfull)
   TEST_WEBSITE := cms-full
   COMPOSE_FILE ?= docker-compose.yml
 else ifeq ($(WEBSITE),structa)
-  SITE := lms
-  TEST_WEBSITE := structa
-  COMPOSE_FILE ?= docker-compose.yml
+  # Legacy alias — structa/lms was merged into precis-main.
+  SITE := precis-main
+  PROJECT_DIR := precis/precis-main
+  TEST_WEBSITE := precis-main
+  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
+  PYTHON := uv run python
 else ifeq ($(WEBSITE),lms)
-  SITE := lms
-  TEST_WEBSITE := structa
-  COMPOSE_FILE ?= docker-compose.yml
+  # Legacy alias — structa/lms was merged into precis-main.
+  SITE := precis-main
+  PROJECT_DIR := precis/precis-main
+  TEST_WEBSITE := precis-main
+  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
+  PYTHON := uv run python
 else ifeq ($(WEBSITE),core)
-  SITE := lms
-  TEST_WEBSITE := structa
-  COMPOSE_FILE ?= docker-compose.yml
+  # Legacy alias — structa/lms was merged into precis-main.
+  SITE := precis-main
+  PROJECT_DIR := precis/precis-main
+  TEST_WEBSITE := precis-main
+  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
+  PYTHON := uv run python
 else ifeq ($(WEBSITE),structa.cloud)
-  SITE := lms
-  TEST_WEBSITE := structa
-  COMPOSE_FILE ?= docker-compose.yml
+  # Legacy alias — structa/lms was merged into precis-main.
+  SITE := precis-main
+  PROJECT_DIR := precis/precis-main
+  TEST_WEBSITE := precis-main
+  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
+  PYTHON := uv run python
 else ifeq ($(WEBSITE),vresume)
   SITE := vresume
   TEST_WEBSITE := vresume
@@ -156,6 +172,13 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
+# Canonical backend Makefile for the selected site. Used by check/test/
+# run-dev/migrate/collectstatic/makemigrations below so Django commands run in
+# the project's own backend tree (with its PYTHONPATH + uv wiring) instead of
+# the generic `uv run <module>` fallback. Sites without a backend tree keep
+# the MANAGE fallback (legacy aliases: vresume, cms-fusion, ...).
+BACKEND_MAKE := $(if $(filter $(SITE),precis-ctc),precis/precis-ctc/backend,$(if $(filter $(SITE),precis-main),precis/precis-main/backend,$(if $(filter $(SITE),loop-crm),loop-crm/backend,)))
+
 .PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy redeploy-with-stack docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
@@ -214,11 +237,16 @@ help:
 		'  clean-logs     - Remove generated logs under $(LOG_DIR), preserving .gitkeep'
 
 assets:
-	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
+	@case '$(SITE)' in \
+	  precis-ctc)   $(MAKE) -C precis/precis-ctc/assets $(filter-out $@,$(MAKECMDGOALS)) ;; \
+	  *) echo "No assets Makefile registered for $(SITE)"; exit 1 ;; \
+	esac
 
 scripts script:
 	$(MAKE) -C tests/scripts $(filter-out $@,$(MAKECMDGOALS))
-	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
+	@if [ -f assets/Makefile ]; then \
+		$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS)); \
+	fi
 
 website-ctc:
 	$(MAKE) -C precis/precis-ctc $(filter-out $@,$(MAKECMDGOALS))
@@ -231,10 +259,14 @@ website-precis-main: website-precis  ## Alias — Precis is the unified precis-m
 website-precis-lms: website-precis  ## Legacy alias — precis-lms merged into precis-main
 
 website-structa:
-	$(MAKE) -C lms $(filter-out $@,$(MAKECMDGOALS))
+	$(MAKE) -C precis/precis-main $(filter-out $@,$(MAKECMDGOALS))
 
 website-vresume:
-	$(MAKE) -C portfolio $(filter-out $@,$(MAKECMDGOALS))
+	@if [ -f portfolio/Makefile ]; then \
+		$(MAKE) -C portfolio $(filter-out $@,$(MAKECMDGOALS)); \
+	else \
+		echo "  (skip) portfolio/vresume is not present in this checkout"; \
+	fi
 
 website-formints:
 	$(MAKE) -C formints $(filter-out $@,$(MAKECMDGOALS))
@@ -251,13 +283,17 @@ projects:
 	done
 
 check:
-	$(MANAGE) check
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) check; \
+	else \
+		$(MANAGE) check; \
+	fi
 
 check-all:
-	@echo "==> check WEBSITE=precis-main"
-	@$(MAKE) -C precis/precis-main check
-	@echo "==> check WEBSITE=loop-crm"
-	@$(MAKE) -C loop-crm check
+	@echo "==> check precis-main backend"
+	@$(MAKE) -C precis/precis-main/backend check
+	@echo "==> check loop-crm backend"
+	@$(MAKE) -C loop-crm/backend check
 	@echo "==> check Formint editions"
 	@$(MAKE) -C formints check-all
 
@@ -280,13 +316,24 @@ validate-compose-env:
 	@printf '%s\n' 'Redis database indexes: REDIS_URL=/0, DRAMATIQ_BROKER_URL=/1'
 
 build-assets:
-	PROJECT_PATH=$(SITE) $(MAKE) -C assets build
+	@case '$(SITE)' in \
+	  precis-ctc)   $(MAKE) -C precis/precis-ctc build-assets ;; \
+	  precis-main)  $(MAKE) -C precis/precis-main build-assets ;; \
+	  loop-crm)     $(MAKE) -C loop-crm build ;; \
+	  *) echo "No asset pipeline registered for $(SITE)"; exit 1 ;; \
+	esac
 
 build-assets-all:
-	$(MAKE) -C assets build-all
+	@$(MAKE) build-assets WEBSITE=precis-ctc
+	@$(MAKE) build-assets WEBSITE=precis-main
+	@$(MAKE) build-assets WEBSITE=loop-crm
 
 test:
-	$(PYTHON) -m pytest
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) test; \
+	else \
+		$(PYTHON) -m pytest; \
+	fi
 
 test-local tests-local:
 	uv run pytest
@@ -298,7 +345,11 @@ test-fusion:
 	@echo '✅ precis-main tests complete'
 
 run-dev:
-	$(MANAGE) runserver
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) dev; \
+	else \
+		$(MANAGE) runserver; \
+	fi
 
 run-local runserver-local:
 	$(MANAGE) runserver
@@ -451,39 +502,46 @@ docker-prune-data:
 
 build-assets-site:
 	mkdir -p $(LOG_DIR)
-	PROJECT_PATH=$(SITE) npm --prefix assets run build 2>&1 | tee $(LOG_DIR)/build_assets-$(SITE).log
+	@$(MAKE) build-assets 2>&1 | tee $(LOG_DIR)/build_assets-$(SITE).log
 
 collectstatic-site:
 	mkdir -p $(LOG_DIR)
-	# Use unique staticfiles directory per site to avoid conflicts
-	$(MANAGE) collectstatic --noinput --settings=$(SITE).settings_static_$(SITE) 2>&1 | tee $(LOG_DIR)/collectstatic-$(SITE).log || $(MANAGE) collectstatic --noinput 2>&1 | tee $(LOG_DIR)/collectstatic-$(SITE).log
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) collectstatic 2>&1 | tee $(LOG_DIR)/collectstatic-$(SITE).log; \
+	else \
+		$(MANAGE) collectstatic --noinput 2>&1 | tee $(LOG_DIR)/collectstatic-$(SITE).log; \
+	fi
 
 migrate-site:
 	mkdir -p $(LOG_DIR)
-	$(MANAGE) makemigrations --noinput 2>&1 | tee $(LOG_DIR)/makemigrations-$(SITE).log
-	$(MANAGE) migrate --noinput 2>&1 | tee $(LOG_DIR)/migrate-$(SITE).log
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) migrate 2>&1 | tee $(LOG_DIR)/migrate-$(SITE).log; \
+	else \
+		$(MANAGE) makemigrations --noinput 2>&1 | tee $(LOG_DIR)/makemigrations-$(SITE).log; \
+		$(MANAGE) migrate --noinput 2>&1 | tee $(LOG_DIR)/migrate-$(SITE).log; \
+	fi
 
 docker-load-data:
 	@echo "Loading dump data inside Docker container for $(SITE)"
-	$(DOCKER_COMPOSE) exec $(DOCKER_SERVICE) $(PYTHON) ../tests/scripts/utilities/load_dumped_data.py --site $(SITE) --include-dumps --force
+	$(DOCKER_COMPOSE) exec $(DOCKER_SERVICE) $(PYTHON) ../tests/scripts/load_dumped_data.py --site $(SITE) --include-dumps --force
 
 load-dumps-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) ../tests/scripts/utilities/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
+	uv run python ../tests/scripts/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
 
 populate-data-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) ../tests/scripts/utilities/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
+	uv run python ../tests/scripts/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
 
 populate-data-all:
 	mkdir -p $(LOG_DIR)
 	@for site in precis-main loop-crm; do \
-		$(PYTHON) ../tests/scripts/utilities/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
+		uv run python ../tests/scripts/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
 verify-runtime-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) ../tests/scripts/validation/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
+	uv run python ../tests/scripts/staging/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
 
 full-site-check:
 	@if [[ "$(TEST_WEBSITE)" == "all" ]]; then \
@@ -496,10 +554,18 @@ full-site-check:
 	fi
 
 migrations:
-	$(MANAGE) makemigrations
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) migrate; \
+	else \
+		$(MANAGE) makemigrations; \
+	fi
 
 migrate:
-	$(MANAGE) migrate
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) migrate; \
+	else \
+		$(MANAGE) migrate; \
+	fi
 
 tests:
 	$(MAKE) -C tests $(filter-out $@,$(MAKECMDGOALS))
@@ -514,7 +580,7 @@ tests-websites:
 	$(MAKE) -C tests websites
 
 tests-website:
-	../tests/scripts/helpers/run_website_tests.sh $(TEST_WEBSITE)
+	@cd .. && uv run python -m pytest tests/websites -q
 
 # Delegated subtargets are consumed by nested Makefiles.
 list health containers production production-simple domains vresume-pages:

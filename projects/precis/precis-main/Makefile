@@ -53,15 +53,15 @@ clean:
 	rm -rf backend/assets/static/bundles node_modules
 
 # ── Webpack Asset Build (Django-side SCSS/JS) ──────────────────────
-# Extends projects/webpack/base.config.js — see webpack/precis-landing.config.js
+# Extends projects/webpack/base.config.js — see webpack/landing-fusion.config.js
 install-assets:
 	npm install
 
 build-assets: skeleton-manifest
-	npx webpack --config webpack/precis-landing.config.js --mode=production
+	npx webpack --config webpack/landing-fusion.config.js --mode=production
 
 build-assets-dev:
-	npx webpack --config webpack/precis-landing.config.js --mode=development
+	npx webpack --config webpack/landing-fusion.config.js --mode=development
 
 # ── Skeleton Manifest ──────────────────────────────────────────────
 # Runs the Django management command to produce a static JSON manifest

@@ -4,19 +4,46 @@
 # Containers: precis-ctc-website   (Django + django-fusion, port 5070)
 #             precis-ctc-frontend  (Astro shell, port 3002)
 # Domain: ctc-research.com / www.ctc-research.com / arch.ctc-research.com
-# Backend paths (/admin, /api, /apis/, /fragment/) route to the backend; static
-# /media/sites assets route to shared-proxy; everything else is the frontend.
+#
+# Routing split:
+#   priority 110 — ctc-media   : /static/ /media/ /sites/ → shared-proxy (Nginx)
+#   priority 100 — ctc-backend : all Django-owned prefixes → precis-ctc-website:5070
+#   priority  10 — ctc-site    : everything else → precis-ctc-frontend:3002 (Astro static)
+#
+# Backend prefixes (Django URL map, grouped by app):
+#   Core API       /api/  /apis/
+#   Auth           /accounts/  /auth/  /api/auth/
+#   Admin          /admin/  /django-admin/
+#   Fusion         /fusion/  /fragment/  /components/
+#   Learning       /learning/
+#   Profile        /profile/
+#   Cart/Checkout  /cart/  /checkout/
+#   Legal/Privacy  /legal/
+#   Newsletter     /newsletter/
+#   i18n           /i18n/
+#   Tasks          /tasks/
+#   Documents      /documents/
+#   Health         /health/  /assets/health/
+#
 # TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
 # =============================================================================
 
+# Shared host match expression — used in every router rule.
+# Traefik v3 supports YAML anchors only within the same mapping, so we
+# repeat the host clause rather than use an anchor (YAML anchors do not
+# survive Traefik's config parser in file-provider mode).
+
 http:
   routers:
+    # ── HTTP → HTTPS redirect (all hosts, lowest priority) ──────────────────
     ctc-site-http:
       rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: ctc-frontend-service
       priority: 10
+
+    # ── HTTPS frontend catch-all ─────────────────────────────────────────────
     ctc-site-https:
       rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
       entryPoints: [web-secure]
@@ -25,12 +52,19 @@ http:
       priority: 10
       tls:
         certResolver: letsencrypt-http
-    ctc-api:
-      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`))'
+
+    # ── Django backend — all server-rendered and API paths ───────────────────
+    # Covers: /api/ /apis/ /accounts/ /auth/ /admin/ /django-admin/ /fusion/
+    #         /fragment/ /components/ /learning/ /profile/ /cart/ /checkout/
+    #         /legal/ /newsletter/ /i18n/ /tasks/ /documents/ /health/ /assets/health/
+    ctc-backend:
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/api/`) || PathPrefix(`/apis/`) || PathPrefix(`/accounts/`) || PathPrefix(`/auth/`) || PathPrefix(`/admin/`) || PathPrefix(`/django-admin/`) || PathPrefix(`/fusion/`) || PathPrefix(`/fragment/`) || PathPrefix(`/components/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`) || PathPrefix(`/cart/`) || PathPrefix(`/checkout/`) || PathPrefix(`/legal/`) || PathPrefix(`/newsletter/`) || PathPrefix(`/i18n/`) || PathPrefix(`/tasks/`) || PathPrefix(`/documents/`) || PathPrefix(`/health/`) || PathPrefix(`/assets/health/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-backend-service
       priority: 100
+
+    # ── Static + media assets → shared Nginx ────────────────────────────────
     ctc-media:
       rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
       entryPoints: [web, web-secure]

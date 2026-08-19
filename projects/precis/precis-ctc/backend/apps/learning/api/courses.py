@@ -101,6 +101,12 @@ def list_courses(request):
         diff = _qp(request, "difficulty")
         if diff:
             qs = qs.filter(difficulty_level=diff)
+        tag = _qp(request, "tag")
+        if tag:
+            qs = qs.filter(tags__slug=tag)
+        spec = _qp(request, "specialization")
+        if spec:
+            qs = qs.filter(specializations__slug=spec)
         featured = _qp(request, "featured")
         if featured == "true":
             qs = qs.filter(is_featured=True)
@@ -108,7 +114,9 @@ def list_courses(request):
         page = _qp_int(request, "page", 1)
         per_page = _qp_int(request, "per_page", 12)
         total = qs.count()
-        courses = qs[(page - 1) * per_page : page * per_page]
+        courses = list(qs[(page - 1) * per_page : page * per_page].prefetch_related(
+            "tags", "specializations", "categories"
+        ))
 
         return JsonResponse({
             "data": [
@@ -127,6 +135,9 @@ def list_courses(request):
                     "reviews_count": getattr(c, "reviews_count", 0),
                     "is_featured": getattr(c, "is_featured", False),
                     "has_certificate": getattr(c, "has_certificate", False),
+                    "tags": list(c.tags.values_list("name", flat=True)),
+                    "specializations": list(c.specializations.values_list("title", flat=True)),
+                    "categories": list(c.categories.values_list("title", flat=True)),
                 }
                 for c in courses
             ],
@@ -233,20 +244,38 @@ def course_detail(request, slug):
 def course_filters(request):
     """GET /api/courses/filters — Available filter options for the course catalog."""
     try:
-        from apps.learning.models import Course
+        from apps.learning.models import Course, CourseTag, Specialization
+
+        qs_active = Course.objects.filter(is_published=True, is_active=True)
 
         languages = list(
-            Course.objects.filter(is_published=True, is_active=True)
-            .values_list("language", flat=True).distinct().order_by("language")
+            qs_active.values_list("language", flat=True)
+            .distinct().order_by("language")
         )
         difficulties = list(
-            Course.objects.filter(is_published=True, is_active=True)
-            .values_list("difficulty_level", flat=True).distinct()
+            qs_active.values_list("difficulty_level", flat=True)
+            .distinct().order_by("difficulty_level")
+        )
+
+        # Tags that are actually assigned to at least one published course.
+        tags = list(
+            CourseTag.objects.filter(courses__is_published=True, courses__is_active=True)
+            .distinct().order_by("name").values("name", "slug")
+        )
+
+        # Specializations used by at least one published course.
+        specs = list(
+            Specialization.objects.filter(
+                courses__is_published=True, courses__is_active=True
+            ).distinct().order_by("title").values("title", "slug")
         )
 
         return JsonResponse({
             "languages": [code for code in languages if code],
             "difficulties": [level for level in difficulties if level],
+            "tags": tags,
+            "specializations": specs,
         })
     except Exception:
-        return JsonResponse({"languages": [], "difficulties": []})
+        logger.exception("Error building course filters")
+        return JsonResponse({"languages": [], "difficulties": [], "tags": [], "specializations": []})

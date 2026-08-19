@@ -1,8 +1,41 @@
+---
+title: Architecture and data workflow
+description: Request, component, task, asset, MCP, and documentation flows across Structa Cloud.
+navigation:
+  title: Architecture
+  icon: i-lucide-landmark
+object:
+  type: "architecture"
+  id: "docs.architecture"
+attributes:
+  source_path: "ARCHITECTURE.md"
+  canonical_route: "/docs/en/architecture"
+  source_of_truth: "repository-markdown"
+  owner: "workspace"
+  status: "maintained"
+tags:
+  - structa-cloud
+  - architecture
+  - backend
+  - frontend
+  - infrastructure
+  - docus
+links:
+  - label: "Project awareness"
+    to: "/docs/en/guides/00-project-awareness"
+    icon: "i-lucide-compass"
+  - label: "Project structure"
+    to: "/docs/en/project-structure"
+    icon: "i-lucide-folder-tree"
+---
+
 # 🏗️ Structa Cloud — Architecture & Data Workflow
 
 > Complete architecture reference: request lifecycle, component system, skeleton
-> pipeline, background tasks, MCP integration, and the full build chain.
-> Updated: 10 August 2026
+> pipeline, background tasks, MCP integration, Docus documentation, and the full build chain.
+> Updated: 18 August 2026
+
+<!-- AI-generated: review needed -->
 
 ---
 
@@ -102,26 +135,30 @@ different formats:
 
 ### 2.2 Import Path Convention
 
-| Old path (deprecated, kept as alias) | New canonical path |
-|:-------------------------------------|:-------------------|
-| `django_fusion.comp.templatetags.components` | `django_fusion.comp.tags.components` |
-| `django_fusion.comp.templatetags.routable_components` | `django_fusion.comp.tags.routable_components` |
+Use the paths that exist in the checked-out framework. The component tag library
+is currently owned by `django_fusion.comp.templatetags.components`; do not
+invent a `comp.tags` alias in product code.
 
 ```python
-# settings.py TEMPLATES — use the canonical path:
+# settings.py TEMPLATES — register the real library when needed:
 TEMPLATES = [{
     "OPTIONS": {
         "builtins": [
-            "django_fusion.comp.tags.components",  # NEW
+            "django_fusion.comp.templatetags.components",
         ],
     },
 }]
 ```
 
 ```django
-{# Templates — both paths still work, prefer the new one: #}
-{% load components from django_fusion.comp.tags %}  {# NEW, preferred #}
+{# Registered component usage #}
+{% comp "blocks/hero.html" /%}
 ```
+
+For routed backend views use canonical imports such as
+`django_fusion.routes.components.routable.RoutableComponent` and
+`django_fusion.routes.components.fragments.FragmentComponent`. Search the
+library tree before relying on a historical import name.
 
 ---
 
@@ -605,7 +642,26 @@ projects/<project>/backend/db.sqlite3    # Per-project SQLite
 
 ---
 
-## 10. Directory Map (Quick Reference)
+## 10. Docus Documentation Architecture
+
+The documentation build follows the same source/build/runtime separation as the
+application assets:
+
+```text
+docs/**/*.md or *.mdx  →  docs/docus/scripts/prepare-content.mjs
+                       →  docs/docus/content/en/ (ignored, generated)
+docs/docus/ar-content/ →  docs/docus/content/ar/ (ignored, generated)
+                       →  Nuxt/Docus SSR server
+                       →  shared-proxy + Traefik
+                       →  docs.structa.cloud/ or media.structa.cloud/docs/
+```
+
+The preparation step enriches generated documents with Affine-style metadata:
+`object` identity, `attributes`, `tags`, and `links`. Existing source frontmatter
+remains authoritative. Never edit generated Docus content; update the source
+Markdown or the preparation script instead.
+
+## 11. Directory Map (Quick Reference)
 
 ```
 structa.cloud/
@@ -627,3 +683,9 @@ structa.cloud/
 ├── tests/                    # Workspace integration tests
 └── .agents/                  # AI agent skills
 ```
+
+## Remarks & Notes
+
+- This document describes shared boundaries; product-specific behavior belongs in the product documentation and nearest scoped `AGENTS.md`.
+- The current filesystem map is `projects/precis/precis-main/`, `projects/precis/precis-landing/`, and `projects/precis/precis-ctc/`; confirm aliases in `projects/Makefile` before using a legacy name.
+- Docus metadata is generated from canonical Markdown by `docs/docus/scripts/prepare-content.mjs`; generated content is not a second source.

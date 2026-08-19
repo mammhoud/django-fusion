@@ -11,6 +11,7 @@
  *   GET /apis/site/settings/   — branding, social links, footer
  *   GET /apis/navigation/      — nav links from published pages
  *   GET /apis/contact/         — contact methods + form
+ *   GET /apis/content/media/   — restored CTC archive media manifest
  *   GET /apis/pages/<slug>/    — full page data (JSON)
  *   GET /apis/pages/           — page list
  */
@@ -124,6 +125,25 @@ export interface ContentLanguagesData {
   languages: ContentLanguage[];
   coverage: Record<string, number>;
   ui_languages?: string[];
+}
+
+export interface MediaManifestItem {
+  src: string;
+  alt: string;
+  caption: string;
+  category: string;
+  media_type: 'image' | 'video';
+  source_name: string;
+}
+
+export interface MediaManifestData {
+  version: number;
+  site: string;
+  archive_root: string;
+  logos: { name: string; path: string; alt: string }[];
+  items: MediaManifestItem[];
+  available: number;
+  total: number;
 }
 
 export interface ContactMethod {
@@ -321,6 +341,11 @@ export function fetchContentLanguages(): Promise<ContentLanguagesData> {
   return fetchJSON<ContentLanguagesData>('/apis/content/languages/');
 }
 
+/** Fetch the restored CTC archive media pack for editorial website surfaces. */
+export function fetchMediaManifest(): Promise<MediaManifestData> {
+  return fetchJSON<MediaManifestData>('/apis/content/media/');
+}
+
 /** Fetch contact methods + form info from Wagtail ContactPage. */
 export function fetchContact(): Promise<ContactData> {
   return fetchJSON<ContactData>('/apis/contact/');
@@ -420,6 +445,10 @@ export interface CourseCard {
   reviews_count: number;
   is_featured: boolean;
   has_certificate: boolean;
+  // Added by API fix — tags and specializations on list view
+  tags: string[];
+  specializations: string[];
+  categories: string[];
 }
 
 export interface CourseListData {
@@ -519,6 +548,7 @@ async function fetchCached<T>(key: string, fetcher: () => Promise<T>): Promise<T
 }
 
 export const cachedAssets = () => fetchCached('assets', fetchAssets);
+export const cachedMediaManifest = () => fetchCached('media-manifest', fetchMediaManifest);
 export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettings);
 export const cachedNavigation = () => fetchCached('navigation', fetchNavigation);
 export const cachedContact = () => fetchCached('contact', fetchContact);

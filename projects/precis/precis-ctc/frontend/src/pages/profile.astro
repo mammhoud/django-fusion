@@ -1,5 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import PageHeader from '@/components/blocks/PageHeader.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { SiteSettings, NavigationData } from '@/lib/api';
@@ -20,15 +21,15 @@ try {
   siteSettings={siteSettings}
   pageSlug="profile"
 >
-  <section class="section-hero reg-marks overflow-hidden py-16 md:py-20">
-    <div class="container-fusion">
-      <div class="mx-auto max-w-3xl">
-        <p class="tag-marker mb-4">account · ctc research</p>
-        <h1 class="mb-4 font-display text-4xl font-bold tracking-tight text-fu-ink md:text-5xl">Your learning profile</h1>
-        <p class="max-w-2xl text-lg leading-relaxed text-fu-muted">One quiet place for your account, progress, certificates, and security controls.</p>
-      </div>
-    </div>
-  </section>
+  <PageHeader
+    eyebrow="account · ctc research"
+    title="Your learning profile"
+    intro="One quiet place for your account, progress, certificates, and security controls."
+    variant="network"
+    index="11"
+    status="200 OK · account surface"
+    primaryCta={{ label: 'Browse courses', href: '/courses/' }}
+  />
 
   <section class="py-14 md:py-20">
     <div class="container-fusion">

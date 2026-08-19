@@ -10,8 +10,6 @@ import os
 import sys
 from pathlib import Path
 
-import django
-
 # ── Path setup ──────────────────────────────────────────────────────────────
 _SITE_DIR = Path(__file__).resolve().parent.parent  # projects/precis-lms/backend
 
@@ -25,7 +23,11 @@ for _path in (
     sys.path.insert(0, _path)
 
 # ── Use test settings (real INSTALLED_APPS + SQLite) ────────────────────────
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "tests.test_settings")
+# Override a production container's DJANGO_SETTINGS_MODULE instead of letting
+# pytest accidentally point its database tests at PostgreSQL.
+os.environ["DJANGO_SETTINGS_MODULE"] = "tests.test_settings"
 
 # ── Bootstrap Django ────────────────────────────────────────────────────────
+import django  # noqa: E402
+
 django.setup()

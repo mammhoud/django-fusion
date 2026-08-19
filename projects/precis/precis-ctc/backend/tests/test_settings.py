@@ -2,20 +2,17 @@
 
 Uses the real INSTALLED_APPS (Wagtail, django_fusion, domain models, etc.)
 but replaces the database with an in-memory SQLite backend so tests run
-without Docker/Postgres.
-
-Migrations are disabled via MIGRATION_MODULES — Django creates tables
-from model metadata instead of running migration files, which is much
-faster and avoids SQLite/Postgres migration incompatibilities.
+without Docker/Postgres. The project's committed migrations are applied by
+the test runner so schema drift is detected instead of being hidden.
 """
 
 import os
 
 # Force development profile so configs.settings picks up the right base
-os.environ.setdefault("SERVER_ENV", "development")
-os.environ.setdefault("DJANGO_SERVER_ENV", "development")
-os.environ.setdefault("WEBSITE", "precis-ctc")
-os.environ.setdefault("WEBSITE_NAME", "precis-ctc")
+os.environ["SERVER_ENV"] = "development"
+os.environ["DJANGO_SERVER_ENV"] = "development"
+os.environ["WEBSITE"] = "precis-ctc"
+os.environ["WEBSITE_NAME"] = "precis-ctc"
 
 # Import ALL real settings (Wagtail, domain apps, middleware, etc.)
 # pylint: disable=wildcard-import,unused-wildcard-import
@@ -29,18 +26,9 @@ DATABASES = {
     }
 }
 
-# ── Disable migrations for speed ────────────────────────────────────────
-# Return None for ALL apps — Django creates tables from model metadata
-# instead of running migration files, which is much faster and avoids
-# SQLite/Postgres migration file incompatibilities. Tables are still
-# created for all models (Wagtail, Django, domain, project apps) via
-# schema introspection.
-class _DisableMigrations:
-    def __contains__(self, item):
-        return True
+# Test clients use plain HTTP and should exercise API responses directly,
+# without production proxy HTTPS redirects.
+DEBUG = True
+SECURE_SSL_REDIRECT = False
+SECURE_PROXY_SSL_HEADER = None
 
-    def __getitem__(self, item):
-        return None
-
-
-MIGRATION_MODULES = _DisableMigrations()

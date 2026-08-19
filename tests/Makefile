@@ -18,11 +18,13 @@ integration:
 
 websites: ctc structa vresume
 
+# Per-site website suites. The active per-site dirs under tests/websites/ are
+# used when present; otherwise the whole website suite runs.
 ctc:
-	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/precis-ctc ]; then echo tests/websites/precis-ctc; elif [ -d projects/precis-ctc ]; then echo projects/precis-ctc; else echo tests/unit; fi)
+	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/precis-ctc ]; then echo tests/websites/precis-ctc; elif [ -d tests/websites ]; then echo tests/websites; else echo tests/unit; fi)
 
 structa:
-	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/structa ]; then echo tests/websites/structa; elif [ -d projects/lms ]; then echo projects/lms; else echo tests/unit; fi)
+	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/structa ]; then echo tests/websites/structa; elif [ -d tests/websites ]; then echo tests/websites; else echo tests/unit; fi)
 
 vresume:
 	cd .. && ./.venv/bin/python -m pytest tests/websites/vresume

@@ -4365,7 +4365,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\tModule %(num)s: %(title)s\n"
 "\t\t\t\t\t\t\t\t"
-msgstr "الوحدة %(num)s: %(title)s"
+msgstr ""
 
 #: apps/templates/courses/details/curriculum.html:37
 #, python-format
@@ -4373,7 +4373,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\t%(count)s lessons • %(duration)s min\n"
 "\t\t\t\t\t\t\t\t"
-msgstr "%(count)s دروس • %(duration)s دقيقة"
+msgstr ""
 
 #: apps/templates/courses/details/curriculum.html:77
 #, python-format
@@ -4381,7 +4381,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\t\t\t%(minutes)s min\n"
 "\t\t\t\t\t\t\t\t\t\t"
-msgstr "%(minutes)s دقيقة"
+msgstr ""
 
 #: apps/templates/courses/details/curriculum.html:84
 msgid "Preview"
@@ -4393,7 +4393,7 @@ msgid ""
 "\n"
 "                        %(hours)s hours\n"
 "                    "
-msgstr "%(hours)s ساعات"
+msgstr ""
 
 #: apps/templates/courses/details/instructor.html:21
 msgid "About the Instructor"
@@ -4405,7 +4405,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t%(bio|default:\"Experienced instructor with passion for teaching and sharing knowledge.\")s\n"
 "\t\t\t\t\t"
-msgstr "%(bio|default:\"مدرب ذو خبرة بشغف للتدريس ومشاركة المعرفة.\")s"
+msgstr ""
 
 #: apps/templates/courses/details/instructor.html:47
 #: django_grep.comp/blocks/contact/socialLinks.py:25
@@ -4425,7 +4425,7 @@ msgid ""
 "\n"
 "                                %(hours)s hours\n"
 "                            "
-msgstr "%(hours)s ساعات"
+msgstr ""
 
 #: apps/templates/courses/details/overview.html:35
 msgid "Level"
@@ -4581,7 +4581,7 @@ msgid ""
 "\n"
 "                Showing %(count)s results\n"
 "                "
-msgstr "عرض %(count)s نتائج"
+msgstr ""
 
 #: apps/templates/courses/sections/search.html:141
 msgid "Clear all filters"
@@ -4881,11 +4881,6 @@ msgid ""
 "primary\">%(email)s</span>\n"
 "                "
 msgstr ""
-"\n"
-"                سيتم إرسال رابط التحقق إلى:\n"
-"                <span class=\"auth__email fw-semibold text-"
-"primary\">%(email)s</span>\n"
-"                \n"
 
 #: components/auth/verification_link.html:34
 msgid "A verification link has been sent to your email address."
@@ -6804,8 +6799,7 @@ msgstr "نقطة نهاية API"
 
 #: core/CI/models/integrations.py:89
 msgid "Base URL for the endpoint, e.g., https://api.twilio.com/v1/messages"
-msgstr ""
-"عنوان URL الأساسي للنقطة النهاية، مثلاً: https://api.twilio.com/v1/messages"
+msgstr "عنوان URL الأساسي لنقطة النهاية، مثال: https://api.twilio.com/v1/messages"
 
 #: core/CI/models/integrations.py:92
 msgid "API Key / Token"
@@ -12085,8 +12079,7 @@ msgstr "طرق التواصل الإضافية"
 
 #: django_grep.pipelines/models/contacts/base.py:56
 msgid "Add email, phone, social media, and website contacts"
-msgstr ""
-"إضافة بريد إلكتروني، هاتف، وسائل التواصل الاجتماعي، وجهات اتصال الموقع "
+msgstr "إضافة جهات اتصال عبر البريد الإلكتروني والهاتف ووسائل التواصل الاجتماعي والموقع الإلكتروني"
 "الإلكتروني"
 
 #: django_grep.pipelines/models/contacts/base.py:262

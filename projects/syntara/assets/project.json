@@ -2,7 +2,22 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "name": "customizer",
   "root": "projects/syntara/assets",
+  "projectType": "library",
+  "tags": ["product:syntara", "type:assets", "stack:webpack"],
   "targets": {
-    "build": { "executor": "nx:run-commands", "options": { "command": "npm run build", "cwd": "projects/syntara/assets" } }
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["assets"],
+      "cache": true,
+      "options": { "command": "npm run build", "cwd": "projects/syntara/assets" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run dev", "cwd": "projects/syntara/assets" }
+    },
+    "watch": {
+      "executor": "nx:run-commands",
+      "options": { "command": "npm run watch", "cwd": "projects/syntara/assets" }
+    }
   }
 }

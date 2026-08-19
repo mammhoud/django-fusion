@@ -5,6 +5,11 @@ SHELL := /bin/bash
 # =============================================================================
 # Targets for starting, stopping, reloading, and inspecting the default-proxy,
 # plus helpers for switching between local-development TLS strategies.
+#
+# Standard verb aliases (deploy / status / validate / stop / restart / help)
+# let the workspace root Makefile delegate with `$(MAKE) -C applications/proxy
+# <verb>` — see the root Makefile's deploy-proxy / status / validate / stop /
+# cert-* targets.
 # =============================================================================
 
 # Default values for local development.
@@ -17,6 +22,30 @@ DEFAULT_PROXY_NAME  := default-proxy
 HOSTS_FILE          := /etc/hosts
 LOCAL_HOSTS         := fusion.localhost cms-fusion.localhost precis-lms.localhost code.localhost coder.localhost space.localhost
 LOCAL_CERT_SANS      := DNS:fusion.localhost,DNS:cms-fusion.localhost,DNS:precis-lms.localhost,DNS:code.localhost,DNS:coder.localhost,DNS:space.localhost,DNS:localhost,IP:127.0.0.1,IP:::1
+
+# ---------------------------------------------------------------------------
+# Standard verb aliases (consumed by the root Makefile delegation)
+# ---------------------------------------------------------------------------
+
+.PHONY: deploy status validate stop restart help
+
+help: ## Show proxy commands
+	@echo "Proxy (Traefik) commands:"
+	@echo "  make deploy | status | validate | stop | restart   standard verbs (root delegation)"
+	@echo "  make proxy-up | proxy-down | proxy-restart | proxy-logs | proxy-status"
+	@echo "  make proxy-reload | proxy-validate | proxy-dns-check | proxy-dashboard"
+	@echo "  make proxy-certs-selfsigned | proxy-certs-mkcert | proxy-certs-info"
+	@echo "  make proxy-hosts-check | proxy-hosts-add | proxy-verify"
+
+deploy: proxy-validate proxy-up ## Deploy the Traefik proxy (validate config, then start)
+
+status: proxy-status ## Show proxy status
+
+validate: proxy-validate ## Validate the Traefik dynamic configuration
+
+stop: proxy-down ## Stop the Traefik proxy
+
+restart: proxy-restart ## Restart the Traefik proxy
 
 # ---------------------------------------------------------------------------
 # Lifecycle

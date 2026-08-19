@@ -13,9 +13,11 @@ applications/
 │   └── redis/                # redis.conf
 ├── proxy/                   # Traefik, Nginx media, TLS/cert operations
 │   ├── docker-compose*.yml
-│   ├── traefik/              # static/dynamic routers and middleware
-│   ├── nginx/                # shared static/media server
+│   ├── configs/traefik/      # static/dynamic routers and middleware
+│   ├── configs/nginx/        # shared static/media server
 │   └── scripts/              # certificate validation/backup/restore
+├── tools/                   # self-hosted auxiliary services
+│   ├── affine/  docus/  ollama/  adminer/  mailpit/  monitoring/
 ├── docker-compose.yml       # Coder control-plane Compose stack
 ├── docker-compose.tasks.yml # shared-worker + shared-scheduler compose
 ├── scripts/                  # dev, staging, testing, production automation
@@ -48,6 +50,10 @@ probe, documentation, and CI path filters as applicable.
 - Database image/init/backup behavior belongs in `applications/databases/`.
 - Host routing, TLS, certificates, static/media serving, and proxy middleware
   belong in `applications/proxy/`.
+- Auxiliary self-hosted services (AFFiNE, Docus, Ollama, Adminer, Mailpit,
+  Prometheus/Grafana) belong in `applications/tools/<name>/`, each with its
+  own `docker-compose.yml` + `Makefile`, and are path-routed at
+  `tools.structa.cloud/<tool>/` through the shared-proxy Nginx.
 - Cross-service dependency order belongs in the root deployment Makefile, not
   in a product's application code.
 - Product-specific environment defaults belong in the product Compose file or

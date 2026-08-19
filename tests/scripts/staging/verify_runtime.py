@@ -111,7 +111,7 @@ def check_pages(strict_content: bool, strict_pages: bool) -> int:
     for page in pages:
         path = page_path(page, wagtail_site)
         if not path:
-            print(f"⚠️  Skipping page without URL: id={page.id} title={page.title!r}")
+            print(f"ℹ️  Skipping non-public root page: id={page.id} title={page.title!r}")
             continue
         response = client.get(path, follow=False)
         if response.status_code >= 400:

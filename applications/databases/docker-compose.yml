@@ -117,24 +117,3 @@ services:
           cpus: '0.5'
           memory: 256M
 
-  # # ----------------------------------------------------------
-  # # Adminer – optional database UI
-  # # ----------------------------------------------------------
-  # adminer:
-  #   image: adminer:latest
-  #   container_name: adminer
-  #   restart: unless-stopped
-  #   ports:
-  #     - "8081:8080"
-  #   networks:
-  #     - common
-  #     - traefik-net
-  #     - site_network
-  #   depends_on:
-  #     postgres:
-  #       condition: service_healthy
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.http.routers.adminer.rule=Host(`adminer.localhost`)"
-  #     - "traefik.http.routers.adminer.entrypoints=web"
-  #     - "traefik.http.services.adminer.loadbalancer.server.port=8080"

@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import TeamSection from '@/components/blocks/TeamSection.astro';
+import PageHeader from '@/components/blocks/PageHeader.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData, TeamMember } from '@/lib/api';
@@ -38,6 +39,17 @@ const members = (pageData?.team_members || []).map((m: TeamMember) => ({
   pageData={pageData}
   pageSlug="team"
 >
+  <PageHeader
+    eyebrow="the research network"
+    title={pageData?.team_title || 'Meet the team'}
+    intro={pageData?.team_subtitle || 'Academic, clinical, and analytical collaborators connected by a shared research method.'}
+    variant="network"
+    index="06"
+    status="200 OK · research network"
+    primaryCta={{ label: 'Work with the team', href: '/contact/' }}
+    secondaryCta={{ label: 'Our approach', href: '/about/research/' }}
+  />
+
   {members.length ? (
     <TeamSection
       eyebrow="the team"
@@ -49,7 +61,7 @@ const members = (pageData?.team_members || []).map((m: TeamMember) => ({
     <section class="team doc-sheet bg-fu-paper py-20 md:py-28">
       <div class="container-fusion team__header">
         <p class="tag-marker mb-4">the research network</p>
-        <h1 class="font-display text-4xl font-bold tracking-tight text-fu-ink md:text-5xl">Meet the research network</h1>
+        <h2 class="font-display text-4xl font-bold tracking-tight text-fu-ink md:text-5xl">Meet the research network</h2>
         <p class="mt-4 text-fu-muted">Our academic, clinical, and analytical collaborators are introduced as each profile is ready. Start with the research question and we will connect the right expertise.</p>
         <a class="btn-primary mt-8 inline-flex" href="/contact/">Work with the team</a>
       </div>

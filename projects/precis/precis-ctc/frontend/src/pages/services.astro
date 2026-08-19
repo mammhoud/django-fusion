@@ -56,6 +56,7 @@ const processSteps = (pageProcess || []).map((p: any) => ({
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Discuss a study', href: '/contact/' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Explore courses', href: '/courses/' }}
     status='200 OK · clinical evidence services'
+    variant="contact"
   />
 
   {serviceItems.length ? (

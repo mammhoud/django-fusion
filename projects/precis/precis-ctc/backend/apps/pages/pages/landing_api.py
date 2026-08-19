@@ -13,6 +13,11 @@ import json
 import logging
 import re
 from datetime import datetime
+from pathlib import Path
+from urllib.parse import quote
+
+from django.conf import settings
+from django.utils.text import slugify
 
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -742,6 +747,64 @@ def contact_api(request: HttpRequest) -> JsonResponse:
         "form_title": form_title,
         "form_description": form_description,
         "fields": fields,
+    })
+
+
+def media_manifest_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/content/media/ — CTC archive media for website content.
+
+    The manifest is source-controlled beside the compatible Wagtail dump. The
+    endpoint only returns files that exist in the mounted shared media tree,
+    so a clean checkout remains valid and a restored archive becomes visible
+    without a database reload. It prefers the prepared ``ctc-content/`` copy
+    and falls back to the attached archive directory until preparation runs.
+    """
+    manifest_path = Path(getattr(settings, "CTC_MEDIA_MANIFEST_PATH", ""))
+    if not manifest_path.is_file():
+        return JsonResponse({"version": 1, "site": "precis-ctc", "logos": [], "items": []})
+
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        logger.exception("Unable to read CTC media manifest: %s", manifest_path)
+        return JsonResponse({"version": 1, "site": "precis-ctc", "logos": [], "items": []})
+
+    source_dir = Path(getattr(settings, "CTC_MEDIA_SOURCE_DIR", Path(settings.MEDIA_ROOT) / "media"))
+    content_dir = Path(getattr(settings, "CTC_MEDIA_CONTENT_DIR", Path(settings.MEDIA_ROOT) / "ctc-content"))
+    media_url = str(getattr(settings, "MEDIA_URL", "/media/")).rstrip("/")
+    content_url = str(getattr(settings, "CTC_MEDIA_CONTENT_URL", f"{media_url}/ctc-content/")).rstrip("/")
+    items = []
+
+    for item in manifest.get("items", []):
+        source_name = str(item.get("source", ""))
+        if not source_name or Path(source_name).name != source_name:
+            continue
+        source_path = source_dir / source_name
+        prepared_name = f"{slugify(Path(source_name).stem) or 'asset'}{Path(source_name).suffix.lower()}"
+        prepared_path = content_dir / prepared_name
+        if prepared_path.is_file():
+            url = f"{content_url}/{quote(prepared_name)}"
+        elif source_path.is_file():
+            url = f"{media_url}/media/{quote(source_name)}"
+        else:
+            continue
+        items.append({
+            "src": url,
+            "alt": item.get("alt", "CTC Research archive media"),
+            "caption": item.get("caption", ""),
+            "category": item.get("category", "research"),
+            "media_type": item.get("media_type", "video" if source_name.lower().endswith(".mp4") else "image"),
+            "source_name": source_name,
+        })
+
+    return JsonResponse({
+        "version": manifest.get("version", 1),
+        "site": manifest.get("site", "precis-ctc"),
+        "archive_root": manifest.get("archive_root", ""),
+        "logos": manifest.get("logos", []),
+        "items": items,
+        "available": len(items),
+        "total": len(manifest.get("items", [])),
     })
 
 

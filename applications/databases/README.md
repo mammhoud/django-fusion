@@ -1,36 +1,37 @@
-# Warehouses Infrastructure
+# Databases Infrastructure
 
-**Location:** `/warehouses/`  
-**Purpose:** Data storage, caching, and database services  
-**Created:** Phase 11  
+**Location:** `applications/databases/`
+**Purpose:** Data storage, caching, and database services (PostgreSQL + Redis)
+**Created:** Phase 11
 
 ---
 
 ## Overview
 
-The `warehouses` directory contains all data infrastructure services:
-- **PostgreSQL** - Primary database
-- **Redis** - Caching and session store
-- **Adminer** - Database administration UI
+The `applications/databases` directory contains the shared data infrastructure:
+
+- **PostgreSQL** — primary relational database (multi-database bootstrap)
+- **Redis** — caching and session store / Dramatiq broker
+
+Database administration UI (**Adminer**) now lives in
+`applications/tools/adminer/` (path-routed at `tools.structa.cloud/adminer/`),
+not in this stack.
 
 ---
 
 ## Directory Structure
 
 ```
-warehouses/
+applications/databases/
 ├── README.md                    (this file)
-├── docker-compose.yml           (warehouse services)
+├── docker-compose.yml           (PostgreSQL + Redis)
 ├── postgres/                    (PostgreSQL config)
+│   ├── Dockerfile               (custom entrypoint)
 │   ├── init/
-│   │   └── init-databases.sql
-│   ├── backups/
-│   └── data/
-├── redis/                       (Redis config)
-│   ├── redis.conf
-│   └── data/
-└── adminer/                     (Adminer UI)
-    └── config.php
+│   │   └── 00.initdb-multiple-databases.sh
+│   └── backups/
+└── redis/                       (Redis config)
+    └── redis.conf
 ```
 
 ---
@@ -39,296 +40,157 @@ warehouses/
 
 ### PostgreSQL
 
-**Purpose:** Primary relational database  
-**Port:** 5432  
-**Container:** postgres:14  
+**Purpose:** Primary relational database
+**Port:** `${POSTGRES_PORT:-5432}`
+**Container:** `postgres`
 
-**Environment:**
-- POSTGRES_USER=admin
-- POSTGRES_PASSWORD=(from .env)
-- POSTGRES_DB=app_db
+**Environment (from repo-root `.env`):**
+- `POSTGRES_USER` (default `admin`)
+- `POSTGRES_PASSWORD` — **required** (`POSTGRES_PASSWORD=...` in `.env`)
+- `POSTGRES_DB` (default `app_db`)
+- `POSTGRES_PORT` (default `5432`)
+- `POSTGRES_DATABASES` — comma-separated `db:owner:password` list for the
+  multi-database bootstrap (defaults to all site + tool DBs)
+- `FORCE_REINIT` — `true` re-runs init scripts on every start (default `false`)
+
+**Multiple databases:** The `00.initdb-multiple-databases.sh` entrypoint creates
+every database listed in `POSTGRES_DATABASES`. The default value covers the
+known sites and tools:
+
+```text
+db_precis_lms, db_precis_ctc, db_vresume, coder, db_loop_crm,
+db_precis_landing, affine
+```
 
 **Volumes:**
-- `postgres/data/` - Database files
-- `postgres/init/` - SQL initialization scripts
-
-**Initialization:**
-```sql
--- Create databases
-CREATE DATABASE ctc_research;
-CREATE DATABASE lms_demo;
-CREATE DATABASE vresume;
-
--- Create users
-CREATE USER django WITH PASSWORD 'password';
-GRANT ALL PRIVILEGES ON ALL DATABASES TO django;
-```
+- `postgres_data` — named volume for database files
+- `./postgres/init` — initialization scripts
+- `./postgres/backups` — backup destination
 
 ### Redis
 
-**Purpose:** Caching and session store  
-**Port:** 6379  
-**Container:** redis:7-alpine  
+**Purpose:** Caching and session store / Dramatiq broker
+**Port:** `${REDIS_PORT:-6379}`
+**Container:** `default-redis` (name is a hard contract — every site + the
+shared task stack resolves `redis://default-redis:6379/<db>`)
 
 **Configuration:**
-- `requirepass` - Password authentication
-- Persistence enabled (RDB)
-- 512MB max memory
+- `requirepass` — `REDIS_PASSWORD` (**required** in `.env`)
+- `--appendonly yes` — persistence enabled (AOF)
+- `redis_data` named volume
 
-**Volumes:**
-- `redis/data/` - Persistence files
+---
 
 ## Coder control plane
 
 The Coder service is owned by `applications/docker-compose.yml`, separate from
 this database Compose file. PostgreSQL still creates the dedicated `coder`
-database and role through `INITDB_MULTIPLE_DATABASES`; the Coder container joins
-the external `common` network and connects to that database by service name.
+database and role through `INITDB_MULTIPLE_DATABASES`; the Coder container
+joins the external `common` network and connects to that database by service
+name.
 
 ```bash
 # Start PostgreSQL/Redis first, then Coder from the application boundary.
 cd applications/databases
 make up
 cd ..
-docker compose -f docker-compose.yml up -d coder
+docker compose -f applications/docker-compose.yml up -d coder
 ```
-
-The compatibility commands `make up-coder`, `make logs-coder`, and
-`make down-coder` delegate to `applications/docker-compose.yml`. Existing
-`coder_data` volumes are unchanged.
 
 ### AFFiNE shared-service database
 
-AFFiNE is a permanent service owned by
-`applications/proxy/docker-compose.nginx.yml`; the Coder `workspace` template
-and `.devcontainer` do not install, stop, or provision it. The proxy-side
-`affine-migration` and `proxy-affine` containers connect to this PostgreSQL
-service through the external `common` and `warehouse-net` networks:
+AFFiNE is a permanent service owned by `applications/tools/affine/` (was
+`applications/proxy/docker-compose.nginx.yml`). The `proxy-affine` container
+connects to this PostgreSQL service through the external `common` and
+`warehouse-net` networks:
 
 | Setting | Value |
 |---|---|
 | Database | `affine` |
 | Role | `affine` |
 | Host | `postgres` |
-| Password source | `applications/proxy/.env` (`AFFINE_DB_PASSWORD`) |
-
-Keep the decoded password synchronized with the `affine` role created by the
-PostgreSQL bootstrap. Because the proxy composes a PostgreSQL URI, the value in
-`applications/proxy/.env` must percent-encode URI-reserved characters. AFFiNE
-also uses `default-redis` on `common` and receives its password from the same
-ignored proxy environment file. Existing volumes require explicit
-operator-managed database/user changes; this documentation does not run
-migrations or modify data automatically.
-
-### Adminer
-
-**Purpose:** Database administration UI  
-**URL:** http://localhost:8081  
-**Container:** adminer:latest  
-
-**Features:**
-- Web-based database management
-- Query execution
-- Table management
-- User management
+| Password source | repo-root `.env` (`AFFINE_DB_PASSWORD`) |
 
 ---
 
 ## Docker Compose
 
-**File:** `warehouses/docker-compose.yml`
+**File:** `applications/databases/docker-compose.yml`
 
 **Services:**
-- postgres (main database)
-- redis (cache)
-- adminer (admin UI, when enabled)
+- `postgres` (main database)
+- `default-redis` (cache / broker)
 
-Coder is intentionally managed by `applications/docker-compose.yml`, not by
-this warehouse stack.
-
-**Network:**
-- `common` (internal bridge network)
-- `traefik-net` (shared with reverse proxy)
-
-**Template:**
-
-```yaml
-version: '3.8'
-
-services:
-  postgres:
-    image: postgres:14-alpine
-    container_name: warehouse-postgres
-    volumes:
-      - ./postgres/data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: app_db
-    ports:
-      - "5432:5432"
-    networks:
-      - common
-      - traefik-net
-
-  redis:
-    image: redis:7-alpine
-    container_name: warehouse-redis
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    volumes:
-      - ./redis/data:/data
-    ports:
-      - "6379:6379"
-    networks:
-      - common
-      - traefik-net
-
-  adminer:
-    image: adminer:latest
-    container_name: warehouse-adminer
-    ports:
-      - "8081:8080"
-    networks:
-      - common
-      - traefik-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.adminer.rule=Host(`admin.local`)"
-
-networks:
-  common:
-    driver: bridge
-  traefik-net:
-    external: true
-```
+**Networks:** `common`, `warehouse-net`, `internal`, `traefik-net`,
+`site_network` (all external).
 
 ---
 
 ## Deployment
 
-### Start Warehouses
-
 ```bash
-cd warehouses
-docker compose up -d
+# Start databases
+cd applications/databases
+make up            # or: docker compose up -d
+
+# Stop
+make down
+
+# View logs
+make logs
 ```
 
-### Stop Warehouses
-
-```bash
-cd warehouses
-docker compose down
-```
-
-### View Logs
-
-```bash
-docker compose logs -f
-docker logs warehouse-postgres
-docker logs warehouse-redis
-```
+Root Makefile shortcut: `make deploy-databases`.
 
 ### Backup Database
 
 ```bash
 # Dump database
-docker exec warehouse-postgres pg_dump -U admin app_db > backup.sql
+docker exec postgres pg_dump -U admin app_db > backup.sql
 
 # Restore database
-docker exec -i warehouse-postgres psql -U admin app_db < backup.sql
+docker exec -i postgres psql -U admin app_db < backup.sql
 ```
-
-### Access Adminer
-
-1. Open: http://localhost:8081
-2. System: PostgreSQL
-3. Server: warehouse-postgres
-4. Username: admin
-5. Password: (from .env)
-6. Database: app_db
 
 ---
 
-## Configuration
+## Adminer
 
-### Database Initialization
+Adminer is no longer part of this stack. It lives at
+`applications/tools/adminer/` and is served at
+`https://tools.structa.cloud/adminer/` (Traefik → shared-proxy Nginx path
+split). To connect it to this PostgreSQL instance, use:
 
-**File:** `postgres/init/init-databases.sql`
+- System: **PostgreSQL**
+- Server: `postgres`
+- Username / Password / Database: from `.env`
 
-Runs automatically on first startup:
-
-```sql
--- Create databases
-CREATE DATABASE ctc_research;
-CREATE DATABASE lms_demo;
-CREATE DATABASE vresume;
-
--- Create application user
-CREATE USER django WITH PASSWORD 'django_password';
-GRANT ALL PRIVILEGES ON DATABASE ctc_research TO django;
-GRANT ALL PRIVILEGES ON DATABASE lms_demo TO django;
-GRANT ALL PRIVILEGES ON DATABASE vresume TO django;
-```
-
-### Redis Configuration
-
-**File:** `redis/redis.conf`
-
-```conf
-# Authentication
-requirepass ${REDIS_PASSWORD}
-
-# Memory management
-maxmemory 512mb
-maxmemory-policy allkeys-lru
-
-# Persistence
-save 900 1
-save 300 10
-appendonly yes
+```bash
+cd applications/tools/adminer && make up
 ```
 
 ---
 
 ## Connection Strings
 
-### Django Settings
+- **PostgreSQL:** `postgresql://admin:<password>@postgres:5432/<db>`
+- **Redis:** `redis://:<password>@default-redis:6379/0`
 
-```python
-# PostgreSQL
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ctc_research',
-        'USER': 'django',
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': 'warehouse-postgres',
-        'PORT': '5432',
-    }
-}
+---
 
-# Redis (Cache)
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': 'redis://:password@warehouse-redis:6379/0',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
+## Environment Variables
 
-# Redis (Session)
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_CACHE_ALIAS = 'default'
+**Required in repo-root `.env`:**
+```bash
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=...
+POSTGRES_DB=app_db
+POSTGRES_PORT=5432
+POSTGRES_DATABASES=db_precis_lms:structa:<pw>,db_precis_ctc:structa:<pw>,...
+REDIS_PASSWORD=...
+CODER_DB_PASSWORD=...
+AFFINE_DB_PASSWORD=...
 ```
-
-### Connection Details
-
-- **PostgreSQL:** `postgresql://django:password@warehouse-postgres:5432/ctc_research`
-- **Redis:** `redis://:password@warehouse-redis:6379/0`
-- **Adminer UI:** `http://localhost:8081`
 
 ---
 
@@ -336,197 +198,30 @@ SESSION_CACHE_ALIAS = 'default'
 
 ### Regular Tasks
 
-- ✅ Monitor disk space for database
+- ✅ Monitor disk space for the database
 - ✅ Review slow query logs
 - ✅ Backup database daily
 - ✅ Verify Redis persistence
 - ✅ Check connection pool usage
 
-### Backup Strategy
+### Troubleshooting
 
-```bash
-# Daily backup
-docker exec warehouse-postgres pg_dump -U admin app_db | \
-  gzip > backups/app_db_$(date +%Y%m%d).sql.gz
+**PostgreSQL not starting:**
+1. Port 5432 free: `lsof -i :5432`
+2. Disk space: `df -h`
+3. Permissions on `postgres_data` volume
+4. `.env` has `POSTGRES_PASSWORD` set
 
-# Weekly full backup
-tar czf backups/warehouse_$(date +%Y%m%d).tar.gz \
-  postgres/data redis/data
-```
-
-### Performance Tuning
-
-**PostgreSQL:**
-```sql
--- Check connections
-SELECT * FROM pg_stat_activity;
-
--- Check slow queries
-SELECT * FROM pg_stat_statements 
-ORDER BY mean_time DESC LIMIT 10;
-
--- Analyze tables
-ANALYZE;
-```
-
-**Redis:**
-```bash
-# Check memory usage
-redis-cli INFO memory
-
-# Check key statistics
-redis-cli INFO stats
-
-# Monitor commands
-redis-cli MONITOR
-```
-
----
-
-## Troubleshooting
-
-### PostgreSQL Not Starting
-
-**Check:**
-1. Port 5432 not in use: `lsof -i :5432`
-2. Disk space available: `df -h`
-3. Permission on data directory
-
-**Solution:**
 ```bash
 docker compose logs postgres
-rm -rf postgres/data/*  # Clear corrupted data
-docker compose up -d postgres
 ```
 
-### Redis Connection Issues
-
-**Check:**
+**Redis connection issues:**
 1. Redis running: `docker ps | grep redis`
-2. Port 6379 accessible: `redis-cli -h warehouse-redis ping`
-3. Password correct: check .env
-
-**Solution:**
-```bash
-docker exec warehouse-redis redis-cli PING
-docker compose restart redis
-```
-
-### Database Locked
-
-**Check:**
-```sql
-SELECT * FROM pg_locks WHERE granted = false;
-SELECT * FROM pg_stat_activity WHERE state = 'idle in transaction';
-```
-
-**Solution:**
-```sql
--- Terminate blocking query
-SELECT pg_terminate_backend(pid) 
-FROM pg_stat_activity 
-WHERE query ~ 'INSERT|UPDATE|DELETE';
-```
+2. Password matches `.env`: `docker exec default-redis redis-cli -a "$REDIS_PASSWORD" PING`
 
 ---
 
-## Security
-
-### Access Control
-
-- PostgreSQL: Authentication required
-- Redis: Password authentication
-- Adminer: Consider IP restrictions in production
-
-### Network Isolation
-
-- Services on internal `common`
-- External access only via Traefik
-- No direct database exposure
-
-### Credentials
-
-- Store passwords in `.env` file
-- Never commit passwords to git
-- Rotate passwords periodically
-- Use strong passwords (20+ characters)
-
----
-
-## Scaling
-
-### Multiple Instances
-
-For high availability:
-
-```yaml
-# postgres-replica
-postgres_replica:
-  image: postgres:14-alpine
-  environment:
-    POSTGRES_REPLICATION_MODE: slave
-  depends_on:
-    - postgres
-```
-
-### Load Balancing
-
-Use Traefik for load balancing:
-
-```yaml
-labels:
-  - "traefik.http.services.db.loadbalancer.server.port=5432"
-```
-
----
-
-## Integration
-
-### With Services
-
-All services connect to warehouse:
-- Django ORM → PostgreSQL
-- Cache layer → Redis
-- Admin panel → Adminer
-
-### Environment Variables
-
-**Required in `.env`:**
-```bash
-DB_PASSWORD=...
-REDIS_PASSWORD=...
-DATABASE_URL=postgresql://django:...
-REDIS_URL=redis://:...
-```
-
----
-
-## Summary
-
-**Phase 11 - Warehouses: COMPLETE ✅**
-
-**Completed:**
-- ✅ Created warehouses/ directory structure
-- ✅ PostgreSQL configuration
-- ✅ Redis configuration
-- ✅ Adminer setup
-- ✅ Docker Compose template
-- ✅ Comprehensive documentation
-
-**Services:**
-- PostgreSQL (Primary database)
-- Redis (Cache & session store)
-- Adminer (Admin UI)
-
-**Ready for:**
-- Production deployment
-- High availability setup
-- Backup automation
-- Performance monitoring
-
----
-
-**Status:** ✅ COMPLETE  
-**Quality:** 100/100  
-**Production Ready:** YES ✅  
-
+**Status:** ✅ COMPLETE
+**Services:** PostgreSQL (primary database), Redis (cache & session store)
+**DB UI:** Adminer at `applications/tools/adminer/`

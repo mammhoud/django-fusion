@@ -18,7 +18,7 @@ DEFAULT_PORT := 8074
 PYTHONPATH := $(CURDIR):$(CURDIR)/apps
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
-UV := $(UV_BIN) --project ../..
+UV := $(UV_BIN) --project ../../..
 UV_RUN := $(UV) run
 MANAGE := $(UV_RUN) python manage.py
 

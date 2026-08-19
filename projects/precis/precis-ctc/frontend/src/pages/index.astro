@@ -3,11 +3,10 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import Stats from '@/components/blocks/Stats.astro';
 import OutcomeFramework from '@/components/blocks/OutcomeFramework.astro';
+import HomeSlider from '@/components/blocks/HomeSlider.astro';
 import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import RenderModeSwitch from '@/components/ui/RenderModeSwitch.astro';
-import ContentError from '@/components/ui/ContentError.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData, CONTENT_LANGUAGE } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedMediaManifest, CONTENT_LANGUAGE } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 import { teaserCopy } from '@/lib/teaser-translations';
 
@@ -15,12 +14,14 @@ import { teaserCopy } from '@/lib/teaser-translations';
 let siteSettings: SiteSettings | undefined;
 let navData: NavigationData | undefined;
 let pageData: PageData | undefined;
+let mediaManifest: Awaited<ReturnType<typeof cachedMediaManifest>> | undefined;
 
 try {
-  [siteSettings, navData, pageData] = await Promise.all([
+  [siteSettings, navData, pageData, mediaManifest] = await Promise.all([
     cachedSiteSettings(),
     cachedNavigation(),
     cachedPageData('home'),
+    cachedMediaManifest(),
   ]);
 } catch {
   // Backend unreachable — use hardcoded fallbacks below
@@ -34,13 +35,62 @@ const methods = pageData?.methods as string[] | undefined;
 
 // Media gallery items for the hero panel — from the seeded AboutPage gallery
 // (media_items), localized. Rendered only when the backend provides them.
-const heroGallery = (pageData?.gallery as any[] | undefined)?.map((g: any) => ({
+const pageGallery = (pageData?.gallery as any[] | undefined)?.map((g: any) => ({
   src: g.image?.image?.url || g.image?.url || '',
   alt: g.image?.alternative_text || g.caption || '',
   embedUrl: g.video?.embed_url || '',
   caption: String(g.caption || '').replace(/<[^>]+>/g, ''),
   category: g.category || '',
 })).filter((g) => Boolean(g.src || g.embedUrl));
+const archiveGallery = mediaManifest?.items
+  .filter((item) => item.media_type === 'image')
+  .slice(0, 6)
+  .map((item) => ({
+    src: item.src,
+    alt: item.alt,
+    caption: item.caption,
+    category: item.category,
+  }));
+const heroGallery = pageGallery?.length ? pageGallery : archiveGallery;
+const sliderImages = (heroGallery || []).filter((item) => Boolean(item.src)).slice(0, 4);
+const agendaSlides = [
+  {
+    eyebrow: 'clinical evidence',
+    title: 'From question to protocol',
+    text: 'Start with the clinical need, make the estimand explicit, and build a study record the whole team can inspect.',
+    href: '/services/',
+    cta: 'Explore services',
+    image: sliderImages[0]?.src,
+    alt: sliderImages[0]?.alt,
+  },
+  {
+    eyebrow: 'responsible medical AI',
+    title: 'Make data useful and accountable',
+    text: 'Evaluate clinical data and AI systems with attention to bias, validation, safety, and implementation in care.',
+    href: '/courses/',
+    cta: 'View the course',
+    image: sliderImages[1]?.src,
+    alt: sliderImages[1]?.alt,
+  },
+  {
+    eyebrow: 'evidence synthesis',
+    title: 'Turn uncertainty into a record',
+    text: 'Use reproducible search, appraisal, extraction, and reporting to give decisions the context they need.',
+    href: '/courses/',
+    cta: 'Build the method',
+    image: sliderImages[2]?.src,
+    alt: sliderImages[2]?.alt,
+  },
+  {
+    eyebrow: 'education and training',
+    title: 'Learn the method behind the result',
+    text: 'Short, applied learning paths help clinicians, researchers, and medical writers take the next defensible step.',
+    href: '/courses/',
+    cta: 'Browse courses',
+    image: sliderImages[3]?.src,
+    alt: sliderImages[3]?.alt,
+  },
+];
 
 // ── Fallbacks (used when backend is unreachable at build time) ──
 const techStats = pageStats?.map((s: any) => ({
@@ -83,7 +133,10 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
     secondaryCta={hasEditorialHero && pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
     status='200 OK · text/html · the center, in one response'
     gallery={heroGallery}
+    variant="home"
   />
+
+  <HomeSlider slides={agendaSlides} />
 
   <!-- Why-choose methods — seeded on HomePage.CTA (why_choose_section) and
        rendered from the localized page data, never hardcoded. -->
@@ -187,8 +240,10 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
     </div>
   </section>
 
-  <!-- HTMX → backend: server-rendered fragment replaces this region -->
-  {pageData ? <RenderModeSwitch route='home' /> : <ContentError label="Live fragment unavailable" showHomeLink={false} />}
+  <!-- The homepage is already rendered from the page-data response above.
+       Do not request `/fragment/pages/home/` a second time: that backend
+       component is an enhancement road, not a prerequisite for the document,
+       and showing its 503 fallback made a healthy page look broken. -->
 
   <CTA
     heading={pageCta?.title || 'Advance health through research'}

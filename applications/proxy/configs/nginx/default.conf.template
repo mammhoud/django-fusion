@@ -343,3 +343,129 @@ server {
         proxy_buffering off;
     }
 }
+
+# ------------------------------------------------------------
+# Tools — tools.structa.cloud (self-hosted utilities, path-based)
+# ------------------------------------------------------------
+# One navigation door for every utility under applications/tools/. The root
+# serves a small landing page; each /<tool>/ prefix is proxied to its own
+# container by name on the external `common` network (start/stop independent
+# of this proxy). Apps that support a base-path setting (Mailpit MP_WEBROOT,
+# Grafana serve_from_sub_path) are configured in their docker-compose so the
+# browser sees the subpath consistently.
+#
+#   /             → tools navigation page (nginx/www/tools/index.html)
+#   /adminer/     → adminer:8080
+#   /mailpit/     → mailpit:8025   (MP_WEBROOT=/mailpit/)
+#   /ai/          → open-webui:8080
+#   /grafana/     → grafana:3000   (serve_from_sub_path=true)
+#   /docs/        → docus:3000
+#   /space/       → proxy-affine:3010
+server {
+    listen 80;
+    server_name tools.structa.cloud tools.localhost;
+
+    # Tools navigation page at the root.
+    location = / {
+        root /var/www/html/tools;
+        try_files /index.html =404;
+        add_header Cache-Control "no-cache";
+    }
+
+    # Health check endpoint (Traefik tools-service healthCheck).
+    location = /health/ {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    location /adminer/ {
+        set $adminer_upstream adminer:8080;
+        proxy_pass http://$adminer_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_read_timeout 120s;
+    }
+
+    location /mailpit/ {
+        set $mailpit_upstream mailpit:8025;
+        proxy_pass http://$mailpit_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 120s;
+    }
+
+    location /ai/ {
+        set $open_webui_upstream open-webui:8080;
+        proxy_pass http://$open_webui_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 300s;
+        client_max_body_size 128m;
+    }
+
+    location /grafana/ {
+        set $grafana_upstream grafana:3000;
+        proxy_pass http://$grafana_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 120s;
+    }
+
+    location /docs/ {
+        set $tools_docus_upstream docus:3000;
+        proxy_pass http://$tools_docus_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+    }
+
+    location /space/ {
+        set $tools_affine_upstream proxy-affine:3010;
+        proxy_pass http://$tools_affine_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 3600s;
+        client_max_body_size 128m;
+    }
+
+    # Anything else on this host: 404.
+    location / {
+        return 404;
+    }
+}

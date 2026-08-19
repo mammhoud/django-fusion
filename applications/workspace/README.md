@@ -111,7 +111,7 @@ the host, in the Coder agent host, and in the devcontainer. The agent runs as
 root so npm and Git can write to the root-owned checkout.
 
 On every workspace start, an idempotent `coder_script` installs the base
-toolchain (`git`, `make`, Node.js, and `npm install -g nx freebuff`) directly in
+toolchain (`git`, `make`, Node.js, and `npm install -g freebuff`) directly in
 the agent-host container — so the toolchain is available even before (or
 without) the devcontainer. This absorbs the former `toolchain` template.
 

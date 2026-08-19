@@ -8,8 +8,16 @@ import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { CourseDetail, NavigationData, SiteSettings } from '@/lib/api';
 
 export async function getStaticPaths() {
-  const catalog = await fetchCourseList();
-  return catalog.data.map((course) => ({ params: { slug: course.slug } }));
+  // Build-time content is optional: Docker/CI can build the static shell
+  // before Django is running. The backend still supplies the authoritative
+  // list at runtime; unknown slugs fall through to the ContentError branch.
+  try {
+    const catalog = await fetchCourseList();
+    if (catalog.data.length) return catalog.data.map((course) => ({ params: { slug: course.slug } }));
+  } catch {
+    // Backend unreachable during docker build — emit empty path set.
+  }
+  return [];
 }
 
 const { slug } = Astro.params;

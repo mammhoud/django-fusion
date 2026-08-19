@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "name": "precis-main-backend",
+  "root": "projects/precis/precis-main/backend",
+  "projectType": "application",
+  "tags": ["product:precis-main", "type:backend", "stack:django"],
+  "implicitDependencies": ["django-fusion-assets"],
+  "targets": {
+    "check": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend", "^production"],
+      "cache": true,
+      "options": { "command": "make check", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend", "^production"],
+      "cache": true,
+      "options": { "command": "make test", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make migrate", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make dev", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make seed", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "collectstatic": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make collectstatic", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "skeleton-manifest": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make skeleton-manifest", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend"],
+      "cache": true,
+      "options": { "command": "make lint", "cwd": "projects/precis/precis-main/backend" }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make format", "cwd": "projects/precis/precis-main/backend" }
+    }
+  }
+}

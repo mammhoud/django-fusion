@@ -1,0 +1,110 @@
+# ============================================================
+# precis-ctc — standalone stack (backend + frontend + worker)
+# ============================================================
+
+services:
+
+  worker:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-ctc
+        PROJECT_PATH: precis-ctc
+    image: precis-ctc-backend:latest
+    container_name: precis-ctc-worker
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-ctc
+      DJANGO_SITE: precis-ctc
+      PROJECT_PATH: precis-ctc
+      WEBSITE_DIR: /app/precis-ctc
+      DJANGO_WEBSITE_DIR: /app/precis-ctc
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CTC:-db_precis_ctc}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for CTC Research production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues email,content,courses,system,default
+    volumes:
+      # Backend code is copied into the image; keep source code out of the
+      # production service mount so the image remains self-contained.
+      - ../../../logs:/app/logs:z
+      - ../../assets/media/ctc-research:/app/media:rw
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  scheduler:
+    build:
+      context: ../../../
+      dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+      args:
+        SOURCE_PATH: precis/precis-ctc
+        PROJECT_PATH: precis-ctc
+    image: precis-ctc-backend:latest
+    container_name: precis-ctc-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DEBUG: "false"
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-ctc
+      DJANGO_SITE: precis-ctc
+      PROJECT_PATH: precis-ctc
+      WEBSITE_DIR: /app/precis-ctc
+      DJANGO_WEBSITE_DIR: /app/precis-ctc
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CTC:-db_precis_ctc}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for CTC Research production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/1
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+    depends_on:
+      backend:
+        condition: service_healthy
+    command: python -m django_fusion.tasks.scheduler
+    volumes:
+      # Backend code is copied into the image; keep source code out of the
+      # production service mount so the image remains self-contained.
+      - ../../../logs:/app/logs:z
+      - ../../assets/media/ctc-research:/app/media:rw
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  traefik-net:
+    external: true
+

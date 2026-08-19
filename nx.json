@@ -1,48 +1,124 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+
   "namedInputs": {
     "default": [
       "{projectRoot}/**/*",
       "!{projectRoot}/node_modules/**",
       "!{projectRoot}/dist/**",
-      "!{projectRoot}/.astro/**"
+      "!{projectRoot}/.astro/**",
+      "!{projectRoot}/**/__pycache__/**",
+      "!{projectRoot}/**/*.pyc"
     ],
     "production": [
       "default",
       "!{projectRoot}/**/*.test.*",
+      "!{projectRoot}/**/*.spec.*",
+      "!{projectRoot}/tests/**",
+      "!{projectRoot}/e2e/**",
+      "!{projectRoot}/**/__pycache__/**"
+    ],
+    "frontend": [
+      "{projectRoot}/src/**",
+      "{projectRoot}/public/**",
+      "{projectRoot}/astro.config.*",
+      "{projectRoot}/vite.config.*",
+      "{projectRoot}/tsconfig.*",
+      "{projectRoot}/package.json"
+    ],
+    "backend": [
+      "{projectRoot}/**/*.py",
+      "{projectRoot}/Makefile",
+      "!{projectRoot}/**/__pycache__/**",
+      "!{projectRoot}/**/*.pyc",
       "!{projectRoot}/tests/**"
+    ],
+    "assets": [
+      "{projectRoot}/src/**",
+      "{projectRoot}/styles/**",
+      "{projectRoot}/assets/**",
+      "{projectRoot}/webpack.config.*",
+      "{projectRoot}/package.json"
     ],
     "sharedGlobals": [
       "package.json",
-      "nx.json"
+      "nx.json",
+      "libs/django-fusion/src/**",
+      "libs/django-fusion/js/fusion-js/src/**"
     ]
   },
+
   "targetDefaults": {
     "build": {
-      "inputs": [
-        "production",
-        "^production"
-      ],
+      "inputs": ["production", "^production"],
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^build"]
+    },
+    "build-static": {
+      "cache": true,
+      "dependsOn": ["build"]
     },
     "check": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
+      "inputs": ["default", "^production"],
+      "cache": true
+    },
+    "backend-check": {
+      "inputs": ["backend", "^production"],
+      "cache": true
+    },
+    "frontend-check": {
+      "inputs": ["frontend", "^production"],
       "cache": true
     },
     "test": {
-      "inputs": [
-        "default",
-        "^production"
-      ],
+      "inputs": ["default", "^production"],
       "cache": true
+    },
+    "typecheck": {
+      "inputs": ["default", "^production"],
+      "cache": true
+    },
+    "lint": {
+      "inputs": ["default"],
+      "cache": true
+    },
+    "collectstatic": {
+      "inputs": ["backend", "^production"],
+      "cache": true
+    },
+    "migrate": {
+      "cache": false
+    },
+    "seed": {
+      "cache": false
+    },
+    "populate-data": {
+      "cache": false
+    },
+    "skeleton-manifest": {
+      "cache": false
+    },
+    "install": {
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false
+    },
+    "preview": {
+      "cache": false,
+      "dependsOn": ["build"]
+    },
+    "e2e": {
+      "cache": false
+    },
+    "deploy": {
+      "cache": false
     }
   },
+
   "defaultBase": "generic",
   "analytics": false
 }

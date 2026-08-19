@@ -19,13 +19,13 @@ BLUE   := \033[0;34m
 CYAN   := \033[0;36m
 NC     := \033[0m
 
-SITE_NAME := $(notdir $(CURDIR))
-DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
+SITE_NAME := $(notdir $(abspath ..))
+DEFAULT_PORT := 5070
 # PYTHONPATH includes site root, workspace root, www subdirectory, and libs
-PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../..):$(abspath ../libs/django-fusion/src)
+PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../../../..):$(abspath ../../../../libs/django-fusion/src)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
-UV := $(UV_BIN) --project ..
+UV := $(UV_BIN) --project ../../..
 UV_RUN := $(UV) run --frozen
 MANAGE := $(UV_RUN) python manage.py
 VENV_DIR := ../.venv
@@ -101,10 +101,10 @@ workspace-assets: ## Delegate to workspace assets Makefile for this project
 	@PROJECT_PATH=$(SITE_NAME) $(MAKE) -C ../assets $(filter-out $@,$(MAKECMDGOALS))
 
 workspace-test: ## Run workspace pytest for this project
-	@cd .. && $(MAKE) tests-website WEBSITE=$(SITE_NAME)
+	@cd ../.. && $(MAKE) tests-website WEBSITE=precis-ctc
 
 scripts workspace-script: ## Delegate to workspace test utility scripts
-	@cd .. && $(MAKE) scripts $(filter-out $@,$(MAKECMDGOALS))
+	@cd ../.. && $(MAKE) scripts $(filter-out $@,$(MAKECMDGOALS))
 
 frontend-install: ## Install npm dependencies
 	@$(MAKE) -C assets install
@@ -149,7 +149,7 @@ install: ## Install Python dependencies
 	@echo -e "$(GREEN)✅ Installed$(NC)"
 	# Install local django_fusion library in editable mode
 	@echo -e "$(BLUE)Installing local django_fusion library...$(NC)"
-	@cd $(abspath ../libs/django-fusion) && $(UV) pip install -e .
+	@cd $(abspath ../../../../libs/django-fusion) && $(UV) pip install -e .
 	@echo -e "$(GREEN)✅ Local library installed$(NC)"
 
 install-internal: ## Refresh mammhoud GitHub packages (django-fusion)
@@ -209,12 +209,12 @@ superuser: ## Create superuser (interactive)
 	@$(MANAGE) createsuperuser
 
 test: ## Run comprehensive tests
-	@echo -e "$(BLUE)Running tests...$(NC)"
-	@$(UV_RUN) pytest tests -q
+	@echo -e "$(BLUE)Running tests with isolated SQLite test settings...$(NC)"
+	@DJANGO_SETTINGS_MODULE=tests.test_settings $(UV_RUN) pytest tests -q
 	@echo -e "$(GREEN)✅ Tests done$(NC)"
 
 test-quick: ## Run tests (less output)
-	@$(UV_RUN) pytest tests -q
+	@DJANGO_SETTINGS_MODULE=tests.test_settings $(UV_RUN) pytest tests -q
 
 test-url: ## Test custom URL (make test-url URL=http://...)
 	@BASE_URL=$(URL) $(UV_RUN) pytest tests -q

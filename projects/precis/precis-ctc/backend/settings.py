@@ -51,6 +51,17 @@ from configs.default import *  # noqa: E402,F401,F403
 if "testserver" not in ALLOWED_HOSTS:
     ALLOWED_HOSTS = [*ALLOWED_HOSTS, "testserver"]
 
+# TLS terminates at Traefik in production. Tell Django which forwarded scheme
+# is authoritative, enforce HTTPS for normal requests, and keep the internal
+# container health probes reachable over plain HTTP.
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT = True
+    SECURE_REDIRECT_EXEMPT = (r"^health/$", r"^assets/health/$")
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+
 # ── APPEND_SLASH — kept at the Django default (True).
 #
 #    Note: the allauth headless URL patterns (e.g. /api/auth/browser/v1/auth/login)
@@ -147,6 +158,17 @@ LANGUAGES = [
 # fall back to it when no per-record currency is set.
 FUSION_DEFAULT_CURRENCY = cfg("FUSION_DEFAULT_CURRENCY", "USD")
 LANGUAGES_BIDI = ["ar"]
+# The Docker image consolidates the project asset tree at /app/assets while
+# local development keeps it at <site>/assets. Resolve both from the shared
+# asset root so gettext loads the same catalogs in local, test, and container
+# processes instead of silently falling back to English.
+_LOCALE_DIR = _WORKSPACE_DIR / "assets" / "locale"
+_LOCALE_FALLBACK_DIR = _SITE_DIR / "assets" / "locale"
+LOCALE_PATHS = [
+    str(path)
+    for path in (_LOCALE_DIR, _LOCALE_FALLBACK_DIR)
+    if path.exists()
+]
 WAGTAIL_I18N_ENABLED = True
 WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
 WAGTAIL_I18N_LOCALE_MODEL = "wagtailcore.Locale"
@@ -236,6 +258,20 @@ MEDIA_ROOT = os.environ.get(
     "MEDIA_ROOT", str(_PROJECTS_DIR / "assets" / "media" / "ctc-research")
 )
 
+# CTC archive/media pack. The attached backup is kept under the same
+# project-named shared media root; ``prepare_ctc_media`` creates a clean
+# ``ctc-content/`` website copy and dump-compatible ``original_images/``
+# aliases without loading or mutating database data.
+_CTC_MEDIA_ROOT = Path(MEDIA_ROOT)
+CTC_MEDIA_SOURCE_DIR = Path(os.environ.get("CTC_MEDIA_SOURCE_DIR", str(_CTC_MEDIA_ROOT / "media")))
+CTC_MEDIA_CONTENT_DIR = Path(os.environ.get("CTC_MEDIA_CONTENT_DIR", str(_CTC_MEDIA_ROOT / "ctc-content")))
+CTC_MEDIA_DUMP_IMAGE_DIR = Path(os.environ.get("CTC_MEDIA_DUMP_IMAGE_DIR", str(_CTC_MEDIA_ROOT / "original_images")))
+CTC_MEDIA_MANIFEST_PATH = Path(os.environ.get(
+    "CTC_MEDIA_MANIFEST_PATH",
+    str(_SITE_DIR / "assets" / "fixtures" / "ctc-research-media.json"),
+))
+CTC_MEDIA_CONTENT_URL = os.environ.get("CTC_MEDIA_CONTENT_URL", f"{MEDIA_URL}ctc-content/")
+
 # Bundles: webpack writes to the site-local assets/bundles/ctc-research/ dir
 # (mounted at /app/assets/bundles/ctc-research in the container). Register it
 # under the bundles/ctc-research/ URL namespace so collectstatic copies it into
@@ -243,11 +279,32 @@ MEDIA_ROOT = os.environ.get(
 # (nginx location already aliases that path).
 _SHARED_BUNDLES = _WORKSPACE_DIR / "assets" / "bundles" / "ctc-research"
 if _SHARED_BUNDLES.exists() and "STATICFILES_DIRS" in dir():
+    # The runtime site root is /app/precis-ctc, while the shared asset tree is
+    # mounted at /app/assets. Keep the webpack manifest and URL namespace
+    # aligned with the actual shared bundle directory.
+    SITE_BUNDLES_DIR = _SHARED_BUNDLES
     _bundle_entry = ("bundles/ctc-research", str(_SHARED_BUNDLES))
     if _bundle_entry not in STATICFILES_DIRS:
         STATICFILES_DIRS.append(_bundle_entry)
+    if "WEBPACK_LOADER" in dir():
+        _webpack_default = WEBPACK_LOADER.setdefault("DEFAULT", {})
+        _webpack_default["BUNDLE_DIR_NAME"] = "bundles/ctc-research/"
+        _webpack_default["STATS_FILE"] = str(_SHARED_BUNDLES / "bundles.json")
+        if (_SHARED_BUNDLES / "bundles.json").is_file():
+            _webpack_default["LOADER_CLASS"] = "webpack_loader.loader.WebpackLoader"
+    if "FUSION_PIPELINE" in dir():
+        FUSION_PIPELINE["webpack"].update(
+            stats_file=str(_SHARED_BUNDLES / "bundles.json"),
+            bundle_dir="bundles/ctc-research/",
+        )
 
 # Static: ensure workspace-level assets/static is in STATICFILES_DIRS.
+# Use the CTC finder so Unfold's intentional admin overrides do not produce
+# duplicate-destination warnings during collectstatic.
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "apps.core.staticfiles.CtcAppDirectoriesFinder",
+]
 _ASSETS_STATIC = _WORKSPACE_DIR / "assets" / "static"
 if _ASSETS_STATIC.exists() and "STATICFILES_DIRS" in dir():
     # Mount the site-local assets at the root namespace (/static/...) so the

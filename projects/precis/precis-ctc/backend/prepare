@@ -136,9 +136,10 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
         exit 1
     fi
 
-    echo "[SETUP] Making migrations..."
-    if ! run_logged makemigrations python manage.py makemigrations --noinput; then
-        echo "[WARN] makemigrations failed (non-fatal); see ${LOG_DIR}/makemigrations.log"
+    echo "[SETUP] Checking migration files..."
+    if ! run_logged makemigrations_check python manage.py makemigrations --check --dry-run; then
+        echo "[ERROR] Model changes are missing committed migrations; see ${LOG_DIR}/makemigrations_check.log"
+        exit 1
     fi
 
     echo "[SETUP] Applying migrations..."
@@ -192,6 +193,12 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "[SETUP] Compiling translation messages..."
     if ! run_logged compilemessages python manage.py compilemessages; then
         echo "[WARN] compilemessages failed (non-fatal); see ${LOG_DIR}/compilemessages.log"
+    fi
+
+    echo "[SETUP] Collecting static files..."
+    if ! run_logged collectstatic python manage.py collectstatic --noinput; then
+        echo "[ERROR] collectstatic failed; see ${LOG_DIR}/collectstatic.log"
+        exit 1
     fi
 
     echo "[SETUP] Verifying Wagtail pages and collected assets..."

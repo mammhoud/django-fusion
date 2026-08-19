@@ -32,6 +32,8 @@ interface Props {
   gallery?: GalleryItem[];
   /** Optional evidence points shown when no gallery is provided. */
   evidence?: { value: string; label: string }[];
+  /** Page-specific visual treatment for the shared hero component. */
+  variant?: 'home' | 'research' | 'learning' | 'archive' | 'legal' | 'network' | 'contact' | 'product';
 }
 
 const {
@@ -49,12 +51,13 @@ const {
     { value: '6', label: 'course programs' },
     { value: '7', label: 'languages' },
   ],
+  variant = 'research',
 } = Astro.props;
 
 const showGallery = gallery.length > 0;
 ---
 
-<section class="hero">
+<section class:list={["hero", `hero--${variant}`]} data-page-variant={variant}>
   <!-- Skeleton while Alpine boots (x-intersect reveals) — component-matched height -->
   <div data-hydrate-skeleton>
     <Skeleton variant="hero-section" />

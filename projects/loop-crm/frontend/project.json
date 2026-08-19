@@ -2,58 +2,108 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "name": "loop-crm",
   "root": "projects/loop-crm/frontend",
+  "projectType": "application",
+  "tags": [
+    "product:loop-crm",
+    "type:frontend",
+    "stack:astro"
+  ],
+  "implicitDependencies": [
+    "loop-crm-backend",
+    "django-fusion-assets",
+    "fusion-js"
+  ],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "options": { "command": "npm run build", "cwd": "projects/loop-crm/frontend" }
+      "options": {
+        "command": "npm run build",
+        "cwd": "projects/loop-crm/frontend"
+      }
     },
     "check": {
       "executor": "nx:run-commands",
-      "options": { "command": "npm run check", "cwd": "projects/loop-crm/frontend" }
+      "options": {
+        "command": "npm run check",
+        "cwd": "projects/loop-crm/frontend"
+      }
     },
     "test": {
       "executor": "nx:run-commands",
-      "options": { "command": "npm run test", "cwd": "projects/loop-crm/frontend" }
+      "options": {
+        "command": "npm run test",
+        "cwd": "projects/loop-crm/frontend"
+      }
     },
     "dev": {
       "executor": "nx:run-commands",
-      "options": { "command": "make dev", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make dev",
+        "cwd": "projects/loop-crm"
+      }
     },
     "preview": {
       "executor": "nx:run-commands",
-      "options": { "command": "make preview", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make preview",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-dev": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-dev", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-dev",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-check": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-check", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-check",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-test": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-test", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-test",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-migrate": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-migrate", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-migrate",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-seed": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-seed", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-seed",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-lint": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-lint", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-lint",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-format": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-format", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-format",
+        "cwd": "projects/loop-crm"
+      }
     },
     "backend-shell": {
       "executor": "nx:run-commands",
-      "options": { "command": "make backend-shell", "cwd": "projects/loop-crm" }
+      "options": {
+        "command": "make backend-shell",
+        "cwd": "projects/loop-crm"
+      }
     }
   }
 }

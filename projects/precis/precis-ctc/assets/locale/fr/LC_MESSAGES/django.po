@@ -137,8 +137,7 @@ msgstr "Jours de récurrence"
 
 #: apps/LMS/models/classes.py:79
 msgid "Comma-separated days (0=Sunday, 1=Monday, etc.) for weekly recurrence"
-msgstr ""
-"Jours séparés par des virgules (0=Dimanche, 1=Lundi, etc.) pour la "
+msgstr "Jours séparés par des virgules (0=Dimanche, 1=Lundi, etc.) pour la récurrence hebdomadaire"
 "récurrence hebdomadaire"
 
 #: apps/LMS/models/classes.py:84
@@ -147,8 +146,7 @@ msgstr "Intervalle de récurrence"
 
 #: apps/LMS/models/classes.py:85
 msgid "Interval for recurrence (e.g., 2 for every 2 weeks)"
-msgstr ""
-"Intervalle pour la récurrence (par exemple, 2 pour toutes les 2 semaines)"
+msgstr "Intervalle de récurrence (ex. : 2 pour toutes les 2 semaines)"
 
 #: apps/LMS/models/classes.py:93
 msgid "Meeting Platform"
@@ -1405,8 +1403,7 @@ msgstr "Renouvellement auto de l'abonnement"
 
 #: apps/handlers/forms/billing.py:66
 msgid "Automatically renew your subscription at the end of each billing period"
-msgstr ""
-"Renouvelez automatiquement votre abonnement à la fin de chaque période de "
+msgstr "Renouveler automatiquement votre abonnement à la fin de chaque période de facturation"
 "facturation"
 
 #: apps/handlers/forms/billing.py:71
@@ -1635,8 +1632,7 @@ msgstr "Public - Tout le monde peut voir votre profil"
 
 #: apps/handlers/forms/privacy.py:12
 msgid "Members Only - Only registered members can see your profile"
-msgstr ""
-"Membres uniquement - Seuls les membres enregistrés peuvent voir votre profil"
+msgstr "Membres uniquement - Seuls les membres inscrits peuvent voir votre profil"
 
 #: apps/handlers/forms/privacy.py:13
 msgid "Private - Only you can see your profile"
@@ -1800,8 +1796,7 @@ msgstr "Rôle"
 
 #: apps/handlers/models/blog/post.py:47
 msgid "Author's role for this post (e.g., Main Author, Contributor)"
-msgstr ""
-"Rôle de l'auteur pour cet article (par ex., Auteur principal, Contributeur)"
+msgstr "Rôle de l'auteur pour ce billet (ex. : Auteur principal, Contributeur)"
 
 #: apps/handlers/models/blog/post.py:52
 msgid "Is Primary Author"
@@ -2270,8 +2265,7 @@ msgstr "Couleur principale de la marque en format hexadécimal"
 
 #: apps/handlers/models/manage/company.py:199
 msgid "Display this company in public directories and partner pages"
-msgstr ""
-"Afficher cette entreprise dans les annuaires publics et pages partenaires"
+msgstr "Afficher cette entreprise dans les répertoires publics et les pages partenaires"
 
 #: apps/handlers/models/manage/company.py:206
 msgid "Strategic Partner"
@@ -2468,13 +2462,11 @@ msgstr "Le niveau de partenariat ne s'applique qu'aux entreprises partenaires."
 
 #: apps/handlers/models/manage/company.py:504
 msgid "Partnership start date is only applicable to partner companies."
-msgstr ""
-"La date de début du partenariat ne s'applique qu'aux entreprises partenaires."
+msgstr "La date de début de partenariat ne s'applique qu'aux entreprises partenaires."
 
 #: apps/handlers/models/manage/company.py:510
 msgid "Institution type is only applicable to educational institutions."
-msgstr ""
-"Le type d'institution ne s'applique qu'aux établissements d'enseignement."
+msgstr "Le type d'établissement ne s'applique qu'aux établissements d'enseignement."
 
 #: apps/handlers/models/manage/company.py:516
 msgid "A company cannot be its own parent."
@@ -3263,8 +3255,7 @@ msgstr "Échec de l'exportation"
 
 #: apps/handlers/site/settings.py:663
 msgid "Data export requested. You will receive an email when it's ready."
-msgstr ""
-"Exportation des données demandée. Vous recevrez un e-mail lorsqu'elle sera "
+msgstr "Exportation des données demandée. Vous recevrez un e-mail lorsqu'elle sera prête."
 "prête."
 
 #: apps/handlers/site/settings.py:665
@@ -3293,8 +3284,7 @@ msgstr "Échec de la suppression"
 
 #: apps/handlers/site/settings.py:720
 msgid "Account deletion requested. You will receive a confirmation email."
-msgstr ""
-"Suppression du compte demandée. Vous recevrez un e-mail de confirmation."
+msgstr "Suppression de compte demandée. Vous recevrez un e-mail de confirmation."
 
 #: apps/handlers/site/settings.py:730
 msgid "Failed to delete account: {}"
@@ -4366,7 +4356,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\tModule %(num)s: %(title)s\n"
 "\t\t\t\t\t\t\t\t"
-msgstr "Module %(num)s : %(title)s"
+msgstr ""
 
 #: apps/templates/courses/details/curriculum.html:37
 #, python-format
@@ -4374,7 +4364,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\t%(count)s lessons • %(duration)s min\n"
 "\t\t\t\t\t\t\t\t"
-msgstr "%(count)s leçons • %(duration)s min"
+msgstr ""
 
 #: apps/templates/courses/details/curriculum.html:77
 #, python-format
@@ -4382,7 +4372,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\t\t\t%(minutes)s min\n"
 "\t\t\t\t\t\t\t\t\t\t"
-msgstr "%(minutes)s min"
+msgstr ""
 
 #: apps/templates/courses/details/curriculum.html:84
 msgid "Preview"
@@ -4394,7 +4384,7 @@ msgid ""
 "\n"
 "                        %(hours)s hours\n"
 "                    "
-msgstr "%(hours)s heures"
+msgstr ""
 
 #: apps/templates/courses/details/instructor.html:21
 msgid "About the Instructor"
@@ -4406,7 +4396,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t%(bio|default:\"Experienced instructor with passion for teaching and sharing knowledge.\")s\n"
 "\t\t\t\t\t"
-msgstr "%(bio|default:\"Instructeur expérimenté passionné par l'enseignement et le partage des connaissances.\")s"
+msgstr ""
 
 #: apps/templates/courses/details/instructor.html:47
 #: django_grep.comp/blocks/contact/socialLinks.py:25
@@ -4426,7 +4416,7 @@ msgid ""
 "\n"
 "                                %(hours)s hours\n"
 "                            "
-msgstr "%(hours)s heures"
+msgstr ""
 
 #: apps/templates/courses/details/overview.html:35
 msgid "Level"
@@ -4582,7 +4572,7 @@ msgid ""
 "\n"
 "                Showing %(count)s results\n"
 "                "
-msgstr "Affichage de %(count)s résultats"
+msgstr ""
 
 #: apps/templates/courses/sections/search.html:141
 msgid "Clear all filters"
@@ -4882,10 +4872,6 @@ msgid ""
 "primary\">%(email)s</span>\n"
 "                "
 msgstr ""
-"Lien de vérification envoyé à :\n"
-"                <span class=\"auth__email fw-semibold text-"
-"primary\">%(email)s</span>\n"
-"                "
 
 #: components/auth/verification_link.html:34
 msgid "A verification link has been sent to your email address."
@@ -4945,8 +4931,7 @@ msgstr "Renvoyer l’e-mail de vérification"
 
 #: components/auth/verification_link.html:170
 msgid "Check your spam folder if you don't see it in your inbox"
-msgstr ""
-"Vérifiez votre dossier spam si vous ne le voyez pas dans votre boîte de "
+msgstr "Vérifiez votre dossier spam si vous ne le trouvez pas dans votre boîte de réception"
 "réception"
 
 #: components/auth/verification_link.html:179
@@ -5576,8 +5561,7 @@ msgstr "Êtes-vous sûr de vouloir bloquer cet utilisateur ?"
 
 #: components/profile/partials/banner-cta.html:153
 msgid "Blocked users cannot view your profile or send you messages."
-msgstr ""
-"Les utilisateurs bloqués ne peuvent pas voir votre profil ni vous envoyer de "
+msgstr "Les utilisateurs bloqués ne peuvent pas voir votre profil ni vous envoyer de messages."
 "messages."
 
 #: components/profile/partials/banner-cta.html:180
@@ -5995,8 +5979,7 @@ msgstr "Notifications SMS"
 #: components/profile/settings.html:399
 #: components/profile/settings/notifications.html:149
 msgid "Standard carrier rates may apply for SMS notifications"
-msgstr ""
-"Des tarifs opérateurs standard peuvent s’appliquer pour les notifications SMS"
+msgstr "Des tarifs standard de l'opérateur peuvent s'appliquer pour les notifications SMS"
 
 #: components/profile/settings.html:430
 msgid "Notification Actions"
@@ -6845,8 +6828,7 @@ msgstr "Point de terminaison API"
 
 #: core/CI/models/integrations.py:89
 msgid "Base URL for the endpoint, e.g., https://api.twilio.com/v1/messages"
-msgstr ""
-"URL de base pour le point de terminaison, ex. https://api.twilio.com/v1/"
+msgstr "URL de base du point de terminaison, ex. : https://api.twilio.com/v1/messages"
 "messages"
 
 #: core/CI/models/integrations.py:92
@@ -12178,8 +12160,7 @@ msgstr "Méthodes de contact supplémentaires"
 
 #: django_grep.pipelines/models/contacts/base.py:56
 msgid "Add email, phone, social media, and website contacts"
-msgstr ""
-"Ajouter des contacts par e-mail, téléphone, réseaux sociaux et site web"
+msgstr "Ajouter des contacts par e-mail, téléphone, réseaux sociaux et site web"
 
 #: django_grep.pipelines/models/contacts/base.py:262
 msgid "At least one contact method (email or phone) is required."

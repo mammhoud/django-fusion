@@ -11,7 +11,7 @@ SHELL := /bin/bash
 WORKSPACE_ROOT    := .
 CORE_DIR          := projects
 PROXY_DIR         := applications/proxy
-SERVICES_DIR      := services
+SERVICES_DIR      := applications/tools
 DATABASES_DIR     := applications/databases
 POS_DIR           := projects/formints
 SOURCE_DIR        := source
@@ -31,7 +31,7 @@ NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
 # Override on the command line if your cache lives elsewhere, e.g.:
 #   make deploy-tasks TASKS_PROJECT_NAME=apps-tasks
 # -----------------------------------------------------------------
-TASKS_COMPOSE_FILE := applications/docker-compose.tasks.yml
+TASKS_COMPOSE_FILE := projects/docker-compose.tasks.yml
 TASKS_PROJECT_NAME := compose
 # Default persistence DB for shared task audit/scheduler records. This is
 # infrastructure storage, not an LMS worker identity. Website-specific task
@@ -71,7 +71,7 @@ DEPLOY_ORDER_PATTERNS := $(subst $(space),|,$(VALID_DEPLOY_ORDERS))
 PREFLIGHT_COMPOSE_FILES := \
 	$(DATABASES_DIR)/docker-compose.yml \
 	$(PROXY_DIR)/docker-compose.yml \
-	applications/docker-compose.tasks.yml \
+	$(TASKS_COMPOSE_FILE) \
 	applications/docker-compose.yml
 
 # -----------------------------------------------------------------
@@ -83,7 +83,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
 .PHONY: deploy-databases deploy-coder
-.PHONY: deploy-utilities deploy-ollama deploy-mailpit
+.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-monitoring deploy-tools
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
@@ -343,10 +343,12 @@ help:
 	@echo "  make venv-clean        - Delete .venv (recreate with make venv-setup)"
 	@echo "  make venv-info         - Show venv status, Python version, paths"
 	@echo ""
-	@echo "Aspirational (require scaffolded component dirs):"
-	@echo "  make deploy-utilities  - Deploy monitoring stack (needs services/utilities/)"
-	@echo "  make deploy-ollama     - Deploy Ollama + Open WebUI (needs services/ollama/)"
-	@echo "  make deploy-mailpit    - Deploy Mailpit (needs services/mailpit/)"
+	@echo "Self-hosted tools (applications/tools/):"
+	@echo "  make deploy-tools      - Deploy all self-hosted tools (monitoring, ollama, adminer, mailpit)"
+	@echo "  make deploy-utilities  - Deploy monitoring stack (Prometheus + Grafana, needs applications/tools/monitoring/)"
+	@echo "  make deploy-ollama     - Deploy Ollama + Open WebUI (needs applications/tools/ollama/)"
+	@echo "  make deploy-adminer    - Deploy Adminer DB UI (needs applications/tools/adminer/)"
+	@echo "  make deploy-mailpit    - Deploy Mailpit (needs applications/tools/mailpit/)"
 	@echo ""
 	@echo "See individual component Makefiles for more details."
 
@@ -422,9 +424,7 @@ deploy-all: preflight-network deploy-preflight
 		$(MAKE) --no-print-directory deploy-proxy; \
 	fi
 	@$(MAKE) --no-print-directory deploy-anytype
-	@$(MAKE) --no-print-directory deploy-utilities
-	@$(MAKE) --no-print-directory deploy-ollama
-	@$(MAKE) --no-print-directory deploy-mailpit
+	@$(MAKE) --no-print-directory deploy-tools
 	@$(MAKE) --no-print-directory deploy-coolify
 	@echo "✅ All services deployed"
 
@@ -582,7 +582,7 @@ deploy-media:
 	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d
 
 deploy-docs:
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d --build docus shared-proxy
+	@docker compose -f applications/tools/docus/docker-compose.yml up -d --build
 
 deploy-proxy:
 	@cd $(PROXY_DIR) && $(MAKE) deploy
@@ -596,14 +596,21 @@ deploy-coder:
 	@echo "✅ Coder platform deployed"
 
 # -----------------------------------------------------------------
-# Aspirational deploy targets — component directories not in repo yet.
-# Targets are wired so adding services/<X>/Makefile "just works".
+# Self-hosted tools deploy targets — one compose per tool under
+# applications/tools/<name>/ (each with its own Makefile). Targets are
+# wired so adding applications/tools/<X>/Makefile "just works".
 # -----------------------------------------------------------------
+deploy-tools:
+	@$(MAKE) --no-print-directory deploy-utilities
+	@$(MAKE) --no-print-directory deploy-ollama
+	@$(MAKE) --no-print-directory deploy-adminer
+	@$(MAKE) --no-print-directory deploy-mailpit
+
 deploy-utilities:
-	@if [ -d "$(SERVICES_DIR)/utilities" ]; then \
-		$(MAKE) -C $(SERVICES_DIR)/utilities up; \
+	@if [ -d "$(SERVICES_DIR)/monitoring" ]; then \
+		$(MAKE) -C $(SERVICES_DIR)/monitoring up; \
 	else \
-		echo "  (skip) $(SERVICES_DIR)/utilities not present"; \
+		echo "  (skip) $(SERVICES_DIR)/monitoring not present"; \
 	fi
 
 deploy-ollama:
@@ -611,6 +618,13 @@ deploy-ollama:
 		$(MAKE) -C $(SERVICES_DIR)/ollama up; \
 	else \
 		echo "  (skip) $(SERVICES_DIR)/ollama not present"; \
+	fi
+
+deploy-adminer:
+	@if [ -d "$(SERVICES_DIR)/adminer" ]; then \
+		$(MAKE) -C $(SERVICES_DIR)/adminer up; \
+	else \
+		echo "  (skip) $(SERVICES_DIR)/adminer not present"; \
 	fi
 
 deploy-mailpit:
@@ -952,7 +966,7 @@ stop:
 	@echo "🛑 Stopping all services..."
 	@cd $(PROXY_DIR) && $(MAKE) stop || true
 	@$(MAKE) -C $(CORE_DIR) docker-down || true
-	@docker compose -f $(SERVICES_DIR)/docker-compose.media.yml down 2>/dev/null || true
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml down 2>/dev/null || true
 	@docker compose -f $(DATABASES_DIR)/docker-compose.yml down 2>/dev/null || true
 	@docker compose -f $(SOURCE_DIR)/docker-compose.yml down 2>/dev/null || true
 	@echo "✅ All services stopped"
@@ -1002,18 +1016,18 @@ clean:
 cert: cert-generate
 
 cert-generate:
-	@cd $(PROXY_DIR)/scripts && ./generate-certs.sh production
+	@cd $(PROXY_DIR)/scripts && ./dev/generate-certs.sh production
 	@cd $(PROXY_DIR) && $(MAKE) restart
 	@echo "✅ Certificates generated and proxy restarted"
 
 cert-backup:
-	@cd $(PROXY_DIR)/scripts && ./manage-certs.sh backup
+	@cd $(PROXY_DIR)/scripts && ./production/manage-certs.sh backup
 	@echo "✅ Certificates backed up"
 
 cert-restore:
 	@read -p "Enter backup filename to restore: " FILE; \
 	if [ -f "$(PROXY_DIR)/scripts/certs/$$FILE" ]; then \
-		cd $(PROXY_DIR)/scripts && ./manage-certs.sh restore certs/"$$FILE"; \
+		cd $(PROXY_DIR)/scripts && ./production/manage-certs.sh restore "$$FILE"; \
 	else \
 		echo "❌ File not found: certs/$$FILE"; \
 		echo "Available backups:"; \
@@ -1021,11 +1035,11 @@ cert-restore:
 	fi
 
 cert-validate:
-	@cd $(PROXY_DIR)/scripts && ./manage-certs.sh validate
+	@cd $(PROXY_DIR)/scripts && ./production/manage-certs.sh validate
 	@echo "✅ Certificates validated"
 
 cert-check:
-	@cd $(PROXY_DIR)/scripts && ./manage-certs.sh check-expiry
+	@cd $(PROXY_DIR)/scripts && ./production/manage-certs.sh check-expiry
 	@echo "✅ Certificate check complete"
 
 # -----------------------------------------------------------------
@@ -1037,10 +1051,10 @@ build-app:
 	@$(MAKE) -C $(CORE_DIR) docker-build
 
 build-media:
-	@cd $(SERVICES_DIR) && docker compose -f docker-compose.media.yml build
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build shared-proxy
 
 build-docs:
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build docus shared-proxy
+	@docker compose -f applications/tools/docus/docker-compose.yml build
 
 # -----------------------------------------------------------------
 # Validation
@@ -1150,7 +1164,7 @@ help-all:
 	@echo "  make {community,standard,pro,cloud,client}-*"
 	@echo "                      - Formint edition Makefiles"
 	@echo "  make -C $(PROXY_DIR) help           - Proxy management commands"
-	@echo "  make -C $(SERVICES_DIR) help        - Service-specific commands"
+	@echo "  make -C applications/tools/<tool> help - Tool-specific commands (docus, ollama, mailpit, ...)"
 	@echo "  make -C $(DATABASES_DIR) help       - Database commands"
 	@echo "  make -C $(SOURCE_DIR) help          - Coolify source commands"
 	@echo "═══════════════════════════════════════════════════════════════"

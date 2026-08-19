@@ -20,8 +20,8 @@ from apps.domain.site.views import (  # noqa: F401
     PaymentsView,
     SearchView,
 )
-from django_fusion.routes.http.notifications import NotificationView
-from django_fusion.routes.tags import EnhancedTagsView as TagsView
+from django_fusion.routes.views.notifications import NotificationView
+from django_fusion.routes.views.tags import EnhancedTagsView as TagsView
 
 
 def profile_page(request):

@@ -139,6 +139,7 @@ urlpatterns = [
     path("apis/site/settings/", landing_api.site_settings_api, name="landing-site-settings"),
     path("apis/navigation/", landing_api.navigation_api, name="landing-navigation"),
     path("apis/content/languages/", landing_api.content_languages_api, name="landing-content-languages"),
+    path("apis/content/media/", landing_api.media_manifest_api, name="landing-content-media"),
     path("apis/research/publications/", landing_api.research_publications_api, name="landing-research-publications"),
     path("apis/contact/", landing_api.contact_api, name="landing-contact"),
     path("apis/auth/status/", landing_api.auth_status_api, name="landing-auth-status"),
@@ -197,6 +198,20 @@ urlpatterns += i18n_patterns(
     prefix_default_language=False,
 )
 
+# ── Legacy `handlers` namespace (reverse alias) ────────────────────────────
+# The pre-merge LMS mounted profile, cart/checkout and accounts surfaces under
+# a single `handlers` namespace. Templates and views still reverse names like
+# `handlers:settings`, `handlers:cart-count`, and `handlers:checkout` (see the
+# profile nav-menu, settings forms, cart drawer and component partials). The
+# routes themselves are owned by the `profile`/`cart` app namespaces above, so
+# this block re-registers the same URLconfs under the legacy namespace purely
+# so those `{% url 'handlers:…' %}` calls resolve. Resolution order is
+# unaffected: the earlier `plugins`/`cart` includes still match first.
+urlpatterns += i18n_patterns(
+    path("", include("apps.handlers.legacy_urls")),
+    prefix_default_language=False,
+)
+
 # ── Cart & Checkout ──────────────────────────────────────────────────────
 urlpatterns += i18n_patterns(
     path("cart/", include("apps.core.urls", namespace="cart")),
@@ -212,6 +227,19 @@ urlpatterns += i18n_patterns(
 # ── REST API ────────────────────────────────────────────────────────
 urlpatterns += [
     path("api/", include("apps.core.api.urls")),
+]
+
+# ── Public page-component compatibility road ─────────────────────────────
+# Legacy clients request the static page components directly. Route these
+# public pages through the same Wagtail-backed fragment contract used by the
+# Astro shell instead of the generic routable component renderer, whose full
+# page fallback can fail when a deployment is missing its legacy layout context.
+urlpatterns += [
+    re_path(
+        r"^components/lms/pages/(?P<slug>[a-z0-9-]+)/$",
+        landing_api.page_fragment_api,
+        name="component-static-page-compat",
+    ),
 ]
 
 # ── Routable component site ─────────────────────────────────────────────

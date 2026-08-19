@@ -42,7 +42,7 @@ const repoProjects = pageProjects?.length ? pageProjects.map((p: any) => ({
 ---
 
 <Layout title={pageData?.title || 'Projects'} description={pageData?.search_description || 'The full project document — the monorepo at a glance.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="projects">
-  <Hero eyebrow={pageHero?.badge || 'projects · research programs'} heading={pageHero?.title || 'Programs and research'} accent='evidence you can build on' intro={pageHero?.subtitle || 'Learning paths, research programs, and evidence services from CTC Research.'} primaryCta={{ label: 'See the features', href: '/features' }} secondaryCta={{ label: 'Read the FAQ', href: '/projects#faq' }} status='200 OK · text/html · every program in one response' />
+  <Hero eyebrow={pageHero?.badge || 'projects · research programs'} heading={pageHero?.title || 'Programs and research'} accent='evidence you can build on' intro={pageHero?.subtitle || 'Learning paths, research programs, and evidence services from CTC Research.'} primaryCta={{ label: 'See the features', href: '/features' }} secondaryCta={{ label: 'Read the FAQ', href: '/projects#faq' }} status='200 OK · text/html · every program in one response' variant="research" />
 
   {repoProjects.length ? (
   <section class='page-section doc-sheet bg-fu-paper py-20 md:py-24'>

@@ -74,8 +74,12 @@ RUN uv pip install --python /opt/venv/bin/python setuptools wheel \
 # canonical path in both image-only and development-container runs.
 COPY projects/${SOURCE_PATH}/backend ${APP_HOME}/${PROJECT_PATH}
 # Canonical shared settings package (moved from backend/configs to precis/configs).
-COPY projects/precis/configs ${APP_HOME}/${PROJECT_PATH}/configs
+COPY ../configs ${APP_HOME}/${PROJECT_PATH}/configs
 COPY projects/${SOURCE_PATH}/Env ${APP_HOME}/${PROJECT_PATH}/Env
+# Asset/template source is part of the runtime image. Production Compose does
+# not bind-mount source directories because remote Docker engines can expose a
+# partial synchronized tree and mask the files copied above.
+COPY projects/${SOURCE_PATH}/assets ${APP_HOME}/assets
 # Runtime setup and optional fixture verification use the shared workspace
 # utilities; keep them available in image-only deployments as well.
 COPY tests ${APP_HOME}/tests
@@ -86,11 +90,11 @@ RUN if [ -f "${APP_HOME}/${PROJECT_PATH}/pyproject.toml" ]; then \
     fi
 
 # ── Entrypoint and helper scripts ───────────────────────────────────────────
-COPY projects/precis/precis-ctc/compose/entrypoint     /entrypoint
-COPY projects/precis/precis-ctc/compose/start          /start
+COPY ../precis-ctc/compose/prepare     /prepare
+COPY ./run          /run
 RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/media ${APP_HOME}/${PROJECT_PATH}/assets/staticfiles \
-    && sed -i 's/\r$//g' /entrypoint /start \
-    && chmod +x /entrypoint /start
+    && sed -i 's/\r$//g' /prepare /run \
+    && chmod +x /entrypoint /run
 
-ENTRYPOINT ["/entrypoint"]
+ENTRYPOINT ["/prepare"]
 CMD ["server"]

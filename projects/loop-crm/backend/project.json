@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "loop-crm-backend",
+  "root": "projects/loop-crm/backend",
+  "projectType": "application",
+  "tags": ["product:loop-crm", "type:backend", "stack:django"],
+  "implicitDependencies": ["django-fusion-assets"],
+  "targets": {
+    "check": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend", "^production"],
+      "cache": true,
+      "options": { "command": "make check", "cwd": "projects/loop-crm/backend" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend", "^production"],
+      "cache": true,
+      "options": { "command": "make test", "cwd": "projects/loop-crm/backend" }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make migrate", "cwd": "projects/loop-crm/backend" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make dev", "cwd": "projects/loop-crm/backend" }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make seed", "cwd": "projects/loop-crm/backend" }
+    },
+    "seed-pages": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make seed-pages", "cwd": "projects/loop-crm/backend" }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend"],
+      "cache": true,
+      "options": { "command": "make lint", "cwd": "projects/loop-crm/backend" }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make format", "cwd": "projects/loop-crm/backend" }
+    },
+    "shell": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make shell", "cwd": "projects/loop-crm/backend" }
+    }
+  }
+}

@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "prepare-content": "node scripts/prepare-content.mjs",
+    "validate-content": "node scripts/validate-content.mjs",
     "dev": "npm run prepare-content && nuxt dev",
     "build": "npm run prepare-content && nuxt build",
     "build:static": "npm run prepare-content && nuxt generate",

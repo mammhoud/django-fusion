@@ -8,8 +8,8 @@ WEBSITE ?= all
 help:
 	@echo "Workspace script targets:"
 	@echo "  make list              List available utility scripts"
-	@echo "  make health            Run HTTP health-check script"
-	@echo "  make websites          Run website shell test runner (WEBSITE=all|ctc|structa|vresume)"
+	@echo "  make health            Run HTTP health-check script (BASE_URL=...)"
+	@echo "  make websites          Run the workspace website pytest suite"
 	@echo "  make containers        Run container shell test runner"
 	@echo "  make production        Run production Python checks"
 	@echo "  make production-simple Run simple production Python checks"
@@ -18,31 +18,35 @@ help:
 	@echo "  make vresume-pages     Run VResume page checks (BASE_URL=..., VERBOSE=true|false)"
 
 list:
-	@echo "=== deployment/ ===" && find deployment -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
-	@echo "=== validation/ ===" && find validation -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
-	@echo "=== utilities/ ===" && find utilities -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
-	@echo "=== helpers/  ===" && find helpers -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+	@echo "=== dev/ ==="
+	@find dev -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+	@echo "=== helpers/ ==="
+	@find helpers -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+	@echo "=== staging/ ==="
+	@find staging -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+	@echo "=== testing/ ==="
+	@find testing -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
 
 health:
-	@bash helpers/health-check.sh $(BASE_URL)
+	@bash dev/health-check.sh $(BASE_URL)
 
 websites:
-	@bash helpers/run_website_tests.sh $(WEBSITE)
+	@cd ../.. && uv run python -m pytest tests/websites -q
 
 containers:
-	@bash helpers/run_container_tests.sh $(WEBSITE)
+	@bash ../../tests/run_containers.sh
 
 production:
-	@$(PYTHON) validation/test_production.py
+	@$(PYTHON) staging/test_production.py
 
 production-simple:
-	@$(PYTHON) validation/test_production_simple.py
+	@$(PYTHON) staging/test_production_simple.py
 
 domains:
-	@$(PYTHON) validation/test_domain_urls.py
+	@$(PYTHON) ../../tests/test_domain_urls.py
 
 populate:
-	@$(PYTHON) utilities/populate_site_data.py --site $(WEBSITE) $(ARGS)
+	@$(PYTHON) populate_site_data.py --site $(WEBSITE) $(ARGS)
 
 vresume-pages:
-	@bash helpers/test_vresume_pages.sh $(BASE_URL) $(VERBOSE)
+	@bash dev/test_vresume_pages.sh $(BASE_URL) $(VERBOSE)

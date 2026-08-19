@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import ContentError from '@/components/ui/ContentError.astro';
+import PageHeader from '@/components/blocks/PageHeader.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, fetchPublications, CONTENT_LANGUAGE } from '@/lib/api';
 import type { NavigationData, PublicationListData, SiteSettings } from '@/lib/api';
@@ -29,19 +30,16 @@ try {
 >
   {library ? (
     <>
-      <section class="documents-hero doc-sheet bg-fu-paper py-20 md:py-28">
-        <div class="container-fusion documents-hero__inner">
-          <div class="documents-hero__copy">
-            <p class="tag-marker mb-5">research library · {library.language}</p>
-            <h1 class="font-display text-5xl font-light leading-[1.02] tracking-tight text-fu-ink md:text-7xl">Documents for the next defensible step.</h1>
-            <p class="mt-6 max-w-2xl text-lg leading-relaxed text-fu-muted">{library.guidance.body}</p>
-          </div>
-          <div class="documents-hero__signal" aria-label={`${library.total} documents published`}>
-            <span class="documents-hero__signal-value">{String(library.total).padStart(2, '0')}</span>
-            <span class="documents-hero__signal-label">published<br />documents</span>
-          </div>
-        </div>
-      </section>
+      <PageHeader
+        eyebrow={`research library · ${library.language}`}
+        title="Documents for the next defensible step."
+        intro={library.guidance.body}
+        variant="archive"
+        index="12"
+        status={`${library.total} published documents · ${library.language}`}
+        primaryCta={{ label: 'Browse courses', href: '/courses/' }}
+        secondaryCta={{ label: 'Contact the center', href: '/contact/' }}
+      />
 
       <section class="documents-guidance doc-sheet bg-fu-card py-16 md:py-20">
         <div class="container-fusion">

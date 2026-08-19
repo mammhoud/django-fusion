@@ -74,6 +74,7 @@ const excerpt = String(pageData?.excerpt || '');
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: '← All posts', href: '/blog' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
     status={`200 OK · ${readTime || 'text/html'}${postDate ? ` · ${postDate}` : ''} · one document`}
+    variant="archive"
   />
 
   {body ? (

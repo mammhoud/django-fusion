@@ -1,49 +1,43 @@
-# Structa Cloud Docus
+# Structa Cloud Docus application
 
-The repository documentation is served with [Docus](https://docus.dev), a
-Nuxt Content documentation layer with SSR, full-text search, responsive
-navigation, SEO/LLM metadata, and built-in internationalization.
+This directory contains the Nuxt/Docus application that serves the authored
+repository documentation. The canonical reader-facing implementation guide is
+[`../guides/09-docus.md`](../guides/09-docus.md); keep operational detail there
+instead of maintaining a second documentation copy in this package README.
 
 ## Local development
 
 ```bash
 cd docs/docus
 npm install
+npm run prepare-content
+npm run validate-content
 npm run dev
 ```
 
-The local site uses the `/docs/` base path to match the deployed shared-proxy
-route. Open `http://localhost:3000/docs/`.
+Open `http://localhost:3000/docs/en/`. The application also exposes the Arabic
+locale at `/docs/ar/` and uses `/docs/` as its configured base path.
 
-## Languages
-
-- English: `/docs/en/`
-- Arabic: `/docs/ar/`
-
-The English locale is generated from the existing repository Markdown tree so
-current documentation remains in one source location. Arabic core onboarding
-pages live in `ar-content/` and use Docus/ Nuxt i18n RTL metadata. Additional
-Arabic pages can be added by mirroring the English route under `ar-content/`.
-
-## Build
+## Build and preview
 
 ```bash
-npm run build          # Nuxt server output for deployment
-npm run build:static   # optional static export for isolated hosting
+npm run build
+npm run build:static
 npm run preview
 ```
 
-`prepare-content.mjs` creates the ignored `content/en/` and `content/ar/`
-directories before development and build. The production image runs the Docus
-Nuxt server so deep links, search, sitemap, LLM output, and locale switching
-remain fully functional.
+`prepare-content.mjs` generates the ignored `content/en/` and `content/ar/`
+trees before development and build. Do not edit or commit `content/`, `.nuxt/`,
+`.output/`, `dist/`, or `node_modules/`.
 
-## Deployment contract
+## Deployment
 
-- `media.structa.cloud/docs/` is proxied by shared-proxy Nginx to `docus:3000`.
-- `docs.structa.cloud/` is proxied through the same shared-proxy service.
-- Traefik keeps the existing `/docs` strip-prefix middleware for the docs host.
-- `NUXT_APP_BASE_URL=/docs/` keeps asset and locale links valid on both hosts.
+The production image is built from `docs/Dockerfile`, runs the Docus Nuxt SSR
+server on `docus:3000`, and is routed by the shared proxy. See the canonical
+[Docus implementation guide](../guides/09-docus.md) for the proxy contract,
+metadata model, validation commands, and source-of-truth rules.
 
-Do not commit generated `content/`, `.nuxt/`, `.output/`, `dist/`, or
-`node_modules/`.
+## Remarks & Notes
+
+- This README describes the application package; `docs/guides/09-docus.md` is the single published Docus guide.
+- A Docus build does not validate product backend health; run the owning project checks separately.

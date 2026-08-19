@@ -1,0 +1,69 @@
+{
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "name": "workspace",
+  "root": ".",
+  "projectType": "application",
+  "tags": ["type:infrastructure", "stack:docker+make"],
+  "targets": {
+    "create-networks": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make create-networks", "cwd": "." }
+    },
+    "deploy-databases": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-databases", "cwd": "." }
+    },
+    "deploy-coder": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-coder", "cwd": "." }
+    },
+    "deploy-proxy": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-proxy", "cwd": "." }
+    },
+    "deploy-tasks": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-tasks", "cwd": "." }
+    },
+    "deploy-docs": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-docs", "cwd": "." }
+    },
+    "deploy-app": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-app", "cwd": "." }
+    },
+    "deploy-all": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy", "cwd": "." }
+    },
+    "probe-health": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make probe-health", "cwd": "." }
+    },
+    "status-tasks": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make status-tasks", "cwd": "." }
+    },
+    "logs-tasks": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make logs-tasks", "cwd": "." }
+    },
+    "deploy-preflight": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-preflight", "cwd": "." }
+    },
+    "status": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make status", "cwd": "." }
+    },
+    "push": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make push", "cwd": "." }
+    },
+    "venv-setup": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make venv-setup", "cwd": "." }
+    }
+  }
+}

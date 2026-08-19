@@ -1,8 +1,39 @@
+---
+title: Structa Cloud Documentation
+description: Canonical engineering, product, and operations documentation for the Structa Cloud monorepo.
+navigation:
+  title: Documentation home
+  icon: i-lucide-house
+object:
+  type: "reference"
+  id: "docs.home"
+attributes:
+  source_path: "README.md"
+  canonical_route: "/docs/en/"
+  source_of_truth: "repository-markdown"
+  owner: "workspace"
+  status: "maintained"
+tags:
+  - structa-cloud
+  - documentation
+  - onboarding
+  - docus
+links:
+  - label: "Project awareness"
+    to: "/docs/en/guides/00-project-awareness"
+    icon: "i-lucide-compass"
+  - label: "Architecture"
+    to: "/docs/en/architecture"
+    icon: "i-lucide-landmark"
+---
+
 # Structa Cloud — Documentation
 
-> ⭐ **Start here:** read [Recommendations first](recommendations.md), then open the relevant guide, project reference, or implementation plan.
+> ⭐ **Start here:** read [Project awareness](guides/00-project-awareness.md), then open the relevant architecture, product, or implementation guide.
 
-> ⚡ **New here?** Start with [Guides](guides/) — numbered walkthroughs for setup, auth, dev, deployment, and customization.
+> ⚡ **New here?** Start with [Guides](guides/) — numbered walkthroughs for setup, auth, development, deployment, and customization.
+
+> 📚 **Docus:** this Markdown tree is the single authored source. `docs/docus/content/` is generated and ignored; build it with `make -C docs build`.
 
 ## Current Products
 
@@ -22,7 +53,8 @@
 |---|---|
 | Recommended priorities and sequencing | [`recommendations.md`](recommendations.md) |
 | Engineering plans and implementation tasks | [`plans/`](plans/README.md) |
-| Product decisions and knowledge-graph objects | `Anytype/` when present |
+| Product decisions and architecture context | [`plans/`](plans/) and the relevant product section |
+| Document objects, attributes, tags, and links | [`guides/00-project-awareness.md`](guides/00-project-awareness.md) |
 | Current project, architecture, development, and deployment references | The topic/project sections below |
 
 All new plans must be added under `docs/plans/<scope>/` and linked from the canonical plan registry. The old `docs/dev/plans/`, `docs/plans/migrated/`, and project-local `docs/superpowers/plans/` locations are no longer active authoring paths.
@@ -33,15 +65,15 @@ All new plans must be added under `docs/plans/<scope>/` and linked from the cano
 structa.cloud/
 ├── projects/                         # Product code, shared Django config, and assets
 │   ├── precis/                       # Product grouping: LMS, research, marketing
-│   │   ├── main/                     # Precis LMS — learning platform
+│   │   ├── precis-main/              # Precis LMS — learning platform
 │   │   │   ├── backend/              # Django + Wagtail backend
 │   │   │   ├── assets/               # Templates, static, SCSS, media
 │   │   │   └── frontend/             # Astro frontend shell
-│   │   ├── precis-ctc/             # Medical research center site
-│   │   └── landi/                    # Astro marketing site + Django/Wagtail CMS
-│   │       ├── backend/              # Django + Wagtail backend
-│   │       ├── frontend/             # Astro frontend
-│   │       └── assets/               # Project assets
+│   │   ├── precis-landing/           # Landing-Fusion marketing/catalog site
+│   │   │   ├── backend/              # Django + Wagtail backend
+│   │   │   ├── frontend/             # Astro frontend
+│   │   │   └── assets/               # Project assets
+│   │   └── precis-ctc/               # Medical research center site
 │   ├── syntara/                      # Cypercloud AI chat/customizer runtime
 │   ├── formints/                     # Multi-edition POS platform
 │   │   ├── formint-community/        # Community (Tauri + React + Rust)
@@ -70,10 +102,12 @@ structa.cloud/
 │   │   ├── screenshots/formints/     # Formint admin + frontend screenshots
 │   │   └── previews/formints/        # Formint product preview images
 │   ├── guides/                       # Step-by-step numbered walkthroughs
-│   ├── plans/                        # Single active plan registry
-│   ├── projects/                     # Current per-project references
-│   ├── ai/                           # Agents, prompts, MCP
-│   └── design/                       # Design system and branding
+│   ├── plans/                        # Single active plan registry + legacy archive
+│   ├── precis/  loop-crm/  syntara/  pos/  precis-ctc/   # Per-product references
+│   ├── libs/                         # Shared library docs (django-fusion)
+│   ├── startup/                      # Private market strategy per product
+│   └── ai/                           # Agents, prompts, MCP
+│   └── dev/                          # Infrastructure, databases, customization
 ├── .agents/                          # AI agent skills and configuration
 │   ├── skills/                       # Reusable skill definitions (21 skills)
 │   └── kiro/settings/                # MCP server configuration
@@ -84,6 +118,7 @@ structa.cloud/
 
 ## Quick Links
 
+- [🧭 Project awareness and computation guide](guides/00-project-awareness.md)
 - [⭐ Recommendations first](recommendations.md)
 - [🛠️ Project Setup & Build Guides](setup-guides.md) — per-project setup/build indexes
 - [📚 Guides](guides/) — step-by-step tutorials
@@ -93,24 +128,38 @@ structa.cloud/
 - [🏗️ Infrastructure & Deployment](dev/infrastructure/)
 - [🗄️ Databases](dev/databases/)
 - [🧪 Testing](tests/)
-- [🤖 AI & Agents](ai/) — agent instructions and prompts
-- [🏛️ Project Architecture](dev/technical/architecture/)
-- [📐 Customization](dev/customization/)
+- [🏛️ Architecture](ARCHITECTURE.md) — request lifecycle, components, tasks, MCP, Docus
+- [🏗️ Infrastructure & Deployment](dev/infrastructure/) — proxy, workers, troubleshooting
+- [📐 Customization](dev/customization/) — methods and design system
 - [📦 Publishing](publish/) — marketplace & distribution
-- [🎨 Design](design/)
+- [🤖 AI & Agents](ai/) — agent instructions, prompts, and skills
+- [🚀 Startup & Market Strategy](startup/README.md) — 🔒 private: MVP canvas, TAM/SAM/SOM, ideal clients per product
+- [📚 Docus implementation](guides/09-docus.md) — source generation, metadata, locales, build, and deployment
 
 ## Project Documentation
 
 | Product | Directory | Key Docs |
 |---|---|---|
-| **Precis LMS** | [`precis/`](precis/) | Configuration, Courses, Deployment |
-| **Landing-Fusion** | [`landing-fusion/`](landing-fusion/) | Frontend, Backend API, Deployment |
-| **CTC Research** | [`precis-ctc/`](precis-ctc/) | Content strategy, Publishing & production, Environment |
+| **Precis** (LMS + landing) | [`precis/`](precis/README.md) | Architecture, Configuration, Courses, Landing (frontend/API/deployment) |
+| **CTC Research** | [`precis-ctc/`](precis-ctc/) | Content strategy, Publishing & production |
 | **Syntara** (Cypercloud) | [`syntara/`](syntara/) | Configuration, Features, Infrastructure |
 | **Loop-CRM** | [`loop-crm/`](loop-crm/) | Design system, Setup & build |
-| **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar, Cloud |
-| **django-fusion** | [`libs/`](libs/) | Component guide, Viewsets, Templates |
+| **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar, Cloud edition |
+| **django-fusion** | [`libs/`](libs/README.md) | Package guide, Where & how used, Component system |
 | **Shared Config** | [`dev/back-env/`](dev/back-env/) | Settings reference, Environment variables |
+| **Startup strategy** 🔒 | [`startup/`](startup/README.md) | MVP canvas, TAM/SAM/SOM, SaaS services, ideal clients, research |
+
+## Canonical source and Docus
+
+`docs/**/*.md` and `docs/**/*.mdx` are authored documentation. The Docus app
+at `docs/docus/` runs `scripts/prepare-content.mjs` to generate the ignored
+English content tree and copy the authored Arabic translations. There is one
+content source, one set of links, and one validation path; generated files are
+not edited or committed.
+
+Use `object`, `attributes`, `tags`, and `links` frontmatter for new documents.
+The preparation script adds the same graph metadata to legacy pages that do not
+yet define it. See [Project awareness](guides/00-project-awareness.md).
 
 ## Related
 
@@ -118,3 +167,10 @@ structa.cloud/
 - [`recommendations.md`](recommendations.md) — recommended priorities
 - [`plans/README.md`](plans/README.md) — canonical plan registry
 - [`plans/document-lifecycle.md`](plans/document-lifecycle.md) — archive/delete policy
+
+## Remarks & Notes
+
+- `docs/**/*.md` and `docs/**/*.mdx` are the only authored documentation sources.
+- `docs/docus/content/` is disposable generated output; never edit it or add a second copy there.
+- New pages should carry `object`, `attributes`, `tags`, and Docus-native `links` metadata.
+- Prefer one canonical page plus links to it over repeated product explanations.

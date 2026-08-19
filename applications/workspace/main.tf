@@ -124,7 +124,7 @@ resource "coder_agent" "main" {
   metadata {
     key          = "toolchain"
     display_name = "Toolchain"
-    script       = "sh -c 'git --version; make --version | head -1; node --version; nx --version'"
+    script       = "sh -c 'git --version; make --version | head -1; node --version'"
     interval     = 3600
     timeout      = 5
   }
@@ -134,11 +134,11 @@ resource "coder_agent" "main" {
 # Toolchain install script (runs on every start)
 # ============================================================
 # Folded in from the former `toolchain` template: the agent-host container
-# always gets git + make + Node + Nx (and the Freebuff client) installed
+# always gets git + make + Node (and the Freebuff client) installed
 # idempotently, in addition to the repo devcontainer below.
 resource "coder_script" "toolchain" {
   agent_id     = coder_agent.main.id
-  display_name = "Install toolchain (git + make + Node + Nx)"
+  display_name = "Install toolchain (git + make + Node)"
   run_on_start = true
 
   script = <<-EOT
@@ -153,16 +153,16 @@ resource "coder_script" "toolchain" {
       apt-get install -y --no-install-recommends git make ca-certificates curl
     fi
 
-    # 2. Node.js runtime for Nx (guarded for minimal images that omit it).
+    # 2. Node.js runtime (guarded for minimal images that omit it).
     if ! command -v node >/dev/null 2>&1; then
       apt-get install -y --no-install-recommends nodejs npm
     fi
 
-    # 3. Nx CLI globally — the requested `npm i -g nx`.
-    npm install -g nx freebuff
-
+    # 3. CLI globally.
+    npm install -g freebuff
+    npm i
     # 4. Report the resolved toolchain versions.
-    echo "toolchain: git $(git --version) | make $(make --version | head -1) | node $(node --version) | npm $(npm --version) | nx $(nx --version) | freebuff $(freebuff --version)"
+    echo "toolchain: git $(git --version) | make $(make --version | head -1) | node $(node --version) | npm $(npm --version) | freebuff $(freebuff --version)"
   EOT
 }
 
@@ -207,6 +207,9 @@ module "filebrowser" {
   version  = "1.1.5"
   agent_id = coder_agent.main.id
   folder   = local.workspace_folder
+  agent_name = "main"
+  subdomain  = false
+
   order    = 3
 }
 

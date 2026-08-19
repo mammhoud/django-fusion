@@ -30,6 +30,8 @@
 - Webpack output is configured for `projects/assets/bundles/ctc-research/`.
 - Django settings register the shared media and bundle paths.
 - CTC Compose binds shared media into `/app/media`; the shared proxy mounts the same tree read-only.
+- The restored archive is described by `backend/assets/fixtures/ctc-research-media.json`; `prepare_ctc_media` creates a normalized `ctc-content/` website copy and dump-compatible `original_images/` aliases without loading database data.
+- The additive `/apis/content/media/` contract feeds archive imagery to the home/About fallback gallery while preserving Wagtail gallery precedence.
 - Nginx and Traefik use the public identity `ctc-research` for `/media/`, `/static/bundles/`, and site static routes.
 - Compose config validation and the asset-pipeline verification script pass.
 

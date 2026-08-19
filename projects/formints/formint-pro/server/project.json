@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "name": "formint-pro-server",
+  "root": "projects/formints/formint-pro/server",
+  "projectType": "application",
+  "tags": ["product:formint-pro", "type:backend", "stack:django"],
+  "implicitDependencies": ["django-fusion-assets"],
+  "targets": {
+    "check": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend", "^production"],
+      "cache": true,
+      "options": { "command": "make check", "cwd": "projects/formints/formint-pro/server" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["backend", "^production"],
+      "cache": true,
+      "options": { "command": "make test", "cwd": "projects/formints/formint-pro/server" }
+    },
+    "migrate": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make migrate", "cwd": "projects/formints/formint-pro/server" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make dev", "cwd": "projects/formints/formint-pro/server" }
+    },
+    "seed": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make seed", "cwd": "projects/formints/formint-pro/server" }
+    }
+  }
+}

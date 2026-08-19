@@ -4,7 +4,8 @@
 # Backs the existing MCP agent configs (.agents/mcp/*) and Syntara/CeptorAI,
 # which already point at `ollama:11434` / OLLAMA_BASE_URL. Models are pulled on
 # demand into ./data (gitignored). Open WebUI provides the browser UI and is
-# routed by Traefik (applications/proxy/configs/traefik/dynamic/ollama.yml).
+# routed by Traefik → shared-proxy Nginx at tools.structa.cloud/ai/ (see
+# applications/proxy/configs/traefik/dynamic/tools.yml).
 #
 # Networks:
 #   - common     → Django/MCP services resolve `ollama` by name

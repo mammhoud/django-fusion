@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" fill="none" role="img" aria-label="Enhanced Formint Client app icon">
+  <rect width="1024" height="1024" rx="224" fill="#1A1917"/>
+  <rect x="34" y="34" width="956" height="956" rx="194" stroke="#FFE14D" stroke-opacity=".2" stroke-width="20"/>
+  <path d="M288 400l224 224-224 224" stroke="#FFE14D" stroke-width="88" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="680" cy="470" r="120" fill="#2F6F5B" stroke="#8BD0B6" stroke-width="22"/>
+  <path d="M680 590v222" stroke="#55A889" stroke-width="88" stroke-linecap="round"/>
+</svg>

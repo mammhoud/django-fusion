@@ -2,7 +2,94 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "name": "precis-ctc",
   "root": "projects/precis/precis-ctc",
+  "projectType": "application",
+  "tags": [
+    "product:precis-ctc",
+    "type:orchestrator",
+    "stack:django+astro"
+  ],
+  "implicitDependencies": [
+    "precis-ctc-astro",
+    "precis-ctc-backend",
+    "precis-ctc-assets"
+  ],
   "targets": {
-    "build": { "executor": "nx:run-commands", "options": { "command": "npm run build", "cwd": "projects/precis/precis-ctc" } }
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make build-assets",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make check",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make test",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "frontend-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make frontend-check",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "frontend-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make frontend-build",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "assets-full": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make assets-full",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "up": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make up",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "down": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make down",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "logs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make logs",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "status": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make status",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    },
+    "redeploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make redeploy",
+        "cwd": "projects/precis/precis-ctc"
+      }
+    }
   }
 }

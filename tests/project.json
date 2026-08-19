@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/nx/schemas/project-schema.json",
+  "name": "tests",
+  "root": "tests",
+  "projectType": "application",
+  "tags": ["type:test", "stack:pytest"],
+  "implicitDependencies": ["workspace"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "make -C tests unit", "cwd": "." }
+    },
+    "websites": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "make -C tests websites", "cwd": "." }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "make -C tests/scripts list", "cwd": "." }
+    }
+  }
+}

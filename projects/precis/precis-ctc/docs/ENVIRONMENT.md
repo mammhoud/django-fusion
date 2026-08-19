@@ -73,6 +73,10 @@ the deployment secret store or an ignored `.env` file; never commit them.
 | `MEDIA_URL` | `/media/` | no | Relative path for proxy compatibility |
 | `STATIC_URL` | `/static/` | no | Relative path for proxy compatibility |
 | `MEDIA_ROOT` | `/app/media` in Compose | yes | Shared host tree is mounted here |
+| `CTC_MEDIA_SOURCE_DIR` | `/app/media/media` | no | Restored archive source directory |
+| `CTC_MEDIA_CONTENT_DIR` | `/app/media/ctc-content` | no | Prepared website copy directory |
+| `CTC_MEDIA_DUMP_IMAGE_DIR` | `/app/media/original_images` | no | Wagtail dump-compatible image aliases |
+| `CTC_MEDIA_MANIFEST_PATH` | CTC fixture manifest | no | Source-controlled archive metadata |
 | `STATIC_ROOT` | `/app/precis-ctc/assets/staticfiles` | yes | Named collected-static volume |
 
 ### Email
@@ -98,14 +102,21 @@ recorded in this document or any repository file.
 ```text
 projects/assets/
 ├── media/
-│   └── ctc-research/          # runtime Wagtail/media files
+│   └── ctc-research/
+│       ├── media/              # restored CTC archive source
+│       ├── ctc-content/        # normalized website copy (prepared)
+│       └── original_images/    # dump-compatible Wagtail image paths
 ├── bundles/
 │   └── ctc-research/          # webpack output and bundles.json
 └── static/                    # shared static source files
 ```
 
-The CTC backend writes media to `/app/media` in Compose. The shared proxy reads
-the same host tree at `/var/www/media/ctc-research`. Collected static files are
+The CTC backend writes media to `/app/media` in Compose. Run
+`python manage.py prepare_ctc_media` to prepare the restored archive from
+`/app/media/media/` into `/app/media/ctc-content/` and create aliases in
+`/app/media/original_images/`; this command does not load the database dump.
+The shared proxy reads the same host tree at `/var/www/media/ctc-research`.
+Collected static files are
 mounted at `/var/www/sites/ctc-research/static`; Nginx exposes:
 
 - `/media/ctc-research/`

@@ -15,6 +15,19 @@ test('home renders the hero, header nav and footer', async ({ page }) => {
   expect(footerCount).toBeGreaterThanOrEqual(1);
   const navLinkCount = await page.locator('header nav a').count();
   expect(navLinkCount).toBeGreaterThan(3);
+  await expect(page.locator('[data-testid="home-slider"]')).toBeVisible();
+  await expect(page.locator('[data-testid="home-slide"]')).toHaveCount(4);
+});
+
+test('home slider advances through content and keeps controls accessible', async ({ page }) => {
+  await page.goto('/');
+  const slider = page.locator('[data-testid="home-slider"]');
+  const firstTitle = await slider.locator('[data-testid="home-slide"]').first().locator('h3').textContent();
+  await slider.getByRole('button', { name: 'Next research slide' }).click();
+  await expect.poll(() => slider.locator('.home-slider__track').evaluate((node) => getComputedStyle(node).transform)).not.toBe('none');
+  const activeDot = slider.locator('.home-slider__dot[aria-current="true"]');
+  await expect(activeDot).toHaveCount(1);
+  expect(firstTitle?.trim()).toBeTruthy();
 });
 
 test('theme toggle flips the html dark/light class', async ({ page }) => {

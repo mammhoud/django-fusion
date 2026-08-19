@@ -1,3 +1,32 @@
+---
+title: Project structure
+description: The canonical filesystem map, product boundaries, commands, and customization seams.
+navigation:
+  title: Project structure
+  icon: i-lucide-folder-tree
+object:
+  type: "reference"
+  id: "docs.project-structure"
+attributes:
+  source_path: "project-structure.md"
+  canonical_route: "/docs/en/project-structure"
+  source_of_truth: "repository-markdown"
+  owner: "workspace"
+  status: "maintained"
+tags:
+  - structa-cloud
+  - architecture
+  - project-awareness
+  - customization
+links:
+  - label: "Project awareness"
+    to: "/docs/en/guides/00-project-awareness"
+    icon: "i-lucide-compass"
+  - label: "Architecture"
+    to: "/docs/en/architecture"
+    icon: "i-lucide-landmark"
+---
+
 # 🏛️ Project Structure — Complete Reference
 
 > Full directory tree with remarks, references, customization guides, instance
@@ -59,7 +88,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   ├── design/                             #   Design system
 │   ├── shared/                             #   Shared methods
 │   ├── tests/                              #   Testing docs
-│   └── Dockerfile                          #   Standalone Docus static container
+│   └── Dockerfile                          #   Docus Nuxt SSR container
 │
 ├── projects/                               # 🔵 All product code + shared Django config
 │   ├── AGENTS.md                           #   Project-level conventions
@@ -69,17 +98,17 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   ├── manage.py                           #   Shared Django CLI entry
 │   │
 │   ├── precis/                             # 📘 Precis group — LMS, marketing, research
-│   │   ├── main/                           #     Precis LMS (WEBSITE=precis-main)
+│   │   ├── precis-main/                    #     Precis LMS (WEBSITE=precis-main)
 │   │   │   ├── backend/                    #       Django + Wagtail backend
 │   │   │   ├── assets/                     #       Templates, static, media
 │   │   │   └── frontend/                   #       Astro frontend shell
-│   │   ├── lnd-structa/                    #     Landing-Fusion (WEBSITE=precis-landing)
+│   │   ├── precis-landing/                 #     Landing-Fusion (WEBSITE=precis-landing)
 │   │   │   ├── backend/                    #       Django + Wagtail backend
 │   │   │   ├── frontend/                   #       Astro 5 + Tailwind 4 frontend
 │   │   │   └── assets/                     #       SCSS, compiled CSS
-│   │   ├── lms-ctc/                        #     CTC Research (WEBSITE=precis-ctc)
+│   │   ├── precis-ctc/                     #     CTC Research (WEBSITE=precis-ctc)
 │   │   │   ├── backend/                    #       Django + Wagtail backend
-│   │   │   └── frontend/                   #       Frontend
+│   │   │   └── frontend/                   #       Astro frontend
 │   │   ├── assets/                         #     Group-shared templates/static
 │   │   └── configs/                        #     Shared Django settings (base, Env, settings)
 │   │
@@ -155,7 +184,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 |---|---|---|---|
 | **Precis LMS** | `projects/precis/precis-main/` | Django + Wagtail + django-fusion | `projects/precis/precis-main/backend/AGENTS.md` |
 | **Landing-Fusion** | `projects/precis/precis-landing/` | Astro 5 + Django + Wagtail | `projects/precis/precis-landing/AGENTS.md` |
-| **CTC Research** | `projects/precis/precis-ctc/` | Django + Wagtail | `projects/precis/precis-ctc/AGENTS.md` |
+| **CTC Research** | `projects/precis/precis-ctc/` | Django + Wagtail + Astro | `projects/precis/precis-ctc/AGENTS.md` |
 | **Syntara** | `projects/syntara/` | Django + CeptorAI + Ollama | `projects/syntara/AGENTS.md` |
 | **Loop-CRM** | `projects/loop-crm/` | Django + django-fusion + Astro | `projects/loop-crm/backend/AGENTS.md` |
 | **Formint Community** | `projects/formints/formint-community/` | Tauri 2 + React 19 + Rust/Diesel | `projects/formints/formint-community/AGENTS.md` |
@@ -281,7 +310,7 @@ cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis
 
 ---
 
-## Remarks, Recommendations & How to Use
+## Remarks & Notes — Recommendations & How to Use
 
 > This section explains **how to work with the latest structure** and the
 > conventions that make the monorepo easier to navigate with standard tooling.
@@ -289,19 +318,26 @@ cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis
 ### 1. Where things live now
 
 - **LMS/marketing/research are one group:** `projects/precis/` holds
-  `main/` (Precis LMS), `lnd-structa/` (Landing-Fusion) and `lms-ctc/`
-  (CTC Research). Their shared Django settings live in `projects/precis/configs/`.
+  `precis-main/` (Precis LMS), `precis-landing/` (Landing-Fusion) and
+  `precis-ctc/` (CTC Research). Their shared Django settings live in
+  `projects/precis/configs/`.
   The **runtime identity is unchanged** — use `WEBSITE=precis-main`,
   `WEBSITE=precis-landing`, or `WEBSITE=precis-ctc` and let
   `projects/Makefile` resolve the filesystem path.
-- **POS editions use short names:** `community/`, `standard/`, `pro/`,
-  `cloud/`, `client/` under `projects/formints/`. The old `formintA`,
-  `formint`, `formint-cloud`, `formintC` and `formint-*` names are aliases
+- **POS editions use explicit current names:** `formint-community/`,
+  `formint-standard/`, `formint-pro/`, `formint-cloud/`, and
+  `formint-client/` under `projects/formints/`. Historical names are aliases
   only — do not add new code under them.
 - **Loop-CRM is its own modular monolith** at `projects/loop-crm/` with
   `backend/apps/{core,crm,marketing,attribution,finance,pos}`.
+
+For the complete command and computation path, use
+[`guides/00-project-awareness.md`](guides/00-project-awareness.md).
 - **Shared framework code** stays in `libs/django-fusion/` (submodule). Never
   copy framework code into a product.
+- **Docus has one authoring source:** `docs/**/*.md` is canonical;
+  `docs/docus/content/` is generated and ignored. Use frontmatter `object`,
+  `attributes`, `tags`, and `links` for new document objects.
 
 ### 2. Use the dispatcher, not hard-coded paths
 
@@ -323,7 +359,7 @@ over `cd`-ing into `projects/precis/precis-landing` directly, so the `SITE` /
 | Language | Tool | Config |
 |---|---|---|
 | Python | `uv` (workspace in root + `projects/pyproject.toml`) | `pyproject.toml`, `uv.lock` |
-| Frontend | `pnpm` | per-project `package.json` |
+| Frontend | package-local `npm` or `pnpm` | per-project `package.json` |
 | Rust/Tauri | `cargo` | `src-tauri/Cargo.toml` |
 | Lint/format | `ruff` | `pyproject.toml` |
 | Tests | `pytest` + Django `manage.py test` | per-project |

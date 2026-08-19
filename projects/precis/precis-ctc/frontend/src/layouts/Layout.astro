@@ -30,6 +30,8 @@ interface Props {
   pageData?: import('@/lib/api').PageData | null;
   /** Slug of the current page, used as the cache key in the Redux pageSlice. */
   pageSlug?: string;
+  /** Visual family for the global navigation and page header treatment. */
+  pageVariant?: 'home' | 'research' | 'learning' | 'archive' | 'legal' | 'network' | 'contact' | 'product';
 }
 
 const {
@@ -40,7 +42,19 @@ const {
   siteSettings,
   pageData = null,
   pageSlug = '',
+  pageVariant,
 } = Astro.props;
+
+const resolvedPageVariant = pageVariant || (
+  pageSlug === 'home' || !pageSlug ? 'home' :
+  pageSlug.startsWith('course') || pageSlug === 'courses' || pageSlug === 'about/education' ? 'learning' :
+  pageSlug.startsWith('blog') || pageSlug === 'documents' || pageSlug === 'events' ? 'archive' :
+  pageSlug === 'privacy' ? 'legal' :
+  pageSlug === 'team' || pageSlug.startsWith('profile') ? 'network' :
+  pageSlug === 'contact' ? 'contact' :
+  pageSlug.startsWith('product') || pageSlug === 'products' ? 'product' :
+  'research'
+);
 
 let assetManifest: Awaited<ReturnType<typeof cachedAssets>> | null = null;
 try {
@@ -85,7 +99,7 @@ void THEME_STORAGE_KEY;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" id="ctc-root">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -192,7 +206,7 @@ void THEME_STORAGE_KEY;
     </div>
 
     <div class="flex min-h-screen flex-col">
-      <Header siteName={siteName} navItems={navItems} />
+      <Header siteName={siteName} navItems={navItems} logoUrl="/static/images/favicon-enhanced.svg" pageVariant={resolvedPageVariant} />
       <main class="flex-1 pt-24 md:pt-28">
         <slot />
       </main>

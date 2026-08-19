@@ -4,10 +4,10 @@
   "private": true,
   "description": "Landing-Fusion Django-side webpack asset build — extends projects/webpack/base.config.js",
   "scripts": {
-    "build": "npx webpack --config webpack/precis-landing.config.js --mode=production",
-    "dev": "npx webpack --config webpack/precis-landing.config.js --mode=development --watch",
-    "build:prod": "npx webpack --config webpack/precis-landing.config.js --mode=production",
-    "build:dev": "npx webpack --config webpack/precis-landing.config.js --mode=development",
+    "build": "npx webpack --config webpack/landing-fusion.config.js --mode=production",
+    "dev": "npx webpack --config webpack/landing-fusion.config.js --mode=development --watch",
+    "build:prod": "npx webpack --config webpack/landing-fusion.config.js --mode=production",
+    "build:dev": "npx webpack --config webpack/landing-fusion.config.js --mode=development",
     "clean": "rm -rf backend/assets/static/bundles"
   },
   "dependencies": {

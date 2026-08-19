@@ -3,11 +3,11 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * Playwright E2E for Precis (ctc-research.com) — full feature surface.
  *
- * Targets the running LMS-Fusion compose stack by default (frontend
- * :3001, backend :5074). Override with env vars to point elsewhere:
+ * Targets the running CTC compose stack by default (frontend
+ * :3003, backend :5070). Override with env vars to point elsewhere:
  *
- *   E2E_FRONTEND_URL=http://127.0.0.1:3001 npm run test:e2e
- *   E2E_BACKEND_URL=http://127.0.0.1:5074 npm run test:e2e
+ *   E2E_FRONTEND_URL=http://127.0.0.1:3003 npm run test:e2e:playwright
+ *   E2E_BACKEND_URL=http://127.0.0.1:5070 npm run test:e2e:playwright
  *
  * The `webServer` reuses an already-running stack (`reuseExistingServer`),
  * or starts the Astro dev server on the configured port when none is
@@ -16,8 +16,8 @@ import { defineConfig, devices } from '@playwright/test';
  * installed runner + browsers); a plain `npm install` after adding the
  * devDependency replaces it.
  */
-const FRONTEND_URL = process.env.E2E_FRONTEND_URL || 'http://127.0.0.1:3001';
-const BACKEND_URL = process.env.E2E_BACKEND_URL || 'http://127.0.0.1:5074';
+const FRONTEND_URL = process.env.E2E_FRONTEND_URL || 'http://127.0.0.1:3003';
+const BACKEND_URL = process.env.E2E_BACKEND_URL || 'http://127.0.0.1:5070';
 const FRONTEND_PORT = new URL(FRONTEND_URL).port || '3001';
 
 export default defineConfig({

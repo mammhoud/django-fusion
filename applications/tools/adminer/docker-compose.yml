@@ -2,8 +2,10 @@
 # Adminer — lightweight database administration UI
 # =============================================================================
 # Replaces the commented-out service that used to live in
-# applications/databases/docker-compose.yml. Routed by Traefik at
-# admin.structa.cloud (applications/proxy/configs/traefik/dynamic/adminer.yml);
+# applications/databases/docker-compose.yml. Routed by Traefik to the
+# shared-proxy Nginx at tools.structa.cloud/adminer/ (see
+# applications/proxy/configs/traefik/dynamic/tools.yml and the `tools`
+# server block in applications/proxy/configs/nginx/default.conf.template);
 # no host port is published. Connects to `postgres:5432` on the `common` network.
 # =============================================================================
 

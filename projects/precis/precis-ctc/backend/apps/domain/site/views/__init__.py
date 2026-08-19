@@ -9,10 +9,10 @@ Canonical imports::
     from django_fusion.health.views import HealthCheckView
 """
 
-from django_fusion.routes.http.notifications import NotificationView
+from django_fusion.routes.views.notifications import NotificationView
 from .payments import PaymentsView  # noqa: F401
 from .search import SearchView  # noqa: F401
-from django_fusion.routes.tags import EnhancedTagsView as TagsView
+from django_fusion.routes.views.tags import EnhancedTagsView as TagsView
 
 __all__ = [
     "NotificationView",

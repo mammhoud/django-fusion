@@ -8,16 +8,17 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedMediaManifest } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
 // ── Fetch from backend, fall back to static content ──
 let siteSettings: SiteSettings | undefined;
 let navData: NavigationData | undefined;
 let pageData: PageData | undefined;
+let mediaManifest: Awaited<ReturnType<typeof cachedMediaManifest>> | undefined;
 try {
-  [siteSettings, navData, pageData] = await Promise.all([
-    cachedSiteSettings(), cachedNavigation(), cachedPageData('about'),
+  [siteSettings, navData, pageData, mediaManifest] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData('about'), cachedMediaManifest(),
   ]);
 } catch { /* use fallbacks */ }
 
@@ -41,7 +42,7 @@ const bioCounters = (pageCounters?.length ? pageCounters : pageStats)?.map((s: a
   suffix: String(s.suffix || ''),
 }));
 
-const galleryItems = pageGallery?.map((g: any) => ({
+const pageGalleryItems = pageGallery?.map((g: any) => ({
   type: String(g.media_type || 'image'),
   src: g.image?.image?.url || g.image?.url || '',
   alt: g.image?.alternative_text || g.caption || '',
@@ -49,6 +50,15 @@ const galleryItems = pageGallery?.map((g: any) => ({
   caption: String(g.caption || '').replace(/<[^>]+>/g, ''),
   category: g.category || '',
 }));
+const archiveGalleryItems = mediaManifest?.items.slice(0, 18).map((item) => ({
+  type: item.media_type,
+  src: item.media_type === 'image' ? item.src : '',
+  alt: item.alt,
+  embedUrl: item.media_type === 'video' ? item.src : '',
+  caption: item.caption,
+  category: item.category,
+}));
+const galleryItems = pageGalleryItems?.length ? pageGalleryItems : archiveGalleryItems;
 
 const skills = pageFeatures?.length ? pageFeatures.map((f: any) => ({
   icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
@@ -103,6 +113,7 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Meet the team', href: '/team/' }}
     status='200 OK · text/html · the center, in one response'
     gallery={galleryItems}
+    variant="research"
   />
 
   <CounterCard

@@ -1,0 +1,53 @@
+# =============================================================================
+# Tools — Traefik router config  [ACTIVE]
+# =============================================================================
+# One entry point for every self-hosted utility in applications/tools/:
+#   tools.structa.cloud/            → navigation page (shared-proxy Nginx)
+#   tools.structa.cloud/adminer/    → adminer:8080
+#   tools.structa.cloud/mailpit/    → mailpit:8025
+#   tools.structa.cloud/ai/         → open-webui:8080  (Ollama chat UI)
+#   tools.structa.cloud/grafana/    → grafana:3000
+#   tools.structa.cloud/docs/       → docus:3000
+#   tools.structa.cloud/space/      → proxy-affine:3010
+#
+# The shared-proxy Nginx (docker-compose.nginx.yml) performs the path-based
+# split to each container by name on the external `common` network, so tools
+# can be started/stopped independently of the proxy.
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
+# =============================================================================
+
+http:
+  routers:
+    tools-http:
+      rule: 'Host(`tools.structa.cloud`) || Host(`tools.localhost`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: tools-service
+      priority: 150
+
+    tools-https:
+      rule: 'Host(`tools.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: tools-service
+      priority: 150
+      tls:
+        certResolver: letsencrypt-http
+
+    tools-localhost-https:
+      rule: 'Host(`tools.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: tools-service
+      priority: 150
+
+  services:
+    tools-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-proxy:80'
+        passHostHeader: true
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 5s

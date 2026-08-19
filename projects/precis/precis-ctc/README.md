@@ -94,6 +94,9 @@ npm run dev
 | `backend/apps/pages/accounts/` | Auth adapters, registration flow |
 | `backend/apps/domain/models/` | Core domain models (users, contacts, locations) |
 | `backend/apps/handlers/` | PageHandler views, fragment rendering |
+| `backend/assets/fixtures/ctc-research-media.json` | Archive media metadata and dump-compatible aliases |
+| `backend/apps/core/management/commands/prepare_ctc_media.py` | Non-destructive archive-to-website media preparation |
+| `docs/MEDIA_ARCHIVE.md` | Media topology, preparation, content and visual review guide |
 | `backend/assets/templates/` | Site-specific Wagtail templates |
 | `compose/Dockerfile.backend` | Production backend Dockerfile |
 | `compose/Dockerfile.frontend` | Production frontend Dockerfile |

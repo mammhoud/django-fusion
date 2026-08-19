@@ -1,0 +1,104 @@
+# ============================================================
+# precis-ctc — standalone stack (backend + frontend + worker)
+# ============================================================
+
+services:
+  backend:
+    build:
+      context: .
+      args:
+        SOURCE_PATH: precis/precis-ctc
+        PROJECT_PATH: precis-ctc
+    image: precis-ctc-backend:latest
+    container_name: precis-ctc-website
+    restart: unless-stopped
+    env_file:
+      - path: ../.env
+        required: false
+      - path: ../../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      SERVER_ENV: production
+      DJANGO_SERVER_ENV: production
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: precis-ctc
+      DJANGO_SITE: precis-ctc
+      PROJECT_PATH: precis-ctc
+      # Runtime container path matches the host registry path (`precis-ctc`).
+      WEBSITE_DIR: /app/precis-ctc
+      DJANGO_WEBSITE_DIR: /app/precis-ctc
+      PORT: "5070"
+      HOST: "0.0.0.0"
+      SERVER_TYPE: uvicorn
+      WORKERS: "4"
+      LOG_LEVEL: info
+      DEBUG: "false"
+      APP_MODULE: server:asgi_application
+      DJANGO_SERVER_TYPE: asgi
+      RUN_SETUP: "true"
+      # Frontend assets are built in the dedicated Astro image; do not attempt
+      # a webpack build from the backend container during production startup.
+      BUILD_ASSETS_ON_START: "false"
+      # Production startup runs migrations and safe fixture detection against
+      # the shared PostgreSQL container. Destructive fixture replacement is
+      # opt-in through FORCE_LOAD_DUMPS=true and the load_data --replace flag.
+      LOAD_DATA_ON_START: ${LOAD_DATA_ON_START:-false}
+      FORCE_LOAD_DUMPS: ${FORCE_LOAD_DUMPS:-false}
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CTC:-db_precis_ctc}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required for CTC Research production}
+      REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/1
+      FUSION_TASK_BACKEND: dramatiq
+      SITE_DOMAIN: ctc-research.com
+      SITE_PORT: "443"
+      WAGTAILADMIN_BASE_URL: https://ctc-research.com
+      MEDIA_ROOT: /app/media
+      ALLOWED_HOSTS: localhost,127.0.0.1,ctc-research.localhost,ctc-research.com,www.ctc-research.com,arch.ctc-research.com,precis-ctc-website
+      CSRF_TRUSTED_ORIGINS: http://localhost:5070,http://ctc-research.localhost,https://ctc-research.com,https://www.ctc-research.com,https://arch.ctc-research.com
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5070/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - "5070:5070"
+    volumes:
+      # Backend code is copied into the image. Do not bind-mount ./backend in
+      # this production stack: remote Docker engines may expose only the
+      # synchronized runtime directories, masking manage.py/settings.py.
+      - ../../../logs:/app/logs:z
+      # Bind the host staticfiles dir (collectstatic output) and the
+      # monorepo-shared media tree so the shared Nginx proxy serves the same
+      # files the backend writes (it mounts projects/assets/media/ctc-research
+      # → /var/www/media/ctc-research and assets/staticfiles →
+      # /var/www/sites/ctc-research/static).
+      - ./assets/staticfiles:/app/precis-ctc/assets/staticfiles:rw
+      - ../../assets/media/ctc-research:/app/media:rw
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.precis-ctc-api-docker.rule=(Host(`ctc-research.localhost`) || Host(`ctc-research.com`) || Host(`www.ctc-research.com`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.precis-ctc-api-docker.entrypoints=web,web-secure"
+      - "traefik.http.routers.precis-ctc-api-docker.tls=true"
+      - "traefik.http.services.precis-ctc-api-docker.loadbalancer.server.port=5070"
+      - "traefik.http.services.precis-ctc-api-docker.loadbalancer.healthcheck.path=/health/"
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  traefik-net:
+    external: true
+

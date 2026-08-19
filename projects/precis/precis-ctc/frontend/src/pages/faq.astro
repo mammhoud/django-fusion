@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
+import PageHeader from '@/components/blocks/PageHeader.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
@@ -31,15 +32,16 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
 ---
 
 <Layout title={pageData?.title || 'FAQ'} description={pageData?.search_description || 'Frequently asked questions about CTC Research — medical AI, clinical evidence, and health innovation.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="faq">
-  <section class='section-hero reg-marks overflow-hidden py-16'>
-    <div class='container-fusion'>
-      <div class='mx-auto max-w-2xl text-center'>
-        <p class='tag-marker mb-5'>faq</p>
-        <h1 class='mb-4 font-display text-4xl font-bold tracking-tight md:text-5xl'>Frequently asked questions</h1>
-        <p class='text-lg text-fu-muted'>Everything you need to know about CTC Research — learning paths, research programs, and evidence services.</p>
-      </div>
-    </div>
-  </section>
+  <PageHeader
+    eyebrow="faq · ctc research"
+    title="Frequently asked questions"
+    intro="Everything you need to know about CTC Research — learning paths, research programs, and evidence services."
+    variant="research"
+    index="09"
+    status="200 OK · answers in one response"
+    primaryCta={{ label: 'Contact the center', href: '/contact/' }}
+    secondaryCta={{ label: 'Browse courses', href: '/courses/' }}
+  />
 
   <div class='py-14'>
     <FAQ items={faqItems} />
