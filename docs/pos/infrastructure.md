@@ -71,7 +71,7 @@ Both editions use **Robyn** (Rust-powered Python async framework) with **Django 
 ### Shared Module Infrastructure
 
 ```
-projects/pos/shared/        (reusable across both editions)
+projects/formints/shared/        (reusable across both editions)
 ├── signals/                Django signal definitions
 ├── models/                 Shared models (audit, approval, token)
 ├── handlers/               @receiver signal handlers
@@ -110,13 +110,13 @@ projects/pos/shared/        (reusable across both editions)
 
 ```bash
 # Solo sidecar
-cd projects/pos/pos-solo/sidecar
+cd projects/formints/pos-solo/sidecar
 pip install -r requirements.txt
 python3 server.py --port 8765
 DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v  # 155 tests
 
 # Full sidecar
-cd projects/pos/pos-full/sidecar
+cd projects/formints/pos-full/sidecar
 pip install -r requirements.txt
 python3 server.py --port 8766
 DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v  # 63 tests

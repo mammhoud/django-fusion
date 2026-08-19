@@ -42,7 +42,11 @@ for directory in [
     directory.mkdir(exist_ok=True, parents=True)
 
 # ── Media ─────────────────────────────────────────────────────────────────────
-MEDIA_ROOT = str(MEDIA_DIR)
+# Resolve through the configs technique (env var → Dynaconf YAML → fallback).
+# Per-site settings modules may override MEDIA_ROOT (e.g. ctc-research serves
+# from the monorepo-shared projects/assets/media/ctc-research tree so the
+# shared Nginx proxy can map the host → /var/www/media/<site>).
+MEDIA_ROOT = str(settings.get("MEDIA_ROOT", str(MEDIA_DIR)))
 MEDIA_URL  = settings.get("MEDIA_URL", "/media/")
 
 FILE_UPLOAD_PERMISSIONS           = settings.get("FILE_UPLOAD_PERMISSIONS", 0o644)

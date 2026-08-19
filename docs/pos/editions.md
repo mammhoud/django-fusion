@@ -40,7 +40,7 @@
 
 ## Minimal Edition
 
-**Directory:** `projects/pos/pos-minimal/`  
+**Directory:** `projects/formints/pos-minimal/`  
 **Use case:** Core POS — fast, offline-first, no external dependencies.
 
 ```bash
@@ -53,7 +53,7 @@ cd pos-minimal && pnpm install && pnpm dev
 
 ## Solo Edition
 
-**Directory:** `projects/pos/pos-solo/`  
+**Directory:** `projects/formints/pos-solo/`  
 **Use case:** POS + REST API for external integrations + Cloud CRM sync.
 
 ```bash
@@ -83,7 +83,7 @@ pnpm dev
 
 ## Full Edition
 
-**Directory:** `projects/pos/pos-full/`  
+**Directory:** `projects/formints/pos-full/`  
 **Use case:** Enterprise POS with Django ORM, WebSocket, Cloud CRM master, cross-device sync, django-bolt high-performance API.
 
 ```bash
@@ -122,7 +122,7 @@ pnpm dev
 All editions are generated from the Full edition source:
 
 ```bash
-cd projects/pos
+cd projects/formints
 make editions          # Generate minimal + solo from full
 ```
 

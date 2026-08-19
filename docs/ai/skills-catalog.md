@@ -28,7 +28,7 @@ load it by name with the `skill` tool.
 |----------|--------|
 | **Design & UI** | `design-taste-frontend`, `design-taste-frontend-v1`, `industrial-brutalist-ui`, `minimalist-ui`, `gpt-taste`, `high-end-visual-design`, `stitch-design-taste`, `redesign-existing-projects`, `structa-industrial-ui`, `image-to-code`, `imagegen-frontend-web`, `imagegen-frontend-mobile`, `brandkit`, `shadcn`, `shadcn-ui`, `tailwind-design-system`, `frontend-design`, `vercel-react-best-practices` |
 | **Content & Marketing** | `content-creator` (redirect), `content-production`, `content-strategy`, `use-case-triage` |
-| **Documentation** | `documentation`, `documentation-writer`, `structa-docs`, `deployment-documentation`, `github-actions-docs`, `planning-with-files`, `writing-plans`, `executing-plans` |
+| **Documentation** | `documentation`, `documentation-writer`, `structa-docs`, `structa-doc-authoring`, `deployment-documentation`, `github-actions-docs`, `planning-with-files`, `writing-plans`, `executing-plans` |
 | **Backend / Django** | `structa-backend`, `domain-modeling`, `python-performance-optimization`, `api-design-principles`, `explore-data` |
 | **Infra & DevOps** | `container-arch-scaling`, `docker-compose`, `dockerfile-validator`, `multi-stage-dockerfile`, `devops-deployment`, `reverse-proxy`, `ssl-tls-management`, `terraform-module-library`, `templates`, `modules`, `deployment-documentation` |
 | **AI / Agents / MCP** | `mcp-builder`, `context7`, `find-skills`, `skill-creator`, `brainstorming`, `enhance-prompt`, `full-output-enforcement` |
@@ -79,6 +79,7 @@ load it by name with the `skill` tool.
 | `documentation` | Write and maintain technical documentation; READMEs, API docs, runbooks. | "Write docs for…", "document this". |
 | `documentation-writer` | Diátaxis expert: Tutorials / How-to / Reference / Explanation. | Structured multi-type documentation. |
 | `structa-docs` | Repo-personalized conventions: real docs layout, ADR format, Remarks & Notes rule, AI-review markers, path sync. | **Any docs work in this monorepo.** |
+| `structa-doc-authoring` | Powerful doc generation: emoji headers, Remarks & Notes, AI-review markers, mermaid diagrams + ERD, preview images, Affine frontmatter, EN/AR parity. See the [authoring prompt](documentation-authoring.md). | "Write/rewrite/enhance docs", "add diagrams/ERD", "translate to Arabic", "create a package guide". |
 | `deployment-documentation` | Document deployment processes, CI/CD, infrastructure, runbooks. | Deployment guides, infra docs. |
 | `github-actions-docs` | GitHub Actions workflows: write, explain, migrate, secure, troubleshoot. | Any GitHub Actions work. |
 | `planning-with-files` | Persistent file-based planning (task_plan.md, findings.md, progress.md); survives context loss. | Multi-step planning with 5+ tool calls. |

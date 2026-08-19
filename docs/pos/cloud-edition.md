@@ -102,7 +102,7 @@
 ### Start the Server
 
 ```bash
-cd projects/pos/shared-portal/cloud
+cd projects/formints/shared-portal/cloud
 pip install -r requirements.txt
 python server.py --port 8766
 ```

@@ -7,7 +7,7 @@
 ## Tauri Configuration
 
 ```json
-// projects/pos/pos-solo/src-tauri/tauri.conf.json
+// projects/formints/pos-solo/src-tauri/tauri.conf.json
 {
   "productName": "POS",
   "identifier": "com.mammhoud.pos",
@@ -46,7 +46,7 @@ pnpm tauri build --target x86_64-pc-windows-msvc --bundles nsis
 ## Rust Backend Dependencies
 
 ```toml
-# projects/pos/pos-solo/src-tauri/Cargo.toml
+# projects/formints/pos-solo/src-tauri/Cargo.toml
 [dependencies]
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
@@ -82,7 +82,7 @@ tauri-build = { version = "2", features = [] }
 ## Sidecar Django Portal
 
 ```python
-# projects/pos/pos-solo/sidecar/settings.py
+# projects/formints/pos-solo/sidecar/settings.py
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -132,7 +132,7 @@ DATABASES = {
 ## Makefile Build Targets
 
 ```bash
-# From projects/pos/
+# From projects/formints/
 make dev              # Start dev (all editions)
 make build-minimal    # pnpm build:desktop
 make build-solo       # pnpm build:desktop + pnpm build:sidecar

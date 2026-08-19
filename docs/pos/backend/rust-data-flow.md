@@ -32,7 +32,7 @@ How data moves between Rust, SQLite, the Python sidecar, and the React frontend 
 │                                          │             │ read-only        ││
 │  ┌──────────────────────────────────┐    │    ┌────────▼───────────────┐ ││
 │  │    Python Sidecar (Sanic)        │    │    │  Sidecar SQLite access  │ ││
-│  │    projects/pos/sidecar/server.py      │    │    │  file:path?mode=ro      │ ││
+│  │    projects/formints/sidecar/server.py      │    │    │  file:path?mode=ro      │ ││
 │  │                                  │    │    └────────────────────────┘ ││
 │  │  HTTP Routes                     │    │                               ││
 │  │    GET  /api/sales               │    │    ┌─────────────────────────┐││

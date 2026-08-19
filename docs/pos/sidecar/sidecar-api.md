@@ -1,6 +1,6 @@
 # 🌐 Sidecar API Reference
 
-Full API reference for the POS Sanic sidecar server (`projects/pos/sidecar/server.py`).
+Full API reference for the POS Sanic sidecar server (`projects/formints/sidecar/server.py`).
 
 ## Tag Legend
 
@@ -295,7 +295,7 @@ Render a printable invoice as HTML.
 
 ### Customizing Invoice Designs 🟢
 
-Edit `DESIGN_CONFIGS` dict in `projects/pos/sidecar/server.py`:
+Edit `DESIGN_CONFIGS` dict in `projects/formints/sidecar/server.py`:
 
 ```python
 DESIGN_CONFIGS = {

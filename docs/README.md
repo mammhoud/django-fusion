@@ -106,7 +106,7 @@ structa.cloud/
 │   ├── precis/  loop-crm/  syntara/  pos/  precis-ctc/   # Per-product references
 │   ├── libs/                         # Shared library docs (django-fusion)
 │   ├── startup/                      # Private market strategy per product
-│   └── ai/                           # Agents, prompts, MCP
+│   ├── ai/                           # Agents, prompts, MCP
 │   └── dev/                          # Infrastructure, databases, customization
 ├── .agents/                          # AI agent skills and configuration
 │   ├── skills/                       # Reusable skill definitions (21 skills)
@@ -133,6 +133,7 @@ structa.cloud/
 - [📐 Customization](dev/customization/) — methods and design system
 - [📦 Publishing](publish/) — marketplace & distribution
 - [🤖 AI & Agents](ai/) — agent instructions, prompts, and skills
+- [✍️ Documentation authoring prompt](ai/documentation-authoring.md) — the powerful doc-generation prompt (emoji, diagrams, ERD, previews, EN/AR)
 - [🚀 Startup & Market Strategy](startup/README.md) — 🔒 private: MVP canvas, TAM/SAM/SOM, ideal clients per product
 - [📚 Docus implementation](guides/09-docus.md) — source generation, metadata, locales, build, and deployment
 
@@ -174,3 +175,54 @@ yet define it. See [Project awareness](guides/00-project-awareness.md).
 - `docs/docus/content/` is disposable generated output; never edit it or add a second copy there.
 - New pages should carry `object`, `attributes`, `tags`, and Docus-native `links` metadata.
 - Prefer one canonical page plus links to it over repeated product explanations.
+
+
+
+
+
+
+
+
+# Structa Cloud Docus application
+
+This directory contains the Nuxt/Docus application that serves the authored
+repository documentation. The canonical reader-facing implementation guide is
+[`../guides/09-docus.md`](../guides/09-docus.md); keep operational detail there
+instead of maintaining a second documentation copy in this package README.
+
+## Local development
+
+```bash
+cd docs/docus
+npm install
+npm run prepare-content
+npm run validate-content
+npm run dev
+```
+
+Open `http://localhost:3000/docs/en/`. The application also exposes the Arabic
+locale at `/docs/ar/` and uses `/docs/` as its configured base path.
+
+## Build and preview
+
+```bash
+npm run build
+npm run build:static
+npm run preview
+```
+
+`prepare-content.mjs` generates the ignored `content/en/` and `content/ar/`
+trees before development and build. Do not edit or commit `content/`, `.nuxt/`,
+`.output/`, `dist/`, or `node_modules/`.
+
+## Deployment
+
+The production image is built from `docs/Dockerfile`, runs the Docus Nuxt SSR
+server on `docus:3000`, and is routed by the shared proxy. See the canonical
+[Docus implementation guide](../guides/09-docus.md) for the proxy contract,
+metadata model, validation commands, and source-of-truth rules.
+
+## Remarks & Notes
+
+- This README describes the application package; `docs/guides/09-docus.md` is the single published Docus guide.
+- A Docus build does not validate product backend health; run the owning project checks separately.

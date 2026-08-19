@@ -113,7 +113,7 @@ The frontend shows "is typing..." for 2500ms after receiving this, then auto-cle
 
 ## Frontend Integration
 
-### TypeScript API (`projects/pos/src/api/chat.ts`)
+### TypeScript API (`projects/formints/src/api/chat.ts`)
 
 ```typescript
 import { createChatWs } from '../api';
@@ -144,7 +144,7 @@ conn.send({
 return () => cleanup();
 ```
 
-### ChatSupport Component (`projects/pos/src/components/ChatSupport.tsx`)
+### ChatSupport Component (`projects/formints/src/components/ChatSupport.tsx`)
 
 The component manages:
 - Connection via `createChatWs` 🔴
@@ -159,7 +159,7 @@ The component manages:
 
 ### 🟢 Add a New Message Type
 
-1. **Server** — add handler in `projects/pos/sidecar/server.py`:
+1. **Server** — add handler in `projects/formints/sidecar/server.py`:
 ```python
 # In the WebSocket handler
 if data.get("type") == "custom_event":

@@ -3,7 +3,7 @@
 > **Related Names:** `pos`, `POS system`, `desktop app`, `Tauri`, `React`, `Rust`, `SQLite`, `point-of-sale`, `offline-first`, `sidecar`, `Sanic`, `i18n`
 > **Tags:** #site #pos #desktop #tauri #rust #react #offline
 
-**Canonical path:** `projects/pos/`  
+**Canonical path:** `projects/formints/`  
 **Stack:** Tauri 2 + React 19 + Rust (Diesel ORM) + SQLite  
 **Platforms:** Windows, macOS, Linux, Android, iOS
 
@@ -22,7 +22,7 @@ Unlike the Django-based web sites in this monorepo, POS is a standalone desktop 
 ### Quick Start (Minimal Edition)
 
 ```bash
-cd projects/pos
+cd projects/formints
 cp .env.example .env   # Set SUPERUSER_EMAIL + SUPERUSER_PASSWORD
 pnpm install
 pnpm dev               # Vite dev server at localhost:1420
@@ -102,7 +102,7 @@ Both Solo and Full editions use **Robyn** (Rust-powered async Python server) wit
 ### Shared Package Structure
 
 ```
-projects/pos/shared/
+projects/formints/shared/
 ├── signals/               # Signal definitions (config_changed, config_synced, device_status_changed)
 ├── models/                # Shared Django models
 │   ├── audit.py           #   SignalEvent (audit trail)
@@ -195,4 +195,4 @@ The Rust backend (Full Edition) includes a broadcast-based change signal system 
 | POS changelog | [`changelog.md`](changelog.md) |
 | Development guide | [`../../guides/03-dev.md`](../../guides/03-dev.md) |
 | Customization | [`../../customization/`](../../customization/) |
-| POS README | [POS source](https://github.com/mammhoud/structa.cloud/tree/generic/projects/pos) |
+| POS README | [POS source](https://github.com/mammhoud/structa.cloud/tree/generic/projects/formints) |

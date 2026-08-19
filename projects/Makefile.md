@@ -3,95 +3,156 @@
 Path: `projects/Makefile`
 
 Run all targets from `projects/` directory: `cd projects && make <target>`
+Every command takes `WEBSITE=<site>` — see the site selection table below.
+
+> **Keep in sync:** this cheatsheet mirrors `projects/Makefile`. If you change a
+> target, update this file in the same change.
+
+## 🧭 Website Selection (`WEBSITE=`)
+
+| `WEBSITE=` value | SITE | Compose file | Notes |
+|------------------|------|--------------|-------|
+| `ctc` · `precis-ctc` · `ctc-website` · `ctc-research.com` | `precis-ctc` | `precis/precis-ctc/docker-compose.yml` | Medical research center |
+| `precis-main` | `precis-main` | `precis/precis-main/docker-compose.yml` | Unified LMS + landing (canonical) |
+| `precis-lms` · `precis-landing` | `precis-main` | `precis/precis-main/docker-compose.yml` | Legacy aliases → precis-main |
+| `structa` · `lms` · `core` · `structa.cloud` | `precis-main` | `precis/precis-main/docker-compose.yml` | Legacy aliases → precis-main |
+| `loop-crm` · `crm` · `crm.structa.cloud` · `inventory` | `loop-crm` | `loop-crm/docker-compose.yml` | Unified sales + marketing CRM |
+| `vresume` · `VResume` · `resume` | `vresume` | *(legacy — not present in checkout)* | Portfolio/VResume (legacy) |
+| `cms-fusion` · `cms-full` · `cmsfull` | `cms-fusion` | `docker-compose.yml` | Legacy Fusion CMS (not present) |
+
+> Most Django commands (`check`, `test`, `run-dev`, `migrate`, `collectstatic`)
+> **delegate to the site's own backend Makefile** — the site must have a backend
+> tree (`precis-ctc`, `precis-main`, `loop-crm`). Legacy sites fall back to the
+> generic `uv run <module>` path.
 
 ## Quick Reference
 
 ### Checks & Validation
 | Command | Description |
 |---------|-------------|
-| `make check` | Run Django system checks |
-| `make check-all` | Run checks on all sites |
-| `make full-site-check` | Full Django checks + validation |
-| `make validate-config` | Validate site configuration |
-| `make validate-compose-env` | Validate Docker Compose environment |
+| `make check` | Django system checks — delegates to the site backend (`make -C <backend> check`) |
+| `make check-all` | Backend checks for precis-main + loop-crm, then all Formint editions |
+| `make full-site-check` | Full pipeline: assets → collectstatic → migrate → load dumps → verify → website tests |
+| `make validate-config` | `docker compose config` + Django `validate_config` if present |
+| `make validate-compose-env` | Print compose service/env wiring (no secrets) |
+| `make domain-drift` | Run the domain drift check script |
 
 ### Testing
 | Command | Description |
 |---------|-------------|
-| `make test` | Run full pytest suite |
-| `make tests-unit` | Run unit tests only |
-| `make tests-integration` | Run integration tests |
-| `make tests-websites` | Run website-specific tests |
-| `make test-local` | Run tests locally |
-| `make tests-local` | Run full local test suite |
+| `make test` | Backend test suite — delegates to the site backend (`make -C <backend> test`) |
+| `make test-local` · `make tests-local` | Run `uv run pytest` locally |
+| `make test-fusion` | Run precis-main backend tests |
+| `make tests-website` | Run the workspace website suite: `uv run python -m pytest tests/websites` |
+| `make tests-unit` / `tests-integration` / `tests-websites` | Delegate to `tests/Makefile` unit / integration / websites targets |
+
+### Development & Server
+| Command | Description |
+|---------|-------------|
+| `make run-dev` | Django dev server — delegates to the site backend (`make -C <backend> dev`) |
+| `make run-local` · `make runserver-local` | Alias for `run-dev` |
+| `make migrations` / `make migrate` | Make + apply migrations — delegates to the site backend |
+| `make server` / `server-gunicorn` / `server-uvicorn` | Container start scripts (gunicorn/uvicorn) |
+| `make -C <site>/backend shell` | Django shell — via the site's backend Makefile |
 
 ### Docker Build
 | Command | Description |
 |---------|-------------|
-| `make docker-build` | Build all Docker images |
-| `make docker-build-ctc` | Build CTC Research image |
-| `make docker-build-lms` | Build LMS Demo image |
-| `make docker-build-vresume` | Build VResume image |
-| `make docker-build-server` | Build server image |
-| `make docker-build-shared-proxy` | Build shared media image |
+| `make docker-build` | Build the selected site's service (`DOCKER_SERVICE`) |
+| `make docker-build-ctc` | Build precis-ctc image |
+| `make docker-build-lms` | ⚠️ Legacy alias — builds **precis-main** (lms merged) |
+| `make docker-build-vresume` | ⚠️ Legacy — vresume not present in checkout |
+| `make docker-build-server` | Alias for `docker-build` |
+| `make docker-build-shared-proxy` | Build the shared-proxy Nginx media image |
+| `make docker-build-all` | CTC + LMS + VResume + shared-proxy (legacy set) |
 
 ### Docker Operations
 | Command | Description |
 |---------|-------------|
-| `make docker-up` | Start all containers |
-| `make docker-down` | Stop all containers |
-| `make docker-status` | Show container status |
-| `make docker-health-check` | Check container health |
-| `make docker-logs` | Tail all logs |
-| `make docker-logs-service SERVICE=<name>` | Tail specific service logs |
-| `make docker-logs-all` | Show all container logs |
-| `make docker-restart-all` | Restart all containers |
-| `make docker-start-all` | Start all containers |
-| `make docker-stop-all` | Stop all containers |
+| `make docker-up` | Build + start the selected site service (logs to `logs/deploy/`) |
+| `make up` | Alias for `docker-up` |
+| `make docker-down` | Stop the selected site's compose project |
+| `make docker-logs` | Follow logs for the selected site service |
+| `make docker-status` | Compose ps + `docker stats` |
+| `make docker-health-check` | Health-check the selected site's container on `DOCKER_HEALTH_PORT` |
+| `make probe-health` | Health-check precis-main + loop-crm containers |
+| `make docker-logs-all` / `docker-logs-service` | All logs / a specific service |
+| `make docker-restart-all` / `docker-start-all` / `docker-stop-all` | Restart / start / stop all services |
 
 ### Docker Cleanup
 | Command | Description |
 |---------|-------------|
-| `make docker-clean` | Clean Docker build cache |
-| `make docker-clean-all` | Deep clean (images, volumes, networks) |
-| `make docker-prune-containers` | Remove stopped containers |
-| `make docker-prune-data` | Prune unused Docker data |
+| `make docker-clean` | Down + `docker system prune -f --volumes` |
+| `make docker-clean-all` | Clean + remove all images/volumes (destructive) |
+| `make docker-prune-containers` | Down with `--remove-orphans` |
+| `make docker-prune-data` | Down with `--volumes --remove-orphans` (destructive) |
 
 ### Per-Site Operations
 | Command | Description |
 |---------|-------------|
-| `make precis-ctc-up` | Start CTC Research stack |
-| `make structa-up` | Start LMS/Structa stack |
-| `make vresume-up` | Start VResume stack |
-| `make collectstatic-site WEBSITE=<site>` | Collect static files for a site |
-| `make migrate-site WEBSITE=<site>` | Run migrations for a site |
-| `make load-dumps-site WEBSITE=<site>` | Load database dumps for a site |
+| `make precis-ctc-up` | Start CTC Research stack (`docker-up WEBSITE=precis-ctc`) |
+| `make structa-up` | Start **precis-main** stack (legacy `structa` alias) |
+| `make vresume-up` | ⚠️ Legacy — vresume not present in checkout |
+| `make loop-crm-up` | Create networks + start loop-crm stack |
+| `make loop-crm-migrate` | Run loop-crm migrations in the container |
+| `make collectstatic-site WEBSITE=<site>` | Collect static via the backend Makefile |
+| `make migrate-site WEBSITE=<site>` | Migrate via the backend Makefile |
+| `make build-assets-site WEBSITE=<site>` | Build assets (delegates to `build-assets`) |
+| `make load-dumps-site WEBSITE=<site>` | `tests/scripts/load_dumped_data.py --site <site>` |
+| `make populate-data-site WEBSITE=<site>` | `tests/scripts/populate_site_data.py --site <site> --include-shared` |
+| `make populate-data-all` | Populate precis-main + loop-crm |
+| `make verify-runtime-site WEBSITE=<site>` | `tests/scripts/staging/verify_runtime.py --site <site>` |
 
 ### Deployment
 | Command | Description |
 |---------|-------------|
-| `make docker-deploy` | Deploy all services |
-| `make docker-deploy-full` | Full deploy with rebuild |
-| `make docker-deploy-websites` | Deploy website services only |
-| `make docker-deploy-traefik` | Deploy Traefik proxy |
-| `make docker-deploy-warehouse` | Deploy warehouse services |
-| `make docker-up-prod` | Start production stack |
-| `make docker-up-custom` | Start custom stack |
+| `make docker-redeploy` · `make deploy` · `make redeploy` | Build + restart the selected site (precis-ctc delegates to its project Makefile) |
+| `make redeploy-with-stack` | Full-stack redeploy (front + back + worker + scheduler) for precis-ctc |
+| `make docker-redeploy-with-worker` | Redeploy web + worker if a worker service exists in the compose file |
+| `make docker-deploy-full` | Clean + warehouse + traefik + websites |
+| `make docker-deploy-websites` | precis-main + loop-crm stacks |
+| `make docker-deploy-traefik` / `docker-deploy-warehouse` | Proxy / postgres+redis |
+| `make docker-up-prod` / `docker-up-custom` | Up with compose overrides |
+| `make run-all` | Warehouse → traefik → websites |
 
 ### Assets & Build
 | Command | Description |
 |---------|-------------|
-| `make assets` | Build all frontend assets |
-| `make build-assets` | Build site assets |
-| `make build-assets-all` | Build assets for all sites |
-| `make build-assets-site WEBSITE=<site>` | Build assets for specific site |
+| `make assets` | Delegate to a site's assets Makefile (precis-ctc only; others exit with a message) |
+| `make build-assets` | Per-site dispatch: precis-ctc / precis-main / loop-crm asset pipelines |
+| `make build-assets-all` | Build assets for precis-ctc + precis-main + loop-crm |
+| `make build-assets-site WEBSITE=<site>` | Build assets for a specific site |
+
+### Delegation Shortcuts (project dirs)
+| Command | Description |
+|---------|-------------|
+| `make website-ctc` | `make -C precis/precis-ctc <target>` |
+| `make website-precis` · `website-precis-main` · `website-precis-lms` | `make -C precis/precis-main <target>` |
+| `make website-structa` | `make -C precis/precis-main <target>` (legacy alias) |
+| `make website-vresume` | Guarded — skipped when `portfolio/` is absent |
+| `make website-formints` · `website-pos` | `make -C formints <target>` |
+| `make projects` | Run a target in precis-main, loop-crm, formints |
+| `make scripts` · `make script` | Delegate to `tests/scripts/Makefile` (+ `assets/Makefile` if present) |
+| `make tests` | Delegate to `tests/Makefile` |
 
 ### Utilities
 | Command | Description |
 |---------|-------------|
-| `make help` | Show help message |
-| `make clean` | Clean build artifacts |
-| `make clean-logs` | Clean log files |
-| `make clean-site-logs` | Clean site-specific logs |
-| `make format` | Format code (Black, etc.) |
-| `make docs` | Generate documentation |
+| `make help` | Show top-level targets + website selection |
+| `make show-targets` | List every target in the Makefile |
+| `make show-vars` / `make show-config` | Print resolved variables (SITE, MANAGE, COMPOSE_FILE, …) |
+| `make clean` | Remove Python cache + build artifacts (safe, source untouched) |
+| `make clean-logs` / `make clean-site-logs` | Clean generated logs (keeps `.gitkeep`) |
+| `make lint` / `format` / `typecheck` | Pylint / Black / mypy over active products |
+| `make lint-all` | lint + typecheck |
+| `make docs` | List `docs/` contents |
+| `make docker-traefik-generate-certs` / `backup-certs` / `restore-certs` | Traefik SSL certificate operations |
+
+## Remarks & Notes
+
+- **Default `WEBSITE` is `ctc`** — `make docker-up` alone targets precis-ctc.
+- `structa`/`lms`/`core` and `precis-lms`/`precis-landing` are **legacy aliases that resolve to precis-main** (the merged product). Don't reference `projects/lms/` — it no longer exists.
+- `vresume`/`cms-fusion` sites are legacy and **not present in this checkout** — their compose targets report or skip; `website-vresume` prints a notice.
+- Check/test/migrate/run-dev **delegate to the site's backend Makefile** — for a quick look at what will run, use `make -n check WEBSITE=precis-main`.
+- The root `Makefile` forwards unknown targets here (`make check`, `make community-test`, …), and `make structa` / `make precis-main` etc. delegate with a preset `WEBSITE`.
+- Sync with `projects/Makefile` when adding/renaming targets; keep canonical paths + aliases documented here.

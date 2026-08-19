@@ -343,6 +343,14 @@ help:
 	@echo "  make venv-clean        - Delete .venv (recreate with make venv-setup)"
 	@echo "  make venv-info         - Show venv status, Python version, paths"
 	@echo ""
+	@echo "Nx workspace aggregates:"
+	@echo "  make check-all        - Run 'check' across all nx projects (nx run-many)"
+	@echo "  make test-all         - Run 'test' across all nx projects (nx run-many)"
+	@echo "  make nx-check-all     - Alias for check-all (nx run-many -t check --all)"
+	@echo "  make nx-test-all      - Alias for test-all (nx run-many -t test --all)"
+	@echo "  make nx-build-all     - Build all nx projects (nx run-many -t build --all)"
+	@echo "  make nx-run T=<target> - Run any target across all nx projects"
+	@echo ""
 	@echo "Self-hosted tools (applications/tools/):"
 	@echo "  make deploy-tools      - Deploy all self-hosted tools (monitoring, ollama, adminer, mailpit)"
 	@echo "  make deploy-utilities  - Deploy monitoring stack (Prometheus + Grafana, needs applications/tools/monitoring/)"
@@ -1292,6 +1300,34 @@ venv-info:           ## Show venv status and paths
 		echo "   Venv exists:    ❌ (run 'make venv-setup')"; \
 	fi
 	@echo ""
+
+# -----------------------------------------------------------------
+# Nx workspace aggregates — run a target across every nx project via
+# `nx run-many`. `make check-all` / `make test-all` at the root drive
+# the nx graph (dependency-aware + cached) instead of the make-only
+# per-project loop. The make-only variants remain available through
+# `make -C projects check-all` and `make -C formints test-all`.
+# -----------------------------------------------------------------
+.PHONY: nx-check-all nx-test-all nx-build-all nx-run
+.PHONY: check-all test-all
+
+NX := npx nx
+
+check-all: nx-check-all   ## Run `check` across all nx projects (nx run-many)
+test-all: nx-test-all     ## Run `test` across all nx projects (nx run-many)
+
+nx-check-all:
+	@$(NX) run-many -t check --all
+
+nx-test-all:
+	@$(NX) run-many -t test --all
+
+nx-build-all:
+	@$(NX) run-many -t build --all
+
+nx-run:  ## Run any target across all nx projects: make nx-run T=<target>
+	@test -n "$(T)" || (echo "Usage: make nx-run T=<target> (e.g. T=build)"; exit 1)
+	@$(NX) run-many -t "$(T)" --all
 
 # -----------------------------------------------------------------
 # Generic forwarder – any unknown target routes to projects/Makefile

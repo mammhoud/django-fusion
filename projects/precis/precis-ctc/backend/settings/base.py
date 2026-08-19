@@ -26,7 +26,15 @@ if "testserver" not in ALLOWED_HOSTS:
 
 # TLS terminates at Traefik in production. Tell Django which forwarded scheme
 # is authoritative, enforce HTTPS for normal requests, and keep the internal
-# container health probes reachable over plain HTTP.
+# container health probes reachable over plain HTTP. Names are defined
+# unconditionally (so ``__all__`` exports stay stable); the production values
+# only apply when DEBUG is off.
+SECURE_PROXY_SSL_HEADER = None
+SECURE_SSL_REDIRECT = False
+SECURE_REDIRECT_EXEMPT = ()
+SECURE_HSTS_SECONDS = 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+SECURE_HSTS_PRELOAD = False
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_SSL_REDIRECT = True

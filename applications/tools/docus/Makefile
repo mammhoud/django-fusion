@@ -3,7 +3,15 @@ SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
 ENV_FILE     ?= ../../.env
 
-.PHONY: up down restart logs status ps
+.PHONY: help up down restart logs status ps
+
+help: ## Show this help menu
+	@echo 'Docus commands: make up | down | restart | logs | status'
+	@echo '  up        - Build + start Docus docs (tools.structa.cloud/docs/)'
+	@echo '  down      - Stop Docus'
+	@echo '  restart   - Restart Docus'
+	@echo '  logs      - Tail Docus logs'
+	@echo '  status    - Show Docus status (alias: ps)'
 
 up:
 	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up -d --build

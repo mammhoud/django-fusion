@@ -110,7 +110,7 @@ open_conn(db_path: &PathBuf) -> Result<SqliteConnection, String>
 ## Tests
 
 ```bash
-cd projects/pos/src-tauri
+cd projects/formints/src-tauri
 cargo test                          # Run all Rust tests
 cargo test auth                     # Run only auth tests
 cargo test -- --test-threads=1      # Serial (env var tests)

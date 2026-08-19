@@ -3,7 +3,7 @@
 > **Related Names:** `POS`, `Tauri`, `Diesel`, `SQLite`, `CRUD`, `Rust backend`, `operations`, `database`, `migrations`
 > **Tags:** #rust #operations #pos #database #reference
 
-Complete list of all 25 Rust operation modules in `projects/pos/src-tauri/src/operations/`.
+Complete list of all 25 Rust operation modules in `projects/formints/src-tauri/src/operations/`.
 
 > 💡 **Tip:** Every operation follows the same pattern: `pub fn operation_name(db_path: &PathBuf, ...) -> Result<T, String>`. The `db_path` is passed from `lib.rs` which resolves it from `DATABASE_URL` env var or platform app data dir.
 

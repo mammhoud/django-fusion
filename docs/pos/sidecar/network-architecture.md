@@ -238,7 +238,7 @@ Processing: Store in JSONL → optional forward to Django → trigger sync
 |----------|------|
 | This document | [`docs/pos/network-architecture.md`](network-architecture.md) |
 | POS site docs | [`docs/sites/pos.md`](../editions.md) |
-| Cloud CRM docs | [`projects/pos/shared-portal/cloud/README.md`](https://github.com/mammhoud/structa.cloud/tree/generic/projects/pos/shared-portal/cloud) |
-| Solo sidecar docs | [`projects/pos/pos-solo/sidecar/README.md`](https://github.com/mammhoud/structa.cloud/tree/generic/projects/pos/pos-solo/sidecar) |
-| Minimal node agent | [`projects/pos/pos-minimal/sidecar/node_agent.py`](https://github.com/mammhoud/structa.cloud/blob/generic/projects/pos/pos-minimal/sidecar/node_agent.py) |
-| Root Makefile | [`projects/pos/Makefile`](../../projects/pos/Makefile) |
+| Cloud CRM docs | [`projects/formints/shared-portal/cloud/README.md`](https://github.com/mammhoud/structa.cloud/tree/generic/projects/formints/shared-portal/cloud) |
+| Solo sidecar docs | [`projects/formints/pos-solo/sidecar/README.md`](https://github.com/mammhoud/structa.cloud/tree/generic/projects/formints/pos-solo/sidecar) |
+| Minimal node agent | [`projects/formints/pos-minimal/sidecar/node_agent.py`](https://github.com/mammhoud/structa.cloud/blob/generic/projects/formints/pos-minimal/sidecar/node_agent.py) |
+| Root Makefile | [`projects/formints/Makefile`](../../projects/formints/Makefile) |

@@ -36,15 +36,15 @@ cd projects && uv sync --group dev && uv run pytest ../tests/unit/ -v
 
 ---
 
-## Direction 2: Merged Sidecar (`projects/pos/formint-pos/sidecar/tests/`)
+## Direction 2: Merged Sidecar (`projects/formints/formint-pos/sidecar/tests/`)
 
 > ⚠️ **Historical report**: pos-full and pos-solo were merged into `formint-pos/`.
 > Both `tests/py/full/run.sh` and `tests/py/solo/run.sh` wrappers now cd to the
-> merged sidecar at `projects/pos/formint-pos/sidecar/tests/`.
+> merged sidecar at `projects/formints/formint-pos/sidecar/tests/`.
 
 **Command:**
 ```bash
-cd projects/pos/formint-pos/sidecar
+cd projects/formints/formint-pos/sidecar
 DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -k 'not rust_db' --tb=short --no-header
 ```
 
@@ -266,7 +266,7 @@ Both sidecars serve **REST JSON + WebSocket exclusively**. No server-side HTML r
 
 | Document | Path |
 |----------|------|
-| Merged sidecar architecture | `projects/pos/formint-pos/sidecar/ARCHITECTURE.md` |
+| Merged sidecar architecture | `projects/formints/formint-pos/sidecar/ARCHITECTURE.md` |
 | Sidecar overview | [`sidecar/README.md`](sidecar/README.md) |
 | Django ORM guide | [`sidecar/django-orm.md`](sidecar/django-orm.md) |
 | Edition comparison | [`editions.md`](editions.md) |

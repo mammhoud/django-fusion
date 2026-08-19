@@ -1,10 +1,10 @@
 # POS — Changelog
 
-> **Canonical changelog:** [`projects/pos/CHANGELOG.md`](https://github.com/mammhoud/structa.cloud/blob/generic/projects/pos/CHANGELOG.md)
+> **Canonical changelog:** [`projects/formints/CHANGELOG.md`](https://github.com/mammhoud/structa.cloud/blob/generic/projects/formints/CHANGELOG.md)
 >
 > This is a mirror for docs site navigation. The authoritative changelog lives with the POS project.
 
-See the [POS project CHANGELOG](https://github.com/mammhoud/structa.cloud/blob/generic/projects/pos/CHANGELOG.md) for the full version history.
+See the [POS project CHANGELOG](https://github.com/mammhoud/structa.cloud/blob/generic/projects/formints/CHANGELOG.md) for the full version history.
 
 ## Quick Summary
 
@@ -18,6 +18,6 @@ See the [POS project CHANGELOG](https://github.com/mammhoud/structa.cloud/blob/g
 | Resource | Path |
 |----------|------|
 | POS Site Docs | [`docs/sites/pos.md`](editions.md) |
-| POS README | [`projects/pos/README.md`](../../projects/pos/README.md) |
-| POS PUBLISH.md | [`projects/pos/PUBLISH.md`](https://github.com/mammhoud/structa.cloud/blob/generic/projects/pos/PUBLISH.md) |
+| POS README | [`projects/formints/README.md`](../../projects/formints/README.md) |
+| POS PUBLISH.md | [`projects/formints/PUBLISH.md`](https://github.com/mammhoud/structa.cloud/blob/generic/projects/formints/PUBLISH.md) |
 | Features Index | [`docs/features/`](../features/) |

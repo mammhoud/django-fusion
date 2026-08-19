@@ -313,7 +313,7 @@ rules) and `theme.*.js` has `drop_console` applied.
 
 ### Phase 0 — shared groundwork (do first, once)
 
-1. **Document the contract** — this file becomes `docs/design/theme-contract.md` with both shapes, naming rules (`--{product}-{role}-{state}`), and the rule "components reference tokens, never hex".
+1. **Document the contract** — this file becomes `docs/dev/customization/design-system.md` with both shapes, naming rules (`--{product}-{role}-{state}`), and the rule "components reference tokens, never hex".
 2. **De-duplicate precis** — decide the canonical `fusion-theme.scss` location; remove the copy and the committed `fusion-theme-compiled.css` (gitignore the build output).
 3. **Shared tokens parity check** — precis-landing `theme/_light.scss` ↔ storefront `globals.css` `:root` are already mirrors; keep a note that the Astro `:root` and the Django SCSS theme must stay in sync (same values, two dialects).
 4. **Ship the `workspace.js` template** — copy Section 4.1 into `projects/webpack/workspace.template.js` (a documented scaffold, not a required module) so every phase can drop it into the project, fill the entries, and extend `base.config.js`.
@@ -459,7 +459,7 @@ plus a `grep '^// Variation:'` pass per project as the variation check.
 - [ ] `make check`-equivalent passes per project; rendered pages are pixel-
       identical in the default theme before/after (compare computed styles).
 - [ ] precis duplicated SCSS + committed compiled CSS removed.
-- [ ] Contract documented in `docs/design/theme-contract.md` and referenced by
+- [ ] Contract documented in `docs/dev/customization/design-system.md` and referenced by
       each project's AGENTS.md.
 - [ ] `.astro` files are never bundled by webpack — the 4.4 interop rule is
       documented in each Astro project's AGENTS.md (Astro compiles its own pages).

@@ -10,12 +10,12 @@ Complete database layer for POS: connection management, table schema, Rust model
 ## Architecture
 
 ```
-projects/pos/src-tauri/src/db/
+projects/formints/src-tauri/src/db/
 ├── mod.rs          # 🔴 Connection, migrations, path resolution
 ├── schema.rs       # 🔴 Diesel table! definitions (auto-generated)
 └── models.rs       # 🔴 Rust structs (Queryable, Insertable, AsChangeset)
 
-projects/pos/src-tauri/migrations/
+projects/formints/src-tauri/migrations/
 └── 2026-01-01-000000_create_initial/
     ├── up.sql      # 🔴 CREATE TABLE statements
     └── down.sql    # 🔴 DROP TABLE statements
@@ -35,7 +35,7 @@ DATABASE_URL env var set?
   └── No  → Platform app data directory + "restaurant.db"
 ```
 
-> 💡 **Tip:** For development, set `DATABASE_URL=restaurant.db` in `projects/pos/.env` to use the project root.
+> 💡 **Tip:** For development, set `DATABASE_URL=restaurant.db` in `projects/formints/.env` to use the project root.
 
 ### Key Functions (🔴 Not Customizable)
 

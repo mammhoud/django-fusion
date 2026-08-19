@@ -3,7 +3,15 @@ SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
 ENV_FILE     ?= ../../.env
 
-.PHONY: up down restart logs status ps
+.PHONY: help up down restart logs status ps
+
+help: ## Show this help menu
+	@echo 'Mailpit commands: make up | down | restart | logs | status'
+	@echo '  up        - Start Mailpit (tools.structa.cloud/mailpit/, SMTP :1025)'
+	@echo '  down      - Stop Mailpit'
+	@echo '  restart   - Restart Mailpit'
+	@echo '  logs      - Tail Mailpit logs'
+	@echo '  status    - Show Mailpit status (alias: ps)'
 
 up:
 	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up -d

@@ -3,7 +3,15 @@ SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
 ENV_FILE     ?= ../../.env
 
-.PHONY: up down restart logs status ps
+.PHONY: help up down restart logs status ps
+
+help: ## Show this help menu
+	@echo 'AFFiNE commands: make up | down | restart | logs | status'
+	@echo '  up        - Start AFFiNE workspace (tools.structa.cloud/space/)'
+	@echo '  down      - Stop AFFiNE'
+	@echo '  restart   - Restart AFFiNE'
+	@echo '  logs      - Tail AFFiNE logs'
+	@echo '  status    - Show AFFiNE status (alias: ps)'
 
 up:
 	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up -d

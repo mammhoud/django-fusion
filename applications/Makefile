@@ -1,7 +1,15 @@
 SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
-.PHONY: up-coder down-coder logs-coder status-coder deploy-coder env-coder
+.PHONY: help up-coder down-coder logs-coder status-coder deploy-coder env-coder
 
+help: ## Show this help menu
+	@echo 'Applications (Coder platform) commands:'
+	@echo '  make up-coder       - Start the Coder container'
+	@echo '  make down-coder     - Stop and remove the Coder container'
+	@echo '  make logs-coder     - Follow Coder logs'
+	@echo '  make status-coder   - Show Coder container status'
+	@echo '  make deploy-coder   - Deploy Coder (used by root make deploy-coder)'
+	@echo '  make env-coder      - Print the Coder container env vars'
 
 up-coder:
 	@echo "🟢 Starting Coder..."

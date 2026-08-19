@@ -36,7 +36,7 @@ Tauri Desktop App
 ## Project Structure
 
 ```
-projects/pos/sidecar/
+projects/formints/sidecar/
 ├── server.py                   # 🔴 Sanic app — all routes + WS handlers
 ├── requirements.txt            # Python dependencies
 ├── build.py                    # PyInstaller build script
@@ -135,12 +135,12 @@ python3 robyn_server.py --db ../restaurant.db --port 8765
 
 ```bash
 # Run sidecar manually
-cd projects/pos/sidecar
+cd projects/formints/sidecar
 pip install -r requirements.txt
 python server.py --db ../restaurant.db --port 8765
 
 # Build for bundling
-cd projects/pos
+cd projects/formints
 make build-sidecar
 ```
 

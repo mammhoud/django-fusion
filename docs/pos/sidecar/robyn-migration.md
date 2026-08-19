@@ -25,7 +25,7 @@
 Both server.py files are now Robyn-based with Django ORM:
 
 ```
-projects/pos/
+projects/formints/
 ├── pos-solo/sidecar/server.py    # Robyn — 60+ endpoints, port 8765
 ├── pos-full/sidecar/server.py    # Robyn — 70+ endpoints, port 8766
 └── shared/                       # Shared module (package structure)
@@ -91,4 +91,4 @@ Old files preserved as backward-compatible re-export shims.
 | Sidecar overview | [sidecar-readme.md](sidecar-readme.md) |
 | POS editions | [../editions.md](../editions.md) |
 | Cloud sync plan | [../cloud/sync-plan.md](../cloud/sync-plan.md) |
-| Sidecar v2 Reference | [SIDECAR_V2.md](../../../projects/pos/docs/SIDECAR_V2.md) |
+| Sidecar v2 Reference | [SIDECAR_V2.md](../../../projects/formints/docs/SIDECAR_V2.md) |

@@ -26,7 +26,7 @@
 │  └─────────────────────────────────────────────────────┘    │
 │                                                              │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │  Shared Module (projects/pos/shared/)                 │    │
+│  │  Shared Module (projects/formints/shared/)                 │    │
 │  │  • signals/       — Django signal definitions        │    │
 │  │  • models/        — SignalEvent, SyncApproval, Token │    │
 │  │  • handlers/      — Signal receivers (log, webhook)  │    │

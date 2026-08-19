@@ -3,7 +3,16 @@ SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
 ENV_FILE     ?= ../../.env
 
-.PHONY: up down restart logs status ps pull pull-model
+.PHONY: help up down restart logs status ps pull pull-model
+
+help: ## Show this help menu
+	@echo 'Ollama commands: make up | down | restart | logs | status | pull'
+	@echo '  up        - Start Ollama + Open WebUI (tools.structa.cloud/ai/)'
+	@echo '  down      - Stop Ollama'
+	@echo '  restart   - Restart Ollama'
+	@echo '  logs      - Tail Ollama logs'
+	@echo '  status    - Show Ollama status (alias: ps)'
+	@echo '  pull      - Pull a model: make pull MODEL=llama3.2:3b'
 
 # ollama-net is external; create it if missing so a standalone `make up` works.
 up:

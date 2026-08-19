@@ -36,7 +36,13 @@ projects/precis/precis-ctc/
 │   │   ├── domain/            # Domain models (contacts, locations, users, newsletter)
 │   │   └── handlers/          # django-fusion PageHandler views
 │   ├── assets/                # Static, media, templates, fixtures
-│   ├── settings.py            # Site configuration (Dynaconf)
+│   ├── settings/              # Site configuration package (configs technique)
+│   │   ├── __init__.py        #   bootstrap + module layering
+│   │   ├── base.py            #   ALLOWED_HOSTS / TLS defaults
+│   │   ├── auth.py            #   allauth headless
+│   │   ├── site.py            #   identity, branding, languages
+│   │   ├── api.py             #   CORS + FUSION_BOLT
+│   │   └── assets.py          #   media/static/templates/bundles
 │   └── manage.py
 ├── frontend/                  # Astro 5 (hybrid SSG + SSR)
 │   ├── src/

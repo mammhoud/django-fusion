@@ -9,7 +9,7 @@ How the POS database seeder works and how to customize demo data presets.
 
 ## Overview
 
-The seed binary (`projects/pos/src-tauri/src/bin/seed.rs`) populates the SQLite database with demo data. It supports 4 presets, each producing a different restaurant brand.
+The seed binary (`projects/formints/src-tauri/src/bin/seed.rs`) populates the SQLite database with demo data. It supports 4 presets, each producing a different restaurant brand.
 
 ### Presets
 
@@ -116,7 +116,7 @@ This ensures the top bar shows the correct brand regardless of migration order.
 ### Step 1: Create Migration
 
 ```bash
-cd projects/pos/src-tauri
+cd projects/formints/src-tauri
 diesel migration generate my_preset_seed
 ```
 
