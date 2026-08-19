@@ -1,0 +1,28 @@
+# Repository Plans
+
+> **Owning project:** workspace · **Part of:** [`plans/`](../README.md)
+
+Cross-project repository-level implementation and migration plans.
+
+## Files
+
+| File | References |
+|------|------------|
+| [active-monorepo-consolidation-2026-08-14.md](active-monorepo-consolidation-2026-08-14.md) | Monorepo consolidation |
+| [active-project-closeout-2026-08-11.md](active-project-closeout-2026-08-11.md) | Project closeout |
+| [ceptor-ai-cleanup.md](ceptor-ai-cleanup.md) | Ceptor-AI cleanup |
+| [ctc-research-ceptor-ai-migration.md](ctc-research-ceptor-ai-migration.md) | CTC Research + Ceptor-AI migration |
+| [ctc-research-publish-2026-08-18.md](ctc-research-publish-2026-08-18.md) | CTC Research publish pass |
+| [enhancement-plans.md](enhancement-plans.md) | Enhancement plans |
+| [fix-deploy-webpack-cleanup.md](fix-deploy-webpack-cleanup.md) | Deploy + webpack cleanup |
+| [header-footer-alignment-and-e2e-plan.md](header-footer-alignment-and-e2e-plan.md) | Header/footer alignment + E2E |
+| [locale-fixture-audit-2026-07-31.md](locale-fixture-audit-2026-07-31.md) | Locale fixture audit |
+| [migration-cleanup-master.md](migration-cleanup-master.md) | Migration cleanup master |
+| [precis-ctc-workflows.md](precis-ctc-workflows.md) | CTC cross-module workflows |
+| [precis-syntara-merge.md](precis-syntara-merge.md) | Precis + Syntara merge |
+| [worker-consolidation.md](worker-consolidation.md) | Worker consolidation |
+
+## Remarks & Notes
+
+- This is the canonical plan registry for repo-wide work; product-specific
+  plans live in their own subdirectories.

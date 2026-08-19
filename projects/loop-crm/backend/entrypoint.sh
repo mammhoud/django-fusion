@@ -3,7 +3,7 @@
 # migrations, collect static, then hand off to gunicorn.
 #
 # The `postgres` container belongs to another Compose project
-# (applications/databases), so we cannot `depends_on` it from here. This loop
+# (application/databases), so we cannot `depends_on` it from here. This loop
 # is the cold-boot ordering guarantee: the container retries the connection
 # until the shared database accepts it (bounded by DB_READY_ATTEMPTS), then
 # migrates before serving.

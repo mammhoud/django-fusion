@@ -5,20 +5,19 @@
 services:
   frontend:
     build:
-      context: .
+      # The frontend Dockerfile expects the project root as build context
+      # (it copies frontend/ and assets/). The fusion-js source arrives as an
+      # additional context (narrowed to the fusion-js source only) because the
+      # project context cannot COPY above itself.
+      context: ..
+      additional_contexts:
+        fusionjs: ../../../../libs/django-fusion/js/fusion-js/src
+      dockerfile: frontend/Dockerfile
       # The Astro static build calls the live backend API (PUBLIC_BUILD_API_URL)
       # during `npm run build` (getStaticPaths for /courses/[slug] etc.). All
       # build-time fetches are fail-soft (try/catch + seeded fallback slugs), so
       # `docker compose up -d --build` works in one phase even when the backend
       # is not yet healthy — the frontend then renders with fallback content.
-      # The Astro build resolves @fusion/* imports against
-      # /libs/django-fusion/js/fusion-js/src (see frontend/astro.config.mjs), so
-      # that source dir must be available inside the builder stage. The frontend
-      # build context (projects/precis/precis-ctc) cannot COPY above itself, so it
-      # arrives as an additional context (narrowed to the fusion-js source only).
-      additional_contexts:
-        fusionjs: ../../../../libs/django-fusion/js/fusion-js/src
-      dockerfile: compose/Dockerfile.frontend
       args:
         PUBLIC_FUSION_API_URL: ${PUBLIC_FUSION_API_URL:-}
         PUBLIC_BUILD_API_URL: ${PUBLIC_BUILD_API_URL:-https://ctc-research.com}

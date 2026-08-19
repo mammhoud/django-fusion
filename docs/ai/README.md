@@ -11,8 +11,8 @@ The Structa Cloud monorepo uses AI extensively through three mechanisms:
 | Mechanism | Location | Purpose |
 |-----------|----------|---------|
 | **AGENTS.md files** | Root + per-project dirs | AI coding assistant behavioral instructions |
-| **Prompt templates** | `applications/agents/prompts/catalog.json`, project `PROMPTS.md`, `docs/ai/` | Skills-as-prompts, agent workflows, code generation, review, translation |
-| **MCP Servers** | Kilo helper (`applications/agents`), optional ceptor-ai (`libs/ceptor-ai` when present) | Read-only repository introspection and MCP tool metadata |
+| **Prompt templates** | `application/agents/prompts/catalog.json`, project `PROMPTS.md`, `docs/ai/` | Skills-as-prompts, agent workflows, code generation, review, translation |
+| **MCP Servers** | Kilo helper (`application/agents`), optional ceptor-ai (`libs/ceptor-ai` when present) | Read-only repository introspection and MCP tool metadata |
 
 ### How They Work Together
 
@@ -52,7 +52,7 @@ Root AGENTS.md ─── Monorepo-wide conventions
   ├── projects/<site>/AGENTS.md ─── Site-specific rules
   ├── libs/<lib>/AGENTS.md ─── Library conventions
   ├── projects/assets/templates/AGENTS.md ─── Template rules
-  └── applications/<tool>/AGENTS.md ─── Infrastructure rules
+  └── application/<tool>/AGENTS.md ─── Infrastructure rules
 ```
 
 AI agents load ALL AGENTS.md files from root to leaf — later files override earlier ones.
@@ -70,7 +70,7 @@ AI agents load ALL AGENTS.md files from root to leaf — later files override ea
 | `projects/precis/precis-main/assets/templates/plugins/AGENTS.md` | Precis plugin template conventions |
 | `libs/django-fusion/AGENTS.md` | Component system, routing, canonical imports |
 | `libs/ceptor-ai/AGENTS.md` (when present) | AI assistant, MCP server, chat client |
-| `applications/agents/AGENTS.md` | Kilo MCP server, tool definitions |
+| `application/agents/AGENTS.md` | Kilo MCP server, tool definitions |
 
 ### AGENTS.md Structure Convention
 
@@ -104,7 +104,7 @@ See [prompts.md](prompts.md) for the human template library and [PROMPT_CATALOG.
 
 Two MCP servers provide tool access to AI assistants:
 
-### Kilo MCP Helper (`applications/agents/`)
+### Kilo MCP Helper (`application/agents/`)
 
 | Tool | Purpose | Parameters |
 |------|---------|------------|
@@ -168,5 +168,5 @@ See [mcp-integration.md](mcp-integration.md) for full details.
 | Syntara AI chat | [`../../projects/syntara/`](../../projects/syntara/) |
 | Ceptor-AI library | [`libs/ceptor-ai/`](../../libs/ceptor-ai/) |
 | django-fusion library | [`libs/django-fusion/`](../../libs/django-fusion/) |
-| Kilo MCP helper | [`../../applications/agents/`](../../applications/agents/) |
+| Kilo MCP helper | [`../../application/agents/`](../../application/agents/) |
 | Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |

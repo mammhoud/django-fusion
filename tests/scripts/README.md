@@ -3,13 +3,13 @@
 Automated scripts for testing, validation, and deployment.
 
 > **Note:** Domain-level test scripts and shared test runners have been moved to
-> `applications/scripts/`. See that directory for `run_domain_tests.sh`,
+> `application/scripts/`. See that directory for `run_domain_tests.sh`,
 > `test_domain_urls.py`, `run_website_tests.sh`, and `run_container_tests.sh`.
 
 ## Directory Structure
 
 ```
-applications/scripts/
+application/scripts/
 ├── run_domain_tests.sh          (Domain integration test suite)
 ├── test_domain_urls.py          (Domain URL validation)
 ├── run_website_tests.sh         (Cross-site smoke tests)
@@ -59,7 +59,7 @@ tests/scripts/
 - `health-check.sh` - Health check
 - `test_vresume_pages.sh` - Test VResume pages
 
-### Moved to `applications/scripts/`
+### Moved to `application/scripts/`
 - `run_domain_tests.sh` - Domain integration test suite
 - `test_domain_urls.py` - Domain URL validation
 - `run_website_tests.sh` - Cross-site smoke tests
@@ -75,7 +75,7 @@ make test
 ### Run Specific Script
 ```bash
 python tests/scripts/validation/test_production.py
-bash applications/scripts/run_domain_tests.sh
+bash application/scripts/run_domain_tests.sh
 ```
 
 ### Populate Test Data

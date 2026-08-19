@@ -125,7 +125,7 @@ def _django_status() -> dict[str, Any]:
 
 
 def _traefik_status() -> dict[str, Any]:
-    d = Path("/home/structa.cloud/applications/proxy/configs/traefik")
+    d = Path("/home/structa.cloud/application/proxy/configs/traefik")
     return {
         "config_dir": str(d),
         "dynamic_exists": (d / "dynamic.yml").exists(),

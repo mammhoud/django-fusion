@@ -34,8 +34,8 @@ links:
 
 This guide is the canonical operational reference for the Docus application.
 The authored pages live under `docs/**/*.md` and `docs/**/*.mdx`; the Docus
-application at `docs/docus/` generates and serves them. Do not create a second
-published copy inside `docs/docus/content/`.
+application at the root of `docs/` generates and serves them. Do not create a
+second published copy inside `docs/content/`.
 
 ## Source and generated boundaries
 
@@ -43,10 +43,10 @@ published copy inside `docs/docus/content/`.
 docs/**/*.md or *.mdx
         │ authored source
         ▼
-docs/docus/scripts/prepare-content.mjs
+docs/scripts/prepare-content.mjs
         │ adds metadata and copies Arabic sources
         ▼
-docs/docus/content/en/ and docs/docus/content/ar/
+docs/content/en/ and docs/content/ar/
         │ ignored generated content
         ▼
 Nuxt/Docus SSR server
@@ -56,7 +56,7 @@ shared-proxy + Traefik
         └── docs.structa.cloud/
 ```
 
-`docs/docus/content/`, `.nuxt/`, `.output/`, `dist/`, and `node_modules/` are
+`docs/content/`, `.nuxt/`, `.output/`, `dist/`, and `node_modules/` are
 build products. If their content is wrong, fix the authored Markdown or the
 preparation script. The root `docs/index.html` is only a compatibility redirect.
 
@@ -95,18 +95,18 @@ From the repository root:
 ```bash
 cd docs
 make check
-make -C docus prepare-content
-make -C docus validate-content
+npm run prepare-content
+npm run validate-content
 make build
 make build-static
 make serve
 make preview
 ```
 
-Or from the Docus application directory:
+Or directly from the Docus application directory (which is `docs/` itself):
 
 ```bash
-cd docs/docus
+cd docs
 npm install
 npm run prepare-content
 npm run validate-content
@@ -135,10 +135,10 @@ the same generated route contract behind its proxy configuration.
 
 ```text
 Dockerfile: docs/Dockerfile
-Application: docs/docus/
+Application: docs/ (app root, flattened from docs/docus/)
 Container: docus:3000
-Proxy: applications/proxy/configs/traefik/dynamic/docs.yml
-Nginx: applications/proxy/configs/nginx/default.conf.template
+Proxy: application/proxy/configs/traefik/dynamic/docs.yml
+Nginx: application/proxy/configs/nginx/default.conf.template
 ```
 
 The image copies the full `docs/` tree because the preparation script walks the
@@ -156,7 +156,7 @@ recreating shared services; deployment commands require explicit approval.
 
 ## Remarks & Notes
 
-- The Docus app README at `docs/docus/README.md` is an application-maintainer note; this page is the published documentation guide.
+- The Docus application lives at the root of `docs/` (flattened from `docs/docus/`); this page is the published documentation guide.
 - Docus route slugs are lowercase even when a source filename uses uppercase characters such as `ARCHITECTURE.md`.
 - A successful documentation build validates the documentation service, not the health of product backends or production proxy routes.
 - Human review is recommended before publishing architecture, operations, medical, legal, or public product documentation.

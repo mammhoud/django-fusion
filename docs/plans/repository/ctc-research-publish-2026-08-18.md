@@ -159,7 +159,7 @@ backend, frontend, and the shared proxy serve one tree.
 | Bundles | project-local/generated output | Shared `projects/assets/bundles/ctc-research/` |
 | Webpack | `webpack/precis.config.js` | Emits to the shared CTC bundle namespace |
 | Collected statics | per-project `collectstatic` | CTC static volume is mounted at the proxy’s `ctc-research` site root |
-| Proxy | `applications/proxy/` (nginx/traefik) | `/media/`, `/static/bundles/`, and `/sites/` route to shared-proxy |
+| Proxy | `application/proxy/` (nginx/traefik) | `/media/`, `/static/bundles/`, and `/sites/` route to shared-proxy |
 | Naming | mixed `ctcResearch`/`precis-ctc`/`precis` names | Public asset identity is consistently `ctc-research` |
 
 **Implemented:** `MEDIA_ROOT` points to the shared tree by default, Compose

@@ -7,11 +7,11 @@
 # them before any service comes up, so this file must not re-declare them
 # with `driver: bridge` (that conflicts with the included declarations).
 #
-# The former `applications/compose/docker-compose.applications.yml` is gone:
+# The former `application/compose/docker-compose.applications.yml` is gone:
 # per-site Django containers moved to project-level compose files
 # (projects/precis/precis-main/docker-compose.yml, projects/precis/precis-landing/docker-compose.yml),
-# and Coder now lives in applications/databases/docker-compose.yml.
+# and Coder now lives in application/databases/docker-compose.yml.
 
 include:
-  - applications/databases/docker-compose.yml
-  - applications/proxy/docker-compose.yml
+  - application/databases/docker-compose.yml
+  - application/proxy/docker-compose.yml

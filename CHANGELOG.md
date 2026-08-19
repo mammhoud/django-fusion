@@ -157,8 +157,8 @@ Shared Django portal with django-fusion viewsets across all editions:
 
 ### feat: CI gates for docs validation
 
-- **`applications/scripts/check_markdown_links.py`** — validates every Markdown filesystem-relative link + HTTP HEAD (stdlib-only, Python 3.11+ for tomllib). Exit 0 clean / 1 broken / 2 bad interpreter.
-- **`applications/scripts/check_extras_in_docs.py`** — validates every `uv add "pkg[extras]"` / `pip install "pkg[extras]"` line against the corresponding `pyproject.toml` `[project.optional-dependencies]`. Exit 0 clean / 1 drift / 2 bad interpreter.
+- **`application/scripts/check_markdown_links.py`** — validates every Markdown filesystem-relative link + HTTP HEAD (stdlib-only, Python 3.11+ for tomllib). Exit 0 clean / 1 broken / 2 bad interpreter.
+- **`application/scripts/check_extras_in_docs.py`** — validates every `uv add "pkg[extras]"` / `pip install "pkg[extras]"` line against the corresponding `pyproject.toml` `[project.optional-dependencies]`. Exit 0 clean / 1 drift / 2 bad interpreter.
 - **`.github/workflows/deploy-ci.yml`** — added `markdown-links` job (Python 3.11, runs `check_markdown_links.py`) triggered on `libs/**/*.md` changes. Deleted the now-redundant standalone `.github/workflows/check-links.yml`.
 - **`.github/workflows/check-extras.yml`** — runs `check_extras_in_docs.py` (Python 3.11) on PRs touching `libs/**/*.md`, `**/pyproject.toml`, or the script itself.
 

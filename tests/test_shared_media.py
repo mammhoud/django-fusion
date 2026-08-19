@@ -27,7 +27,7 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 PRECIS = PROJECT_ROOT / "projects" / "precis"
 PRECIS_ASSETS_CONFIG = PRECIS / "configs" / "base" / "assets.py"
-PROXY = PROJECT_ROOT / "applications" / "proxy"
+PROXY = PROJECT_ROOT / "application" / "proxy"
 CTC = PROJECT_ROOT / "projects" / "precis" / "precis-ctc"
 SHARED_ASSETS = PROJECT_ROOT / "projects" / "assets"
 

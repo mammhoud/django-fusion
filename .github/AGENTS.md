@@ -14,7 +14,7 @@ monorepo paths and project aliases in `projects/Makefile`.
 | Landing-Fusion | `projects/precis/precis-landing/` | backend tests, Astro check/build, Playwright |
 | Syntara/Cypercloud | `projects/syntara/` | Django checks/tests, asset build |
 | Formints POS | `projects/formints/` | pytest, Vitest, TypeScript, Rust, Playwright |
-| Infrastructure | `applications/`, root Makefile | Compose/YAML/proxy/deploy preflight |
+| Infrastructure | `application/`, root Makefile | Compose/YAML/proxy/deploy preflight |
 
 Some workflows and docs retain `precis-lms`, `cms-fusion`, `lms`, `pos`, or
 `cypercloud` as compatibility names. Before changing a path filter, inspect the
@@ -85,5 +85,5 @@ local validation. Use isolated services and explicit environment configuration.
 
 - [`../AGENTS.md`](../AGENTS.md) — repository-wide structure and safety rules
 - [`../projects/AGENTS.md`](../projects/AGENTS.md) — product dispatcher/aliases
-- [`../applications/AGENTS.md`](../applications/AGENTS.md) — infrastructure CI
+- [`../application/AGENTS.md`](../application/AGENTS.md) — infrastructure CI
 - [`../tests/AGENTS.md`](../tests/AGENTS.md) — test selection and fixtures

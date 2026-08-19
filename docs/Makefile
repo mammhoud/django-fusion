@@ -1,9 +1,16 @@
 # docs/Makefile — Docus documentation build, serve, validate, and deploy
-.PHONY: help install build build-static serve preview check clean deploy
+# The Docus app lives at the root of docs/ (flattened from docs/docus/).
+SHELL := /bin/bash
+
+COMPOSE_FILE := docker-compose.yml
+ENV_FILE     ?= ../.env
+
+.PHONY: help install build build-static serve preview check clean deploy \
+        up down restart logs status ps
 
 .DEFAULT_GOAL := help
 
-DocusDir := docus
+DocusDir := .
 
 help: ## Show documentation commands
 	@printf '%s\n' \
@@ -14,8 +21,13 @@ help: ## Show documentation commands
 		'  make serve         Run the Docus development server' \
 		'  make preview       Preview the generated server output' \
 		'  make check         Validate Docus configuration and locale sources' \
-		'  make deploy        Rebuild the Docus + shared-proxy services' \
-		'  make clean         Remove generated Docus output'
+		'  make clean         Remove generated Docus output' \
+		'  make deploy        Build the Docus image (docs/Dockerfile)' \
+		'  make up            Build + start the Docus container (docs.structa.cloud)' \
+		'  make down          Stop the Docus container' \
+		'  make restart       Restart the Docus container' \
+		'  make logs          Tail Docus container logs' \
+		'  make status        Show Docus container status (alias: ps)'
 
 install: ## Install Docus dependencies
 	cd $(DocusDir) && npm install
@@ -46,8 +58,25 @@ check: ## Validate Docus configuration, generated graph metadata, and locale sou
 	@grep -q "code: 'ar'" $(DocusDir)/nuxt.config.ts
 	@echo 'Docus configuration and English/Arabic source checks passed.'
 
-deploy: ## Rebuild the Docus service (shared-proxy is deployed via applications/proxy)
-	docker compose -f ../applications/tools/docus/docker-compose.yml build
+deploy: ## Build the Docus image (docs/Dockerfile)
+	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) build
+
+up: ## Build + start the Docus container (docs.structa.cloud)
+	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up -d --build
+
+down: ## Stop the Docus container
+	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) down
+
+restart: ## Restart the Docus container
+	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) restart
+
+logs: ## Tail Docus container logs
+	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) logs -f
+
+status: ## Show Docus container status
+	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) ps
+
+ps: status
 
 clean: ## Remove generated Docus output and content
 	rm -rf $(DocusDir)/content $(DocusDir)/.nuxt $(DocusDir)/.output $(DocusDir)/dist

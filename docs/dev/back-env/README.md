@@ -94,7 +94,7 @@ github=ghp_...   # or GITHUB_TOKEN=...
 2. Add `DB_NAME_<SITE>` in root `.env`
 3. Register in `projects/configs/settings/`
 4. Add to `projects/Makefile` WEBSITE alias
-5. Add Traefik router in `applications/proxy/configs/traefik/dynamic/`
+5. Add Traefik router in `application/proxy/configs/traefik/dynamic/`
 
 ---
 

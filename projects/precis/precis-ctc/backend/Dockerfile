@@ -1,12 +1,16 @@
 # =============================================================================
 # Backend container for precis-ctc (CTC Research)
-# Build context: repository root
+# Build context: project root (projects/precis/precis-ctc)
+# Shared workspace dependencies arrive as additional build contexts:
+#   - workspace  → repository root (projects/, libs/, tests/)
+#   - configs    → projects/precis/configs (shared Django settings package)
+# This keeps the build scoped to this project's files instead of shipping the
+# whole monorepo into the image.
 # =============================================================================
 
 FROM python:3.11-slim
 
 ARG PROJECT_PATH=precis-ctc
-ARG SOURCE_PATH=precis/precis-ctc
 ARG APP_HOME=/app
 
 ENV PYTHONUNBUFFERED=1 \
@@ -44,20 +48,17 @@ RUN python -m pip install --no-cache-dir --upgrade pip setuptools uv \
     && uv venv /opt/venv \
     && uv pip install --python /opt/venv/bin/python setuptools
 
-# ── Python dependencies ─────────────────────────────────────────────────────
-COPY projects/pyproject.toml projects/uv.lock ${APP_HOME}/
-
-# ── Shared workspace code ───────────────────────────────────────────────────
-COPY projects/Makefile \
-     projects/manage.py \
-     projects/__about__.py \
-     projects/__main__.py \
-     projects/cli.py \
+# ── Python dependencies (workspace additional context) ─────────────────────
+COPY --from=workspace /projects/pyproject.toml /projects/uv.lock ${APP_HOME}/
+COPY --from=workspace /projects/Makefile \
+     /projects/manage.py \
+     /projects/__about__.py \
+     /projects/__main__.py \
+     /projects/cli.py \
      ${APP_HOME}/
 
-# CTC Research owns its settings package. It is copied with the backend below so
-# the image has no dependency on a repository-level configs directory.
-COPY libs    ${APP_HOME}/libs
+# ── Shared libraries (workspace additional context) ────────────────────────
+COPY --from=workspace /libs ${APP_HOME}/libs
 
 # Symlink so uv resolves "../libs/django-fusion" from pyproject.toml
 RUN ln -sf ${APP_HOME}/libs /libs
@@ -68,21 +69,22 @@ RUN uv pip install --python /opt/venv/bin/python setuptools wheel \
     && cd ${APP_HOME}/libs/django-fusion \
     && uv pip install -e . --no-build-isolation
 
-# ── Project-specific backend code ────────────────────────────────────────────
+# ── Project-specific backend code (project build context) ──────────────────
 # The runtime site root is the backend root. This matches the bind mount in
-# Compose and keeps settings.py, manage.py, assets, and module imports on one
-# canonical path in both image-only and development-container runs.
-COPY projects/${SOURCE_PATH}/backend ${APP_HOME}/${PROJECT_PATH}
-# Canonical shared settings package (moved from backend/configs to precis/configs).
-COPY ../configs ${APP_HOME}/${PROJECT_PATH}/configs
-COPY projects/${SOURCE_PATH}/Env ${APP_HOME}/${PROJECT_PATH}/Env
+# Compose and keeps manage.py, the settings/ package, assets, and module
+# imports on one canonical path in both image-only and development-container
+# runs.
+COPY backend ${APP_HOME}/${PROJECT_PATH}
+# Canonical shared settings package (configs additional context).
+COPY --from=configs / ${APP_HOME}/${PROJECT_PATH}/configs
+COPY Env ${APP_HOME}/${PROJECT_PATH}/Env
 # Asset/template source is part of the runtime image. Production Compose does
 # not bind-mount source directories because remote Docker engines can expose a
 # partial synchronized tree and mask the files copied above.
-COPY projects/${SOURCE_PATH}/assets ${APP_HOME}/assets
+COPY assets ${APP_HOME}/assets
 # Runtime setup and optional fixture verification use the shared workspace
 # utilities; keep them available in image-only deployments as well.
-COPY tests ${APP_HOME}/tests
+COPY --from=workspace /tests ${APP_HOME}/tests
 
 # Install the backend package from the migrated project layout.
 RUN if [ -f "${APP_HOME}/${PROJECT_PATH}/pyproject.toml" ]; then \
@@ -90,11 +92,13 @@ RUN if [ -f "${APP_HOME}/${PROJECT_PATH}/pyproject.toml" ]; then \
     fi
 
 # ── Entrypoint and helper scripts ───────────────────────────────────────────
-COPY ../precis-ctc/compose/prepare     /prepare
-COPY ./run          /run
+COPY backend/prepare /prepare
+# The server helper lives inside the site dir (container /run is a system dir),
+# so the entrypoint can dispatch `server` directly to it.
+COPY backend/run    ${APP_HOME}/${PROJECT_PATH}/run
 RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/media ${APP_HOME}/${PROJECT_PATH}/assets/staticfiles \
-    && sed -i 's/\r$//g' /prepare /run \
-    && chmod +x /entrypoint /run
+    && sed -i 's/\r$//g' /prepare ${APP_HOME}/${PROJECT_PATH}/run \
+    && chmod +x /prepare ${APP_HOME}/${PROJECT_PATH}/run
 
 ENTRYPOINT ["/prepare"]
 CMD ["server"]

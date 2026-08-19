@@ -208,7 +208,7 @@ structa.cloud/
 │   └── formints/          # Multi-edition POS (community/standard/pro/cloud/client)
 ├── libs/                  # Reusable Python packages (git submodules)
 │   └── django-fusion/     # Component system + routing
-├── applications/          # Infrastructure + tooling
+├── application/          # Infrastructure + tooling
 │   ├── proxy/             # Traefik reverse proxy
 │   ├── databases/         # Postgres + Redis compose
 │   ├── templates/         # Coder/Terraform workspace templates

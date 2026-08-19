@@ -924,7 +924,7 @@ class ProductPage(ShowInNavMixin, DisplayModeMixin, LandingPage):
         blank=True,
         verbose_name=_("Built with this product"),
         help_text=_(
-            "Real applications/sites running on this product (e.g. Loop "
+            "Real application/sites running on this product (e.g. Loop "
             "listing vResume + this site). One card each, linking out to the "
             "running product or its edition preview."
         ),

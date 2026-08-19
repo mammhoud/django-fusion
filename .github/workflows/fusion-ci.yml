@@ -14,7 +14,7 @@ on:
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
-      - 'applications/scripts/dev/check_domain_drift.sh'
+      - 'application/scripts/dev/check_domain_drift.sh'
       - '.github/workflows/fusion-ci.yml'
   push:
     branches: ['**']
@@ -209,7 +209,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Check domain code for drift
-        run: bash applications/scripts/dev/check_domain_drift.sh
+        run: bash application/scripts/dev/check_domain_drift.sh
 
   # ── Deploy to Staging (manual only, requires all checks to pass) ────
 

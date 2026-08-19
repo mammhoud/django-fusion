@@ -133,7 +133,7 @@ cd projects/precis/precis-ctc/frontend
 npm run check
 
 cd ../../../../
-python3 applications/scripts/staging/verify_ctc_assets.py --site precis-ctc
+python3 application/scripts/staging/verify_ctc_assets.py --site precis-ctc
 
 cd projects/precis/precis-ctc
 python3 scripts/generate_locales.py --dry-run

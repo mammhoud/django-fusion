@@ -75,7 +75,7 @@ Load skill "design-taste-frontend" to get full design instructions
 Load skill "shadcn" when working with shadcn/ui components
 ```
 
-See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instructions. The stable machine-readable prompt packs are in [`applications/agents/prompts/catalog.json`](../../applications/agents/prompts/catalog.json), with usage and validation documented in [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md).
+See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instructions. The stable machine-readable prompt packs are in [`application/agents/prompts/catalog.json`](../../application/agents/prompts/catalog.json), with usage and validation documented in [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md).
 
 ---
 

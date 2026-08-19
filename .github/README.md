@@ -101,7 +101,7 @@ The `precis-lms-e2e` job spins up the Django backend (with `DB_TYPE=sqlite` for 
 
 | Job | Runs | Timeout | Python |
 |-----|------|:------:|:------:|
-| `check-extras` | `python3 applications/scripts/staging/check_extras_in_docs.py` | 5m | 3.11 |
+| `check-extras` | `python3 application/scripts/staging/check_extras_in_docs.py` | 5m | 3.11 |
 
 ---
 
@@ -114,7 +114,7 @@ The `precis-lms-e2e` job spins up the Django backend (with `DB_TYPE=sqlite` for 
 | Job | Runs | Timeout |
 |-----|------|:------:|
 | `preflight` | Composite Action: `make deploy-ci` (docker version + preflight gates) | 5m |
-| `markdown-links` | `python3 applications/scripts/staging/check_markdown_links.py` | 5m |
+| `markdown-links` | `python3 application/scripts/staging/check_markdown_links.py` | 5m |
 
 ### Preflight Steps
 
@@ -131,7 +131,7 @@ The `precis-lms-e2e` job spins up the Django backend (with `DB_TYPE=sqlite` for 
 
 | Job | Runs | Timeout |
 |-----|------|:------:|
-| `check-typos-and-deadcode` | `python3 applications/scripts/dev/check_typos_and_deadcode.py` (full repo) + sanity-check on `--staged` mode | 5m |
+| `check-typos-and-deadcode` | `python3 application/scripts/dev/check_typos_and_deadcode.py` (full repo) + sanity-check on `--staged` mode | 5m |
 
 ### Companion Pre-Commit Hook
 

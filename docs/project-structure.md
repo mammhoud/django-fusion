@@ -154,7 +154,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │       ├── src/django_fusion/             #     comp, tables, forms, fragments, routing, tasks, mcp
 │       └── tests/                         #     Framework tests
 │
-├── applications/                          # 🏗️ Infrastructure + tooling
+├── application/                          # 🏗️ Infrastructure + tooling
 │   ├── AGENTS.md                          #   Infrastructure agent instructions
 │   ├── proxy/                             #   Traefik reverse proxy configs
 │   ├── databases/                         #   PostgreSQL + Redis compose
@@ -193,7 +193,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 | **Formint Cloud** | `projects/formints/formint-cloud/` | Django + Channels + Unfold | `projects/formints/formint-cloud/AGENTS.md` |
 | **Formint Client** | `projects/formints/formint-client/` | Tauri 2 + Vue 3 | `projects/formints/formint-client/AGENTS.md` |
 | **django-fusion** | `libs/django-fusion/` | Python package | `libs/django-fusion/AGENTS.md` |
-| **Kilo MCP** | `applications/agents/` | FastAPI | `applications/agents/AGENTS.md` |
+| **Kilo MCP** | `application/agents/` | FastAPI | `application/agents/AGENTS.md` |
 
 ---
 
@@ -211,7 +211,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 | **django-fusion components** | Component templates, behavior | `libs/django-fusion/` | 🔵 Template-level |
 | **Database schema** | Models, migrations | `backend/apps/*/models.py` | 🔴 Core — needs migrations |
 | **Auth system** | Allauth adapters | `backend/apps/auth/` | 🟡 Adapter-based |
-| **Infrastructure** | Proxy, Docker, Compose | `applications/` | 🔴 Infrastructure |
+| **Infrastructure** | Proxy, Docker, Compose | `application/` | 🔴 Infrastructure |
 | **Build tooling** | Webpack, pnpm, Cargo | Per-product Makefile | 🟡 Config-only |
 
 ### Instance Setup Guide
@@ -336,7 +336,7 @@ For the complete command and computation path, use
 - **Shared framework code** stays in `libs/django-fusion/` (submodule). Never
   copy framework code into a product.
 - **Docus has one authoring source:** `docs/**/*.md` is canonical;
-  `docs/docus/content/` is generated and ignored. Use frontmatter `object`,
+  `docs/content/` is generated and ignored. Use frontmatter `object`,
   `attributes`, `tags`, and `links` for new document objects.
 
 ### 2. Use the dispatcher, not hard-coded paths

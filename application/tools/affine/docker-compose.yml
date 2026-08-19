@@ -1,0 +1,73 @@
+# =============================================================================
+# AFFiNE — permanent shared workspace service
+# =============================================================================
+# Split out of application/proxy/docker-compose.nginx.yml: AFFiNE is a shared
+# application, not a proxy concern. It runs independently of Coder workspaces,
+# so deleting a workspace cannot take down the public space origin.
+#
+# Networks: postgres on `warehouse-net`, default-redis on `common`.
+# Data: ./affine-data/ (gitignored).
+# =============================================================================
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+
+services:
+  affine-migration:
+    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
+    container_name: proxy-affine-migration
+    command: ["sh", "-c", "node ./scripts/self-host-predeploy.js"]
+    volumes:
+      - ./affine-data/storage:/root/.affine/storage
+      - ./affine-data/config:/root/.affine/config
+    environment:
+      # This value is inserted into a PostgreSQL URI; percent-encode reserved
+      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
+      DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
+      REDIS_SERVER_HOST: default-redis
+      REDIS_SERVER_PORT: "6379"
+      REDIS_SERVER_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+      AFFINE_INDEXER_ENABLED: "false"
+    networks:
+      - common
+      - warehouse-net
+    restart: "no"
+
+  affine:
+    image: ghcr.io/toeverything/affine:${AFFINE_VERSION:-stable}
+    container_name: proxy-affine
+    depends_on:
+      affine-migration:
+        condition: service_completed_successfully
+    volumes:
+      - ./affine-data/storage:/root/.affine/storage
+      - ./affine-data/config:/root/.affine/config
+    environment:
+      # This value is inserted into a PostgreSQL URI; percent-encode reserved
+      # URI characters in AFFINE_DB_PASSWORD (for example @ becomes %40).
+      DATABASE_URL: postgresql://affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}@postgres:5432/affine
+      REDIS_SERVER_HOST: default-redis
+      REDIS_SERVER_PORT: "6379"
+      REDIS_SERVER_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+      AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL:-https://space.structa.cloud}
+      AFFINE_SERVER_PORT: "3010"
+      AFFINE_INDEXER_ENABLED: "false"
+      # Email notifications/invites (Gmail SMTP via an app password).
+      MAILER_HOST: ${MAILER_HOST:-smtp.gmail.com}
+      MAILER_PORT: ${MAILER_PORT:-587}
+      MAILER_USER: ${MAILER_USER:-}
+      MAILER_PASSWORD: ${MAILER_PASSWORD:-}
+      MAILER_SENDER: ${MAILER_SENDER:-structa.cloud@gmail.com}
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3010/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 60s
+    networks:
+      - common
+      - warehouse-net
+    restart: unless-stopped

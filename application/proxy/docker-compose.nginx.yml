@@ -1,0 +1,74 @@
+# =============================================================================
+# Shared-proxy Nginx — static/media server + reverse proxy for Docus and AFFiNE
+# =============================================================================
+# Docus now lives at the root of docs/ (docs/docker-compose.yml); AFFiNE lives
+# under application/tools/affine. This file owns only the shared-proxy Nginx
+# server, which:
+#   - serves per-site static/media volumes;
+#   - proxies /docs/ and docs.structa.cloud to `docus:3000`;
+#   - proxies space.structa.cloud to `proxy-affine:3010`.
+# Both upstreams resolve by container_name on the external `common` network, so
+# they can be started/stopped independently of the proxy.
+# =============================================================================
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true
+
+x-media-base: &media-base
+  build:
+    context: ../..
+    dockerfile: application/proxy/configs/nginx/Dockerfile
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - common
+  healthcheck:
+    test: ["CMD-SHELL", "nginx -t >/dev/null 2>&1 && wget -qO- http://127.0.0.1/health/ | grep -qx healthy"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 30s
+
+services:
+  shared-proxy:
+    <<: *media-base
+    container_name: shared-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shared-proxy.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.vresume.structa.cloud`)"
+      - "traefik.http.services.shared-proxy.loadbalancer.server.port=80"
+    volumes:
+      - ../../projects/precis/precis-ctc/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../../projects/precis/precis-main/assets/staticfiles:/var/www/sites/lms/static:ro
+      - ../../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
+      - precis-lms-static:/var/www/sites/precis-lms/static:ro
+      - ../../projects/assets/static:/var/www/static:ro
+      - ../../projects/assets/media/ctc-research:/var/www/media/ctc-research:ro
+      - ../../projects/precis/precis-main/assets/media:/var/www/media/lms:ro
+      - ../../projects/portfolio/assets/media:/var/www/media/vresume:ro
+      - precis-lms-media:/var/www/media/precis-lms:ro
+      # The nginx config template and tools navigation page (www/) are baked
+      # into the image via Dockerfile COPY (repo file bind mounts are unreliable
+      # in this environment). Rebuild the image after editing either.
+    networks:
+      - traefik-net
+      - common
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+volumes:
+  precis-lms-static:
+    name: precis-lms-static
+    external: true
+  precis-lms-media:
+    name: precis-lms-media
+    external: true

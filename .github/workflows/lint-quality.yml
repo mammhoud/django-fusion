@@ -1,5 +1,5 @@
 # lint-quality: Runs the typo + dead-code linter across the whole repo on
-# every PR and push. Companion to applications/scripts/dev/check_typos_and_deadcode.py
+# every PR and push. Companion to application/scripts/dev/check_typos_and_deadcode.py
 # — that script is the source of truth. This workflow's job is to run it.
 #
 # The same script is also wired into the .githooks/pre-commit hook (which
@@ -22,7 +22,7 @@ on:
       - '**.yaml'
       - '**.yml'
       - '**.sh'
-      - 'applications/scripts/dev/check_typos_and_deadcode.py'
+      - 'application/scripts/dev/check_typos_and_deadcode.py'
       - '.github/workflows/lint-quality.yml'
       - '.githooks/pre-commit'
   push:
@@ -39,7 +39,7 @@ on:
       - '**.yaml'
       - '**.yml'
       - '**.sh'
-      - 'applications/scripts/dev/check_typos_and_deadcode.py'
+      - 'application/scripts/dev/check_typos_and_deadcode.py'
       - '.github/workflows/lint-quality.yml'
       - '.githooks/pre-commit'
   workflow_dispatch:
@@ -63,7 +63,7 @@ jobs:
           python-version: '3.11'
 
       - name: Run typo + dead-code linter (full repo)
-        run: python3 applications/scripts/dev/check_typos_and_deadcode.py
+        run: python3 application/scripts/dev/check_typos_and_deadcode.py
 
       - name: Run on staged files (pre-commit hook sanity check)
         run: |
@@ -74,4 +74,4 @@ jobs:
           git config user.name "Lint Quality Bot"
           echo "# clean file" > /tmp/_lint_sanity.md
           git add /tmp/_lint_sanity.md 2>/dev/null || true
-          python3 applications/scripts/dev/check_typos_and_deadcode.py --staged
+          python3 application/scripts/dev/check_typos_and_deadcode.py --staged

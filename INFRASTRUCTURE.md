@@ -271,9 +271,9 @@ docker volume inspect structacloud_media
 ### Bind Mounts
 
 ```
-/home/structa.cloud/applications/proxy/configs/traefik/dynamic → /etc/traefik/dynamic (Traefik configs)
-/home/structa.cloud/applications/proxy/configs/acme.json → /etc/traefik/acme/acme.json (Let's Encrypt store)
-/home/structa.cloud/applications/proxy/data/certs → /etc/traefik/certs (Self-signed fallback)
+/home/structa.cloud/application/proxy/configs/traefik/dynamic → /etc/traefik/dynamic (Traefik configs)
+/home/structa.cloud/application/proxy/configs/acme.json → /etc/traefik/acme/acme.json (Let's Encrypt store)
+/home/structa.cloud/application/proxy/data/certs → /etc/traefik/certs (Self-signed fallback)
 ```
 
 ### Backup Strategy
@@ -293,7 +293,7 @@ docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 **Let's Encrypt Certs:**
 ```bash
 # Backup ACME store
-cp -r /home/structa.cloud/applications/proxy/configs/acme.json /home/structa.cloud/applications/proxy/data/backups/acme_$(date +%Y%m%d_%H%M%S).json
+cp -r /home/structa.cloud/application/proxy/configs/acme.json /home/structa.cloud/application/proxy/data/backups/acme_$(date +%Y%m%d_%H%M%S).json
 
 # Traefik will auto-renew within 30 days before expiry
 ```
@@ -396,7 +396,7 @@ sudo ufw status
 ```bash
 # Keep .env files gitignored
 cat .gitignore
-# Should contain: applications/proxy/.env, projects/.env
+# Should contain: application/proxy/.env, projects/.env
 
 # Store secrets securely
 # Do NOT commit: DB passwords, API keys, CSRF tokens
@@ -437,7 +437,7 @@ docker restart precis-ctc-website
 **Let's Encrypt cert issues:**
 ```bash
 # Restore from backup
-cp /home/structa.cloud/applications/proxy/data/backups/acme_*.json /home/structa.cloud/applications/proxy/configs/acme.json
+cp /home/structa.cloud/application/proxy/data/backups/acme_*.json /home/structa.cloud/application/proxy/configs/acme.json
 docker restart default-proxy
 ```
 
@@ -465,9 +465,9 @@ docker-compose up -d postgres
 docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 
 # Restore Let's Encrypt certs
-mkdir -p applications/proxy/configs
-cp backup_acme.json applications/proxy/configs/acme.json
-chmod 600 applications/proxy/configs/acme.json
+mkdir -p application/proxy/configs
+cp backup_acme.json application/proxy/configs/acme.json
+chmod 600 application/proxy/configs/acme.json
 
 # Start all services
 docker-compose up -d

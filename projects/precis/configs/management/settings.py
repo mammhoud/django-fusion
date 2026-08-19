@@ -40,7 +40,7 @@ The retired Temporal campaign worker is no longer a runtime entrypoint.
 Production web workers run with their product backend baked at build time;
 in `projects/compose/Dockerfile` (override-able via the
 `TASKS_PROJECT_PATH=tools` build arg passed from
-`applications/compose/docker-compose.tasks.yml`). Under the default
+`application/compose/docker-compose.tasks.yml`). Under the default
 PROJECT_PATH=precis-ctc, `python manage.py rundramatiq` is invoked with
 DJANGO_SETTINGS_MODULE=settings resolving to
 `projects/precis-ctc/settings.py` (bind-mounted at runtime) — NOT this module.

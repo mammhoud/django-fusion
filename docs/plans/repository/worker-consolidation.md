@@ -16,7 +16,7 @@ the django-fusion task API.
 - Added filesystem and dotted-module discovery to
   `django_fusion.tasks.TaskRegistry`.
 - Added a site-neutral `shared-worker` and `shared-scheduler` in
-  `applications/docker-compose.tasks.yml`.
+  `application/docker-compose.tasks.yml`.
 - Excluded Precis/LMS worker paths from the shared worker and from aggregate
   project deploy/check loops. Explicit Precis maintenance commands remain
   available.
@@ -44,10 +44,10 @@ settings module and does not mount Precis/LMS task modules.
 
 ```bash
 # Read-only Compose validation
-Docker compose -f applications/docker-compose.tasks.yml config -q
+Docker compose -f application/docker-compose.tasks.yml config -q
 
 # Start only after the database and Redis services are available
-DB_NAME=db_structa docker compose -f applications/docker-compose.tasks.yml up -d
+DB_NAME=db_structa docker compose -f application/docker-compose.tasks.yml up -d
 ```
 
 ## Deprecated paths
@@ -56,7 +56,7 @@ DB_NAME=db_structa docker compose -f applications/docker-compose.tasks.yml up -d
 |---|---|
 | `celery -A ... worker` | `python manage.py rundramatiq` |
 | Celery Beat | `python -m django_fusion.tasks.scheduler` |
-| `applications/configs/*/worker` | Product `backend/plugins/workers` packages |
+| `application/configs/*/worker` | Product `backend/plugins/workers` packages |
 | `apps/tasks/*_tasks.py` implementations | `plugins/workers/*_tasks.py` |
 | Precis Temporal campaign command | `plugins.workers.campaign_tasks` |
 | Aggregate LMS queue | Explicit Precis maintenance only; never shared discovery |

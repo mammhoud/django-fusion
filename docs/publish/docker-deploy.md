@@ -9,7 +9,7 @@
 ```
 root Makefile (make deploy)
     │
-    ├── make deploy-databases    → applications/databases/
+    ├── make deploy-databases    → application/databases/
     │   ├── postgres:5432 (per-site DBs)
     │   └── redis:6379 (shared broker)
     │
@@ -17,7 +17,7 @@ root Makefile (make deploy)
     │   ├── Static files: /var/www/sites/<site>/static/
     │   └── Media files:  /var/www/sites/<site>/media/
     │
-    ├── make deploy-app          → applications/compose/
+    ├── make deploy-app          → application/compose/
     │   ├── precis-ctc:5070
     │   ├── lms:5071
     │   ├── portfolio:5072
@@ -109,8 +109,8 @@ make deploy-ci            # CI-only gate (no actual deploy)
 ## Adding a New Project to Docker
 
 1. Create `projects/<name>/docker-compose.yml`
-2. Add to `applications/compose/docker-compose.applications.yml` includes
-3. Add Traefik router in `applications/proxy/configs/traefik/dynamic/`
+2. Add to `application/compose/docker-compose.applications.yml` includes
+3. Add Traefik router in `application/proxy/configs/traefik/dynamic/`
 4. Add health check: `Host: 127.0.0.1` → `<port>/health/`
 5. `make deploy-app` picks it up automatically
 

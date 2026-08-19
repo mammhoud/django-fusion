@@ -14,7 +14,7 @@ def test_django_fusion_task_registry_supports_project_paths():
 
 
 def test_shared_tasks_compose_uses_dramatiq_and_excludes_lms():
-    compose_file = ROOT / "applications" / "docker-compose.tasks.yml"
+    compose_file = ROOT / "application" / "docker-compose.tasks.yml"
     content = compose_file.read_text()
 
     assert "shared-worker" in content

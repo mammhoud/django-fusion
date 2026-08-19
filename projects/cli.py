@@ -209,7 +209,7 @@ class SiteCLI:
                 f"DB_NAME not set and SITES[{self.site!r}] has no default. "
                 f"Sentinel site '{self.site}' requires an explicit DB_NAME — "
                 f"set it in env or via docker-compose tasks.yml "
-                f"applications/docker-compose.tasks.yml loud-fail form."
+                f"application/docker-compose.tasks.yml loud-fail form."
             )
         env.update(
             {

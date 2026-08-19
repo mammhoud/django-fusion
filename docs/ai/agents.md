@@ -37,8 +37,8 @@ Root /AGENTS.md — Monorepo-wide conventions, safety rules, ownership
   │       ├── projects/formints/formint-client/AGENTS.md
   │       └── projects/formints/tests/pos-e2e/AGENTS.md
   ├── libs/django-fusion/AGENTS.md
-  ├── applications/AGENTS.md
-  │   └── applications/agents/AGENTS.md (Kilo MCP)
+  ├── application/AGENTS.md
+  │   └── application/agents/AGENTS.md (Kilo MCP)
   └── tests/AGENTS.md
 ```
 
@@ -95,8 +95,8 @@ When an AI agent works on a file, it loads all AGENTS.md files from the root dow
 
 | File | Scope | Key Rules |
 |------|-------|-----------|
-| `applications/AGENTS.md` | Infrastructure | Docker, proxy, databases, deployment boundaries |
-| `applications/agents/AGENTS.md` | Kilo MCP server | Read-only introspection, endpoint groups, skills |
+| `application/AGENTS.md` | Infrastructure | Docker, proxy, databases, deployment boundaries |
+| `application/agents/AGENTS.md` | Kilo MCP server | Read-only introspection, endpoint groups, skills |
 
 ### Testing Level
 
@@ -205,7 +205,7 @@ Beyond AGENTS.md files, the project includes:
         └── mcp.json                    # MCP server configuration
 ```
 
-### Kilo MCP Server (`applications/agents/`)
+### Kilo MCP Server (`application/agents/`)
 
 The Kilo MCP server provides programmatic introspection for:
 - Health/readiness checks
@@ -214,7 +214,7 @@ The Kilo MCP server provides programmatic introspection for:
 - Docker service status
 - Auth configuration
 
-Commands and skills in `applications/agents/commands/` and `applications/agents/skills/`.
+Commands and skills in `application/agents/commands/` and `application/agents/skills/`.
 
 ---
 

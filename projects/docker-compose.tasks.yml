@@ -12,10 +12,10 @@
 # routes and database migrations.
 #
 # Prerequisites:
-#   docker compose -f applications/databases/docker-compose.yml up -d postgres default-redis
+#   docker compose -f application/databases/docker-compose.yml up -d postgres default-redis
 #
 # Start:
-#   DB_NAME=db_precis_lms docker compose -f applications/docker-compose.tasks.yml up -d
+#   DB_NAME=db_precis_lms docker compose -f application/docker-compose.tasks.yml up -d
 # ============================================================
 
 networks:
@@ -25,7 +25,7 @@ networks:
 
 x-shared-tasks-base: &shared-tasks-base
   build:
-    # This file sits one level deep (applications/), unlike projects/<site>/
+    # This file sits one level deep (application/), unlike projects/<site>/
     # which is two deep, so all host paths below use `..` (repo root).
     context: ..
     dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend

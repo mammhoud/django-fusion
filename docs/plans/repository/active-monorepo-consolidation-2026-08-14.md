@@ -14,7 +14,7 @@
 - Active product task packages are imported by filesystem project paths through
   `FUSION_TASK_PROJECT_PATHS`; the worker does not guess a product from the
   default Django site.
-- The Coder template is now `applications/templates/dev-workspace/` and must
+- The Coder template is now `application/templates/dev-workspace/` and must
   be used with workspace name `dev` because the proxy routes stable container
   names.
 - AFFiNE is the shared proxy application and uses the shared PostgreSQL
@@ -33,7 +33,7 @@
 - The Dramatiq backend declares discovered actors in the worker process and
   uses `DRAMATIQ_BROKER_URL` / `REDIS_URL` when no explicit Fusion broker is
   configured.
-- `applications/docker-compose.tasks.yml` runs `rundramatiq` plus
+- `application/docker-compose.tasks.yml` runs `rundramatiq` plus
   `python -m django_fusion.tasks.scheduler`; Celery Beat is no longer used by
   this stack.
 - The shared worker mounts active task packages from Landing-Fusion, Loop-CRM,
@@ -84,8 +84,8 @@
 |---|---|---|
 | LMS queue in shared worker | Removed from worker discovery/queues | Explicit Precis web/product maintenance; no shared LMS worker |
 | Celery Beat in shared task stack | Deprecated and removed from Compose command | `django_fusion.tasks.scheduler` (APScheduler) |
-| `applications/compose/docker-compose.tasks.yml` | Retired path in current checkout | `applications/docker-compose.tasks.yml` |
-| `applications/templates/dev-stack/` | Renamed | `applications/templates/dev-workspace/` |
+| `application/compose/docker-compose.tasks.yml` | Retired path in current checkout | `application/docker-compose.tasks.yml` |
+| `application/templates/dev-stack/` | Renamed | `application/templates/dev-workspace/` |
 | Blinko workspace service | Deprecated and removed | Shared AFFiNE proxy service; FileGator removed |
 | Precis Temporal campaign worker | Removed | `plugins.workers.campaign_tasks` Dramatiq actors |
 | Historical worker-consolidation Celery target | Superseded documentation | This plan + django-fusion task API |
@@ -120,7 +120,7 @@ npx nx run loop-crm:check
 npx nx run fusion-js:check
 uv run pytest libs/django-fusion/tests/test_tasks.py tests/websites/test_shared_tasks.py -q
 # Read-only Compose validation; no services were started or migrated.
-docker compose -f applications/docker-compose.tasks.yml config -q
+docker compose -f application/docker-compose.tasks.yml config -q
 git diff --check  # task-related paths
 ```
 

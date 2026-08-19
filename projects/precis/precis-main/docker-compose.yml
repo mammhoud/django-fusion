@@ -16,7 +16,7 @@ services:
       DJANGO_ALLOWED_HOSTS: structa.cloud,www.structa.cloud,localhost,127.0.0.1,precis-main-backend,precis-main-frontend
       CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
       CORS_ALLOWED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
-      # Shared PostgreSQL cluster (applications/databases) — site-owned DB.
+      # Shared PostgreSQL cluster (application/databases) — site-owned DB.
       DJANGO_DB_ENGINE: django.db.backends.postgresql
       DJANGO_DB_NAME: ${DB_NAME_LANDING:-db_precis_landing}
       DJANGO_DB_USER: ${POSTGRES_USER:-admin}

@@ -54,7 +54,7 @@ workspace
 │   ├── syntara/              AI chat/customizer runtime
 │   └── loop-crm/             CRM and social scheduling monolith
 ├── libs/django-fusion/       shared framework object (git submodule)
-├── applications/             infrastructure and proxy objects
+├── application/             infrastructure and proxy objects
 ├── tests/                    cross-project verification object
 └── docs/                     canonical documentation source + Docus app
 ```
@@ -67,12 +67,12 @@ Each object has attributes that must agree across code and documentation:
 | Backend | settings module, URL root, database, media/static roots, worker | product `backend/`, Compose file, environment guide |
 | Frontend | package manager, API origin, build target, static/public assets | product `frontend/`, `package.json`, project guide |
 | Shared library | submodule commit, public imports, tests, consuming products | `libs/django-fusion/AGENTS.md`, library docs |
-| Infrastructure service | Compose service, network, router, health path, volume | `applications/`, routing guide, deployment runbook |
+| Infrastructure service | Compose service, network, router, health path, volume | `application/`, routing guide, deployment runbook |
 | Document | source path, Docus route, owner, status, tags, links | this Markdown tree; generated Docus content is not authored |
 
 The Docus build adds these attributes to generated English documents as
 frontmatter: `object`, `attributes`, `tags`, and `links`. The authoritative
-content remains the Markdown file under `docs/`; `docs/docus/content/` is an
+content remains the Markdown file under `docs/`; `docs/content/` is an
 ignored build product and must never become a second authoring tree.
 
 ## 2. First commands: orient before editing
@@ -245,7 +245,7 @@ project Makefile or `package.json` disagrees.
 ### New infrastructure behavior
 
 1. Identify the Compose service, network, volume, health check, and router.
-2. Update the owning `applications/` config, routing guide, and deployment
+2. Update the owning `application/` config, routing guide, and deployment
    runbook together.
 3. Validate Compose/YAML without bringing down or recreating shared services.
 4. Treat volume pruning, production migration, certificate operations, and
@@ -279,7 +279,7 @@ IDs when a document is referenced by plans, agents, or Docus links. Prefer links
 to duplicating explanations. A page can link to its source code, owner project,
 architecture decision, commands, tests, and deployment/runbook neighbors.
 
-The generator in `docs/docus/scripts/prepare-content.mjs` adds the shared graph
+The generator in `docs/scripts/prepare-content.mjs` adds the shared graph
 metadata to legacy Markdown that lacks it. If a document already owns an
 `object` block, that source metadata is preserved. This allows gradual
 normalization without rewriting every historical page in one risky change.
@@ -289,8 +289,8 @@ normalization without rewriting every historical page in one risky change.
 ```text
 docs/**/*.md or *.mdx       canonical authored content
         ↓ prepare-content.mjs
- docs/docus/content/en/     ignored generated English tree + metadata
- docs/docus/ar-content/     authored Arabic source
+ docs/content/en/           ignored generated English tree + metadata
+ docs/ar-content/           authored Arabic source
         ↓ Nuxt/Docus build
  .output/server/index.mjs  SSR documentation service
         ↓ shared-proxy + Traefik
@@ -298,7 +298,7 @@ docs/**/*.md or *.mdx       canonical authored content
  media.structa.cloud/docs/ prefixed documentation host
 ```
 
-Do not edit `docs/docus/content/`, `.nuxt/`, `.output/`, `dist/`, or
+Do not edit `docs/content/`, `.nuxt/`, `.output/`, `dist/`, or
 `node_modules/`. If generated content is wrong, fix the source Markdown or the
 preparation script. The root `docs/index.html` is only a compatibility redirect;
 it is not a second documentation application.

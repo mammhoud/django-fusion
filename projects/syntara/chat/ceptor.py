@@ -47,7 +47,7 @@ class CeptorConfigLoader:
         self._cache: dict[str, Any] = {}
 
     def load_agent_configs(self) -> dict[str, Any]:
-        """Load applications/kilo/agent/*.json configs (cached)."""
+        """Load application/kilo/agent/*.json configs (cached)."""
         cache_key = "agent_configs"
         if cache_key in self._cache:
             return self._cache[cache_key]

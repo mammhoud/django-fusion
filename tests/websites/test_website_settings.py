@@ -11,11 +11,11 @@ from django.urls import reverse
 # tests/websites/ -> tests/ -> workspace root; canonical site files live under projects/.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ROOT = REPO_ROOT / "projects"
-# Shared compose/proxy orchestration lives under applications/ in this monorepo.
-COMPOSE_ROOT = REPO_ROOT / "applications" / "compose"
+# Shared compose/proxy orchestration lives under application/ in this monorepo.
+COMPOSE_ROOT = REPO_ROOT / "application" / "compose"
 # Docker image build files live under projects/compose/.
 CORE_COMPOSE_ROOT = ROOT / "compose"
-PROXY_ROOT = REPO_ROOT / "applications" / "proxy"
+PROXY_ROOT = REPO_ROOT / "application" / "proxy"
 # Sites were restructured: old core/{precis-ctc,lms} → projects/lms/cms/,
 # old core/VResume → projects/cms/portfolio/.
 WEBSITE_DIRS = {"precis-ctc": "lms/cms", "lms": "lms/cms", "vresume": "cms/portfolio"}

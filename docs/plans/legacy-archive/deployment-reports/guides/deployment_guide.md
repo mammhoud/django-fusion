@@ -72,8 +72,8 @@
 ├── .git/                          # Git repository
 ├── .github/                       # GitHub Actions workflows
 ├── core/                  # Main Django monorepo (see below)
-├── applications/proxy/                         # Traefik proxy configuration
-├── applications/databases/                     # Database containers (PostgreSQL)
+├── application/proxy/                         # Traefik proxy configuration
+├── application/databases/                     # Database containers (PostgreSQL)
 ├── docs/                          # Project documentation
 ├── Makefile                       # Root-level task delegation
 ├── CHANGELOG.md                   # Version history
@@ -130,7 +130,7 @@
 ### Proxy Configuration Structure
 
 ```
-/home/structa.cloud/applications/proxy/
+/home/structa.cloud/application/proxy/
 ├── Dockerfile                     # Traefik container image
 ├── docker-compose.traefik.yml     # Traefik compose file
 ├── .env                           # Cloudflare credentials (gitignored)
@@ -216,11 +216,11 @@ docker-compose down
 #### Prerequisites
 1. DNS A records point to this server (187.77.166.222)
 2. Port 80 reachable from internet
-3. `applications/proxy/configs/acme.json` exists (mode 0600)
+3. `application/proxy/configs/acme.json` exists (mode 0600)
 
 #### Configuration
 
-**File:** `/home/structa.cloud/applications/proxy/configs/traefik/dynamic.yml`
+**File:** `/home/structa.cloud/application/proxy/configs/traefik/dynamic.yml`
 
 ```yaml
 certificatesResolvers:
@@ -235,7 +235,7 @@ certificatesResolvers:
 
 #### Enable for a site
 
-**File:** `/home/structa.cloud/applications/proxy/configs/traefik/dynamic/ctc-research.yml`
+**File:** `/home/structa.cloud/application/proxy/configs/traefik/dynamic/ctc-research.yml`
 
 ```yaml
 routers:
@@ -274,7 +274,7 @@ If you want to use Cloudflare DNS-01 instead of HTTP-01:
 
 #### 2. Set credentials
 
-**File:** `/home/structa.cloud/applications/proxy/.env`
+**File:** `/home/structa.cloud/application/proxy/.env`
 
 ```
 CF_DNS_API_TOKEN=your_token_here
@@ -283,7 +283,7 @@ LETSENCRYPT_EMAIL=structa.cloud@gmail.com
 
 #### 3. Enable in static config
 
-**File:** `/home/structa.cloud/applications/proxy/configs/traefik/dynamic.yml`
+**File:** `/home/structa.cloud/application/proxy/configs/traefik/dynamic.yml`
 
 ```yaml
 certificatesResolvers:
@@ -314,7 +314,7 @@ docker restart default-proxy
 
 **Status:** ✅ Active (fallback only)
 
-If Let's Encrypt fails, Traefik falls back to self-signed certs in `applications/proxy/configs/traefik/dynamic/certs.yml`:
+If Let's Encrypt fails, Traefik falls back to self-signed certs in `application/proxy/configs/traefik/dynamic/certs.yml`:
 
 ```yaml
 tls:
@@ -467,7 +467,7 @@ make help
 echo | openssl s_client -connect ctc-research.com:443 -servername ctc-research.com 2>/dev/null | openssl x509 -noout -dates
 
 # Check Let's Encrypt store
-cat /home/structa.cloud/applications/proxy/configs/acme.json | python3 -m json.tool | grep -A 10 'precis-ctc'
+cat /home/structa.cloud/application/proxy/configs/acme.json | python3 -m json.tool | grep -A 10 'precis-ctc'
 
 # Restart proxy to reload configs
 docker restart default-proxy
@@ -604,9 +604,9 @@ docker exec precis-ctc-website python manage.py collectstatic --noinput
    ```
 2. Delete/backup acme.json:
    ```bash
-   mv /home/structa.cloud/applications/proxy/configs/acme.json /home/structa.cloud/applications/proxy/configs/acme.json.backup
-   touch /home/structa.cloud/applications/proxy/configs/acme.json
-   chmod 600 /home/structa.cloud/applications/proxy/configs/acme.json
+   mv /home/structa.cloud/application/proxy/configs/acme.json /home/structa.cloud/application/proxy/configs/acme.json.backup
+   touch /home/structa.cloud/application/proxy/configs/acme.json
+   chmod 600 /home/structa.cloud/application/proxy/configs/acme.json
    ```
 3. Restart and test:
    ```bash
@@ -623,7 +623,7 @@ docker exec precis-ctc-website python manage.py collectstatic --noinput
 - [Let's Encrypt DNS-01](https://doc.traefik.io/traefik/https/acme/#dnschallenge)
 - [Wagtail Documentation](https://docs.wagtail.org/)
 - [Django Documentation](https://docs.djangoproject.com/)
-- [Docker Compose Reference](https://docs.docker.com/applications/compose/compose-file/)
+- [Docker Compose Reference](https://docs.docker.com/application/compose/compose-file/)
 
 ---
 

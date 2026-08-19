@@ -1,0 +1,44 @@
+# =============================================================================
+# Workspace origin — space.structa.cloud (all workspace services, path-based)
+# =============================================================================
+# Routes space.localhost / space.structa.cloud to the shared-proxy nginx,
+# which serves AFFiNE at the root (see
+# application/proxy/nginx/default.conf.template). The affine.pro host remains
+# removed; AFFiNE is served only at the root of the shared space origin.
+#
+# Public host uses Let's Encrypt; the .localhost host stays on the mkcert
+# default cert. They are split because a single certResolver router bundling
+# a .localhost SAN fails ACME (\".localhost\" is not a public suffix), which
+# would block issuance for the public domain too.
+# =============================================================================
+http:
+  routers:
+    space-http:
+      rule: 'Host(`space.localhost`) || Host(`space.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: space-service
+      priority: 150
+
+    space-https:
+      rule: 'Host(`space.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: space-service
+      tls:
+        certResolver: letsencrypt-http
+      priority: 150
+
+    space-localhost-https:
+      rule: 'Host(`space.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: space-service
+      priority: 150
+
+  services:
+    space-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-proxy:80'
+        passHostHeader: true

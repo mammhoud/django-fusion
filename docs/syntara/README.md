@@ -95,6 +95,8 @@ make deploy                 # Full: build → collectstatic → migrate
 
 | Resource | Path |
 |----------|------|
+| Syntara strategy 🔒 | [`../startup/syntara.md`](../startup/syntara.md) |
+| Full portfolio strategy 🔒 | [`../startup/STRATEGY.md`](../startup/STRATEGY.md) |
 | Syntara config | [`configuration.md`](configuration.md) |
 | Backend environment | [`../../back-env/`](../../back-env/) |
 | Ceptor-AI library | [`../libs/README.md`](../libs/README.md) |

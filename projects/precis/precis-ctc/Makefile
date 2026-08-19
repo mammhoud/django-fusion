@@ -9,6 +9,9 @@ PROJECT := precis-ctc
 # ${VAR:?...} required-variable syntax in docker-compose.yml doesn't abort.
 ROOT_ENV := ../../../.env
 DC := docker compose --env-file $(ROOT_ENV)
+# Worker + scheduler live in docker-compose.tools.yml (standalone stack); the
+# main compose includes backend + frontend. Merge both for full-stack ops.
+DC_ALL := $(DC) -f docker-compose.yml -f docker-compose.tools.yml
 
 # Colors
 CYAN := \033[0;36m
@@ -126,10 +129,10 @@ rebuild-frontend:
 #   cd projects && make redeploy-with-stack WEBSITE=precis-ctc  (alias below)
 redeploy: check frontend-check
 	@echo "$(CYAN)🔄 Redeploying $(PROJECT) — backend + worker + scheduler + frontend...$(NC)"
-	$(DC) build backend worker scheduler frontend
-	$(DC) up -d --force-recreate backend worker scheduler frontend
+	$(DC_ALL) build backend worker scheduler frontend
+	$(DC_ALL) up -d --force-recreate backend worker scheduler frontend
 	@echo "$(GREEN)✅ Redeploy complete — stack status:$(NC)"
-	$(DC) ps
+	$(DC_ALL) ps
 
 # ── Clean Docker resources ─────────────────────────────────────────────
 clean:

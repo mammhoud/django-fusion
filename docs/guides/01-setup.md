@@ -12,12 +12,12 @@ Triggers on changes to:
 - `.github/actions/deploy-preflight/**`
 - `**/docker-compose*.yml` and `*.yaml`
 - `libs/**/*.md`
-- `applications/scripts/check_markdown_links.py`
+- `application/scripts/check_markdown_links.py`
 
 Jobs:
 
 1. **preflight** — runs the local Composite Action `.github/actions/deploy-preflight` to validate Docker daemon and `make deploy-ci`.
-2. **markdown-links** — runs `applications/scripts/check_markdown_links.py` to validate Markdown cross-links.
+2. **markdown-links** — runs `application/scripts/check_markdown_links.py` to validate Markdown cross-links.
 
 ### `check-extras.yml`
 
@@ -50,6 +50,6 @@ Common targets:
 
 ## Recommended enhancements
 
-1. Add a `docs.yml` workflow that runs `npm --prefix docs/docus run build` to validate Docus routes and locales on every docs PR.
+1. Add a `docs.yml` workflow that runs `npm --prefix docs run build` to validate Docus routes and locales on every docs PR.
 2. Pin `actions/checkout` and `actions/setup-python` to specific hashes for supply-chain security.
 3. Keep `make -C docs serve` as the canonical local Docus preview command.

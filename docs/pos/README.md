@@ -196,3 +196,5 @@ The Rust backend (Full Edition) includes a broadcast-based change signal system 
 | Development guide | [`../../guides/03-dev.md`](../../guides/03-dev.md) |
 | Customization | [`../../customization/`](../../customization/) |
 | POS README | [POS source](https://github.com/mammhoud/structa.cloud/tree/generic/projects/formints) |
+| Formint strategy 🔒 | [`../startup/formints.md`](../startup/formints.md) |
+| Full portfolio strategy 🔒 | [`../startup/STRATEGY.md`](../startup/STRATEGY.md) |

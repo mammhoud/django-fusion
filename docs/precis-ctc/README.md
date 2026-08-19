@@ -14,6 +14,7 @@ routes. It is not the same runtime as the unified `precis-main` product.
 
 ## Guides
 
+- [Project docs index](../../projects/precis/precis-ctc/docs/README.md)
 - [Content map](../../projects/precis/precis-ctc/docs/CONTENTS.md)
 - [Component registry and frontend components](../../projects/precis/precis-ctc/docs/COMPONENTS.md)
 - [Template architecture](../../projects/precis/precis-ctc/docs/TEMPLATES.md)
@@ -28,6 +29,11 @@ routes. It is not the same runtime as the unified `precis-main` product.
 
 - [Content strategy, ICP & market research](content-strategy.md)
 - [Publishing workflow & production notes](publishing-and-production.md)
+
+## Startup strategy 🔒
+
+- [CTC Research market strategy](../startup/precis-ctc.md) — MVP canvas, TAM/SAM/SOM, SaaS services, ideal clients, research backlog
+- [Full portfolio strategy](../startup/STRATEGY.md) — consolidated master
 
 ## Architecture at a glance
 

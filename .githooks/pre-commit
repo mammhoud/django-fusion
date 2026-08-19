@@ -30,7 +30,7 @@ fi
 
 # ── Repo root ───────────────────────────────────────────────────────
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-LINT_SCRIPT="$REPO_ROOT/applications/scripts/dev/check_typos_and_deadcode.py"
+LINT_SCRIPT="$REPO_ROOT/application/scripts/dev/check_typos_and_deadcode.py"
 
 if [ ! -f "$LINT_SCRIPT" ]; then
     echo -e "${RED}ERROR: lint script not found at $LINT_SCRIPT${NC}"

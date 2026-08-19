@@ -34,7 +34,7 @@ Copy the example env files:
 ```bash
 cp .env.example .env
 cp .env.local.example .env.local
-# Optional: cp applications/proxy/.env.example applications/proxy/.env
+# Optional: cp application/proxy/.env.example application/proxy/.env
 ```
 
 Edit `.env` and set at minimum:
@@ -79,7 +79,7 @@ make check WEBSITE=precis-ctc
 ## Common issues
 
 - **Missing submodules**: `django-fusion` or `ceptor-ai` import errors almost always mean submodules were not initialized.
-- **DB_NAME not set**: shared-worker and shared-scheduler require `DB_NAME` to be explicit; see `applications/docker-compose.tasks.yml`.
+- **DB_NAME not set**: shared-worker and shared-scheduler require `DB_NAME` to be explicit; see `application/docker-compose.tasks.yml`.
 - **Site directory not found**: ensure `WEBSITE` matches a canonical site name in `projects/cli.py`.
 
 ## Troubleshooting

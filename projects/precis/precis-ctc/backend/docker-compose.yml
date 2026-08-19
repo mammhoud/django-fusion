@@ -5,9 +5,17 @@
 services:
   backend:
     build:
-      context: .
+      # Project-scoped build: the context is the project root (backend/ is one
+      # level up from this compose file). Shared workspace dependencies arrive
+      # as additional contexts so the image stays scoped to this project:
+      #   - workspace → repo root (projects/pyproject, libs/, tests/)
+      #   - configs   → projects/precis/configs (shared Django settings)
+      context: ..
+      additional_contexts:
+        workspace: ../../../..
+        configs: ../../configs
+      dockerfile: backend/Dockerfile
       args:
-        SOURCE_PATH: precis/precis-ctc
         PROJECT_PATH: precis-ctc
     image: precis-ctc-backend:latest
     container_name: precis-ctc-website
@@ -72,7 +80,7 @@ services:
     volumes:
       # Backend code is copied into the image. Do not bind-mount ./backend in
       # this production stack: remote Docker engines may expose only the
-      # synchronized runtime directories, masking manage.py/settings.py.
+      # synchronized runtime directories, masking manage.py/settings/.
       - ../../../logs:/app/logs:z
       # Bind the host staticfiles dir (collectstatic output) and the
       # monorepo-shared media tree so the shared Nginx proxy serves the same

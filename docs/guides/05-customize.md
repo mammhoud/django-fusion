@@ -115,10 +115,10 @@ Every doc uses these tags:
 
 | Area | How |
 |------|-----|
-| Add a Docker service | Create `docker-compose.custom.yml` in `applications/compose/` |
+| Add a Docker service | Create `docker-compose.custom.yml` in `application/compose/` |
 | Add SSL certificate | `manage-certs.sh bootstrap-acme` |
 | Add site router | Edit `proxy/configs/traefik/dynamic/<site>.yml` |
-| Database backup scripts | Add to `applications/scripts/` |
+| Database backup scripts | Add to `application/scripts/` |
 
 ### 🔴 What You Should NOT Change
 

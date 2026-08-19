@@ -10,9 +10,9 @@ SHELL := /bin/bash
 # -----------------------------------------------------------------
 WORKSPACE_ROOT    := .
 CORE_DIR          := projects
-PROXY_DIR         := applications/proxy
-SERVICES_DIR      := applications/tools
-DATABASES_DIR     := applications/databases
+PROXY_DIR         := application/proxy
+SERVICES_DIR      := application/tools
+DATABASES_DIR     := application/databases
 POS_DIR           := projects/formints
 SOURCE_DIR        := source
 
@@ -72,7 +72,7 @@ PREFLIGHT_COMPOSE_FILES := \
 	$(DATABASES_DIR)/docker-compose.yml \
 	$(PROXY_DIR)/docker-compose.yml \
 	$(TASKS_COMPOSE_FILE) \
-	applications/docker-compose.yml
+	application/docker-compose.yml
 
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.
@@ -83,7 +83,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
 .PHONY: deploy-databases deploy-coder
-.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-monitoring deploy-tools
+.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-affine deploy-monitoring deploy-tools
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
@@ -103,7 +103,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 GITHUB_TOKEN ?=
 
-_github_token_files := .env projects/.env applications/proxy/.env
+_github_token_files := .env projects/.env application/proxy/.env
 _github_token := $(or \
 	$(GITHUB_TOKEN), \
 	$(shell cat $(_github_token_files) 2>/dev/null \
@@ -351,12 +351,12 @@ help:
 	@echo "  make nx-build-all     - Build all nx projects (nx run-many -t build --all)"
 	@echo "  make nx-run T=<target> - Run any target across all nx projects"
 	@echo ""
-	@echo "Self-hosted tools (applications/tools/):"
-	@echo "  make deploy-tools      - Deploy all self-hosted tools (monitoring, ollama, adminer, mailpit)"
-	@echo "  make deploy-utilities  - Deploy monitoring stack (Prometheus + Grafana, needs applications/tools/monitoring/)"
-	@echo "  make deploy-ollama     - Deploy Ollama + Open WebUI (needs applications/tools/ollama/)"
-	@echo "  make deploy-adminer    - Deploy Adminer DB UI (needs applications/tools/adminer/)"
-	@echo "  make deploy-mailpit    - Deploy Mailpit (needs applications/tools/mailpit/)"
+	@echo "Self-hosted tools (application/tools/):"
+	@echo "  make deploy-tools      - Deploy all self-hosted tools (monitoring, ollama, adminer, mailpit, affine)"
+	@echo "  make deploy-utilities  - Deploy monitoring stack (Prometheus + Grafana, needs application/tools/monitoring/)"
+	@echo "  make deploy-ollama     - Deploy Ollama + Open WebUI (needs application/tools/ollama/)"
+	@echo "  make deploy-adminer    - Deploy Adminer DB UI (needs application/tools/adminer/)"
+	@echo "  make deploy-mailpit    - Deploy Mailpit (needs application/tools/mailpit/)"
 	@echo ""
 	@echo "See individual component Makefiles for more details."
 
@@ -441,10 +441,10 @@ deploy-app:
 
 # Separate target for Anytype (non-Django application)
 deploy-anytype:
-	@if [ -d "applications/anytype" ]; then \
-		cd applications/anytype && $(MAKE) up; \
+	@if [ -d "application/anytype" ]; then \
+		cd application/anytype && $(MAKE) up; \
 	else \
-		echo "  (skip) applications/anytype not present"; \
+		echo "  (skip) application/anytype not present"; \
 	fi
 
 # Internal helper: wait up to 30s for default-redis healthcheck to pass.
@@ -590,7 +590,7 @@ deploy-media:
 	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d
 
 deploy-docs:
-	@docker compose -f applications/tools/docus/docker-compose.yml up -d --build
+	@docker compose -f docs/docker-compose.yml up -d --build
 
 deploy-proxy:
 	@cd $(PROXY_DIR) && $(MAKE) deploy
@@ -600,19 +600,27 @@ deploy-databases:
 
 deploy-coder:
 	@echo "🚀 Deploying Coder platform..."
-	@docker compose -f applications/docker-compose.yml up -d coder
+	@docker compose -f application/docker-compose.yml up -d coder
 	@echo "✅ Coder platform deployed"
 
 # -----------------------------------------------------------------
 # Self-hosted tools deploy targets — one compose per tool under
-# applications/tools/<name>/ (each with its own Makefile). Targets are
-# wired so adding applications/tools/<X>/Makefile "just works".
+# application/tools/<name>/ (each with its own Makefile). Targets are
+# wired so adding application/tools/<X>/Makefile "just works".
 # -----------------------------------------------------------------
 deploy-tools:
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
 	@$(MAKE) --no-print-directory deploy-adminer
 	@$(MAKE) --no-print-directory deploy-mailpit
+	@$(MAKE) --no-print-directory deploy-affine
+
+deploy-affine:
+	@if [ -d "$(SERVICES_DIR)/affine" ]; then \
+		$(MAKE) -C $(SERVICES_DIR)/affine up; \
+	else \
+		echo "  (skip) $(SERVICES_DIR)/affine not present"; \
+	fi
 
 deploy-utilities:
 	@if [ -d "$(SERVICES_DIR)/monitoring" ]; then \
@@ -942,7 +950,7 @@ status:
 	@echo "Databases:"
 	@echo ""
 	@echo "Anytype:"
-	@cd applications/anytype && $(MAKE) status || echo "  (Anytype not available)"
+	@cd application/anytype && $(MAKE) status || echo "  (Anytype not available)"
 	@docker ps --filter "name=postgres" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Postgres not running)"
 	@docker ps --filter "name=redis" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Redis not running)"
 
@@ -1062,7 +1070,7 @@ build-media:
 	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build shared-proxy
 
 build-docs:
-	@docker compose -f applications/tools/docus/docker-compose.yml build
+	@docker compose -f docs/docker-compose.yml build
 
 # -----------------------------------------------------------------
 # Validation
@@ -1172,7 +1180,7 @@ help-all:
 	@echo "  make {community,standard,pro,cloud,client}-*"
 	@echo "                      - Formint edition Makefiles"
 	@echo "  make -C $(PROXY_DIR) help           - Proxy management commands"
-	@echo "  make -C applications/tools/<tool> help - Tool-specific commands (docus, ollama, mailpit, ...)"
+	@echo "  make -C application/tools/<tool> help - Tool-specific commands (docus, ollama, mailpit, ...)"
 	@echo "  make -C $(DATABASES_DIR) help       - Database commands"
 	@echo "  make -C $(SOURCE_DIR) help          - Coolify source commands"
 	@echo "═══════════════════════════════════════════════════════════════"
@@ -1242,7 +1250,7 @@ cms-fusion:
 
 # Domain drift check — verifies cms-fusion and precis domain code is in sync
 domain-drift:
-	@bash applications/scripts/dev/check_domain_drift.sh
+	@bash application/scripts/dev/check_domain_drift.sh
 
 test-fusion:
 	@$(MAKE) -C $(CORE_DIR) test-fusion

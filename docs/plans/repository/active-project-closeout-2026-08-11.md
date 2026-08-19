@@ -124,7 +124,7 @@ cd ../frontend && npm run check && npm run build
 
 # Repository documentation hygiene
 cd /home/structa.cloud
-python applications/scripts/check_markdown_links.py
+python application/scripts/check_markdown_links.py
 ```
 
 ## Related

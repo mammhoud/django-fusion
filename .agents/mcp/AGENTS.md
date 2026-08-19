@@ -1,8 +1,8 @@
 # Kilo MCP Server — AI Agent Instructions
 
-**Path:** `applications/agents/`
+**Path:** `application/agents/`
 
-Read `/AGENTS.md` and `applications/AGENTS.md` first. Kilo is a lightweight
+Read `/AGENTS.md` and `application/AGENTS.md` first. Kilo is a lightweight
 FastAPI MCP/introspection service for this repository. It exposes read-oriented
 project, framework, infrastructure, and agent metadata without eagerly loading
 Django or AI models.
@@ -10,7 +10,7 @@ Django or AI models.
 ## Layout
 
 ```text
-applications/agents/
+application/agents/
 ├── mcp_server.py             # FastAPI MCP endpoints
 ├── config.json / kilo.jsonc  # Kilo configuration
 ├── agent/                    # Agent role definitions
@@ -123,8 +123,8 @@ Read the product-specific `AGENTS.md` before using a command against a product.
 ## Local development
 
 ```bash
-uvicorn --app-dir applications/agents mcp_server:app --host 127.0.0.1 --port 8100
-uvicorn --app-dir applications/agents mcp_server:app --host 127.0.0.1 --port 8100 --reload
+uvicorn --app-dir application/agents mcp_server:app --host 127.0.0.1 --port 8100
+uvicorn --app-dir application/agents mcp_server:app --host 127.0.0.1 --port 8100 --reload
 curl http://127.0.0.1:8100/readyz
 curl http://127.0.0.1:8100/health
 curl http://127.0.0.1:8100/prompts

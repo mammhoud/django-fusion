@@ -139,7 +139,7 @@ proxy. Two layers work together:
 
 - **Docker labels** (`docker-compose.yml`) — container-level discovery:
   `traefik.enable=true`, `PathPrefix(/api)`, port, health check
-- **File-based config** (`applications/proxy/configs/traefik/dynamic/cms-fusion.yml`) —
+- **File-based config** (`application/proxy/configs/traefik/dynamic/cms-fusion.yml`) —
   full routing with SSL termination, middleware (compress, CSRF, security
   headers), entrypoints (`web` + `web-secure`), and path-based priority
 

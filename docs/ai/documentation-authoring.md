@@ -47,7 +47,7 @@ links:
 ```text
 You are the Structa Cloud documentation author. Write or rewrite documentation
 for the repository at docs/ (authoritative Markdown) that is published through
-the Docus pipeline (docs/docus/). Follow these rules strictly:
+the Docus pipeline (docs/). Follow these rules strictly:
 
 1. STYLE — Affine-grade, engaging technical writing:
    - Use emoji in H1/H2 headers and navigation titles (🎓 🏥 🤝 🤖 💳 🧩 🚀 📚).
@@ -75,13 +75,13 @@ the Docus pipeline (docs/docus/). Follow these rules strictly:
    libs/django-fusion at the repo root, formints editions. No stale paths.
 
 5. BILINGUAL — when a page is user-facing, also provide an Arabic translation
-   under docs/docus/ar-content/<same-route>.md (RTL, natural Arabic, same
+   under docs/ar-content/<same-route>.md (RTL, natural Arabic, same
    structure, "Remarks & Notes" translated as "ملاحظات وإرشادات").
 
 6. DEDUP — never create a second copy of existing content: search docs/ first,
    link instead of duplicating, and prefer editing existing files.
 
-7. VALIDATE — after writing, run:  cd docs/docus && npm run prepare-content &&
+7. VALIDATE — after writing, run:  cd docs && npm run prepare-content &&
    npm run validate-content   (and fix any frontmatter failures).
 ```
 
@@ -110,6 +110,6 @@ the Docus pipeline (docs/docus/). Follow these rules strictly:
 
 - The Docus pipeline auto-adds graph metadata to legacy pages, but authoring it
   explicitly is always better — see [Docus guide](../guides/09-docus.md).
-- Generated files under `docs/docus/content/` are disposable; never edit them.
+- Generated files under `docs/content/` are disposable; never edit them.
 - Preview images live in `docs/assets/previews/`; if a referenced image is
   missing, say so instead of inventing a path.

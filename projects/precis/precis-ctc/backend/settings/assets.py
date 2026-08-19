@@ -45,7 +45,7 @@ for _sub in ("blog", "lms", "profile", "products", "pages", "accounts",
 # ═══════════════════════════════════════════════════════════════════
 # Media — serve from the monorepo-shared media tree, project-named so the
 # shared Nginx proxy can map ctc-research.com → /var/www/media/ctc-research
-# (see applications/proxy/docker-compose.nginx.yml + nginx/default.conf.template).
+# (see application/proxy/docker-compose.nginx.yml + nginx/default.conf.template).
 # The runtime container overrides this via the MEDIA_ROOT env var (/app/media).
 # ═══════════════════════════════════════════════════════════════════
 MEDIA_ROOT = os.environ.get(

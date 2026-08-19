@@ -5,15 +5,15 @@
 
 The default proxy (`default-proxy`) serves SSL on port 443.
 
-- Global config: `applications/proxy/configs/traefik/dynamic.yml`
-- Per-site routers: `applications/proxy/configs/traefik/dynamic/*.yml`
-- Let's Encrypt store: `applications/proxy/configs/acme.json`
+- Global config: `application/proxy/configs/traefik/dynamic.yml`
+- Per-site routers: `application/proxy/configs/traefik/dynamic/*.yml`
+- Let's Encrypt store: `application/proxy/configs/acme.json`
 
 ## Let's Encrypt
 
 Certs are obtained via Let's Encrypt DNS-01 (Cloudflare).
 
-Required env vars in `applications/proxy/.env`:
+Required env vars in `application/proxy/.env`:
 
 ```
 CF_DNS_API_TOKEN=<token>
@@ -30,7 +30,7 @@ CF_API_KEY=<key>
 
 1. **Stage 1**: LE staging CA for `vresume.structa.cloud`.
 2. **Stage 2**: LE production CA for precis-ctc, structa-cloud, media, dashboard.
-3. **Stage 3**: Delete `applications/proxy/configs/traefik/dynamic/certs.yml`.
+3. **Stage 3**: Delete `application/proxy/configs/traefik/dynamic/certs.yml`.
 
 ## Shared media
 
@@ -46,12 +46,12 @@ Media subdomains:
 
 ```bash
 # Deploy proxy
-cd applications/proxy && make deploy
+cd application/proxy && make deploy
 
 # Check certificate status
 make cert-check
 
 # Backup ACME store
-cp applications/proxy/configs/acme.json \
-  applications/proxy/data/backups/acme_$(date +%Y%m%d_%H%M%S).json
+cp application/proxy/configs/acme.json \
+  application/proxy/data/backups/acme_$(date +%Y%m%d_%H%M%S).json
 ```

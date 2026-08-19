@@ -41,8 +41,8 @@ npm run build
 ## تشغيل البنية المحلية
 
 ```bash
-docker compose -f applications/databases/docker-compose.yml up -d postgres default-redis
-docker compose -f applications/proxy/docker-compose.nginx.yml up -d --build shared-proxy
+docker compose -f application/databases/docker-compose.yml up -d postgres default-redis
+docker compose -f application/proxy/docker-compose.nginx.yml up -d --build shared-proxy
 ```
 
 بعد تشغيل الوكيل العكسي افتح:

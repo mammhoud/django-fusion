@@ -52,7 +52,7 @@
 │   ├── assets/
 │   ├── configs/
 │   └── www/
-├── applications/
+├── application/
 │   ├── proxy/                  # Traefik config
 │   └── databases/              # Postgres/Redis compose
 ├── docs/                       # Documentation
@@ -79,8 +79,8 @@ make deploy
 Or manually:
 
 ```bash
-docker compose -f applications/databases/docker-compose.yml up -d
-docker compose -f applications/proxy/docker-compose.yml up -d
+docker compose -f application/databases/docker-compose.yml up -d
+docker compose -f application/proxy/docker-compose.yml up -d
 cd projects && make docker-up WEBSITE=precis-ctc
 ```
 

@@ -1,12 +1,12 @@
 # Loop-CRM — Django render-first backend + Astro frontend.
 #
 # Like the Precis stacks (projects/precis/*/docker-compose.yml), this project
-# depends on the SHARED infrastructure from applications/databases rather than
+# depends on the SHARED infrastructure from application/databases rather than
 # running its own Postgres/Redis:
 #   - PostgreSQL  → container `postgres`, database `db_loop_crm` (DB_NAME_CRM)
 #   - Redis       → container `default-redis`, password REDIS_PASSWORD
 # Both live on the `common` + `warehouse-net` networks (created by
-# applications/databases), so every Loop-CRM service joins those networks and
+# application/databases), so every Loop-CRM service joins those networks and
 # addresses the shared containers by their stable container_name. The backend
 # applies migrations at startup; `restart: unless-stopped` retries until the
 # shared database is reachable, which is the "depend on the database" ordering.
@@ -30,7 +30,7 @@ services:
       DJANGO_SECRET_KEY: "${DJANGO_SECRET_KEY:?Set DJANGO_SECRET_KEY in projects/loop-crm/.env}"
       DJANGO_ALLOWED_HOSTS: crm.structa.cloud,www.crm.structa.cloud,loop-crm-backend,localhost,127.0.0.1
       CSRF_TRUSTED_ORIGINS: https://crm.structa.cloud,https://www.crm.structa.cloud
-      # Shared PostgreSQL cluster (applications/databases) — project-scoped DB.
+      # Shared PostgreSQL cluster (application/databases) — project-scoped DB.
       USE_POSTGRES: "1"
       POSTGRES_DB: "${DB_NAME_CRM:-db_loop_crm}"
       POSTGRES_USER: "${POSTGRES_USER:-admin}"

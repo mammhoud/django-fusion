@@ -434,7 +434,7 @@ class CeptorConfigPreloadView(View):
         from .ceptor import get_config_loader
 
         # Use project root (three levels up: chat/ → customizer/ → projects/ → root)
-        # so applications/kilo/agent/*.json is found
+        # so application/kilo/agent/*.json is found
         from pathlib import Path
 
         project_root = Path(__file__).resolve().parents[3]

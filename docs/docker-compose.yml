@@ -1,0 +1,45 @@
+# =============================================================================
+# Docus — Structa Cloud documentation (Nuxt server)
+# =============================================================================
+# Split out of applications/proxy/docker-compose.nginx.yml. Docus is a product
+# documentation service, not a proxy concern. shared-proxy (Nginx) still proxies
+# /docs/ and docs.structa.cloud to `docus:3000`, so this service must stay on
+# the `common` network alongside shared-proxy.
+# =============================================================================
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true
+
+services:
+  docus:
+    build:
+      context: ..
+      dockerfile: docs/Dockerfile
+    image: structa-docus:latest
+    container_name: docus
+    restart: unless-stopped
+    environment:
+      NUXT_APP_BASE_URL: /docs/
+      NUXT_SITE_URL: https://docs.structa.cloud
+      NUXT_HOST: 0.0.0.0
+      NUXT_PORT: 3000
+    networks:
+      - traefik-net
+      - common
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/docs/en/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M

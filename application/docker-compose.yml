@@ -1,0 +1,68 @@
+# ============================================================
+# Coder control plane
+# ============================================================
+# Coder owns workspace lifecycle and Terraform template execution. Workspace
+# workspace containers are provisioned by the Coder templates under
+# application/workspaces/ (the template runs the repo's compose devcontainer),
+#
+# PostgreSQL is created by application/databases/docker-compose.yml. Both
+# stacks attach to the external `common` network, so this file intentionally
+# does not duplicate the database service or use cross-file depends_on.
+#
+# Start order:
+#   docker compose -f application/databases/docker-compose.yml up -d postgres default-redis
+#   docker compose -f application/docker-compose.yml up -d coder
+# ============================================================
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  coder_data:
+    name: coder_data
+
+services:
+  coder:
+    image: ghcr.io/coder/coder:${CODER_VERSION:-latest}
+    container_name: coder
+    restart: unless-stopped
+    # Coder's Docker provisioner needs access to the host Docker socket. The
+    # supplementary group keeps the socket usable by the non-root Coder user.
+    group_add:
+      - "${DOCKER_GROUP_GID:-999}"
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      CODER_PG_CONNECTION_URL: "postgres://${CODER_DB_USER:-coder}:${CODER_DB_PASSWORD:-CTCreSearch0x@}@postgres:5432/${CODER_DB_NAME:-coder}?sslmode=disable"
+      CODER_ACCESS_URL: "${CODER_ACCESS_URL:-https://coder.structa.cloud}"
+      CODER_DANGEROUS_ALLOW_PATH_APP_SITE_OWNER_ACCESS: "${CODER_DANGEROUS_ALLOW_PATH_APP_SITE_OWNER_ACCESS:-true}"
+      CODER_HTTP_ADDRESS: "0.0.0.0:${CODER_HTTP_PORT:-7080}"
+      CODER_HTTPS_ADDRESS: "0.0.0.0:${CODER_HTTPS_PORT:-7443}"
+      CODER_TLS_ENABLED: "${CODER_TLS_ENABLED:-false}"
+      # Workspace IDEs are exposed through authenticated Coder apps, not a
+      # public code-server subdomain.
+    ports:
+      - "${CODER_HTTP_PORT:-7080}:7080"
+      - "${CODER_HTTPS_PORT:-7443}:7443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/structa.cloud:/home/structa.cloud:ro
+      - coder_data:/home/coder
+    networks:
+      # The workspace Terraform template defaults coder_host_ip to this stable
+      # address for agent binary downloads and workspace agent callbacks.
+      common:
+        ipv4_address: 172.18.0.16
+      traefik-net: {}
+    # The canonical Coder routers live in the Traefik file provider
+    # (application/proxy/configs/traefik/dynamic/coder.yml). Avoid duplicate Docker
+    # provider routers with different TLS behavior.
+    labels:
+      traefik.enable: "false"
+    # ghcr.io/coder/coder is distroless and has no shell/curl healthcheck.
+    # Coder retries its database connection while the separately managed
+    # PostgreSQL stack becomes ready.

@@ -25,7 +25,7 @@ structa.cloud/
 │   ├── Makefile              # Canonical project dispatcher
 │   └── pyproject.toml        # Python workspace dependencies and pytest config
 ├── libs/                     # Reusable libraries (currently django-fusion)
-├── applications/             # Databases, proxy, Compose, scripts, Kilo/MCP
+├── application/             # Databases, proxy, Compose, scripts, Kilo/MCP
 ├── tests/                    # Workspace integration, HTTP, browser, fixtures
 ├── docs/                     # MkDocs/docs site, plans, and project references
 ├── .github/                  # CI workflows and composite actions
@@ -42,7 +42,7 @@ structa.cloud/
 | Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
 | Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
 | django-fusion | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables, and assets | `libs/django-fusion/AGENTS.md` |
-| Infrastructure | `applications/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | `applications/AGENTS.md` |
+| Infrastructure | `application/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | `application/AGENTS.md` |
 | Workspace tests | `tests/` | Cross-project validation, fixtures, browser tests, and deployment checks | `tests/AGENTS.md` |
 
 ### Name and migration rules
@@ -92,8 +92,8 @@ root safety and repository rules remain in force.
 │       ├── projects/formints/formint-client/AGENTS.md
 │       └── projects/formints/tests/pos-e2e/AGENTS.md
 ├── libs/django-fusion/AGENTS.md
-├── applications/AGENTS.md
-│   └── applications/agents/AGENTS.md
+├── application/AGENTS.md
+│   └── application/agents/AGENTS.md
 ├── tests/AGENTS.md
 ├── .github/AGENTS.md
 └── deeper template/frontend/test AGENTS.md files

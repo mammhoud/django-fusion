@@ -51,12 +51,12 @@ Internet
 2. **Stage 2:** Flip to **production** CA, enable for all sites
 3. **Stage 3:** Delete self-signed cert fallback
 
-> ⚠️ **Warning:** The ACME store at `applications/proxy/configs/acme.json` must have `0600` permissions and is gitignored. Never commit it.
+> ⚠️ **Warning:** The ACME store at `application/proxy/configs/acme.json` must have `0600` permissions and is gitignored. Never commit it.
 
 ### Required Env Vars
 
 ```bash
-# applications/proxy/.env
+# application/proxy/.env
 CF_DNS_API_TOKEN=your-cloudflare-api-token
 # OR
 CF_API_EMAIL=your@email.com
@@ -80,11 +80,11 @@ make deploy              # Full stack deploy
 
 ```bash
 # Databases
-cd applications/databases
+cd application/databases
 make deploy
 
 # Proxy
-cd applications/proxy
+cd application/proxy
 make deploy
 
 # Specific site
@@ -119,7 +119,7 @@ docker exec precis-ctc-website python manage.py check
 docker exec postgres pg_dump -U structa_user ctc_research_db > backup_ctc.sql
 
 # All databases
-cd applications/databases
+cd application/databases
 make backup
 ```
 

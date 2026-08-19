@@ -77,17 +77,17 @@ echo "=================================="
 # LE-managed: acme.json is the source of truth (Stage 3+). Until Stage 3
 # the self-signed .crt/.key/.pem files in certs/ are still referenced
 # via certs.yml as a fallback.
-check_file "/root/site/websites/applications/proxy/configs/acme.json" "Traefik ACME store (acme.json)"
-check_permission "/root/site/websites/applications/proxy/configs/acme.json" "600" "ACME store permissions"
+check_file "/root/site/websites/application/proxy/configs/acme.json" "Traefik ACME store (acme.json)"
+check_permission "/root/site/websites/application/proxy/configs/acme.json" "600" "ACME store permissions"
 
-check_file "/root/site/websites/applications/proxy/data/certs/ctc-research.crt" "CTC-Research self-signed cert (fallback)"
-check_file "/root/site/websites/applications/proxy/data/certs/ctc-research.key" "CTC-Research self-signed key (fallback)"
+check_file "/root/site/websites/application/proxy/data/certs/ctc-research.crt" "CTC-Research self-signed cert (fallback)"
+check_file "/root/site/websites/application/proxy/data/certs/ctc-research.key" "CTC-Research self-signed key (fallback)"
 
-check_file "/root/site/websites/applications/proxy/data/certs/structa-cloud.crt" "Structa Cloud self-signed cert (fallback)"
-check_file "/root/site/websites/applications/proxy/data/certs/structa-cloud.key" "Structa Cloud self-signed key (fallback)"
+check_file "/root/site/websites/application/proxy/data/certs/structa-cloud.crt" "Structa Cloud self-signed cert (fallback)"
+check_file "/root/site/websites/application/proxy/data/certs/structa-cloud.key" "Structa Cloud self-signed key (fallback)"
 
-check_file "/root/site/websites/applications/proxy/data/certs/vresume.crt" "VResume self-signed cert (fallback)"
-check_file "/root/site/websites/applications/proxy/data/certs/vresume.key" "VResume self-signed key (fallback)"
+check_file "/root/site/websites/application/proxy/data/certs/vresume.crt" "VResume self-signed cert (fallback)"
+check_file "/root/site/websites/application/proxy/data/certs/vresume.key" "VResume self-signed key (fallback)"
 
 # Check certificate permissions
 echo ""
@@ -95,20 +95,20 @@ echo "2. Certificate File Permissions"
 echo "================================"
 
 # Self-signed keys (fallback) must remain 0600
-check_permission "/root/site/websites/applications/proxy/data/certs/ctc-research.key" "600" "CTC-Research Key Permissions"
-check_permission "/root/site/websites/applications/proxy/data/certs/structa-cloud.key" "600" "Structa Cloud Key Permissions"
-check_permission "/root/site/websites/applications/proxy/data/certs/vresume.key" "600" "VResume Key Permissions"
+check_permission "/root/site/websites/application/proxy/data/certs/ctc-research.key" "600" "CTC-Research Key Permissions"
+check_permission "/root/site/websites/application/proxy/data/certs/structa-cloud.key" "600" "Structa Cloud Key Permissions"
+check_permission "/root/site/websites/application/proxy/data/certs/vresume.key" "600" "VResume Key Permissions"
 
 # Check configuration files
 echo ""
 echo "3. Configuration Files Verification"
 echo "===================================="
 
-check_file "/root/site/websites/applications/proxy/configs/traefik/dynamic.yml" "Traefik Static Configuration"
-check_file "/root/site/websites/applications/proxy/docker-compose.traefik.yml" "Traefik Docker Compose"
-check_file "/root/site/websites/applications/proxy/configs/traefik/dynamic/ctc-research.yml" "CTC-Research Routing Config"
-check_file "/root/site/websites/applications/proxy/configs/traefik/dynamic/structa-cloud.yml" "Structa Cloud Routing Config"
-check_file "/root/site/websites/applications/proxy/configs/traefik/dynamic/vresume.yml" "VResume Routing Config"
+check_file "/root/site/websites/application/proxy/configs/traefik/dynamic.yml" "Traefik Static Configuration"
+check_file "/root/site/websites/application/proxy/docker-compose.traefik.yml" "Traefik Docker Compose"
+check_file "/root/site/websites/application/proxy/configs/traefik/dynamic/ctc-research.yml" "CTC-Research Routing Config"
+check_file "/root/site/websites/application/proxy/configs/traefik/dynamic/structa-cloud.yml" "Structa Cloud Routing Config"
+check_file "/root/site/websites/application/proxy/configs/traefik/dynamic/vresume.yml" "VResume Routing Config"
 
 # Check configuration content
 echo ""
@@ -118,22 +118,22 @@ echo "======================================"
 # Static config: must declare the letsencrypt certificatesResolvers block
 # (dnsChallenge + cloudflare). certs.yml self-signed fallback is still
 # expected on the host until Stage 3 deletes it.
-check_contains "/root/site/websites/applications/proxy/configs/traefik/dynamic.yml" "certificatesResolvers:" "Static config declares certificatesResolvers"
-check_contains "/root/site/websites/applications/proxy/configs/traefik/dynamic.yml" "letsencrypt-http:" "Static config declares 'letsencrypt-http' resolver"
-check_contains "/root/site/websites/applications/proxy/configs/traefik/dynamic.yml" "httpChallenge:" "Static config uses HTTP-01 challenge"
-check_contains "/root/site/websites/applications/proxy/configs/traefik/dynamic.yml" "caServer:" "Static config points to Let's Encrypt CA"
+check_contains "/root/site/websites/application/proxy/configs/traefik/dynamic.yml" "certificatesResolvers:" "Static config declares certificatesResolvers"
+check_contains "/root/site/websites/application/proxy/configs/traefik/dynamic.yml" "letsencrypt-http:" "Static config declares 'letsencrypt-http' resolver"
+check_contains "/root/site/websites/application/proxy/configs/traefik/dynamic.yml" "httpChallenge:" "Static config uses HTTP-01 challenge"
+check_contains "/root/site/websites/application/proxy/configs/traefik/dynamic.yml" "caServer:" "Static config points to Let's Encrypt CA"
 
-check_file "/root/site/websites/applications/proxy/configs/traefik/dynamic/certs.yml" "Self-signed certs fallback (deleted in Stage 3)"
+check_file "/root/site/websites/application/proxy/configs/traefik/dynamic/certs.yml" "Self-signed certs fallback (deleted in Stage 3)"
 
-check_contains "/root/site/websites/applications/proxy/docker-compose.traefik.yml" "./data/certs:/etc/traefik/certs" "Self-signed certs volume mount in compose"
-check_contains "/root/site/websites/applications/proxy/docker-compose.traefik.yml" "./configs/acme.json:/etc/traefik/acme/acme.json" "ACME store volume mount in compose"
-check_contains "/root/site/websites/applications/proxy/docker-compose.traefik.yml" "LETSENCRYPT_EMAIL" "Let's Encrypt email env var passed to proxy"
+check_contains "/root/site/websites/application/proxy/docker-compose.traefik.yml" "./data/certs:/etc/traefik/certs" "Self-signed certs volume mount in compose"
+check_contains "/root/site/websites/application/proxy/docker-compose.traefik.yml" "./configs/acme.json:/etc/traefik/acme/acme.json" "ACME store volume mount in compose"
+check_contains "/root/site/websites/application/proxy/docker-compose.traefik.yml" "LETSENCRYPT_EMAIL" "Let's Encrypt email env var passed to proxy"
 
 # Stage 1 of the LE rollout only enables vresume. Stage 2 will add the
 # other two sites — re-enable these checks at that point.
-# check_contains "/root/site/websites/applications/proxy/configs/traefik/dynamic/ctc-research.yml" "certResolver: letsencrypt-http" "CTC-Research uses Let's Encrypt HTTP-01 cert resolver"
-# check_contains "/root/site/websites/applications/proxy/configs/traefik/dynamic/structa-cloud.yml" "certResolver: letsencrypt-http" "Structa Cloud uses Let's Encrypt HTTP-01 cert resolver"
-check_contains "/root/site/websites/applications/proxy/configs/traefik/dynamic/vresume.yml" "certResolver: letsencrypt-http" "VResume uses Let's Encrypt HTTP-01 cert resolver (Stage 1)"
+# check_contains "/root/site/websites/application/proxy/configs/traefik/dynamic/ctc-research.yml" "certResolver: letsencrypt-http" "CTC-Research uses Let's Encrypt HTTP-01 cert resolver"
+# check_contains "/root/site/websites/application/proxy/configs/traefik/dynamic/structa-cloud.yml" "certResolver: letsencrypt-http" "Structa Cloud uses Let's Encrypt HTTP-01 cert resolver"
+check_contains "/root/site/websites/application/proxy/configs/traefik/dynamic/vresume.yml" "certResolver: letsencrypt-http" "VResume uses Let's Encrypt HTTP-01 cert resolver (Stage 1)"
 
 # Check base directory cleanup
 echo ""

@@ -22,7 +22,7 @@ except ImportError:  # pragma: no cover
     pytest = None  # type: ignore
 
 PROJECT_ROOT = Path(__file__).parent.parent
-PROXY_DIR = PROJECT_ROOT / "applications" / "proxy"
+PROXY_DIR = PROJECT_ROOT / "application" / "proxy"
 CERTS_DIR = PROXY_DIR / "certs"
 TRAEFIK_DYNAMIC_DIR = PROXY_DIR / "traefik" / "dynamic"
 

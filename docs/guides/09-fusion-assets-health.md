@@ -12,7 +12,7 @@ contracts. The detailed library reference is
   media, and webpack asset checks.
 - `projects/cms-fusion/backend/` and `projects/precis/precis-main/backend/` — site
   settings, URL mounts, and compatibility adapters.
-- `applications/proxy/` — Traefik and the read-only `shared-proxy` Nginx
+- `application/proxy/` — Traefik and the read-only `shared-proxy` Nginx
   service.
 
 ## Choose one response mode
@@ -65,7 +65,7 @@ webpack output; the proxy health check remains a deployment concern.
 python3 -m pytest libs/django-fusion/tests/test_health_assets.py -q
 python3 -m py_compile libs/django-fusion/src/django_fusion/core/assets/*.py \
   libs/django-fusion/src/django_fusion/core/health/*.py
-python3 applications/scripts/staging/check_markdown_links.py
+python3 application/scripts/staging/check_markdown_links.py
 ```
 
 See the library guide for the full response matrix, remarks, and the staged

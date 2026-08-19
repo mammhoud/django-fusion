@@ -132,7 +132,7 @@ TASK_MODULES = [
 ### Step 3: Add queue to Docker Compose
 
 ```yaml
-# applications/compose/docker-compose.tasks.yml
+# application/compose/docker-compose.tasks.yml
 services:
   shared-worker:
     environment:

@@ -1,4 +1,4 @@
-# 🔴 Proxy — `applications/proxy/`
+# 🔴 Proxy — `application/proxy/`
 
 Traefik reverse proxy with Let's Encrypt SSL, serving all Structa Cloud sites.
 
@@ -39,7 +39,7 @@ Internet → Traefik (port 443, SSL)
 ## Quick Commands
 
 ```bash
-cd applications/proxy
+cd application/proxy
 
 make up              # Start proxy
 make down            # Stop proxy

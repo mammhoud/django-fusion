@@ -62,7 +62,7 @@ Every generated document **must** include:
 | Syntara | `projects/syntara/` · `docs/syntara/` | `cypercloud` (legacy) |
 | Formint POS | `projects/formints/` · `docs/pos/` | `pos`, edition names |
 | django-fusion | `libs/django-fusion/` (repo root) · `docs/libs/` | — |
-| Infra | `applications/` · `docs/dev/infrastructure/` | `services/` (legacy) |
+| Infra | `application/` · `docs/dev/infrastructure/` | `services/` (legacy) |
 
 ## 4. Where Things Live
 

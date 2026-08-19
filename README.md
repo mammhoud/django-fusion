@@ -1,6 +1,6 @@
 # ☁️ Structa Cloud
 
-**Multi-product monorepo** — Django sites, desktop POS apps, AI services, and shared infrastructure.
+**Multi-product monorepo** — Django sites, desktop POS apps, AI services, and shared infrastructure on one Django + Wagtail + django-fusion foundation.
 
 ```text
                      ┌──────────────────────────────────┐
@@ -10,8 +10,8 @@
                           │      │      │      │
               ┌───────────┼──────┼──────┼──────┼───────────┐
               │           │      │      │      │           │
-        CTC Research    LMS  Portfolio  Cypercloud  Media Server
-          :5070        :5071    :5072     :5073       :80
+        CTC Research   Precis  Syntara  Loop-CRM  Media Server
+          :5070        :5074    :5073    :80xx      :80
               │           │      │      │      │           │
               └───────────┴──────┴──────┴──────┴───────────┘
                                  │
@@ -25,10 +25,11 @@
 
 | Layer | Technology | Projects |
 |-------|-----------|----------|
-| **Web Apps** | Django 5.1 + Wagtail + HTMX | LMS, Portfolio, Cypercloud, CTC Research |
-| **Desktop POS** | Tauri 2 + Rust + React 19 | POS (Minimal / Solo / Full) |
-| **AI Platform** | Ollama + MCP + CeptorAI | Cypercloud Chat, AI Agents |
-| **Infrastructure** | Docker + Traefik + Nginx | Proxy, Databases, Workers |
+| **Web Apps** | Django + Wagtail + HTMX + django-fusion | Precis (LMS + landing), CTC Research, Loop-CRM |
+| **AI Platform** | Ollama + MCP + CeptorAI | Syntara (AI chat/customizer) |
+| **Desktop POS** | Tauri 2 + Rust + React 19 | Formint POS (Community / Standard / Pro / Cloud / Client) |
+| **Infrastructure** | Docker + Traefik + Nginx | Proxy, Databases, Workers, Tools |
+| **Documentation** | Docus (Nuxt Content) | `docs/` — EN + AR, `docs.structa.cloud` |
 
 ## 📦 Quick Start
 
@@ -43,40 +44,39 @@ uv sync
 
 # Install local libs
 uv pip install -e libs/django-fusion/
-uv pip install -e libs/ceptor-ai/
 
-# Start infra
+# Start infrastructure
 make deploy-databases
 make deploy-proxy
 
 # Run a site
-cd projects && make dev WEBSITE=lms
+cd projects && make run-dev WEBSITE=precis-main
 ```
 
 ## 🏗️ Project Structure
 
 ```
 structa.cloud/
-├── projects/              # Django sites + desktop apps
-│   ├── configs/           # Shared Django settings
-│   ├── assets/            # Shared templates, static, locale
-│   ├── www/               # Shared core code + workers
-│   ├── lms/               # LMS Demo (structa.cloud)
-│   ├── portfolio/         # Portfolio/VResume (vresume.structa.cloud)
-│   ├── cypercloud/        # AI Chat Platform
-│   ├── precis-ctc/      # CTC Research (ctc-research.com)
-│   └── pos/               # Desktop POS (Tauri 2 + Rust)
-├── libs/                  # Reusable Python packages (submodules)
-│   ├── django-fusion/     # Component system + routing framework
-│   └── ceptor-ai/         # AI chat + MCP integration toolkit
-├── applications/          # Infrastructure + tooling
-│   ├── proxy/             # Traefik SSL reverse proxy
-│   ├── databases/         # Postgres + Redis containers
-│   ├── compose/           # Docker Compose orchestration
-│   └── scripts/           # Build + automation scripts
-├── docs/                  # Full documentation site
-├── tests/                 # Workspace integration tests
-└── Makefile               # Root dispatcher
+├── projects/                  # Product code + shared Django config
+│   ├── precis/                # Precis product group
+│   │   ├── precis-main/       # Unified Precis (LMS + landing, canonical)
+│   │   ├── precis-landing/    # Legacy Landing-Fusion copy (kept)
+│   │   └── precis-ctc/        # CTC Research (ctc-research.com)
+│   ├── syntara/               # Cypercloud AI chat/customizer runtime
+│   ├── formints/              # POS editions (community/pro/cloud/standard/client)
+│   ├── loop-crm/              # Sales + marketing CRM
+│   ├── configs/               # Shared Django settings
+│   └── Makefile               # Site dispatcher (WEBSITE=...)
+├── libs/
+│   └── django-fusion/         # Shared Django/Wagtail framework (submodule)
+├── application/               # Infrastructure + tooling
+│   ├── proxy/                 # Traefik SSL reverse proxy + Nginx shared-proxy
+│   ├── databases/             # Postgres + Redis containers
+│   ├── tools/                 # Self-hosted tools (affine, ollama, adminer, mailpit, monitoring)
+│   └── scripts/               # Build + automation scripts
+├── docs/                      # Full documentation site (Docus, EN + AR)
+├── tests/                     # Workspace integration tests
+└── Makefile                   # Root dispatcher + deploy cascade
 ```
 
 ## 🧩 Core Libraries
@@ -84,45 +84,42 @@ structa.cloud/
 | Library | Description | Status |
 |---------|-------------|--------|
 | **[django-fusion](libs/django-fusion/)** | Component system, `{% comp %}` tag, declarative routing, forms/tables, auth, Wagtail blocks | ✅ Production |
-| **[ceptor-ai](libs/ceptor-ai/)** | AI chat client, MCP server, BEM converter, agent generation | ✅ Beta |
 
 ## 🚢 Deployment
 
 ```bash
-make deploy              # Full stack (DB → media → apps → proxy)
+make deploy              # Full stack (DB → coder → media → apps → tasks → docs → proxy)
 make deploy-databases    # Postgres + Redis
 make deploy-app          # Django sites
+make deploy-docs         # Docus documentation site
 make deploy-proxy        # Traefik reverse proxy
+make deploy-tools        # Self-hosted tools
 make status              # Container health
 ```
+
+The cascade is ordered `postgres-first` by default — see
+[`docs/COMMANDS.md`](docs/COMMANDS.md) for the full delegation chain and the
+unified `up`/`deploy`/`down` verb convention.
 
 ## 📚 Documentation
 
 | Section | What You'll Find |
 |---------|-----------------|
+| [🏠 Docs home](docs/README.md) | Product table, quick links, Docus source note |
+| [🗺️ Reference map](docs/REFERENCE.md) | Every docs dir/subdir → owning project → file contents |
+| [🛠️ Commands](docs/COMMANDS.md) | Unified verbs, delegation chain, deploy cascade |
 | [📖 Guides](docs/guides/) | Setup → Dev → Deploy → Customize → Clone |
-| [🏢 Projects](docs/projects/) | Per-project docs: features, config, infra, DB |
-| [🏗️ Infrastructure](docs/infrastructure/) | Proxy, Docker, deployment, workers |
 | [🤖 AI & Agents](docs/ai/) | Agent instructions, prompts, MCP integration |
+| [🚀 Startup strategy 🔒](docs/startup/README.md) | MVP canvas, TAM/SAM/SOM, ideal clients (private) |
 | [🔄 Changelogs](CHANGELOG.md) | Full version history |
-
-## 🛠️ Key Commands
-
-```bash
-make dev          # Run dev server
-make check        # Django system checks
-make test         # Run tests
-make push         # Push repo + submodules
-make deploy       # Full deployment
-make status       # Container status
-```
 
 ## 🔗 Links
 
-- **LMS:** [structa.cloud](https://structa.cloud)
-- **Portfolio:** [vresume.structa.cloud](https://vresume.structa.cloud)
+- **Precis:** [structa.cloud](https://structa.cloud)
 - **CTC Research:** [ctc-research.com](https://ctc-research.com)
 - **Docs:** [docs.structa.cloud](https://docs.structa.cloud)
+- **Tools:** [tools.structa.cloud](https://tools.structa.cloud)
+- **Workspace:** [space.structa.cloud](https://space.structa.cloud)
 
 ## 📄 License
 

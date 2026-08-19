@@ -152,7 +152,7 @@ The package prompt references are:
 
 - `libs/django-fusion/PROMPTS.md` (`DF-*` docs)
 - `libs/ceptor-ai/PROMPTS.md` (`CA-*` docs)
-- `applications/kilo/commands/ceptor-ai.md` (Kilo workflow)
+- `application/kilo/commands/ceptor-ai.md` (Kilo workflow)
 
 ## Testing and release checklist
 

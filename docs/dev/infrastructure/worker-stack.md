@@ -56,14 +56,14 @@ Django settings module or importing Precis/LMS task code.
 
 ## Compose deployment
 
-The canonical stack is `applications/docker-compose.tasks.yml`:
+The canonical stack is `application/docker-compose.tasks.yml`:
 
 ```bash
 # The following command is read-only during validation; deployment is explicit.
-docker compose -f applications/docker-compose.tasks.yml config -q
+docker compose -f application/docker-compose.tasks.yml config -q
 
 # Start the shared stack after PostgreSQL and Redis are available.
-DB_NAME=db_structa docker compose -f applications/docker-compose.tasks.yml up -d
+DB_NAME=db_structa docker compose -f application/docker-compose.tasks.yml up -d
 ```
 
 The worker command is:
@@ -120,7 +120,7 @@ python backend/manage.py shell -c \
 make status-tasks
 make logs-tasks
 
-docker compose -f applications/docker-compose.tasks.yml config -q
+docker compose -f application/docker-compose.tasks.yml config -q
 uv run pytest libs/django-fusion/tests/test_tasks.py \
   tests/websites/test_shared_tasks.py -q
 ```
@@ -141,7 +141,7 @@ before starting services on a shared host.
 
 ## Source of truth
 
-- `applications/docker-compose.tasks.yml`
+- `application/docker-compose.tasks.yml`
 - `libs/django-fusion/src/django_fusion/tasks/`
 - `projects/<product>/backend/plugins/workers/`
 - `docs/plans/repository/active-monorepo-consolidation-2026-08-14.md`

@@ -299,7 +299,7 @@ check-all:
 
 # Domain drift check — verifies cms-fusion and precis-lms domain code is in sync
 domain-drift:
-	@bash ../applications/scripts/dev/check_domain_drift.sh
+	@bash ../application/scripts/dev/check_domain_drift.sh
 
 validate-config:
 	@docker compose -f $(COMPOSE_FILE) config -q && echo "Compose config valid" || echo "Compose config invalid"
@@ -387,7 +387,7 @@ docker-build-shared-proxy:
 	@mkdir -p $(LOG_BUILD_DIR)
 	@timestamp=$$(date +%Y%m%d-%H%M%S); \
 	 echo "[build] shared-proxy -> $(LOG_BUILD_DIR)/docker-build-shared-proxy-$$timestamp.log"; \
-	 docker compose -f applications/proxy/docker-compose.nginx.yml build shared-proxy 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-proxy-$$timestamp.log
+	 docker compose -f application/proxy/docker-compose.nginx.yml build shared-proxy 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-proxy-$$timestamp.log
 
 docker-build-all: docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy
 
@@ -820,12 +820,12 @@ run-all:
 # Traefik SSL Certificate Operations
 docker-traefik-generate-certs:
 	@echo "Generating Traefik SSL certificates..."
-	bash applications/proxy/scripts/generate-certs.sh
+	bash application/proxy/scripts/generate-certs.sh
 
 docker-traefik-backup-certs:
 	@echo "Backing up Traefik SSL certificates..."
-	bash applications/proxy/scripts/backup-certs.sh
+	bash application/proxy/scripts/backup-certs.sh
 
 docker-traefik-restore-certs:
 	@echo "Restoring Traefik SSL certificates..."
-	bash applications/proxy/scripts/restore-certs.sh
+	bash application/proxy/scripts/restore-certs.sh

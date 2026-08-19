@@ -33,7 +33,7 @@ links:
 
 > ⚡ **New here?** Start with [Guides](guides/) — numbered walkthroughs for setup, auth, development, deployment, and customization.
 
-> 📚 **Docus:** this Markdown tree is the single authored source. `docs/docus/content/` is generated and ignored; build it with `make -C docs build`.
+> 📚 **Docus:** this Markdown tree is the single authored source. `docs/content/` is generated and ignored; build it with `make -C docs build`.
 
 ## Current Products
 
@@ -44,7 +44,7 @@ links:
 | **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
 | **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |
 | **django-fusion** | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables | submodule |
-| **Infrastructure** | `applications/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | structa.cloud |
+| **Infrastructure** | `application/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | structa.cloud |
 | **Workspace tests** | `tests/` | Cross-project validation, fixtures, browser tests, deployment checks | — |
 
 ## Documentation ownership
@@ -90,7 +90,7 @@ structa.cloud/
 │   └── pyproject.toml                # Python workspace dependencies
 ├── libs/                             # Reusable libraries
 │   └── django-fusion/                # Shared Django/Wagtail components (submodule)
-├── applications/                     # Databases, proxy, Compose, scripts, Kilo/MCP
+├── application/                     # Databases, proxy, Compose, scripts, Kilo/MCP
 │   ├── proxy/                        # Traefik reverse proxy configs
 │   ├── databases/                    # PostgreSQL + Redis compose
 │   ├── agents/                       # Kilo MCP server
@@ -122,6 +122,8 @@ structa.cloud/
 - [⭐ Recommendations first](recommendations.md)
 - [🛠️ Project Setup & Build Guides](setup-guides.md) — per-project setup/build indexes
 - [📚 Guides](guides/) — step-by-step tutorials
+- [🗺️ Reference map](REFERENCE.md) — every docs dir/subdir, its owning project, and what each file references
+- [🛠️ Commands & delegation](COMMANDS.md) — unified verb naming, delegation chain, and the deploy cascade
 - [🗺️ Canonical plans](plans/README.md) — all active plans and historical evidence
 - [🔄 Recent Changes](recent-changes.md)
 - [🎯 Features Index](features/) — capabilities by project
@@ -134,7 +136,7 @@ structa.cloud/
 - [📦 Publishing](publish/) — marketplace & distribution
 - [🤖 AI & Agents](ai/) — agent instructions, prompts, and skills
 - [✍️ Documentation authoring prompt](ai/documentation-authoring.md) — the powerful doc-generation prompt (emoji, diagrams, ERD, previews, EN/AR)
-- [🚀 Startup & Market Strategy](startup/README.md) — 🔒 private: MVP canvas, TAM/SAM/SOM, ideal clients per product
+- [🚀 Startup & Market Strategy](startup/README.md) — 🔒 private: MVP canvas, TAM/SAM/SOM, ideal clients per product; [full portfolio master](startup/STRATEGY.md)
 - [📚 Docus implementation](guides/09-docus.md) — source generation, metadata, locales, build, and deployment
 
 ## Project Documentation
@@ -153,10 +155,10 @@ structa.cloud/
 ## Canonical source and Docus
 
 `docs/**/*.md` and `docs/**/*.mdx` are authored documentation. The Docus app
-at `docs/docus/` runs `scripts/prepare-content.mjs` to generate the ignored
-English content tree and copy the authored Arabic translations. There is one
-content source, one set of links, and one validation path; generated files are
-not edited or committed.
+lives at the root of `docs/` and runs `scripts/prepare-content.mjs` to
+generate the ignored English content tree and copy the authored Arabic
+translations. There is one content source, one set of links, and one
+validation path; generated files are not edited or committed.
 
 Use `object`, `attributes`, `tags`, and `links` frontmatter for new documents.
 The preparation script adds the same graph metadata to legacy pages that do not
@@ -172,7 +174,7 @@ yet define it. See [Project awareness](guides/00-project-awareness.md).
 ## Remarks & Notes
 
 - `docs/**/*.md` and `docs/**/*.mdx` are the only authored documentation sources.
-- `docs/docus/content/` is disposable generated output; never edit it or add a second copy there.
+- `docs/content/` is disposable generated output; never edit it or add a second copy there.
 - New pages should carry `object`, `attributes`, `tags`, and Docus-native `links` metadata.
 - Prefer one canonical page plus links to it over repeated product explanations.
 
@@ -193,7 +195,7 @@ instead of maintaining a second documentation copy in this package README.
 ## Local development
 
 ```bash
-cd docs/docus
+cd docs
 npm install
 npm run prepare-content
 npm run validate-content

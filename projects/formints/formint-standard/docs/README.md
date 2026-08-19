@@ -1,116 +1,72 @@
-# Formint — Documentation
+# Formint Standard — Documentation
 
 > **Version:** 0.1.0 | **Stack:** Tauri 2 + React 19 + Rust/Diesel + SQLite
 > **Repository:** [github.com/mammhoud/POS](https://github.com/mammhoud/POS)
+> **Edition identity:** `formint-standard` (historically `formintA`)
 
-## Overview
+<!-- AI-generated: review needed -->
 
-Formint is a lightweight, offline-first Point of Sale desktop application built with **Tauri**, **React 19**, and **Rust/Diesel ORM**. It uses an embedded **SQLite** database — no external server or server required.
+## One docs project per edition
 
----
+The Standard and Community editions share the same Tauri + React + Rust frontend,
+so their documentation is **one shared docs project**. The canonical copy lives
+in [`formint-community/docs/`](../formint-community/docs/); this directory keeps
+only the edition-specific files and points at the shared docs.
 
-## Documentation Index
+## Edition-specific files (kept here)
 
 | Document | Description |
 |----------|-------------|
-| **[Architecture](architecture.md)** | System design, data flow diagrams, FlyonUI integration, theme system |
-| **[Styling & UI Packages](styling.md)** | Full styling catalog — Tailwind v4, FlyonUI, Iconify, Framer Motion, themes, bundle analysis |
-| **[Color Palette](color-palette.md)** | Theme variants, OKLCH tokens, custom actions/choices at color themes, references |
-| **[Forms & Inputs](forms.md)** | BEM `.field` system, inputs, selects, validation states |
-| **[Tables & Grids](tables-grid.md)** | `DataTable` component + responsive grid utilities |
-| **[Page Options](pages-options.md)** | What search/filter/sort/view options each page has |
-| **[Shared Components](shared-components.md)** | The shared compact search bar (`ProductFilterBar`) and how to add it anywhere |
-| **[Modals](modals.md)** | Extended `Modal` + `useModal`/`ModalProvider`, and the htmx / Alpine.js option |
-| **[Database Schema](database.md)** | ERD, table reference, migration guide, seed presets |
-| **[Invoke Methods](invoke-methods.md)** | Complete Tauri `invoke()` catalog — frontend calls & Rust handlers |
-| **[File Structure](file-structure.md)** | Full project tree with descriptions |
-| **[Commands](commands.md)** | Makefile, Tauri CLI, and dev commands reference |
-| **[Guides](guides.md)** | Setup, customization, deployment, troubleshooting |
-| **[Calculations](calculations.md)** | All formulas: sales, tax, delivery, payroll, loyalty |
-| **[Roles & Permissions](roles-permissions.md)** | Permission flags, default roles, UI visibility rules |
-| **[Rust Code](rust-code.md)** | Diesel ORM schema, operation modules, hardware integration |
-| **[Customization](customization.md)** | Theme variants, product colors, receipts, i18n, presets |
+| **[Guides](guides.md)** | Setup, customization, deployment, troubleshooting (Standard bundle id `com.mammhoud.pos`) |
+| **[i18n Gaps](i18n-gaps.md)** | Translation coverage report for this edition's locale files |
+| **[Mobile concept](mobile-concept.html)** | Static mobile UI preview |
 
----
+## Shared documentation (canonical in formint-community/docs/)
 
-## Quick Links
-
-- **Getting Started:** See [Guides → Setup](guides.md#setup)
-- **Architecture Overview:** See [Architecture → Data Flow](architecture.md#data-flow)
-- **Database ERD:** See [Database → Entity Relationship Diagram](database.md#entity-relationship-diagram)
-- **All Tauri Commands:** See [Invoke Methods](invoke-methods.md)
-- **Makefile Commands:** See [Commands](commands.md)
-
----
+| Document | Description |
+|----------|-------------|
+| [Architecture](../formint-community/docs/architecture.md) | System design, data flow diagrams, FlyonUI integration, theme system |
+| [Styling & UI Packages](../formint-community/docs/styling.md) | Full styling catalog — Tailwind v4, FlyonUI, Iconify, Framer Motion, themes |
+| [Color Palette](../formint-community/docs/color-palette.md) | Theme variants, OKLCH tokens, custom color actions |
+| [Forms & Inputs](../formint-community/docs/forms.md) | BEM `.field` system, inputs, selects, validation states |
+| [Tables & Grids](../formint-community/docs/tables-grid.md) | `DataTable` component + responsive grid utilities |
+| [Page Options](../formint-community/docs/pages-options.md) | Search/filter/sort/view options per page |
+| [Shared Components](../formint-community/docs/shared-components.md) | `ProductFilterBar` and how to add it anywhere |
+| [Modals](../formint-community/docs/modals.md) | Extended `Modal` + `useModal`/`ModalProvider`, htmx / Alpine.js option |
+| [Database Schema](../formint-community/docs/database.md) | ERD, table reference, migration guide, seed presets |
+| [Invoke Methods](../formint-community/docs/invoke-methods.md) | Complete Tauri `invoke()` catalog |
+| [File Structure](../formint-community/docs/file-structure.md) | Full project tree with descriptions |
+| [Commands](../formint-community/docs/commands.md) | Makefile, Tauri CLI, and dev commands reference |
+| [Calculations](../formint-community/docs/calculations.md) | Sales, tax, delivery, payroll, loyalty formulas |
+| [Roles & Permissions](../formint-community/docs/roles-permissions.md) | Permission flags, default roles, UI visibility rules |
+| [Rust Code](../formint-community/docs/rust-code.md) | Diesel ORM schema, operation modules, hardware integration |
+| [Customization](../formint-community/docs/customization.md) | Theme variants, product colors, receipts, i18n, presets |
 
 ## Project at a Glance
 
 ```
-formintA/  (site slug formint-pos)
+formint-standard/          (historically formintA)
 ├── src/                    # React 19 frontend
 │   ├── components/         # 16 reusable UI components
 │   ├── pages/              # 22 route-level pages
 │   ├── contexts/           # React contexts (Theme, Auth, Language)
-│   ├── hooks/              # Custom React hooks (2)
-│   ├── api/                # Tauri invoke wrappers (chat, data, server)
-│   ├── utils/              # Utilities (invoice PDF, export)
+│   ├── hooks/              # Custom React hooks
+│   ├── api/                # Tauri invoke wrappers
 │   ├── i18n/               # Internationalization (5 languages)
 │   └── test/               # Vitest tests
 ├── src-tauri/              # Rust/Tauri backend
-│   ├── src/                # Rust source
-│   │   ├── lib.rs          # 80+ Tauri command registrations
-│   │   ├── operations/     # 27 CRUD operation modules
-│   │   └── db/             # Diesel models + schema
+│   ├── src/                # Rust source (lib.rs, operations/, db/)
 │   ├── migrations/         # SQLite migrations
 │   └── binaries/           # Server binaries
-├── docs/                   # This documentation
-└── scripts/                # Build, dev, CI scripts
+└── docs/                   # Edition-specific docs only (shared docs in community)
 ```
 
----
+## Remarks & Notes
 
-## Technology Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Desktop Shell** | Tauri 2 | Native window, file dialogs, system menus |
-| **Frontend** | React 19 + TypeScript | UI components, routing, state |
-| **Styling** | Tailwind CSS v4 + FlyonUI | Utility-first CSS with semantic components |
-| **Animation** | Framer Motion v12 | Page transitions, micro-interactions |
-| **i18n** | react-i18next + i18next | Multi-language support (5 languages) |
-| **Charts** | Recharts | Analytics dashboards |
-| **Backend** | Rust (Tauri commands) | Business logic, data access |
-| **ORM** | Diesel | Type-safe SQLite queries |
-| **Database** | SQLite (embedded) | Local data storage |
-| **PDF** | jsPDF + jspdf-autotable | Receipt and invoice generation |
-
----
-
-## Architecture Overview
-
-```
-┌───────────────────────────────────────────────────────────────────┐
-│                     Tauri Desktop App                             │
-│                                                                   │
-│  ┌─────────────────────────────────────┐  ┌────────────────────┐  │
-│  │         React Frontend              │  │   Rust Backend     │  │
-│  │                                     │  │                    │  │
-│  │  ┌─────────┐  ┌──────────────────┐  │  │  ┌──────────────┐  │  │
-│  │  │ Contexts │  │    Pages (22)    │  │  │  │  Operations  │  │  │
-│  │  │ Auth     │  │  Home, Sale,     │  │  │  │  (27 modules)│  │  │
-│  │  │ Theme    │  │  Settings, ...   │──┼──┼─>│              │  │  │
-│  │  │ Language │  │                  │  │  │  │  ┌─────────┐ │  │  │
-│  │  └─────────┘  └──────────────────┘  │  │  │  │  Diesel  │ │  │  │
-│  │                                     │  │  │  │  ORM     │ │  │  │
-│  │  ┌─────────┐  ┌──────────────────┐  │  │  │  └─────────┘ │  │  │
-│  │  │  Hooks  │  │   Components     │  │  │  └──────────────┘  │  │
-│  │  │ (2)     │  │   (16 reusable)  │  │  │                    │  │
-│  │  └─────────┘  └──────────────────┘  │  │  ┌──────────────┐  │  │
-│  │                                     │  │  │   SQLite DB  │  │  │
-│  │  ┌─────────┐  ┌──────────────────┐  │  │  │ restaurant.db│  │  │
-│  │  │ FlyonUI │  │  Tailwind CSS    │  │  │  └──────────────┘  │  │
-│  │  │ JS/CSS  │  │  + Iconify       │  │  │                    │  │
-│  │  └─────────┘  └──────────────────┘  │  └────────────────────┘  │
-│  └─────────────────────────────────────┘                          │
-└───────────────────────────────────────────────────────────────────┘
-```
+- The 18 shared docs (architecture, styling, database, commands, …) were
+  byte-identical copies of the Community edition's docs and were deleted here;
+  the Community directory is the single source. Edit them there.
+- Do not re-copy shared docs into this directory — link to
+  `../formint-community/docs/` instead.
+- Edition identity and bundle identifiers differ per edition (`guides.md`
+  documents Standard's); the shared docs are edition-agnostic.

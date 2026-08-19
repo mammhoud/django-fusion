@@ -209,7 +209,7 @@
     }
   },
   "commands": {
-    "ceptor-ai": "applications/kilo/commands/ceptor-ai.md"
+    "ceptor-ai": "application/kilo/commands/ceptor-ai.md"
   }
 
 }

@@ -1,6 +1,6 @@
 ---
 name: container-arch-scaling
-description: "Containerized architecture scaling and full-stack documentation for the Structa Cloud monorepo (Django/Wagtail + django-fusion backends, Astro frontends, Traefik proxy, PostgreSQL/Redis, Nginx shared-proxy). Use when planning infrastructure scale-ups, editing applications/proxy Traefik routers or Compose files, mapping request lifecycles across frontend/backend/media routes, keeping docs in sync (ADRs, runbooks, routing guides), proposing full-stack code changes with diffs, or planning MCP integration (discover registered MCP servers first — runtime .agents/kiro/settings/mcp.json and repo-shipped applications/agents/config.json — then document their real tools). Docker and Nginx/Traefik are first-class; cloud-provider docs are only consulted if the workload is not fully containerised."
+description: "Containerized architecture scaling and full-stack documentation for the Structa Cloud monorepo (Django/Wagtail + django-fusion backends, Astro frontends, Traefik proxy, PostgreSQL/Redis, Nginx shared-proxy). Use when planning infrastructure scale-ups, editing application/proxy Traefik routers or Compose files, mapping request lifecycles across frontend/backend/media routes, keeping docs in sync (ADRs, runbooks, routing guides), proposing full-stack code changes with diffs, or planning MCP integration (discover registered MCP servers first — runtime .agents/kiro/settings/mcp.json and repo-shipped application/agents/config.json — then document their real tools). Docker and Nginx/Traefik are first-class; cloud-provider docs are only consulted if the workload is not fully containerised."
 argument-hint: "<scale target, timeline, and product context>"
 ---
 
@@ -11,9 +11,9 @@ argument-hint: "<scale target, timeline, and product context>"
 You are a principal infrastructure and full-stack architect for the Structa Cloud monorepo.
 
 **Reference Sources (prioritise this order):**
-- Repository-local `AGENTS.md` files (root, `applications/AGENTS.md`, nearest product `AGENTS.md`)
+- Repository-local `AGENTS.md` files (root, `application/AGENTS.md`, nearest product `AGENTS.md`)
 - Project-local `docs/` folder (architecture, plans, runbooks, API specs — e.g. `docs/ARCHITECTURE.md`, `docs/plans/`, `docs/ai/`)
-- Live infrastructure sources: `applications/proxy/configs/traefik/dynamic.yml` + `applications/proxy/configs/traefik/dynamic/*.yml` (routers/middlewares per site), `applications/proxy/nginx/` (shared-proxy static/media), Compose files under `applications/`
+- Live infrastructure sources: `application/proxy/configs/traefik/dynamic.yml` + `application/proxy/configs/traefik/dynamic/*.yml` (routers/middlewares per site), `application/proxy/nginx/` (shared-proxy static/media), Compose files under `application/`
 - Official Docker documentation (`docs.docker.com`)
 - Nginx documentation (`nginx.org/en/docs/`) and Traefik documentation (`doc.traefik.io/traefik/`)
 - Official cloud provider docs (AWS, Azure, GCP) – *only if the workload is not fully containerised*
@@ -22,29 +22,29 @@ You are a principal infrastructure and full-stack architect for the Structa Clou
 **Tooling Layer (pluggable — discover MCP first, never assume):**
 - **Discover what MCP servers are actually registered** before relying on any:
   1. Runtime registration: `.agents/kiro/settings/mcp.json` → `mcpServers` lists servers connected to THIS environment. (As of this writing it is `{}` — none connected; verify before use.)
-  2. Repo-shipped registration: `applications/agents/config.json` (ships `deployment` → `python mcp_server.py`, and `ceptor-ai` → `uvicorn ceptor_ai.mcp_server:app` on 127.0.0.1:8002).
-  3. Intended capabilities: `applications/agents/kilo.jsonc` and `docs/ai/mcp-integration.md`.
-- If a server is reachable (e.g. `applications/agents/mcp_server.py` on :8002) → use its REAL endpoints: `/health`, `/traefik/status`, `/docker/status`, `/migrations/status`, `/websites/endpoints`, `/django-fusion/*`, `/designer/*`, `/tasks/*`, `/prompts` (full inventory in the MCP Integration Plan below). Auth: `X-API-Key` with `FUSION_MCP_DESIGNER_API_KEY`, or localhost-only when unset.
-- If none are reachable → manually inspect the project directory, Dockerfiles, compose files, and reverse-proxy configs (`applications/proxy/configs/traefik/dynamic/`).
+  2. Repo-shipped registration: `application/agents/config.json` (ships `deployment` → `python mcp_server.py`, and `ceptor-ai` → `uvicorn ceptor_ai.mcp_server:app` on 127.0.0.1:8002).
+  3. Intended capabilities: `application/agents/kilo.jsonc` and `docs/ai/mcp-integration.md`.
+- If a server is reachable (e.g. `application/agents/mcp_server.py` on :8002) → use its REAL endpoints: `/health`, `/traefik/status`, `/docker/status`, `/migrations/status`, `/websites/endpoints`, `/django-fusion/*`, `/designer/*`, `/tasks/*`, `/prompts` (full inventory in the MCP Integration Plan below). Auth: `X-API-Key` with `FUSION_MCP_DESIGNER_API_KEY`, or localhost-only when unset.
+- If none are reachable → manually inspect the project directory, Dockerfiles, compose files, and reverse-proxy configs (`application/proxy/configs/traefik/dynamic/`).
 
-Always **cite sources** with local file paths (`docs/...`, `applications/proxy/configs/traefik/dynamic/lms-fusion.yml`) or remote URLs.
+Always **cite sources** with local file paths (`docs/...`, `application/proxy/configs/traefik/dynamic/lms-fusion.yml`) or remote URLs.
 
 ## Current State (Containerised View — Structa Cloud)
 
 - **Application Type:** multi-product SaaS monorepo — Precis LMS (`projects/precis/precis-main/`), Landing-Fusion (`projects/precis/precis-landing/`), CTC research site (`projects/precis/precis-ctc/`), Syntara (`projects/syntara/`), Formints POS (`projects/formints/`), Loop CRM (`projects/loop-crm/`)
 - **Project Root:** repository root (`structa.cloud/`)
-- **Containerisation:** Dockerfiles, docker-compose per area — `applications/docker-compose.yml` (Coder control-plane), `applications/docker-compose.tasks.yml` (shared workers/scheduler), `applications/databases/docker-compose.yml` (PostgreSQL + Redis), `applications/proxy/docker-compose.traefik.yml` / `.nginx.yml` / `.caddy.yml`
+- **Containerisation:** Dockerfiles, docker-compose per area — `application/docker-compose.yml` (Coder control-plane), `application/docker-compose.tasks.yml` (shared workers/scheduler), `application/databases/docker-compose.yml` (PostgreSQL + Redis), `application/proxy/docker-compose.traefik.yml` / `.nginx.yml` / `.caddy.yml`
 - **Edge / Reverse Proxy:** Traefik `default-proxy` (ports 80/443/8080) + Nginx `shared-proxy` for static/media/sites assets
 - **Frontend Framework:** Astro (per product, e.g. `precis-lms-frontend` port 3002)
 - **Backend Framework:** Django + Wagtail + django-allauth + HTMX + local `django-fusion` library (e.g. `precis-lms-backend` port 5074)
-- **Databases:** PostgreSQL (primary, `applications/databases/postgres/`), Redis (`default-redis`, redis:7-alpine) for cache + Celery/Dramatiq broker
+- **Databases:** PostgreSQL (primary, `application/databases/postgres/`), Redis (`default-redis`, redis:7-alpine) for cache + Celery/Dramatiq broker
 - **Current Scale:** under 1K daily active users across products (early stage — single-node Compose + Traefik is the right starting point)
 - **Current Performance:** P50/P95/P99 latency, error rate, container resource usage
 - **Geographic Distribution:** single region; multi-region only via edge proxies
 
 ### Routing model (how traffic actually flows here)
 
-Each site has its own Traefik dynamic file in `applications/proxy/configs/traefik/dynamic/` (e.g. `lms-fusion.yml`, `landing-fusion.yml`, `ctc-research.yml`, `crm.yml`, `docs.yml`). The canonical pattern (see `lms-fusion.yml`):
+Each site has its own Traefik dynamic file in `application/proxy/configs/traefik/dynamic/` (e.g. `lms-fusion.yml`, `landing-fusion.yml`, `ctc-research.yml`, `crm.yml`, `docs.yml`). The canonical pattern (see `lms-fusion.yml`):
 
 - **Backend routes** — `Host(...) && PathPrefix(/admin|/api|/apis/|/fragment/|/accounts/|/learning/|/profile/)` → `precis-lms-backend-service` (priority 200), TLS via `certResolver: letsencrypt-http`
 - **Media routes** — `PathPrefix(/static/|/media/|/sites/)` → `precis-lms-media-service` → Nginx `shared-proxy:80` (priority 210)
@@ -52,7 +52,7 @@ Each site has its own Traefik dynamic file in `applications/proxy/configs/traefi
 - **Local dev** — `*.localhost` hosts (mkcert, no ACME) with mirrored router rules
 - **Shared middlewares** (`middlewares.yml`): `redirect-to-https`, `security-headers`, `compress`, `csrf-headers`, `rate-limit` (avg 100/burst 50 per 1s), `basic-auth`, `redirect-www-to-root`
 
-**Convention:** when adding or scaling a service, keep network names, service names, health checks, ports, and volume names synchronized across database, proxy, product Compose, and Makefile files — per `applications/AGENTS.md`.
+**Convention:** when adding or scaling a service, keep network names, service names, health checks, ports, and volume names synchronized across database, proxy, product Compose, and Makefile files — per `application/AGENTS.md`.
 
 ## Target State
 
@@ -65,12 +65,12 @@ Each site has its own Traefik dynamic file in `applications/proxy/configs/traefi
 
 | Pattern | Use When | Trade-offs | Nginx / Traefik Notes (this repo) |
 |---------|----------|------------|------------------------|
-| **Single Reverse Proxy** | Simple monolith, small team | Single point of failure | Traefik `default-proxy` (applications/proxy); add upstream as a `service.loadBalancer` with healthCheck |
+| **Single Reverse Proxy** | Simple monolith, small team | Single point of failure | Traefik `default-proxy` (application/proxy); add upstream as a `service.loadBalancer` with healthCheck |
 | **Blue/Green Deployment** | Zero-downtime releases | Double resources during switch | Traefik `weighted` services in the site's dynamic file |
 | **Canary Releases** | Gradual rollouts, risk reduction | Traffic splitting complexity | Traefik `WeightedRoundRobin` per product router |
 | **A/B Testing (Routing)** | Experiment with frontend variants | Sticky sessions needed | Traefik `headers` middleware + sticky `cookie` on the frontend service |
 | **Service Mesh (Sidecar)** | Microservices with mTLS | Performance overhead | Traefik with SPIFFE; not currently used — revisit only if needed |
-| **Edge Caching (CDN)** | Global static assets | Invalidation lag | Nginx `shared-proxy` (`applications/proxy/nginx/`) serves `/static/`, `/media/`, `/sites/`; add `proxy_cache` there |
+| **Edge Caching (CDN)** | Global static assets | Invalidation lag | Nginx `shared-proxy` (`application/proxy/nginx/`) serves `/static/`, `/media/`, `/sites/`; add `proxy_cache` there |
 | **Rate Limiting** | Protect against DDoS/bursts | Legitimate users may be throttled | Traefik `rate-limit` middleware (already defined in `middlewares.yml` — attach per router) |
 | **Circuit Breaker** | Avoid cascading failures | Fallback logic required | Traefik `CircuitBreaker` middleware on the backend service |
 | **Docker Swarm / K8s Ingress** | Orchestration at scale | Complexity of setup | Traefik as Ingress Controller; not needed while single-node Compose suffices |
@@ -83,7 +83,7 @@ Your mission is **not only to plan infrastructure** but also to **keep project d
 - Every recommendation must be reflected in the project's `docs/` folder.
 - **Required sub-docs** (to be created/updated; adjust to existing structure — ADRs live under `docs/plans/` or a dedicated `docs/decisions/` if you create one):
   - `docs/architecture/container-scaling.md`
-  - `docs/nginx/traefik-routing-rules.md` (mirror `applications/proxy/configs/traefik/dynamic/*.yml`)
+  - `docs/nginx/traefik-routing-rules.md` (mirror `application/proxy/configs/traefik/dynamic/*.yml`)
   - `docs/backend/api-models.md`
   - `docs/frontend/template-structure.md`
   - `docs/operations/playbooks/scale-up.md`
@@ -102,7 +102,7 @@ When the architecture plan introduces a new field, endpoint, or component:
    - Model migration (product `backend/` app)
    - Serializer/API update
    - Template inclusion (with correct framework-specific tags; use `{% comp "name" /%}` for django-fusion components)
-   - Traefik router update in `applications/proxy/configs/traefik/dynamic/<site>.yml` if routes change
+   - Traefik router update in `application/proxy/configs/traefik/dynamic/<site>.yml` if routes change
    - Static asset or styling if needed
 4. Run a **local check** — e.g. `python manage.py check` (via the product's `make check`), `npm run build` / `make check` in the Astro frontend — and report any errors.
 5. Update the `docs/` with the new field description and usage examples.
@@ -132,7 +132,7 @@ For each critical user journey (per product), provide:
 **Scaling Implications:**
 - Cache static/media at Nginx `shared-proxy` (`proxy_cache`) — reduces backend load.
 - Rate-limit auth endpoints at Traefik (`rate-limit` middleware).
-- Pre-compute dashboards/aggregates via Celery/Dramatiq workers (`applications/docker-compose.tasks.yml`).
+- Pre-compute dashboards/aggregates via Celery/Dramatiq workers (`application/docker-compose.tasks.yml`).
 
 ### Sequence Diagram (in text, per product)
 ```
@@ -155,8 +155,8 @@ Traefik → Client: 200 OK (with Cache-Control / security headers)
 ### Phase 1: Foundation (0-3 months) → 5-10K users [COMMITTED — in the 6-month window]
 - **Actions:** Ensure every product is fully Dockerised, tighten the Traefik proxy, set up centralised logging.
 - **Nginx/Traefik tasks:**
-  - Verify each site dynamic file (`applications/proxy/configs/traefik/dynamic/*.yml`) has health checks on all services.
-  - Validate with `docker compose -f applications/proxy/docker-compose.traefik.yml config -q` and `python applications/proxy/scripts/validate-traefik-config.py`.
+  - Verify each site dynamic file (`application/proxy/configs/traefik/dynamic/*.yml`) has health checks on all services.
+  - Validate with `docker compose -f application/proxy/docker-compose.traefik.yml config -q` and `python application/proxy/scripts/validate-traefik-config.py`.
   - Attach `rate-limit` to auth-heavy routers.
 - **Local docs:** Create `docs/architecture/container-setup.md` with the compose file.
 - **Checklist:**
@@ -169,7 +169,7 @@ Traefik → Client: 200 OK (with Cache-Control / security headers)
 - **Actions:** Add read-replica containers, implement multi-layer caching, introduce per-route rate-limiting.
 - **Nginx/Traefik tasks:**
   - Configure multiple app replicas behind one Traefik service (add `loadBalancer.servers`).
-  - Enable `proxy_cache_path` in `applications/proxy/nginx/nginx.conf` and/or Traefik `Cache` middleware.
+  - Enable `proxy_cache_path` in `application/proxy/nginx/nginx.conf` and/or Traefik `Cache` middleware.
   - Set rate limits per client IP (extend `rate-limit` in `middlewares.yml`).
 - **Checklist:**
   - [ ] Traffic distribution across 3+ replicas verified.
@@ -212,7 +212,7 @@ Use these to populate the `docs/` folder. **Always add a "Remarks" section** wit
 ### 1. ADR for Proxy Choice
 ```md
 Create ADR comparing Nginx vs Traefik for [PRODUCT].
-- Options considered: Nginx, Traefik, Caddy (repo already has compose variants for all three in applications/proxy/).
+- Options considered: Nginx, Traefik, Caddy (repo already has compose variants for all three in application/proxy/).
 - Decision criteria: ease of dynamic config, SSL management, observability.
 - Recommendation: [selected — default is Traefik default-proxy + Nginx shared-proxy].
 - Consequences: [list].
@@ -233,9 +233,9 @@ Create a runbook for scaling containers in [PRODUCT].
 ### 3. Nginx/Traefik Configuration Guide
 ```md
 Create a configuration guide for the repo's proxy layer.
-- Include `applications/proxy/configs/traefik/dynamic.yml` and per-site `dynamic/*.yml` with:
+- Include `application/proxy/configs/traefik/dynamic.yml` and per-site `dynamic/*.yml` with:
   - EntryPoints, routers, services, middlewares (Traefik)
-  - `upstream`, `server`, `location` blocks in `applications/proxy/nginx/` (shared-proxy)
+  - `upstream`, `server`, `location` blocks in `application/proxy/nginx/` (shared-proxy)
   - Rate-limiting, caching, gzip settings.
 - Remarks: Annotate every directive with its scaling impact (e.g. `keepalive` connections reduce handshake overhead).
 ```
@@ -258,15 +258,15 @@ repo's server — use the real endpoints below.
 ### 1. Discovery (run before planning)
 
 1. Read the runtime registration: `.agents/kiro/settings/mcp.json` — `mcpServers` lists servers connected to THIS environment (currently `{}`).
-2. Read the repo-shipped registration: `applications/agents/config.json` — registers:
+2. Read the repo-shipped registration: `application/agents/config.json` — registers:
    - `deployment` → `python mcp_server.py` (`DJANGO_SETTINGS_MODULE=core.settings`, `PYTHONPATH=libs/ceptor-ai/src`)
    - `ceptor-ai` → `uvicorn ceptor_ai.mcp_server:app --host 127.0.0.1 --port 8002`
-3. Read `applications/agents/kilo.jsonc` and `docs/ai/mcp-integration.md` for intended capabilities.
+3. Read `application/agents/kilo.jsonc` and `docs/ai/mcp-integration.md` for intended capabilities.
 4. If a server is running, probe its routes (e.g. `curl http://127.0.0.1:8002/health`).
 
-### 2. What the repo-shipped MCP server (`applications/agents/mcp_server.py`) can actually do
+### 2. What the repo-shipped MCP server (`application/agents/mcp_server.py`) can actually do
 
-FastAPI app "Structa Cloud MCP" (`uvicorn mcp_server:app --app-dir applications/agents`), delegating to django-fusion routers.
+FastAPI app "Structa Cloud MCP" (`uvicorn mcp_server:app --app-dir application/agents`), delegating to django-fusion routers.
 
 **Infrastructure / status (read-only, no auth):**
 
@@ -305,23 +305,23 @@ FastAPI app "Structa Cloud MCP" (`uvicorn mcp_server:app --app-dir applications/
 | `/prompts/{prompt_id}` | Fetch a single prompt's full text |
 
 **Documentation-related assets shipped alongside the server:**
-- `applications/agents/prompts/catalog.json` + `prompt_catalog.py` — validated read-only prompt catalog; `test_prompts.py` enforces the contract (id/title/description/agent/prompt/safety/expected_output/inputs).
-- `applications/agents/commands/*.md` — agent-facing workflows: `add-field` (Wagtail model field + migration), `apply-design` (SCSS/Figma → BEM), `deploy`, `ceptor-ai`, `find-component`.
-- `applications/agents/agent/*.json` — role definitions: `documentation-writer`, `django-coder`, `django-architect`, `docker-engineer`, `frontend-developer`, `test-engineer`, `security-auditor`, `performance-optimizer`, `data-engineer`, `database-engineer`, `refactoring-specialist`, `template-tinker`, `orchestrator`, `product-manager`, `ceptor-ai-toolsmith`, `vresume-agent`, `lms-demo-agent`.
+- `application/agents/prompts/catalog.json` + `prompt_catalog.py` — validated read-only prompt catalog; `test_prompts.py` enforces the contract (id/title/description/agent/prompt/safety/expected_output/inputs).
+- `application/agents/commands/*.md` — agent-facing workflows: `add-field` (Wagtail model field + migration), `apply-design` (SCSS/Figma → BEM), `deploy`, `ceptor-ai`, `find-component`.
+- `application/agents/agent/*.json` — role definitions: `documentation-writer`, `django-coder`, `django-architect`, `docker-engineer`, `frontend-developer`, `test-engineer`, `security-auditor`, `performance-optimizer`, `data-engineer`, `database-engineer`, `refactoring-specialist`, `template-tinker`, `orchestrator`, `product-manager`, `ceptor-ai-toolsmith`, `vresume-agent`, `lms-demo-agent`.
 - `docs/ai/` — `mcp-integration.md`, `PROMPT_CATALOG.md`, `agents.md`, `prompts.md`: the authoritative human docs — keep them in sync when extending.
 
 ### 3. Relevance to this monorepo
 
 Directly relevant — it is purpose-built for this repo (path-aware status for
-`applications/proxy/configs/traefik/`, agent/prompt catalogs, django-fusion viewset and
+`application/proxy/configs/traefik/`, agent/prompt catalogs, django-fusion viewset and
 designer inventory). It is the natural surface for the "Project Guardian"
 doc-sync and code-enhancement workflow below.
 
 ### 4. Known gaps / improvement & error-fix candidates
 
-- `_traefik_status()` in `mcp_server.py` hardcodes `/home/structa.cloud/applications/proxy/configs/traefik` — violates `applications/agents/AGENTS.md` ("never hard-code machine-specific absolute paths"). Fix: resolve from `Path(__file__)` or an env var, like the rest of the repo.
-- `_website_endpoints()` hardcodes ports 5070-5072/service names that drift from `applications/proxy/configs/traefik/dynamic/*.yml` — derive them from the dynamic configs instead.
-- No `analyze_proxy_config` / `docker_inspect_container` / `exec_check` tool yet — candidates to add to `mcp_server.py`, reusing `applications/proxy/scripts/validate-traefik-config.py` (read-only first).
+- `_traefik_status()` in `mcp_server.py` hardcodes `/home/structa.cloud/application/proxy/configs/traefik` — violates `application/agents/AGENTS.md` ("never hard-code machine-specific absolute paths"). Fix: resolve from `Path(__file__)` or an env var, like the rest of the repo.
+- `_website_endpoints()` hardcodes ports 5070-5072/service names that drift from `application/proxy/configs/traefik/dynamic/*.yml` — derive them from the dynamic configs instead.
+- No `analyze_proxy_config` / `docker_inspect_container` / `exec_check` tool yet — candidates to add to `mcp_server.py`, reusing `application/proxy/scripts/validate-traefik-config.py` (read-only first).
 - The prompt catalog is read-only by design; doc-writing actions must go through the normal filesystem workflow with `<!-- AI-generated: review needed -->` markers.
 
 ### 5. Workflow for a New Feature (e.g. add "bio" field)
@@ -334,14 +334,14 @@ doc-sync and code-enhancement workflow below.
 
 ### 6. Registering a new MCP server (if one is added)
 
-Add it to `.agents/kiro/settings/mcp.json` (runtime) or `applications/agents/config.json` (repo-shipped), document it in `docs/ai/mcp-integration.md`, and record its real tools in this section.
+Add it to `.agents/kiro/settings/mcp.json` (runtime) or `application/agents/config.json` (repo-shipped), document it in `docs/ai/mcp-integration.md`, and record its real tools in this section.
 
 ## Validation Gates (Enhanced with Local Checks)
 
 | Phase | Local Check | Proxy Check | Doc Check |
 |-------|-------------|-------------|-----------|
-| 1 | `docker compose -f applications/docker-compose.yml config -q` | `curl -I https://<site>.structa.cloud/health/` → 200 | `docs/architecture/setup.md` exists |
-| 2 | `docker compose up --scale <service>=3` (product include) | `python applications/proxy/scripts/validate-traefik-config.py` passes | `docs/nginx/routing.md` contains upstream config |
+| 1 | `docker compose -f application/docker-compose.yml config -q` | `curl -I https://<site>.structa.cloud/health/` → 200 | `docs/architecture/setup.md` exists |
+| 2 | `docker compose up --scale <service>=3` (product include) | `python application/proxy/scripts/validate-traefik-config.py` passes | `docs/nginx/routing.md` contains upstream config |
 | 3 | Containers communicate cross-host | Geo-routing returns correct region | `docs/operations/multi-node.md` written |
 | 4 | KEDA / auto-scaler triggers | Edge cache purges work | `docs/chaos/results.md` updated |
 
@@ -354,7 +354,7 @@ When using this prompt:
 3. **Generate and update local docs** – use the related doc prompts to write to the `docs/` folder.
 4. **Execute code enhancements** – use the suggested diffs to modify backend/frontend files and Traefik dynamic configs.
 5. **Run checks** – after each change, run the appropriate validation command (narrowest first: `python manage.py check`, `docker compose config -q`, `validate-traefik-config.py`, targeted pytest).
-6. **Create/update the MCP plan** – run the discovery in the MCP Integration Plan above, document what the discovered server can actually do, and extend `docs/ai/mcp-integration.md` (and `applications/agents/`) with the plan *before* writing any server code. This ensures alignment.
+6. **Create/update the MCP plan** – run the discovery in the MCP Integration Plan above, document what the discovered server can actually do, and extend `docs/ai/mcp-integration.md` (and `application/agents/`) with the plan *before* writing any server code. This ensures alignment.
 7. **Output format** – for each phase, provide:
    - Architecture diagram (text)
    - Nginx/Traefik config snippets (with repo file paths)
@@ -371,5 +371,5 @@ When using this prompt:
   - "Traefik middleware order matters – put rate-limit before auth to save CPU."
 - Use **code blocks with language hints** (`nginx`, `yaml`, `python`, `astro`, `django`) for all snippets.
 - For every ADR, include a **date** and **status** (Proposed / Accepted / Superseded).
-- Follow `applications/AGENTS.md` safety rules: database restores, `docker compose down --volumes`, certificate operations, and `make deploy*` are effectful and require explicit user intent. Validate configs read-only first.
+- Follow `application/AGENTS.md` safety rules: database restores, `docker compose down --volumes`, certificate operations, and `make deploy*` are effectful and require explicit user intent. Validate configs read-only first.
 - When the MCP server is extended, its logs should be written to `logs/mcp-requests.log` for auditing.

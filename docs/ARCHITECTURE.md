@@ -352,7 +352,7 @@ projects/
 
 ### 5.1 Kilo MCP Server Router Map
 
-The Kilo server (`applications/agents/mcp_server.py`) exposes django-fusion's
+The Kilo server (`application/agents/mcp_server.py`) exposes django-fusion's
 capabilities to AI agents via FastAPI endpoints:
 
 ```
@@ -405,7 +405,7 @@ Kilo MCP Server (port 8002)
 ### 5.4 MCP Directory Layout
 
 ```
-applications/agents/
+application/agents/
 ├── mcp_server.py            # FastAPI app — mounts all routers
 ├── config.json              # MCP server configuration
 ├── kilo.jsonc               # Kilo agent config
@@ -648,9 +648,9 @@ The documentation build follows the same source/build/runtime separation as the
 application assets:
 
 ```text
-docs/**/*.md or *.mdx  →  docs/docus/scripts/prepare-content.mjs
-                       →  docs/docus/content/en/ (ignored, generated)
-docs/docus/ar-content/ →  docs/docus/content/ar/ (ignored, generated)
+docs/**/*.md or *.mdx  →  docs/scripts/prepare-content.mjs
+                       →  docs/content/en/ (ignored, generated)
+docs/ar-content/       →  docs/content/ar/ (ignored, generated)
                        →  Nuxt/Docus SSR server
                        →  shared-proxy + Traefik
                        →  docs.structa.cloud/ or media.structa.cloud/docs/
@@ -676,7 +676,7 @@ structa.cloud/
 │   └── webpack/              # Shared webpack base config
 ├── libs/
 │   └── django-fusion/        # Component system, tasks, MCP, skeleton
-├── applications/
+├── application/
 │   ├── proxy/                # Traefik/Nginx/Caddy reverse proxy
 │   ├── databases/            # PostgreSQL + Redis compose
 │   └── agents/               # Kilo MCP server
@@ -688,4 +688,4 @@ structa.cloud/
 
 - This document describes shared boundaries; product-specific behavior belongs in the product documentation and nearest scoped `AGENTS.md`.
 - The current filesystem map is `projects/precis/precis-main/`, `projects/precis/precis-landing/`, and `projects/precis/precis-ctc/`; confirm aliases in `projects/Makefile` before using a legacy name.
-- Docus metadata is generated from canonical Markdown by `docs/docus/scripts/prepare-content.mjs`; generated content is not a second source.
+- Docus metadata is generated from canonical Markdown by `docs/scripts/prepare-content.mjs`; generated content is not a second source.

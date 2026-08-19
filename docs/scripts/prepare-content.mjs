@@ -3,13 +3,15 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const docusRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const docsRoot = path.resolve(docusRoot, '..');
+// The Docus app now lives at the root of docs/ (flattened from docs/docus/),
+// so the authored markdown tree IS the docs root — not its parent.
+const docsRoot = docusRoot;
 const contentRoot = path.join(docusRoot, 'content');
 const arabicSource = path.join(docusRoot, 'ar-content');
 const repositoryUrl = 'https://github.com/mammhoud/structa.cloud';
 const repositoryBranch = 'generic';
 
-const ignoredDirectories = new Set(['docus', 'node_modules', '.git', 'site']);
+const ignoredDirectories = new Set(['docus', 'node_modules', '.git', 'site', 'content', 'ar-content', 'scripts', 'public', '.data']);
 const ignoredFiles = new Set(['index.html', '_sidebar.md', '_navbar.md']);
 
 async function walk(directory) {
@@ -49,7 +51,7 @@ function ownerFor(relative) {
   if (normalized.startsWith('projects/syntara/')) return 'syntara';
   if (normalized.startsWith('projects/loop-crm/')) return 'loop-crm';
   if (normalized.startsWith('libs/django-fusion/')) return 'django-fusion';
-  if (normalized.startsWith('applications/')) return 'infrastructure';
+  if (normalized.startsWith('application/')) return 'infrastructure';
   if (normalized.startsWith('tests/')) return 'workspace-tests';
   if (normalized.startsWith('precis-ctc/')) return 'precis-ctc';
   if (normalized.startsWith('landing-fusion/')) return 'precis-landing';

@@ -109,7 +109,7 @@ class ApplicationItemBlock(blocks.StructBlock):
 
 
 class ApplicationsSectionBlock(blocks.StructBlock):
-    """A “Built with …” grid — real applications/sites running on a product.
+    """A “Built with …” grid — real application/sites running on a product.
 
     Editors add one card per application (vResume, this site, …); each card
     links out to the running product or its edition preview page. Mirrors the

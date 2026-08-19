@@ -65,6 +65,10 @@ graph LR
 
 ## 📄 Strategy Documents
 
+| Scope | Doc | Covers |
+|-------|-----|--------|
+| **Full portfolio master** 🔒 | [`STRATEGY.md`](STRATEGY.md) | Consolidated market strategy, combined MVP canvas, TAM/SAM/SOM table, SaaS service lines, ideal clients, research backlog, sequencing |
+
 | Product | Doc | Core Offering |
 |---------|-----|---------------|
 | 🎓 Precis (LMS + landing) | [`precis.md`](precis.md) | Learning platform + marketing/catalog shell |

@@ -6,10 +6,13 @@ services:
 
   worker:
     build:
-      context: ../../../
-      dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+      # Project-scoped build (project root context + shared additional contexts).
+      context: .
+      additional_contexts:
+        workspace: ../../..
+        configs: ../configs
+      dockerfile: backend/Dockerfile
       args:
-        SOURCE_PATH: precis/precis-ctc
         PROJECT_PATH: precis-ctc
     image: precis-ctc-backend:latest
     container_name: precis-ctc-worker
@@ -55,10 +58,13 @@ services:
 
   scheduler:
     build:
-      context: ../../../
-      dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+      # Project-scoped build (project root context + shared additional contexts).
+      context: .
+      additional_contexts:
+        workspace: ../../..
+        configs: ../configs
+      dockerfile: backend/Dockerfile
       args:
-        SOURCE_PATH: precis/precis-ctc
         PROJECT_PATH: precis-ctc
     image: precis-ctc-backend:latest
     container_name: precis-ctc-scheduler
@@ -86,9 +92,9 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/0
       DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:?REDIS_PASSWORD is required for CTC Research production}@default-redis:6379/1
       FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
-    depends_on:
-      backend:
-        condition: service_healthy
+    # Standalone scheduler stack — connects to the shared Postgres/Redis
+    # containers (postgres, default-redis) via the external networks and
+    # retries on boot, so no compose-local depends_on is needed.
     command: python -m django_fusion.tasks.scheduler
     volumes:
       # Backend code is copied into the image; keep source code out of the

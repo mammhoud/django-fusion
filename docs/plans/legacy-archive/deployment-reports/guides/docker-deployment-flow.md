@@ -6,12 +6,12 @@ This guide defines the stable deployment flow for the current repository layout.
 
 | File | Role | Typical command |
 |---|---|---|
-| `applications/databases/docker-compose.yml` | PostgreSQL and Redis, plus optional Celery worker/beat definitions. | `docker compose -f applications/databases/docker-compose.yml up -d vresume-postgres vresume-redis` |
-| `applications/compose/docker-compose.applications.yml` | Django application containers for all sites. | `docker compose -f docker-compose.yml up -d --build vresume-website` |
-| `applications/docker-compose.tasks.yml` | Shared Dramatiq worker/APScheduler for cross-site background jobs. | `docker compose -f applications/databases/docker-compose.yml -f applications/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat` |
-| `applications/proxy/docker-compose.traefik.yml` | Traefik edge proxy and TLS termination. | `docker compose -f applications/proxy/docker-compose.traefik.yml up -d` |
-| `applications/proxy/docker-compose.nginx.yml` | Optional Nginx static/media reverse proxy when Traefik is not serving assets directly. | `docker compose -f docker-compose.yml -f applications/proxy/docker-compose.nginx.yml up -d` |
-| `applications/proxy/docker-compose.nginx.yml` (`shared-proxy` service) | Docus static documentation (English + Arabic, served at `/docs/`). | `docker compose -f applications/proxy/docker-compose.nginx.yml up -d --build shared-proxy` |
+| `application/databases/docker-compose.yml` | PostgreSQL and Redis, plus optional Celery worker/beat definitions. | `docker compose -f application/databases/docker-compose.yml up -d vresume-postgres vresume-redis` |
+| `application/compose/docker-compose.applications.yml` | Django application containers for all sites. | `docker compose -f docker-compose.yml up -d --build vresume-website` |
+| `application/docker-compose.tasks.yml` | Shared Dramatiq worker/APScheduler for cross-site background jobs. | `docker compose -f application/databases/docker-compose.yml -f application/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat` |
+| `application/proxy/docker-compose.traefik.yml` | Traefik edge proxy and TLS termination. | `docker compose -f application/proxy/docker-compose.traefik.yml up -d` |
+| `application/proxy/docker-compose.nginx.yml` | Optional Nginx static/media reverse proxy when Traefik is not serving assets directly. | `docker compose -f docker-compose.yml -f application/proxy/docker-compose.nginx.yml up -d` |
+| `application/proxy/docker-compose.nginx.yml` (`shared-proxy` service) | Docus static documentation (English + Arabic, served at `/docs/`). | `docker compose -f application/proxy/docker-compose.nginx.yml up -d --build shared-proxy` |
 
 ## Recommended production sequence
 
@@ -45,7 +45,7 @@ This guide defines the stable deployment flow for the current repository layout.
 3. **Start the warehouse layer first**:
 
    ```bash
-   docker compose -f applications/databases/docker-compose.yml up -d vresume-postgres vresume-redis
+   docker compose -f application/databases/docker-compose.yml up -d vresume-postgres vresume-redis
    ```
 
 4. **Build and start the selected Django site**:
@@ -72,7 +72,7 @@ This guide defines the stable deployment flow for the current repository layout.
 7. **Start the edge proxy**:
 
    ```bash
-   docker compose -f applications/proxy/docker-compose.traefik.yml up -d
+   docker compose -f application/proxy/docker-compose.traefik.yml up -d
    ```
 
 8. **Watch health and logs**:

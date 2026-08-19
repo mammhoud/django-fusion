@@ -1,0 +1,36 @@
+# =============================================================================
+# Legacy AFFiNE localhost host — affine.localhost → space.localhost
+# =============================================================================
+# AFFiNE now lives at the root of space.structa.cloud (routed via space.yml).
+# This router keeps affine.localhost served by the shared-proxy nginx, which
+# responds with a 301 to space.localhost (see
+# application/proxy/nginx/default.conf.template). The public affine.pro host
+# has been removed entirely (no route, no cert renewal).
+#
+# Public host uses Let's Encrypt; the .localhost host stays on the mkcert
+# default cert. They are split because a single certResolver router bundling
+# a .localhost SAN fails ACME (\".localhost\" is not a public suffix), which
+# would block issuance for the public domain too.
+# =============================================================================
+http:
+  routers:
+    affine-http:
+      rule: 'Host(`affine.localhost`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: affine-service
+      priority: 150
+
+    affine-localhost-https:
+      rule: 'Host(`affine.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: affine-service
+      priority: 150
+
+  services:
+    affine-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-proxy:80'
+        passHostHeader: true

@@ -138,8 +138,8 @@ after verifying the fusion projects no longer need it. Verify that
 
 9. **Proxy integration**
    - Each fusion project gets an explicit Traefik dynamic router config:
-     `applications/proxy/configs/traefik/dynamic/cms-fusion.yml` and
-     `applications/proxy/configs/traefik/dynamic/precis-lms.yml`.
+     `application/proxy/configs/traefik/dynamic/cms-fusion.yml` and
+     `application/proxy/configs/traefik/dynamic/precis-lms.yml`.
    - Routers route host/path matches to the correct backend and frontend
      containers.
    - TLS is handled by the existing `letsencrypt-http` resolver.
@@ -283,7 +283,7 @@ No stale `extends`/`include` references to `backend/templates/`, `../`, or
 - [x] Remove or archive stale `backend/docker-compose.yml` files that still
   reference `precis-ctc`.
 - [x] Add per-project Traefik dynamic configs under
-  `applications/proxy/configs/traefik/dynamic/`.
+  `application/proxy/configs/traefik/dynamic/`.
 - [x] Define unique backend/frontend ports and Traefik service names per project.
 - [x] Configure health checks and ensure the file provider picks up the new
   configs.

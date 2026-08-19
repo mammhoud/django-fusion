@@ -64,8 +64,8 @@ gunicorn-error.log
 
 # ── Backups & temp ───────────────────────────────────────────────────
 backups/
-applications/tmp/
-applications/proxy/backups/
+application/tmp/
+application/proxy/backups/
 compose/data/
 compose/postgres/postgres_data/
 compose/postgres/backups/

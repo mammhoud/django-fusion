@@ -15,7 +15,7 @@
 > registry, Dramatiq backend, scheduled-task registry, and filesystem project
 > discovery are implemented in `libs/django-fusion/src/django_fusion/tasks/`.
 > The active infrastructure Compose stack now runs Dramatiq plus APScheduler;
-> Celery Beat, the historical `applications/compose/` path, and LMS task
+> Celery Beat, the historical `application/compose/` path, and LMS task
 > participation in the shared worker are deprecated. See the current
 > repository plan at [`../repository/active-monorepo-consolidation-2026-08-14.md`](../repository/active-monorepo-consolidation-2026-08-14.md).
 
@@ -34,7 +34,7 @@ Completed in the migration:
 1. Celery, Celery Beat, Django-Q, Django-RQ, and Temporal worker entrypoints were removed from the active runtime.
 2. `django_fusion.tasks` gained filesystem/dotted-module discovery, Dramatiq actor registration, delayed publishing, audit logging, and in-process testing.
 3. Product task implementations moved from `apps/tasks` to `plugins/workers`; model/migration ownership remains in `apps/tasks` where needed.
-4. The shared worker and scheduler commands are defined in `applications/docker-compose.tasks.yml`.
+4. The shared worker and scheduler commands are defined in `application/docker-compose.tasks.yml`.
 
 Remaining work is limited to MCP authorization/transport hardening, production
 observability, and deployment-host verification.
@@ -47,14 +47,14 @@ observability, and deployment-host verification.
 
 | Component | Location | Technology | Status |
 |---|---|---|---|
-| Shared Dramatiq worker | `applications/docker-compose.tasks.yml` + product `backend/plugins/workers/` | Dramatiq + Redis | **Active** — explicit active-product paths |
+| Shared Dramatiq worker | `application/docker-compose.tasks.yml` + product `backend/plugins/workers/` | Dramatiq + Redis | **Active** — explicit active-product paths |
 | Shared scheduler | `django_fusion.tasks.scheduler` | APScheduler | **Active** — configured Fusion schedules |
 | Per-site product workers | product Compose files | mixed legacy | **Deprecated for aggregate workflows** — shared Dramatiq owns active task paths; LMS is excluded |
 | Worker consolidation plan | [`docs/plans/repository/worker-consolidation.md`](../repository/worker-consolidation.md) | Celery → shared | **Planned** — Phases 1-4 |
 | django-fusion task log | `django_fusion.models.tasks.BackgroundTaskLog` | Dramatiq | **Active** — shared audit record |
 | django-fusion dispatch | `django_fusion.tasks` and `django_fusion.services.jobs` | Dramatiq | **Active** — `dispatch_job` is a deprecated compatibility wrapper |
 | ceptor-ai MCP server | `libs/ceptor-ai/src/ceptor_ai/mcp_server.py` | FastAPI + MCP | **Active** — read-only metadata |
-| Kilo MCP server | `applications/agents/mcp_server.py` | FastAPI | **Active** — introspection |
+| Kilo MCP server | `application/agents/mcp_server.py` | FastAPI | **Active** — introspection |
 
 ### 2.2 Gaps
 
@@ -75,8 +75,8 @@ The former codebase had **three copies** of essentially the same worker package:
 | Path | Role |
 |---|---|
 | `projects/www/worker/` | Historical path; no longer a current source of truth |
-| `applications/configs/management/workers/` | Historical duplicate; keep only as migration evidence until deletion gates pass |
-| `applications/configs/tools/worker/` | Current infrastructure actor package |
+| `application/configs/management/workers/` | Historical duplicate; keep only as migration evidence until deletion gates pass |
+| `application/configs/tools/worker/` | Current infrastructure actor package |
 
 Those duplicate worker trees are deleted. Active actors now live in product-owned
 `backend/plugins/workers/` packages, and `django-fusion` owns only the reusable
@@ -160,7 +160,7 @@ django-fusion's `TaskRegistry` scans `INSTALLED_APPS` for `tasks` subpackages an
 | 1.4 | **Remove Celery from django-fusion** — delete the optional `sentry_sdk.integrations.celery` import, remove `CELERY_` settings references | `libs/django-fusion/src/django_fusion/plugins/debug_tools/sentry.py`, `projects/configs/Env/celery.yml` |
 | 1.5 | **Remove per-site worker services** — comment out `lms-worker`, `precis-ctc-worker`, `vresume-worker` from per-site `docker-compose.yml` files (Phase 4 of worker-consolidation) | Per-site compose files |
 | 1.6 | **Consolidate worker code** — keep `projects/configs/tools/worker/` as the single source (already the active worker). Delete `projects/configs/management/workers/` (duplicate). Archive `projects/www/worker/` (legacy, superseded). Do NOT create a new path. | Worker packages |
-| 1.7 | **Update `docker-compose.tasks.yml`** — single `shared-worker` (Dramatiq) + `shared-scheduler` (APScheduler) services | `applications/compose/docker-compose.tasks.yml` |
+| 1.7 | **Update `docker-compose.tasks.yml`** — single `shared-worker` (Dramatiq) + `shared-scheduler` (APScheduler) services | `application/compose/docker-compose.tasks.yml` |
 | 1.8 | **Update CI and deployment targets** — replace `celery -A` commands with `dramatiq` equivalents | Makefiles, CI workflows |
 | 1.9 | **Remove `django-celery-beat` and `django-celery-results`** from dependencies | `pyproject.toml`, `uv.lock` |
 | 1.10 | **Run full test suite** — verify no Celery imports remain, all scheduled tasks fire | `uv run pytest` |
@@ -827,7 +827,7 @@ def handle_task_workers():
 
 ### 6.4 MCP Server Registration
 
-**⚠️ Boundary and production gate:** django-fusion MCP tools must NOT be registered into `ceptor-ai`'s MCP server. ceptor-ai explicitly avoids Django imports (see `applications/agents/commands/ceptor-ai.md`). Instead, django-fusion serves its own MCP endpoint at `/fusion/mcp/` within the Django application.
+**⚠️ Boundary and production gate:** django-fusion MCP tools must NOT be registered into `ceptor-ai`'s MCP server. ceptor-ai explicitly avoids Django imports (see `application/agents/commands/ceptor-ai.md`). Instead, django-fusion serves its own MCP endpoint at `/fusion/mcp/` within the Django application.
 
 > **Implemented 2026-08-18.** The production gate is now enforced in
 > `django_fusion/tasks/mcp_views.py`: an explicit `FUSION_MCP_TOKEN` bearer
@@ -1207,7 +1207,7 @@ FUSION_TASKS["DEFAULT_MIN_BACKOFF"] = 5_000    # Faster retry for sync
 ### 9.3 Docker Configuration (Post-Celery)
 
 ```yaml
-# applications/compose/docker-compose.tasks.yml
+# application/compose/docker-compose.tasks.yml
 services:
   shared-worker:
     image: structa-cloud-worker:latest

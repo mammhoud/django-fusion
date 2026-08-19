@@ -29,8 +29,8 @@ safe_loaddata.py
 !projects/precis/precis-landing/backend/assets/static/related/formints/*.png
 !projects/precis/precis-landing/frontend/public/static/related/formints/*.png
 appmap.log
-applications/proxy/acme/acme-dns.json
-applications/databases/dockge-data/
+application/proxy/acme/acme-dns.json
+application/databases/dockge-data/
 # ── Docs artifacts & archives ────────────────────────────────────────
 .archives/
 archives/
@@ -66,7 +66,7 @@ base_library.zip
 # AFFiNE and FileGator data are owned by the shared proxy stack.
 # Keep this legacy pattern for workspaces that have not migrated yet.
 .affine-data-*/
-applications/proxy/affine-data/
+application/proxy/affine-data/
 .hypothesis
 .pnpm-store
 .nx
