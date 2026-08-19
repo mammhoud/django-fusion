@@ -18,8 +18,12 @@ import json
 import logging
 from typing import Any
 
-from django_bolt import BoltAPI
-from django_bolt.responses import Response
+try:
+    from django_bolt import BoltAPI
+    from django_bolt.responses import Response
+except ImportError:  # django-bolt is an optional Python 3.12+ extra.
+    BoltAPI = None  # type: ignore[assignment,misc]
+    Response = None  # type: ignore[assignment,misc]
 
 from django_fusion.tasks.mcp_handlers import (
     handle_task_inspect,
@@ -113,6 +117,11 @@ class TaskMCPRouter:
     """Builds a :class:`django_bolt.BoltAPI` exposing django-fusion task MCP tools."""
 
     def __init__(self, *, prefix: str = "", **kwargs: Any) -> None:
+        if BoltAPI is None:
+            raise RuntimeError(
+                "TaskMCPRouter requires the optional django-bolt dependency; "
+                "install django-fusion[bolt] on Python 3.12+ first."
+            )
         self.api = BoltAPI(prefix=prefix, **kwargs)
         register_task_routes(self.api)
 

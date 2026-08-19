@@ -116,14 +116,14 @@ git clone https://github.com/structa-cloud/structa.cloud.git
 cd structa.cloud
 git submodule update --init --recursive
 
-pip install -e projects/libs/django-fusion
+pip install -e libs/django-fusion
 ```
 
 To pull the latest lib commit into the monorepo:
 
 ```bash
-cd projects/libs/django-fusion && git pull origin generic && cd ../..
-git add projects/libs/django-fusion
+cd libs/django-fusion && git pull origin generic && cd ../..
+git add libs/django-fusion
 git commit -m "chore: bump django-fusion submodule"
 ```
 

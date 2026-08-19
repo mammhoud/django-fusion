@@ -2,8 +2,20 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "name": "fusion-js",
   "root": "libs/django-fusion/js/fusion-js",
+  "projectType": "library",
+  "tags": ["type:library", "stack:typescript", "framework:django-fusion"],
   "targets": {
-    "build": { "executor": "nx:run-commands", "options": { "command": "npm run build", "cwd": "libs/django-fusion/js/fusion-js" } },
-    "check": { "executor": "nx:run-commands", "options": { "command": "npm run typecheck", "cwd": "libs/django-fusion/js/fusion-js" } }
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["production"],
+      "cache": true,
+      "options": { "command": "npm run build", "cwd": "libs/django-fusion/js/fusion-js" }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "inputs": ["default"],
+      "cache": true,
+      "options": { "command": "npm run typecheck", "cwd": "libs/django-fusion/js/fusion-js" }
+    }
   }
 }
