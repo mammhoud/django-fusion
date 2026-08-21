@@ -131,7 +131,7 @@ def _traefik_status() -> dict[str, Any]:
         "dynamic_exists": (d / "dynamic.yml").exists(),
         "dynamic_dir_exists": (d / "dynamic").exists(),
         "ctc_research": (d / "dynamic/ctc-research.yml").exists(),
-        "landing_fusion": (d / "dynamic/landing-fusion.yml").exists(),
+        "precis_landing": (d / "dynamic/precis-landing.yml").exists(),
         "lms_fusion": (d / "dynamic/lms-fusion.yml").exists(),
         "certs_dir_exists": (d / "../../data/certs").exists(),
     }

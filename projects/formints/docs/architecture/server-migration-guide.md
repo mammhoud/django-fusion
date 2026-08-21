@@ -856,7 +856,7 @@ When adding a new feature that touches data:
 
 ## Related Documentation
 
-- [Edition Comparison](../editions/comprehensive-comparison.md) — Full feature matrix across all three editions
+- [Edition Comparison](editions.md) — per-edition feature matrix
 - [POS Architecture](./pos-architecture.md) — System architecture overview
-- [Server Architecture](POS_ARCHITECTURE.md) — Server process lifecycle details
-- [Cloud Plan](../CLOUD_PLAN.md) — Cloud sync architecture for Full edition
+- [legacy Server Architecture](../legacy/POS_ARCHITECTURE.md) — archived server process lifecycle details
+- [Pro ↔ Cloud Sync Contract](pro-cloud-sync-contract.md) — cloud sync architecture

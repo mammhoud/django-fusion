@@ -7,6 +7,112 @@ Documentation for features and changes added in the most recent development sess
 
 ---
 
+## Session 2026-08-20 — Startup docs enhancement, editions comparison, CTC client case study, Loop-CRM profile UI
+
+Folded a 14-document startup pack into `docs/startup/`, refactored dead/legacy
+docs, added an editions comparison and a CTC production-client case study, and
+started the Loop-CRM user profile UI:
+
+- **Startup docs enhancement** — added `docs/startup/company-profile.md`,
+  `product-profiles.md`, `revenue-model.md`, `presentation.md`; merged the
+  pack's module price book into `PRICING.md` §6; registered the progressive
+  plan at `docs/plans/repository/startup-docs-enhancement-plan.md`. Declined
+  the pack's fictional `fusion.*` django-fusion package guide (real API is the
+  in-repo `django_fusion` src layout).
+- **Arabic translations refined** — added `ar-content/startup/` pages for
+  company profile, product profiles, revenue model, and master deck; fixed
+  dead per-product links in `ar-content/startup/index.md` to point at English
+  canonical routes.
+- **Editions comparison** — new `docs/plans/editions/comparison.md` with a
+  full feature matrix across Community / Standard / Pro / Cloud / pos-client /
+  SDK, linked from the editions index.
+- **CTC as production client website** — new `docs/precis-ctc/client-production.md`
+  case study (scope, stack, deployment, outcomes) linked from the CTC README
+  and startup strategy.
+- **Dead/legacy docs refactored** — stale path/name references fixed in the
+  main index docs; orphaned legacy changelogs recorded in the deletion
+  manifest (see `docs/plans/deletion-manifest.md`).
+- **Loop-CRM profile UI (start)** — added session-based `/apis/me/` endpoint
+  (identity + role + capabilities) and the `/account/profile/` Astro route with
+  a ProfileCard component, closing the 404 gap behind the topbar account icon.
+- **Docs organize & dedupe** — merged the stale `docs/pos/` editions/cloud
+  guides (retired 3-edition + Robyn model) into canonical pointers at
+  `docs/plans/editions/` (incl. the new `comparison.md`); fixed the only
+  external `docs/pos` reference; recorded DOC-0029/DOC-0030 in the deletion
+  manifest.
+- **Docs redeploy** — rebuilt the `docus` container from `docs/Dockerfile` with
+  `--no-cache` and recreated it on `docs.structa.cloud`; cleaned up dangling
+  images, build cache, and stopped containers.
+
+---
+
+## Session 2026-08-19 — Shared language contract, django-fusion consolidation, and docs
+
+Consolidated the language/locale resolution, persistence, and API contract across all
+Django/Wagtail websites into a single shared implementation in django-fusion:
+
+- **django-fusion shared contract** (`libs/django-fusion/src/django_fusion/core/middlewares/language.py`)
+  — `resolve_language()`, `persist_language()`, `set_language_api`, `language_context()`,
+  `configured_language_codes()`, `normalize_language()` are now the single source of truth
+  for all sites.
+- **Precis Main settings** — added `LocaleMiddleware` + `DefaultLanguageMiddleware`,
+  `FUSION_LANGUAGES` catalog, session/cookie attributes, and `/i18n/setlang/` URL.
+- **Precis Landing settings** — same treatment: removed duplicate `LandingLocaleMiddleware`,
+  wired shared middleware and `/i18n/setlang/`.
+- **CTC API** — `landing_api.py` delegates to `resolve_language()` and `persist_language()`
+  instead of its own resolution chain.
+- **Astro frontends** — all three `LanguageSwitcher.astro` components now POST to
+  `/i18n/setlang/` for server-side persistence (session + cookie), read from the
+  backend language catalog on init, and use `sessionStorage` + `localStorage` for
+  client-side fast path.
+- **Frontend API clients** — `fetchJSON` in all three `api.ts` files sends
+  `credentials: 'include'` and `Accept-Language` headers, and auto-appends `?lang=`
+  from the stored preference.
+- **Documentation** — added DF-020 Language Contract guide with Mermaid diagrams,
+  created `docs/libs/django-fusion-language.md` portable/Affine-friendly guide,
+  updated django-fusion INDEX and docs README.
+
+All backend checks pass (CTC 198 tests, Precis Main 20 Treebeard warnings,
+Precis Landing 20 Treebeard warnings). Frontend checks pass (0 errors, 17 hints).
+
+---
+
+## Session 2026-08-19 — Precis/CTC publishing, schema repair, and unified proxy routing
+
+The interrupted Precis CTC and unified Precis work was closed out and documented:
+
+- **CTC Wagtail publishing** — added `MarketingPage` (`0012_marketingpage`) and
+  seeded localized `/faq/`, `/pricing/`, `/features/`, `/projects/`, and
+  `/products/` pages with backend-driven StreamField content. The canonical
+  fixture mirrors the live English and Arabic page trees; Astro route smoke
+  coverage verifies the five routes do not regress to empty sections.
+- **CTC SEO and content contract** — Wagtail SEO fields now feed the Django and
+  Astro metadata roads; About mission/skills/FAQ blocks, localized slugs, and
+  no-frontend-fallback rules are documented in the project changelog,
+  enhancement register, learning cases, and publishing guide.
+- **Missing database tables repaired** — added products `Cart`/`CartItem`
+  migration, profile consent migration, and the shared django-fusion initial
+  migration required by user-delete cascades. The shared migration belongs to
+  the `libs/django-fusion` submodule and must be persisted in that repository.
+- **Unified Precis deployment** — `precis-landing.yml` and `lms-fusion.yml`
+  now target `precis-main-backend:8074` and `precis-main-frontend:3000`; the LMS
+  health check uses `/apis/pages/`, matching the active backend contract.
+- **Admin routing** — `structa.cloud` and `lms.structa.cloud` route `/admin`
+  to Wagtail and `/django-admin` to Django admin. Explicit no-slash redirects
+  preserve `APPEND_SLASH=False` for safe headless auth POSTs. Both public hosts
+  were live-verified through Traefik after a rebuilt Precis Main deployment.
+- **Documentation sync** — updated the Precis deployment index, the legacy
+  Precis Landing pointer, proxy README/routing guide, and added the
+  `precis-main-proxy-admin.md` deployment runbook with validation, smoke tests,
+  rollback notes, and known remaining warnings.
+
+Remaining follow-up work is editorial or operational rather than an unrecorded
+runtime change: human review of translated medical/course copy, `hreflang` and
+JSON-LD metadata, per-article OG images, Treebeard future-compatibility warnings,
+and unrelated ACME/DNS failures for hosts outside Precis.
+
+---
+
 ## Session 2026-08-18 (follow-up) — Loop-CRM build fix, i18n sweep, Stripe billing, webapp, docs
 
 Completes the interrupted work carried in `changelogs/session-2026-08-18.md`:

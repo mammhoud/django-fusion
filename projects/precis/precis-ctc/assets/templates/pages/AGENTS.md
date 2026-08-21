@@ -14,7 +14,7 @@ a Precis-owned page/template asset scope.
 - Keep this asset directory for Precis-specific page assets, includes, or
   presentation templates that are explicitly loaded by Precis settings.
 - Do not use obsolete `plugins/<app>/templates/` paths in new files.
-- Do not place Landing-Fusion, Syntara, or POS page templates here.
+- Do not place Precis Landing, Syntara, or POS page templates here.
 
 ## Rules
 

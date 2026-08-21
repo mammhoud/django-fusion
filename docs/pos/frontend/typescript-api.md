@@ -1,6 +1,12 @@
 # 🟢 API Layer — `src/api/`
 
-Typed HTTP + WebSocket client for the POS Sanic sidecar. All modules export through `src/api/index.ts`.
+> **⛔ Historical:** this module tree described the retired Python/Sanic sidecar
+> client. Community/Standard editions are offline-first — data access is via
+> Tauri `invoke()` → Rust/Diesel (see [TypeScript Frontend](typescript-frontend.md)).
+> Pro/Cloud use `@formints/client` or the Django API. The sections below are
+> kept for history.
+
+Typed HTTP + WebSocket client for the POS Sanic sidecar (removed). All modules export through `src/api/index.ts`.
 
 > **Customization level**: 🟢 Customizable — add new API methods freely.
 
@@ -8,10 +14,10 @@ Typed HTTP + WebSocket client for the POS Sanic sidecar. All modules export thro
 
 | Module | File | Purpose |
 |--------|------|---------|
-| `sidecar` | `sidecar.ts` | Base HTTP client, health check, fetch wrapper |
-| `chat` | `chat.ts` | Chat REST + WebSocket helper |
-| `tickets` | `tickets.ts` | Support tickets CRUD |
-| `data` | `data.ts` | Sales, products, settings, invoice |
+| `sidecar` | `sidecar.ts` | Base HTTP client, health check, fetch wrapper (removed) |
+| `chat` | `chat.ts` | Chat REST + WebSocket helper (removed) |
+| `tickets` | `tickets.ts` | Support tickets CRUD (removed) |
+| `data` | `data.ts` | Sales, products, settings, invoice (removed) |
 
 ## Quick Usage
 

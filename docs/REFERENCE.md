@@ -54,13 +54,13 @@ links:
 | Dir | Owning project | Files → what they reference |
 |-----|----------------|-----------------------------|
 | [`precis/`](precis/README.md) | `precis-main` | README (index) · ARCHITECTURE (LMS + landing architecture) · configuration · courses · deployment |
-| [`precis/landing-fusion/`](precis/landing-fusion/) | `precis-landing` (legacy) | backend-api · deployment · frontend |
-| [`precis-ctc/`](precis-ctc/README.md) | `precis-ctc` | README (index) · content-strategy · publishing-and-production |
+| [`precis/precis-landing/`](precis/precis-landing/) | `precis-landing` (legacy) | backend-api · deployment · frontend |
+| [`precis-ctc/`](precis-ctc/README.md) | `precis-ctc` | README (index) · content-strategy (editorial ICP/research) · publishing-and-production (release workflow) · client-production (case study) |
 | [`syntara/`](syntara/README.md) | `syntara` | README (index) · configuration · features · infrastructure · use-cases |
-| [`pos/`](pos/README.md) | `formints` | README (index) · ARCHITECTURE · changelog · cloud-edition · configuration · editions · features · infrastructure · TEST_RESULTS · use-cases |
-| [`pos/backend/`](pos/backend/README.md) | `formints` | rust-auth · rust-backend · rust-database · rust-data-flow · rust-operations · rust-seed-data |
-| [`pos/frontend/`](pos/frontend/README.md) | `formints` | typescript-api · typescript-components · typescript-contexts-hooks · typescript-frontend |
-| [`pos/sidecar/`](pos/sidecar/README.md) | `formints` | django-bolt-integration · django-orm · network-architecture · robyn-migration · sidecar-api · sidecar-readme · sidecar-websocket |
+| [`pos/`](pos/README.md) | `formints` | README (index) · editions (pointer → `plans/editions/`) · cloud-edition (pointer → `04-cloud.md`) · legacy topic pages — canonical product docs live in [`projects/formints/docs/`](../../projects/formints/docs/) |
+| [`pos/backend/`](pos/backend/README.md) | `formints` | rust-auth · rust-backend · rust-database · rust-data-flow · rust-operations · rust-seed-data (legacy reader-facing; canonical Rust docs in `projects/formints/docs/`) |
+| [`pos/frontend/`](pos/frontend/README.md) | `formints` | typescript-api · typescript-components · typescript-contexts-hooks · typescript-frontend (legacy reader-facing; canonical TS docs in `projects/formints/docs/`) |
+| [`pos/sidecar/`](pos/sidecar/README.md) | `formints` | django-bolt-integration · django-orm · network-architecture · robyn-migration · sidecar-api · sidecar-readme · sidecar-websocket (legacy reader-facing) |
 | [`loop-crm/`](loop-crm/README.md) | `loop-crm` | README (index) · design-system · setup-and-build |
 
 ## Shared & framework docs
@@ -93,24 +93,24 @@ links:
 
 | Dir | Owning project | Files → what they reference |
 |-----|----------------|-----------------------------|
-| [`plans/`](plans/README.md) | workspace | README (registry) · deletion-manifest · document-lifecycle · landing-fusion · marketing-claims · DJANGO_BOLT_FUSION_CASE_STUDY · THEME_DIRECTORY_STRATEGY |
+| [`plans/`](plans/README.md) | workspace | README (registry) · deletion-manifest · document-lifecycle · precis-landing · marketing-claims · DJANGO_BOLT_FUSION_CASE_STUDY · THEME_DIRECTORY_STRATEGY |
 | [`plans/django-fusion/`](plans/django-fusion/) | `django-fusion` | comp-htmx-fusionproxy-analysis · analyzer-skeleton-assets · enhancements · llm-mcp · tasks-mcp · webpack plans · fusion-assets-templates-cleanup |
-| [`plans/editions/`](plans/editions/README.md) | `formints` | 01-community → 08-tenant-schemas · finish-community-standard |
+| [`plans/editions/`](plans/editions/README.md) | `formints` | README (index) · comparison (feature matrix) · 01-community → 08-tenant-schemas · 09-completion-plan · finish-community-standard (archived) |
 | [`plans/loop-crm/`](plans/loop-crm/) | `loop-crm` | demo-state-gap-fixing · formint-integration-finance · merge-plan · twenty-postiz-comparison · wagtail-landing-plan |
-| [`plans/repository/`](plans/repository/) | workspace | monorepo consolidation · project closeout · ctc publish · enhancement plans · migration cleanup · worker consolidation |
-| [`plans/legacy-archive/`](plans/legacy-archive/) | workspace (archived) | dead-code-audit · deployment-reports · dev-notes |
+| [`plans/repository/`](plans/repository/) | workspace | monorepo consolidation · project closeout · ctc publish · enhancement plans · migration cleanup · worker consolidation · startup-docs-enhancement-plan |
+| ~~`plans/legacy-archive/`~~ | deleted (DOC-0024, 2026-08-19) | dead-code-audit · deployment-reports · dev-notes — superseded by the plans registry; git history is the archive |
 
 ## Startup strategy (private) 🔒
 
 | Dir | Owning project | Files → what they reference |
 |-----|----------------|-----------------------------|
-| [`startup/`](startup/README.md) | workspace | README (index) · STRATEGY (full portfolio master) · precis · precis-ctc · syntara · formints · loop-crm · _template |
+| [`startup/`](startup/README.md) | workspace | README (index) · STRATEGY · comparison · PLAN · PRICING · SALES · company-profile · product-profiles · revenue-model · presentation · precis · precis-ctc · syntara · formints · loop-crm · _template |
 
 ## Arabic translations (authored source)
 
 | Dir | Owning project | Files → what they reference |
 |-----|----------------|-----------------------------|
-| [`ar-content/`](ar-content/index.md) | workspace | index (home) · architecture · guides/quickstart · guides/deployment · libs/django-fusion · startup/index · startup/strategy · navigation |
+| [`ar-content/`](ar-content/index.md) | workspace | index (home) · architecture · guides/quickstart · guides/deployment · guides/config-cascade · libs/django-fusion · startup/index · startup/strategy · startup/planning · startup/pricing · startup/sales · startup/company-profile · startup/product-profiles · startup/revenue-model · startup/presentation · navigation |
 
 ## Remarks & Notes
 

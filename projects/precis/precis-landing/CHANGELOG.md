@@ -1,6 +1,6 @@
-# Landing-Fusion changelog
+# Precis Landing changelog
 
-All notable Landing-Fusion changes are recorded here.
+All notable Precis Landing changes are recorded here.
 
 ## 2026-08-11 - Active project closeout
 

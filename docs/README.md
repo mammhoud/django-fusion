@@ -39,10 +39,12 @@ links:
 
 | Product | Canonical Path | Main Responsibility | Domain |
 |---|---|---|---|
-| **Precis LMS** | `projects/precis/precis-main/` | Django/Wagtail learning platform: courses, enrollment, progress, profiles, content | structa.cloud |
-| **Landing-Fusion** | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | structa.cloud |
+| **Precis (unified LMS + landing)** | `projects/precis/precis-main/` | Unified Django/Wagtail + Astro product: marketing, catalog, courses, enrollment, progress, profiles, content | structa.cloud · lms.structa.cloud |
+| **Precis Landing** | `projects/precis/precis-landing/` | Kept legacy marketing/catalog source copy; runtime identity maps to Precis Main | compatibility alias only |
 | **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
 | **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |
+| **CTC Research** | `projects/precis/precis-ctc/` | Medical research center digital presence & publishing | ctc-research.com |
+| **Loop-CRM** | `projects/loop-crm/` | Unified sales + marketing CRM (Twenty + Postiz lineage) | — |
 | **django-fusion** | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables | submodule |
 | **Infrastructure** | `application/` | PostgreSQL, Redis, Traefik/Nginx, Compose, deployment and MCP tooling | structa.cloud |
 | **Workspace tests** | `tests/` | Cross-project validation, fixtures, browser tests, deployment checks | — |
@@ -69,7 +71,7 @@ structa.cloud/
 │   │   │   ├── backend/              # Django + Wagtail backend
 │   │   │   ├── assets/               # Templates, static, SCSS, media
 │   │   │   └── frontend/             # Astro frontend shell
-│   │   ├── precis-landing/           # Landing-Fusion marketing/catalog site
+│   │   ├── precis-landing/           # Precis Landing marketing/catalog site
 │   │   │   ├── backend/              # Django + Wagtail backend
 │   │   │   ├── frontend/             # Astro frontend
 │   │   │   └── assets/               # Project assets
@@ -136,7 +138,9 @@ structa.cloud/
 - [📦 Publishing](publish/) — marketplace & distribution
 - [🤖 AI & Agents](ai/) — agent instructions, prompts, and skills
 - [✍️ Documentation authoring prompt](ai/documentation-authoring.md) — the powerful doc-generation prompt (emoji, diagrams, ERD, previews, EN/AR)
-- [🚀 Startup & Market Strategy](startup/README.md) — 🔒 private: MVP canvas, TAM/SAM/SOM, ideal clients per product; [full portfolio master](startup/STRATEGY.md)
+- [🚀 Startup & Market Strategy](startup/README.md) — 🔒 private: commercial ICP, MVP canvas, TAM/SAM/SOM, and offers; [full portfolio master](startup/STRATEGY.md)
+- [🏥 CTC content strategy](precis-ctc/content-strategy.md) — editorial ICP, market research, topic clusters, and measurement
+- [📝 CTC publishing workflow](precis-ctc/publishing-and-production.md) — review gates, localization, release verification, and rollback
 - [📚 Docus implementation](guides/09-docus.md) — source generation, metadata, locales, build, and deployment
 
 ## Project Documentation
@@ -144,7 +148,7 @@ structa.cloud/
 | Product | Directory | Key Docs |
 |---|---|---|
 | **Precis** (LMS + landing) | [`precis/`](precis/README.md) | Architecture, Configuration, Courses, Landing (frontend/API/deployment) |
-| **CTC Research** | [`precis-ctc/`](precis-ctc/) | Content strategy, Publishing & production |
+| **CTC Research** | [`precis-ctc/`](precis-ctc/) | Content strategy, editorial ICP, market research, publishing workflow, production notes, and client case study |
 | **Syntara** (Cypercloud) | [`syntara/`](syntara/) | Configuration, Features, Infrastructure |
 | **Loop-CRM** | [`loop-crm/`](loop-crm/) | Design system, Setup & build |
 | **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar, Cloud edition |

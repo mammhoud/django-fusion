@@ -6,7 +6,7 @@
 
 Read `/AGENTS.md` and `/projects/AGENTS.md` first. This file applies to the
 CTC Research backend only; it does not describe the retired `projects/precis-lms/`
-boundary, the separate Precis/LMS project, or the Landing-Fusion backend.
+boundary, the separate Precis/LMS project, or the Precis Landing backend.
 
 ## Directory structure
 
@@ -127,7 +127,7 @@ and a consuming-product regression test.
 
 - Do not use old `plugins.*`, `www.*`, or `projects/precis-lms/` paths in new
   imports or files.
-- Do not move Landing-Fusion-only APIs or templates into Precis.
+- Do not move Precis Landing-only APIs or templates into Precis.
 - Do not hand-edit generated static bundles.
 - Do not modify migrations to hide a schema mismatch; reproduce it and create a
   real migration.

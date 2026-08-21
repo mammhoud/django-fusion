@@ -1,5 +1,11 @@
 # ⚡ django-bolt Integration — Full Edition
 
+> **⛔ ARCHIVED (21 Aug 2026):** this file documents the retired Robyn/Sanic
+> sidecar, which was removed from every current edition. See
+> [README.md](README.md) for the canonical sources.
+>
+> ---
+
 > Integration plan: django-bolt high-performance API for POS Full edition Django portal.
 
 ---

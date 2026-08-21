@@ -33,7 +33,7 @@ python3 --version && uv --version && node --version && npm --version
 
 ```bash
 cd projects/loop-crm/backend
-make install            # uv sync in the workspace (projects/)
+just install            # uv sync in the workspace (projects/)
 ```
 
 ### 2.2 Frontend (Astro)

@@ -333,12 +333,15 @@ github=ghp_...   # or GITHUB_TOKEN=...
 
 ## Site ID Assignment
 
-| ID | Site | Container | Port |
-|----|------|-----------|------|
-| 1 | CTC Research | precis-ctc-website | 5070 |
-| 2 | LMS | lms-website | 5071 |
-| 3 | Portfolio | vresume-website | 5072 |
-| 4 | Cypercloud | cypercloud-website | 5073 |
+| ID | Site | Container(s) | Port |
+|----|------|-------------|------|
+| 1 | CTC Research | `precis-ctc-website` | 5070 |
+| 2 | Precis Main (LMS + landing) | `precis-main-backend` + `precis-main-frontend` | 8074 / 3000 |
+| 3 | Portfolio compatibility service | `vresume-website` | 5072 |
+| 4 | Syntara compatibility service | `syntara-backend` | project-defined |
+
+`lms.structa.cloud` is a compatibility host for Precis Main; there is no
+separate `lms-website` deployment target.
 
 ---
 

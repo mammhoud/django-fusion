@@ -13,10 +13,9 @@ build, Docker, and common issues.
 
 | Project | Guide | Stack | Dev ports |
 |---------|-------|-------|-----------|
-| **Precis (unified)** | [`projects/precis/precis-main/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :8074 · frontend :4321 |
-| **Precis LMS** | [`projects/precis/precis-main/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :5071 · frontend :3002 |
-| **Landing-Fusion** | [`projects/precis/precis-landing/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-landing/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :8074 · frontend :4321 |
-| **CTC Research** | [`projects/precis/precis-ctc/docs/SETUP_AND_BUILD.md`](../projects/precis/precis-ctc/docs/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :5070 · frontend :3002 |
+| **Precis (unified LMS + landing)** | [`projects/precis/docs/precis-main/SETUP_AND_BUILD.md`](../projects/precis/docs/precis-main/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | dev backend :8074 · dev frontend :4321 · Docker frontend :3000 |
+| **Precis Landing** | [`projects/precis/docs/precis-landing/SETUP_AND_BUILD.md`](../projects/precis/docs/precis-landing/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :8074 · frontend :4321 |
+| **CTC Research** | [`projects/precis/docs/precis-ctc/SETUP_AND_BUILD.md`](../projects/precis/docs/precis-ctc/SETUP_AND_BUILD.md) | Astro + Django + Wagtail + django-fusion | backend :5070 · frontend :3002 |
 | **Syntara / Cypercloud** | [`projects/syntara/docs/SETUP_AND_BUILD.md`](../projects/syntara/docs/SETUP_AND_BUILD.md) | Django + Ceptor-AI + Monaco + HTMX | app :5073 · webpack HMR :5093 |
 | **Formint POS (all editions)** | [`projects/formints/docs/GETTING_STARTED.md`](../projects/formints/docs/GETTING_STARTED.md) | Tauri + React + Astro + Django Ninja + Vue | Community :1420 · Pro :8767/:4321 · Cloud :8082/:8767/:4323 |
 | **Loop-CRM** | [`projects/loop-crm/docs/SETUP_AND_BUILD.md`](../projects/loop-crm/docs/SETUP_AND_BUILD.md) | Django + django-fusion + Dramatiq + Astro | backend :8000 · frontend :4321 |
@@ -26,10 +25,10 @@ build, Docker, and common issues.
 
 | I want to work on… | Start with |
 |--------------------|------------|
-| The marketing + LMS product | [Precis (unified)](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) |
-| The standalone learning platform | [Precis LMS](../projects/precis/precis-main/docs/SETUP_AND_BUILD.md) |
-| The landing/marketing slice | [Landing-Fusion](../projects/precis/precis-landing/docs/SETUP_AND_BUILD.md) |
-| The medical research center site | [CTC Research](../projects/precis/precis-ctc/docs/SETUP_AND_BUILD.md) |
+| The marketing + LMS product | [Precis (unified)](../projects/precis/docs/precis-main/SETUP_AND_BUILD.md) |
+| A historical LMS alias | [Precis Main deployment](precis/deployment.md) — `precis-lms`/`lms` are compatibility aliases, not a separate stack |
+| The landing/marketing slice | [Precis Landing](../projects/precis/docs/precis-landing/SETUP_AND_BUILD.md) |
+| The medical research center site | [CTC Research](../projects/precis/docs/precis-ctc/SETUP_AND_BUILD.md) |
 | The AI chat / template customizer | [Syntara / Cypercloud](../projects/syntara/docs/SETUP_AND_BUILD.md) |
 | Any POS edition (desktop, pro, cloud) | [Formint POS](../projects/formints/docs/GETTING_STARTED.md) |
 | The sales & marketing platform | [Loop-CRM](../projects/loop-crm/docs/SETUP_AND_BUILD.md) |

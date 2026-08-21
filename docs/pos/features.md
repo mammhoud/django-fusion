@@ -1,12 +1,16 @@
 # 🎯 POS — Features
 
-> Feature set specific to the POS (Point of Sale) desktop application.
+> **Superseded edition names.** The matrix below uses the retired `Mini` /
+> `Solo` / `Full` tiers — map **Mini → Community**, **Solo → Standard**,
+> **Full → Pro/Cloud**. The canonical, current capability matrix is
+> [`docs/plans/editions/comparison.md`](../plans/editions/comparison.md); this
+> page is kept as the historical feature record.
 
 ---
 
-## Feature Matrix by Edition
+## Feature Matrix by Edition (historical Mini/Solo/Full)
 
-| Feature | Mini | Solo | Full |
+| Feature | Mini (Community) | Solo (Standard) | Full (Pro/Cloud) |
 |---------|:----:|:----:|:----:|
 | Product catalog | ✅ | ✅ | ✅ |
 | Category management | ✅ | ✅ | ✅ |
@@ -31,7 +35,7 @@
 | **Sync event log viewer** | ❌ | ❌ | ☁️ |
 | **WebSocket live sync events** | ❌ | ❌ | ☁️ |
 | **DataToken sync tagging** | ❌ | 🔧 | 🔧 |
-| Robyn admin settings | ❌ | ✅ | ✅ |
+| Admin settings | ❌ | ✅ | ✅ |
 | Device peer sync | ❌ | ✅ | ❌ |
 | .env config | ✅ | ✅ | ✅ |
 | POS crest branding | ✅ | ✅ | ✅ |
@@ -39,7 +43,11 @@
 | Scroll cart preview | ✅ | ✅ | ✅ |
 
 > 🔧 = Available in django-fusion library for integration  
-> ☁️ = Available in pos-cloud server
+> ☁️ = Available in the cloud master (see `docs/plans/editions/04-cloud.md`)
+>
+> **Offline mode** is now first-class in all desktop editions (Community and
+> Standard are offline-first; Pro keeps an offline queue) — the historical
+> "❌" for Full above predates the offline-queue work.
 
 ---
 
@@ -65,7 +73,7 @@
 | **Bolt analytics dashboard** | Self-contained HTML dashboard at `/apis/data/` — 6 KPI cards, WebSocket live updates, sync event log viewer, dark theme |
 | **WebSocket sync events** | Django Channels `SyncEventConsumer` at `/ws/sync-events/` — broadcasts products/sales/inventory/heartbeat events in real-time |
 | **Unfold admin** | Django Unfold admin with live sync activity badges, delta counters, WS status indicator |
-| **REST sync API** | `/api/sync/push/{products,sales,inventory,heartbeats}` — receives branch data from pos-solo/pos-full |
+| **REST sync API** | `/api/sync/push/{products,sales,inventory,heartbeats}` — receives branch data from terminals (Pro/Community UI) |
 | **Branch management** | Organizations → Branches → Leads → Deals → Reports hierarchy |
 | **django-fusion viewsets** | ModelViewset + SearchableViewMixin for all sync entities |
 | **Makefile cloud targets** | `make cloud-run`, `cloud-dev`, `cloud-check`, `cloud-test`, `cloud-clean` |

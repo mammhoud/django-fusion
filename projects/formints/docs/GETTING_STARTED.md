@@ -46,7 +46,7 @@ node --version && pnpm --version && rustc --version && cargo --version
 
 ```bash
 cd projects/formints/formint-community
-make install            # pnpm install + cargo fetch
+just install            # pnpm install + cargo fetch
 ```
 
 ### Run
@@ -102,7 +102,7 @@ Standalone Tauri + React desktop POS.
 
 ```bash
 cd projects/formints/formint-standard
-make install            # pnpm + cargo
+just install            # pnpm + cargo
 make dev                # Vite dev server (browser only)
 make check              # TS + Rust checks
 make test               # Vitest unit tests
@@ -126,7 +126,7 @@ python3 --version && node --version && pnpm --version && tmux --version
 
 ```bash
 cd projects/formints/formint-pro
-make install            # backend .venv + deps + migrate + frontend npm install
+just install            # backend .venv + deps + migrate + frontend npm install
 make seed               # migrate + superuser + demo data (admin@formint.local / admin123)
 make seed-force         # wipe + re-seed all demo data
 ```
@@ -204,7 +204,7 @@ with the Community UI frontend.
 
 ```bash
 cd projects/formints/formint-cloud
-make install            # backend uv sync + frontend pnpm install
+just install            # backend uv sync + frontend pnpm install
 make migrate            # apply Django migrations (shared formint_cloud.db)
 ```
 
@@ -234,7 +234,7 @@ Vue 3 + Tauri thin desktop client.
 
 ```bash
 cd projects/formints/formint-client
-make install
+just install
 make dev                # Vite dev server
 make build              # production build
 make lint               # oxlint
@@ -330,8 +330,9 @@ make clean               # Cloud — remove db + bytecode cache
 ## See also
 
 - [Root README](../README.md) — editions overview, architecture, features
-- [docs/POS_ARCHITECTURE.md](POS_ARCHITECTURE.md) — full architecture
-- [docs/SERVER_V2.md](SERVER_V2.md) — merged server v2 reference (70+ APIs)
+- [docs/architecture/editions.md](architecture/editions.md) — per-edition components & features
+- [docs/FORMINT_ARCHITECTURE.md](FORMINT_ARCHITECTURE.md) — merged package architecture
 - [docs/THEME_SYSTEM.md](THEME_SYSTEM.md) — theme variant system
 - [docs/ROLE_SYSTEM.md](ROLE_SYSTEM.md) — roles & permissions
 - [docs/COMMANDS.md](COMMANDS.md) — CLI command reference
+- [docs/legacy/](legacy/README.md) — archived pre-merge / Robyn-era docs (history only)

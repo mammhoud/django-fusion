@@ -40,7 +40,7 @@ The former `docs/Anytype/` knowledge-graph docs were removed in the monorepo
 consolidation; product scope and market research now live alongside the
 canonical plans in `docs/plans/editions/`.
 
-The retired `docs/plans/pos/`, `docs/plans/migrated/`, `docs/plans/cms-fusion/`, and `docs/plans/precis-lms/` plan directories were deleted on 2026-08-14 (superseded by `editions/` and Precis/Landing-Fusion); see the deletion manifest.
+The retired `docs/plans/pos/`, `docs/plans/migrated/`, `docs/plans/cms-fusion/`, and `docs/plans/precis-lms/` plan directories were deleted on 2026-08-14 (superseded by `editions/` and Precis/Precis Landing); see the deletion manifest.
 
 ## Status evidence rules
 

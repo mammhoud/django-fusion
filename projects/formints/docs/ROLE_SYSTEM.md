@@ -2,8 +2,11 @@
 
 > **Version:** 1.0.0  
 > **Last Updated:** 24 July 2026  
-> **Applies to:** pos-mini (Rust), pos-solo (Django), pos-full (Django)  
-> **Related:** [Sync Architecture](SYNC_ARCHITECTURE.md), [Architecture Overview](POS_ARCHITECTURE.md)
+> **Applies to:** pos-mini (Rust), pos-solo (Django), pos-full (Django) —
+> pre-merge editions (archived)  
+> **Related:** [Architecture Overview](architecture/pos-architecture.md),
+> [legacy/SYNC_ARCHITECTURE.md](legacy/SYNC_ARCHITECTURE.md),
+> [legacy/POS_ARCHITECTURE.md](legacy/POS_ARCHITECTURE.md)
 
 ---
 

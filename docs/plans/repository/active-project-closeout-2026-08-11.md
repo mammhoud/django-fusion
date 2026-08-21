@@ -16,7 +16,7 @@ implemented.
 | Product | Canonical path | Former boundary | Closeout status |
 |---|---|---|---|
 | Precis LMS | `projects/precis/precis-lms/` | `projects/precis-lms/` | Active and deployed |
-| Landing-Fusion | `projects/precis/landi/` | CMS-Fusion landing slice | Active |
+| Precis Landing | `projects/precis/landi/` | CMS-Fusion landing slice | Active |
 | CTC Research | `projects/precis/precis-ctc/` | `projects/precis-ctc/` | Active (standalone research site) |
 | Syntara | `projects/syntara/` | Cypercloud | Active |
 | Formints | `projects/formints/` | POS edition workspace | Active |
@@ -83,7 +83,7 @@ Applied conclusions:
 
 | Plan family | Disposition | Reason |
 |---|---|---|
-| CMS/LMS migration plans | Superseded core migration record | Runtime moved to Precis and Landing-Fusion |
+| CMS/LMS migration plans | Superseded core migration record | Runtime moved to Precis and Precis Landing |
 | CMS Next.js/FlyonUI roadmap | Superseded historical proposal | The active frontend is Astro, not Next.js |
 | Assets/templates cleanup | Core work complete; deployment details retained | Remaining media concerns belong to deployment runbooks |
 | django-fusion Webpack plan | Active | Project webpack integration remains a framework roadmap item |
@@ -118,7 +118,7 @@ cd projects/precis/precis-lms/frontend
 npm run check
 npm run build
 
-# Landing-Fusion backend/frontend
+# Precis Landing backend/frontend
 cd projects/precis/landi/backend && make check && make test
 cd ../frontend && npm run check && npm run build
 

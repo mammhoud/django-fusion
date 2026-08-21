@@ -20,7 +20,7 @@ libs/django-fusion/.../templates/    # framework fallback
 ```
 
 Do not document this directory as `projects/assets/templates/`; that is a
-separate path. Do not place Landing-Fusion, Syntara, or POS templates here.
+separate path. Do not place Precis Landing, Syntara, or POS templates here.
 
 ## Rules
 

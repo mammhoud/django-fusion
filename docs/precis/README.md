@@ -1,6 +1,6 @@
 ---
 title: Precis — Unified LMS + Landing product
-description: Canonical documentation index for the Precis product (precis-main), including the merged landing/marketing shell and its legacy Landing-Fusion references.
+description: Canonical documentation index for the Precis product (precis-main), including the merged landing/marketing shell and its legacy Precis Landing references.
 navigation:
   title: Precis
   icon: i-lucide-graduation-cap
@@ -44,12 +44,15 @@ Precis is the unified learning platform: an **LMS** (courses, enrollment, progre
 | Area | Document | Notes |
 |------|----------|-------|
 | Architecture | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Monorepo-merged LMS + landing design |
+| CMS / Builder | [`cms-builder.md`](cms-builder.md) | Assets-based CMS builder (under development) + client work under the Solo/Business editions |
 | Configuration | [`configuration.md`](configuration.md) | Settings, env vars, Dynaconf wiring |
 | Courses | [`courses.md`](courses.md) | LMS course model, enrollment, progress |
-| Deployment | [`deployment.md`](deployment.md) | Docker Compose deployment of the merged stack |
-| Landing frontend | [`landing-fusion/frontend.md`](landing-fusion/frontend.md) | Astro shell, skeleton bridge, HTMX |
-| Landing backend API | [`landing-fusion/backend-api.md`](landing-fusion/backend-api.md) | Render-first + data API contract |
-| Landing deployment | [`landing-fusion/deployment.md`](landing-fusion/deployment.md) | Traefik routing for the landing slice |
+| Deployment | [`deployment.md`](deployment.md) | Unified Compose stack, health checks, and admin routes |
+| Landing frontend | [`precis-landing/frontend.md`](precis-landing/frontend.md) | Astro shell, skeleton bridge, HTMX |
+| Landing backend API | [`precis-landing/backend-api.md`](precis-landing/backend-api.md) | Render-first + data API contract |
+| Proxy/admin runbook | [`../dev/infrastructure/precis-main-proxy-admin.md`](../dev/infrastructure/precis-main-proxy-admin.md) | Current Traefik targets for structa.cloud and lms.structa.cloud |
+| Landing compatibility | [`precis-landing/deployment.md`](precis-landing/deployment.md) | Legacy Precis Landing pointer to the unified runtime |
+| CTC research site | [`../precis-ctc/README.md`](../precis-ctc/README.md) | Standalone research center site in the Precis group |
 
 ## 🧭 Naming & Aliases
 
@@ -57,10 +60,10 @@ Precis is the unified learning platform: an **LMS** (courses, enrollment, progre
 |------|--------|---------|
 | `precis-main` | ✅ canonical | `projects/precis/precis-main/` |
 | `precis-lms` | ⚠️ legacy alias | `precis-main` (merged) |
-| `precis-landing` / Landing-Fusion | ⚠️ legacy alias | `precis-main` (merged) |
+| `precis-landing` / Precis Landing | ⚠️ legacy alias | `precis-main` (merged) |
 
-> Legacy docs under the old `docs/landing-fusion/` tree were moved here —
-> `docs/precis/landing-fusion/*` is the canonical home for the landing slice.
+> Legacy docs under the old `docs/precis-landing/` tree were moved here —
+> `docs/precis/precis-landing/*` is the canonical home for the landing slice.
 
 ## 🏗️ Where django-fusion is used
 

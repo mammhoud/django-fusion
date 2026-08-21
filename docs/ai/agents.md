@@ -61,7 +61,7 @@ When an AI agent works on a file, it loads all AGENTS.md files from the root dow
 | `projects/AGENTS.md` | Project-level dispatcher conventions | Makefile delegation, WEBSITE= selection |
 | `projects/precis/precis-main/AGENTS.md` | Precis LMS project | Full product surface — backend, frontend, assets, templates, deployment |
 | `projects/precis/precis-main/backend/AGENTS.md` | Precis LMS backend | App ownership, URL flow, template resolution order |
-| `projects/precis/precis-landing/AGENTS.md` | Landing-Fusion project | Astro/Django dual rendering, content contracts, testing |
+| `projects/precis/precis-landing/AGENTS.md` | Precis Landing project | Astro/Django dual rendering, content contracts, testing |
 | `projects/syntara/AGENTS.md` | Syntara / Cypercloud | AI streaming, template catalog, provider boundaries |
 | `projects/formints/AGENTS.md` | Formint multi-edition POS | Edition map, cloud rules, community rules, cross-cutting |
 | `projects/formints/formint-pro/AGENTS.md` | Formint Professional | Django + Ninja + Astro + Tauri; fusion render-mode |

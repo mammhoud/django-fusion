@@ -102,7 +102,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   │   │   ├── backend/                    #       Django + Wagtail backend
 │   │   │   ├── assets/                     #       Templates, static, media
 │   │   │   └── frontend/                   #       Astro frontend shell
-│   │   ├── precis-landing/                 #     Landing-Fusion (WEBSITE=precis-landing)
+│   │   ├── precis-landing/                 #     Precis Landing (WEBSITE=precis-landing)
 │   │   │   ├── backend/                    #       Django + Wagtail backend
 │   │   │   ├── frontend/                   #       Astro 5 + Tailwind 4 frontend
 │   │   │   └── assets/                     #       SCSS, compiled CSS
@@ -183,7 +183,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 | Product | Path | Stack | Key AGENTS.md |
 |---|---|---|---|
 | **Precis LMS** | `projects/precis/precis-main/` | Django + Wagtail + django-fusion | `projects/precis/precis-main/backend/AGENTS.md` |
-| **Landing-Fusion** | `projects/precis/precis-landing/` | Astro 5 + Django + Wagtail | `projects/precis/precis-landing/AGENTS.md` |
+| **Precis Landing** | `projects/precis/precis-landing/` | Astro 5 + Django + Wagtail | `projects/precis/precis-landing/AGENTS.md` |
 | **CTC Research** | `projects/precis/precis-ctc/` | Django + Wagtail + Astro | `projects/precis/precis-ctc/AGENTS.md` |
 | **Syntara** | `projects/syntara/` | Django + CeptorAI + Ollama | `projects/syntara/AGENTS.md` |
 | **Loop-CRM** | `projects/loop-crm/` | Django + django-fusion + Astro | `projects/loop-crm/backend/AGENTS.md` |
@@ -227,9 +227,9 @@ uv sync
 cd projects/precis/precis-main/backend
 make check && make migrate && make seed
 
-# Landing-Fusion
+# Precis Landing
 cd projects/precis/precis-landing
-make install && make backend-migrate && make backend-seed
+just install && make backend-migrate && make backend-seed
 
 # Loop-CRM
 cd projects/loop-crm/backend
@@ -237,7 +237,7 @@ make check && make migrate && make test
 
 # Formint Cloud
 cd projects/formints/formint-cloud
-make install && make migrate
+just install && make migrate
 
 # Formint Community
 cd projects/formints/formint-community
@@ -251,7 +251,7 @@ python manage.py migrate
 ### Run Development Servers
 
 ```bash
-# Landing-Fusion (frontend + backend)
+# Precis Landing (frontend + backend)
 cd projects/precis/precis-landing
 make dev                     # Astro frontend
 make backend-dev             # Django backend
@@ -294,9 +294,9 @@ cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis
 | Legacy Name | Current Name | Current Path | Notes |
 |---|---|---|---|
 | `precis-lms` / `lms` | Precis LMS (alias) | `projects/precis/precis-main/` | `WEBSITE=precis-main` dispatcher alias |
-| `precis-landing` | Landing-Fusion | `projects/precis/precis-landing/` | `WEBSITE=precis-landing` |
+| `precis-landing` | Precis Landing | `projects/precis/precis-landing/` | `WEBSITE=precis-landing` |
 | `precis-ctc` / `ctc` | CTC Research | `projects/precis/precis-ctc/` | `WEBSITE=precis-ctc` |
-| `cms-fusion` | Merged | — | Split into Precis + Landing-Fusion |
+| `cms-fusion` | Merged | — | Split into Precis + Precis Landing |
 | `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-main/` | Resume builder merged |
 | `cypercloud` | Syntara | `projects/syntara/` | Runtime alias preserved |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | Formint Community | `projects/formints/formint-community/` | Offline-first edition |
@@ -318,7 +318,7 @@ cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis
 ### 1. Where things live now
 
 - **LMS/marketing/research are one group:** `projects/precis/` holds
-  `precis-main/` (Precis LMS), `precis-landing/` (Landing-Fusion) and
+  `precis-main/` (Precis LMS), `precis-landing/` (Precis Landing) and
   `precis-ctc/` (CTC Research). Their shared Django settings live in
   `projects/precis/configs/`.
   The **runtime identity is unchanged** — use `WEBSITE=precis-main`,

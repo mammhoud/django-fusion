@@ -1,5 +1,11 @@
 # POS Network Architecture
 
+> **⛔ ARCHIVED (21 Aug 2026):** this file documents the retired Robyn/Sanic
+> sidecar, which was removed from every current edition. See
+> [README.md](README.md) for the canonical sources.
+>
+> ---
+
 > Master document for the three-tier POS network architecture:
 > **Minimal (Node)** → **Solo (Server/Aggregator)** → **Full/Cloud (Master)**
 

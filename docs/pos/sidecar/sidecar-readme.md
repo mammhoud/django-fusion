@@ -1,5 +1,11 @@
 # 🌐 Server — Sidecar (Python/Sanic)
 
+> **⛔ ARCHIVED (21 Aug 2026):** this file documents the retired Robyn/Sanic
+> sidecar, which was removed from every current edition. See
+> [README.md](README.md) for the canonical sources.
+>
+> ---
+
 Lightweight Sanic server providing chat, support tickets, customer service, and data APIs for POS.
 
 ## Use Cases

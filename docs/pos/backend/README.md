@@ -1,19 +1,21 @@
 # 🦀 Rust Backend — Overview
 
-> The Rust backend is the core of the POS system — handling all database operations, authentication, and business logic via Tauri commands.
+> The Rust backend is the core of the desktop POS editions (Community /
+> Standard) — handling all database operations, authentication, and business
+> logic via Tauri commands. Pro/Cloud serve their APIs from Django instead.
 
 ---
 
 ## Architecture
 
 ```
-Vue Frontend
+React / Vue Frontend
      │ invoke(command, args)
      ▼
 Tauri Command Layer (lib.rs)
      │
      ▼
-Operations Layer (25 CRUD modules)
+Operations Layer (25+ CRUD modules)
      │
      ▼
 Diesel ORM (SQLite)
@@ -38,6 +40,6 @@ Diesel ORM (SQLite)
 
 | Topic | Path |
 |-------|------|
-| Sidecar architecture | [`../sidecar/README.md`](../sidecar/README.md) |
-| Cloud sync | [`../cloud/README.md`](../cloud/README.md) |
+| Sidecar architecture (archived) | [`../sidecar/README.md`](../sidecar/README.md) |
+| Cloud edition | [`../cloud-edition.md`](../cloud-edition.md) |
 | POS database schema | [`../../databases/pos-schema.md`](../../databases/pos-schema.md) |

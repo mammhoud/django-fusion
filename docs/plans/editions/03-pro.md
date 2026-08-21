@@ -1,5 +1,7 @@
 # Pro Edition — Local Completion Record
 
+> Tags: `#formints` `#pos` `#pro` `#django` `#django-fusion` `#unfold` `#astro` `#htmx` `#kds` `#sync` — status ✅ done (21 Aug 2026).
+
 **Canonical product:** `projects/formints/formint-pro/`
 **Legacy aliases:** `pos-full`, `pos-solo`, and `formint/` are compatibility names only.
 

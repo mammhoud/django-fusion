@@ -8,13 +8,18 @@ React 19 + TypeScript + Vite frontend for the POS desktop application.
 - **Purpose:** Render 22 route-level pages (POS, Inventory, Sales, Analytics, Customers, Employees, Reports, etc.) with 15 reusable UI components — providing the complete restaurant management interface
 - **Key traits:** Most pages/components are 🟢 customizable; page routing guarded by auth context; Framer Motion page transitions
 
-### 2. Sidecar API Client (`api/*.ts`)
-- **Purpose:** Provide a typed HTTP + WebSocket client layer for communicating with the Python/Sanic sidecar — health checks, data queries, chat, tickets, invoice rendering
-- **Key traits:** Base client handles fetch/error normalization; typed endpoints match sidecar REST schema; WebSocket client in `chat.ts` with auto-reconnect
+### 2. Data Access (`api/*.ts` + `invoke()`)
+- **Purpose:** Typed access to POS data. Community/Standard use Tauri `invoke()`
+  → Rust/Diesel directly (offline-first, no server). Pro/Cloud use
+  `@formints/client` or the Django API.
+- **Key traits:** Every CRUD call is an `invoke()` of a registered Rust command;
+  types mirror the Rust structs exactly. The historical Python/Sanic sidecar
+  client (`sidecar.ts`, `chat.ts`, `tickets.ts`) was removed.
 
-### 3. Real-Time Chat Widget (`components/ChatSupport.tsx` + `api/chat.ts`)
-- **Purpose:** Floating chat widget for customer-staff messaging — connects via WebSocket for real-time communication with typing indicators
-- **Key traits:** Room-based support chat; auto-scrolls to latest message; status toast on connection state change; 💡 protocol is 🔴 not-customizable (frontend depends on exact JSON format)
+### 3. Real-Time Chat Widget (`components/ChatSupport.tsx`)
+- **Purpose:** Email-based support chat (`VITE_SUPPORT_EMAIL`) — no server or
+  WebSocket dependency in the current editions.
+- **Key traits:** mailto-based support flow; status toast on send.
 
 ### 4. Internationalization (`i18n/*.json`)
 - **Purpose:** Support English, French, and Arabic locales with i18next — translating all UI labels, messages, invoices, and reports
@@ -29,7 +34,7 @@ src/
 ├── main.tsx                  # 🔴 App entry, providers, language init
 ├── App.tsx                   # 🔴 Router, auth gate, page transitions
 ├── types.ts                  # 🟢 Shared TypeScript interfaces
-├── api/                      # 🟢 Sidecar API client layer
+├── api/                      # 🟢 Data access layer (invoke wrappers)
 │   ├── index.ts              # Barrel exports
 │   ├── sidecar.ts            # Base HTTP client, health check
 │   ├── chat.ts               # Chat REST + WebSocket
@@ -111,16 +116,13 @@ src/
 
 ## Key APIs
 
-### Sidecar Client (`api/sidecar.ts`)
+### Data Access (invoke)
 ```typescript
-import { sidecar } from '../api';
+import { invoke } from '@tauri-apps/api/core';
 
-// Health check
-const running = await sidecar.healthCheck();
-
-// Typed HTTP calls
-const { data, ok, error } = await sidecar.get<MyType>('/api/sales');
-const result = await sidecar.post<Ticket>('/api/support/ticket', payload);
+// Typed calls straight to Rust/Diesel
+const products = await invoke<Product[]>('get_products');
+const sale = await invoke<Sale>('add_sale', { newSale, items });
 ```
 
 ### Auth Context
@@ -131,23 +133,10 @@ const { user, isAuthRequired, login, logout } = useAuth();
 // user: { id, email, name } | null
 ```
 
-### Chat WebSocket (`api/chat.ts`)
-```typescript
-import { createChatWs } from '../api';
-
-const conn = createChatWs({
-  room: 'support',
-  onMessage: (msg) => console.log(msg),
-  onStateChange: (state) => console.log(state),
-});
-conn.send({ type: 'message', text: 'Hello!' });
-conn.close();
-```
-
 ## Tests
 
 ```bash
-cd POS
+cd projects/formints/formint-community   # or formint-standard
 pnpm vitest run                # Run all frontend tests
 pnpm vitest -- --reporter=verbose  # Verbose output
 ```

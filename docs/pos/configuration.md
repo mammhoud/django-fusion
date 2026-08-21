@@ -1,13 +1,15 @@
 # ⚙️ POS — Configuration
 
-> Configuration reference for the POS Tauri desktop application — Tauri, Rust backend, and sidecar Django portal.
+> Configuration reference for the POS Tauri desktop application — Tauri, Rust
+> backend. **⛔ The sidecar Django portal is historical** — Community/Standard are
+> offline-first (Rust/Diesel only); Pro/Cloud serve Django themselves.
 
 ---
 
 ## Tauri Configuration
 
 ```json
-// projects/formints/pos-solo/src-tauri/tauri.conf.json
+// projects/formints/formint-community/src-tauri/tauri.conf.json
 {
   "productName": "POS",
   "identifier": "com.mammhoud.pos",
@@ -46,7 +48,7 @@ pnpm tauri build --target x86_64-pc-windows-msvc --bundles nsis
 ## Rust Backend Dependencies
 
 ```toml
-# projects/formints/pos-solo/src-tauri/Cargo.toml
+# projects/formints/formint-community/src-tauri/Cargo.toml
 [dependencies]
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
@@ -79,10 +81,13 @@ tauri-build = { version = "2", features = [] }
 
 ---
 
-## Sidecar Django Portal
+## Sidecar Django Portal — ⛔ removed
+
+> The embedded sidecar Django portal no longer exists. Pro (`formint-pro/`) and
+> Cloud (`formint-cloud/`) run Django directly (see their READMEs).
 
 ```python
-# projects/formints/pos-solo/sidecar/settings.py
+# historical: pos-solo/sidecar/settings.py — removed
 
 INSTALLED_APPS = [
     "django.contrib.admin",

@@ -143,7 +143,39 @@ make migrate WEBSITE=loop-crm
 `syntara`, plus legacy aliases `structa`/`lms`/`core` → `precis-main`). See
 `projects/Makefile.md` for the full alias table.
 
-## 5. nx aggregate targets
+## 5. Config cascade & static-files commands
+
+Projects with a `configs/` dir (Precis Main first) expose cascade commands that
+render the merged YAML + `.env` + env configuration and the static-files plan
+(read → output → deploy). See [`guides/config-cascade.md`](guides/config-cascade.md).
+
+```bash
+cd projects/precis/precis-main
+make config-show     # merged cascade + static-files plan (read/output/deploy)
+make config-check    # validate required identity keys resolve
+make css             # compile Tailwind design system → assets/static/css/fusion.css
+make collectstatic   # copy STATICFILES_DIRS → STATIC_ROOT (backend target)
+```
+
+| Command | Reads | Writes / effect | Validates |
+|---------|-------|-----------------|-----------|
+| `make config-show` | cascade YAML + `.env` + env | prints merged config + static plan | — |
+| `make config-check` | cascade | — | required identity keys resolve |
+| `make css` | `frontend/src/styles/globals.css` | `assets/static/css/fusion.css` | Tailwind compile |
+| `make build-assets` | webpack config + fusion SCSS | `backend/assets/static/bundles/` | bundle manifest |
+| `make collectstatic` | `STATICFILES_DIRS` | `STATIC_ROOT` | file copy |
+| `docker compose config -q` | compose files + `.env` | — | compose validity |
+
+### Static-files flow (action by action)
+
+`make css` → `assets/static/css/fusion.css` → `collectstatic` copies
+`STATICFILES_DIRS` (`backend/assets/static`, `assets/static`, `frontend/public`)
+into `STATIC_ROOT` (`backend/assets/staticfiles`) → the named volume
+(`precis-main-static`) → whitenoise serves `/static/` behind Traefik; `/media/`
+serves via shared-proxy nginx. The container startup command runs
+`migrate → collectstatic → seed_pages → seed_learning → gunicorn` on every boot.
+
+## 6. nx aggregate targets
 
 ```bash
 make check-all    # npx nx run-many -t check --all

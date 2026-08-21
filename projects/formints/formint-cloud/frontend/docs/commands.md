@@ -60,7 +60,7 @@
 
 | Command | Description |
 |---------|-------------|
-| `make install` | Install all deps (`pnpm install` + `cargo fetch`) |
+| `just install` | Install all deps (`pnpm install` + `cargo fetch`) |
 | `make install-tauri-cli` | Install/update Tauri CLI |
 | `make lint` | Run all linters (typecheck + clippy) |
 | `make format` | Format Rust code (`cargo fmt`) |

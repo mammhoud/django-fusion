@@ -1,6 +1,7 @@
 ---
 name: structa-doc-authoring
 description: "Structa Cloud documentation authoring — the powerful, repo-tuned writing skill for docs/ (Docus pipeline). Enforces emoji headers, ## Remarks & Notes, AI-generated review markers, language-hinted code guides, mermaid architecture diagrams, mermaid ERDs, real preview-image pointers, Affine graph frontmatter (object/attributes/tags/links), canonical paths + aliases, and EN/AR parity via docs/docus/ar-content. Use for any documentation work in this monorepo: new pages, rewrites, package guides, startup/strategy docs, product docs, and bilingual translations. Companion to the structa-docs conventions skill."
+tags: [documentation, docs, docus, mermaid, bilingual, arabic, structa-cloud]
 argument-hint: "<what to document and which product>"
 ---
 
@@ -56,7 +57,7 @@ Every generated document **must** include:
 
 | Entity | Canonical | Aliases (internal only) |
 |--------|-----------|--------------------------|
-| Precis | `projects/precis/precis-main/` · `docs/precis/` | `precis-lms`, `precis-landing`, Landing-Fusion |
+| Precis | `projects/precis/precis-main/` · `docs/precis/` | `precis-lms`, `precis-landing`, Precis Landing |
 | CTC | `projects/precis/precis-ctc/` · `docs/precis-ctc/` | `ctc`, `ctc-research.com` |
 | Loop-CRM | `projects/loop-crm/` · `docs/loop-crm/` | `crm` |
 | Syntara | `projects/syntara/` · `docs/syntara/` | `cypercloud` (legacy) |

@@ -43,9 +43,9 @@ The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript + Ast
 
 | Layer | Technology | Projects Using It |
 |-------|-----------|-------------------|
-| **Backend** | Python 3.11 + Django 5.2 + Wagtail 7.4 | Precis LMS, Landing-Fusion, Syntara, Formint Cloud |
+| **Backend** | Python 3.11 + Django 5.2 + Wagtail 7.4 | Precis LMS, Precis Landing, Syntara, Formint Cloud |
 | **Desktop** | Rust + Tauri 2.x | Formint Community, Formint Professional, Formint Client |
-| **Frontend** | Astro 5 + TypeScript + Vue 3 + React 19 | Landing-Fusion, Formint editions, Syntara Chat |
+| **Frontend** | Astro 5 + TypeScript + Vue 3 + React 19 | Precis Landing, Formint editions, Syntara Chat |
 | **AI** | Ollama + OpenAI-compatible + MCP | Syntara (CeptorAI) |
 | **Infrastructure** | Docker + Traefik + Nginx + Coder | All projects |
 | **Database** | PostgreSQL 16 (prod) / SQLite (dev) | All Django projects |
@@ -61,7 +61,7 @@ The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript + Ast
 cd projects
 make check WEBSITE=precis-main         # Checks Precis LMS
 make test WEBSITE=precis-main          # Tests Precis LMS
-make run-dev WEBSITE=precis-landing   # Landing-Fusion dev server
+make run-dev WEBSITE=precis-landing   # Precis Landing dev server
 make check WEBSITE=precis-ctc         # CTC Research backend/frontend checks
 make check WEBSITE=precis-landing
 make test WEBSITE=precis-landing
@@ -74,18 +74,18 @@ make test WEBSITE=precis-landing
 cd projects/precis/precis-main/backend
 make check && make test && make migrate
 
-# Landing-Fusion
+# Precis Landing
 cd projects/precis/precis-landing
-make install && make check && make build
+just install && make check && make build
 make backend-migrate && make backend-check && make backend-test
 
 # Formint Professional
 cd projects/formints/formint-pro
-make install && make check && make test
+just install && make check && make test
 
 # Formint Cloud
 cd projects/formints/formint-cloud
-make install && make check && make test
+just install && make check && make test
 
 # Formint Community
 cd projects/formints/formint-community
@@ -121,8 +121,8 @@ make logs              # Tail all service logs
 
 | Project | Dir | Type | Port | Stack |
 |---------|-----|------|------|-------|
-| **Precis LMS** | `projects/precis/precis-main/` | Django Site | — | Wagtail + django-fusion |
-| **Landing-Fusion** | `projects/precis/precis-landing/` | Astro + Django | 8074 | Wagtail + Astro 5 + Tailwind 4 |
+| **Precis (unified LMS + landing)** | `projects/precis/precis-main/` | Astro + Django | backend 8074 · frontend 3000 (Docker) | Wagtail + Astro 5 + django-fusion |
+| **Precis Landing** | `projects/precis/precis-landing/` | Legacy compatibility copy | — | Historical source; runtime maps to Precis Main |
 | **CTC Research** | `projects/precis/precis-ctc/` | Django Site | — | Wagtail + django-fusion |
 | **Syntara** | `projects/syntara/` | Django Site | 5073 | AI Chat + CeptorAI + Ollama |
 | **Loop-CRM** | `projects/loop-crm/` | Django + Astro | 8000 | django-fusion + React islands |
@@ -200,7 +200,7 @@ structa.cloud/
 │   ├── assets/            # Shared static/templates/locale
 │   ├── precis/            # Precis group (precis-main, precis-landing, precis-ctc)
 │   │   ├── precis-main/   #   Precis LMS
-│   │   ├── precis-landing/   #   Landing-Fusion marketing site
+│   │   ├── precis-landing/   #   Precis Landing marketing site
 │   │   ├── precis-ctc/    #   CTC Research
 │   │   └── configs/       #   Shared Django settings
 │   ├── syntara/           # Syntara AI chat platform
@@ -235,8 +235,8 @@ The codebase has been through several renames. See this guide for mapping old na
 |---|---|---|
 | `precis-ctc` / `ctc` | **CTC Research** | `projects/precis/precis-ctc/` |
 | `precis-lms` / `lms` | **Precis LMS** (alias) | `projects/precis/precis-main/` |
-| `precis-landing` | **Landing-Fusion** | `projects/precis/precis-landing/` |
-| `cms-fusion` | Merged into Precis + Landing-Fusion | — |
+| `precis-landing` | **Precis Landing** | `projects/precis/precis-landing/` |
+| `cms-fusion` | Merged into Precis + Precis Landing | — |
 | `cypercloud` | **Syntara** (runtime alias preserved) | `projects/syntara/` |
 | `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-main/` |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | **Formint Community** | `projects/formints/formint-community/` |

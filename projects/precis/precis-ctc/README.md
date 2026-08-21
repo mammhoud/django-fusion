@@ -59,7 +59,7 @@ projects/precis/precis-ctc/
 
 ## Quick Start
 
-> 📖 Full step-by-step setup & build: [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md)
+> 📖 Full step-by-step setup & build: [`../docs/precis-ctc/SETUP_AND_BUILD.md`](../docs/precis-ctc/SETUP_AND_BUILD.md)
 
 ### Backend
 
@@ -102,7 +102,7 @@ npm run dev
 | `backend/apps/handlers/` | PageHandler views, fragment rendering |
 | `backend/assets/fixtures/ctc-research-media.json` | Archive media metadata and dump-compatible aliases |
 | `backend/apps/core/management/commands/prepare_ctc_media.py` | Non-destructive archive-to-website media preparation |
-| `docs/MEDIA_ARCHIVE.md` | Media topology, preparation, content and visual review guide |
+| `../docs/precis-ctc/MEDIA_ARCHIVE.md` | Media topology, preparation, content and visual review guide |
 | `backend/assets/templates/` | Site-specific Wagtail templates |
 | `compose/Dockerfile.backend` | Production backend Dockerfile |
 | `compose/Dockerfile.frontend` | Production frontend Dockerfile |
@@ -113,8 +113,8 @@ npm run dev
 
 | Resource | Link |
 |----------|------|
-| **Setup & Build guide** | [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md) — full step-by-step startup/build instructions |
-| Landing-Fusion docs | [`../precis/precis-landing/README.md`](../precis/precis-landing/README.md) |
+| **Setup & Build guide** | [`../docs/precis-ctc/SETUP_AND_BUILD.md`](../docs/precis-ctc/SETUP_AND_BUILD.md) — full step-by-step startup/build instructions |
+| Precis Landing docs | [`../precis/precis-landing/README.md`](../precis/precis-landing/README.md) |
 | django-fusion | [`../../libs/django-fusion/README.md`](../../libs/django-fusion/README.md) |
 | Docs sidebar | [`../../docs/_sidebar.md`](../../docs/_sidebar.md) |
 | Infrastructure | [`../../docs/infrastructure/`](../../docs/infrastructure/) |

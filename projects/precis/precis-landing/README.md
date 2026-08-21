@@ -1,10 +1,10 @@
-# Landing-Fusion
+# Precis Landing
 
 > **Status:** 🟢 Phase 0 + 1 complete; dark mode done; backend added
 > **Tags:** #landing #astro #django #wagtail #aha-stack
 > **Stack:** Astro 5 + Tailwind CSS 4 + HTMX + Alpine.js (frontend) · Django 5.2 + Wagtail 7.4 (backend)
 
-Landing-only implementation of the [Landing-Fusion plan](../../docs/plans/landing-fusion/README.md),
+Landing-only implementation of the [Precis Landing plan](../../docs/plans/precis-landing/README.md),
 with an historical reference to the superseded CMS-Fusion migration (archived).
 It uses an **AHA stack** (Astro + HTMX + Alpine.js) with a **Django + Wagtail backend**
 whose editable fields drive the landing pages. The project is the canonical
@@ -47,20 +47,20 @@ projects/precis/precis-landing/
 │       ├── content/                # StreamField block types + content/blocks/ templates
 │       ├── pages/                  # page models + pages/ templates + seed_pages + tests + migrations
 │       └── handlers/               # django-fusion PageHandler views (HTMX fragment rendering)
-├── plan/                # Deprecated local plan path; canonical plans live in ../../docs/plans/landing-fusion/
+├── plan/                # Deprecated local plan path; canonical plans live in ../../docs/plans/precis-landing/
 ├── Makefile             # Root dispatcher (frontend + backend targets)
 └── README.md
 ```
 
 ## Quick start
 
-> 📖 Full step-by-step setup & build: [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md)
+> 📖 Full step-by-step setup & build: [`../docs/precis-landing/SETUP_AND_BUILD.md`](../docs/precis-landing/SETUP_AND_BUILD.md)
 
 ### Frontend (Astro)
 
 ```bash
 cd projects/precis/precis-landing
-npm install          # or: make install
+npm install          # or: just install
 npm run dev          # http://localhost:3000
 npm run check        # astro check (types + diagnostics)
 npm run build        # static output → frontend/dist/
@@ -99,7 +99,7 @@ make test            # apps.pages tests
 - Self-contained `settings.py` (standalone, no shared-config dependency)
 
 ### Plan docs
-- [`../../docs/plans/landing-fusion/README.md`](../../docs/plans/landing-fusion/README.md) — canonical Landing Fusion plan entry point
+- [`../../docs/plans/precis-landing/README.md`](../../docs/plans/precis-landing/README.md) — canonical Precis Landing plan entry point
 
 ## Not yet ported (later phases)
 
@@ -109,7 +109,7 @@ make test            # apps.pages tests
 
 ## See also
 
-- [**docs/SETUP_AND_BUILD.md**](docs/SETUP_AND_BUILD.md) — full step-by-step setup & build guide
-- [docs/CATALOG_AND_FUSION.md](docs/CATALOG_AND_FUSION.md) — product & edition comparison, the django-fusion dependency surface, and Django Fusion guide references
+- [**Precis landing docs**](../docs/precis-landing/SETUP_AND_BUILD.md) — full step-by-step setup & build guide
+- [Precis catalog docs](../docs/precis-main/CATALOG_AND_FUSION.md) — product & edition comparison, the django-fusion dependency surface, and Django Fusion guide references
 - [`../../docs/plans/precis-landing/README.md`](../../docs/plans/precis-landing/README.md) — this project's canonical plan
 - [shadcnblocks/mainline-astro-template](https://github.com/shadcnblocks/mainline-astro-template) — theme reference

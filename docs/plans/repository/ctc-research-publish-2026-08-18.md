@@ -59,11 +59,11 @@ The audit is complete. The site surface is:
 The CTC-specific documentation set is now written and linked from the plans
 registry and docs sidebar:
 
-- `projects/precis/precis-ctc/docs/CONTENTS.md` — page-by-page content map,
+- `projects/precis/docs/precis-ctc/CONTENTS.md` — page-by-page content map,
   data sources, fallbacks, and medical-content rules.
-- `projects/precis/precis-ctc/docs/ENHANCEMENTS.md` — completed changes,
+- `projects/precis/docs/precis-ctc/ENHANCEMENTS.md` — completed changes,
   publish blockers, and P1/P2 improvements.
-- `projects/precis/precis-ctc/docs/ENVIRONMENT.md` — requirements, environment
+- `projects/precis/docs/precis-ctc/ENVIRONMENT.md` — requirements, environment
   names, shared assets, redeploy, and rollback notes.
 - `docs/precis-ctc/README.md` — repository entry point for architecture,
   content, media/proxy, and deployment guides.
@@ -172,7 +172,7 @@ asset verifier and both relevant Compose configs pass validation.
 
 - **Implemented `redeploy`:** `projects/precis/precis-ctc/Makefile` runs backend/frontend checks, builds backend/worker/frontend, and recreates backend, worker, scheduler, and frontend.
 - **Implemented dispatcher alias:** `cd projects && make redeploy-with-stack WEBSITE=precis-ctc` delegates to the project target. The existing `make redeploy WEBSITE=precis-ctc` remains the dispatcher’s web-only path.
-- **Environment docs:** `projects/precis/precis-ctc/docs/ENVIRONMENT.md` records requirements, variable names, asset mounts, safety, and rollback remarks without secrets.
+- **Environment docs:** `projects/precis/docs/precis-ctc/ENVIRONMENT.md` records requirements, variable names, asset mounts, safety, and rollback remarks without secrets.
 - **Nx:** remains a P2 follow-up; do not add a second package-manager install until the root Nx workspace ownership and target conventions are accepted.
 
 ---
@@ -197,7 +197,7 @@ The companion plan [`precis-ctc-workflows.md`](precis-ctc-workflows.md) defines 
 | A6 | Add `make redeploy` (front + back + attached containers) with precis delegation | P1 | ✅; `make redeploy-with-stack WEBSITE=precis-ctc` delegates to the full stack |
 | A7 | Enrich LMS course fixtures (rich_description, modules, lessons) + reconcile the two dump-data copies | P1 | ◐ Seeded 12 modules/24 lessons; dump-copy reconciliation and editorial review remain |
 | A8 | Write `docs/CONTENTS.md`, `docs/ENHANCEMENTS.md`, repo `docs/precis-ctc/` + sidebar + plans registry links | P1 | ✅ |
-| A9 | Environment docs with requirements remarks + `.env.example` names | P1 | ✅; `projects/precis/precis-ctc/docs/ENVIRONMENT.md` |
+| A9 | Environment docs with requirements remarks + `.env.example` names | P1 | ✅; `projects/precis/docs/precis-ctc/ENVIRONMENT.md` |
 | A10 | Nx targets for precis-ctc (check/test/dev/redeploy) + root npm install | P2 | ⬜ |
 | A11 | Cross-module automation plan (16 workflows, Dramatiq boundary) | P2 | ✅ Proposed plan in `docs/plans/repository/precis-ctc-workflows.md` |
 | A12 | Clear the 9 frontend check hints | P2 | ✅ 0 hints |

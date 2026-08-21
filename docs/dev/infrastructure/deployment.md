@@ -12,10 +12,10 @@
        ┌───────┼────────┬──────────────┐
        │       │        │              │
        v       v        v              v
-    ┌──────────┐  ┌──────────┐  ┌──────────┐
-    │   CTC    │  │  LMS     │  │ VResume  │
-    │ Research │  │  Demo    │  │          │
-    │ (5070)   │  │ (5071)   │  │ (5072)   │
+    ┌──────────┐  ┌──────────────────┐  ┌──────────┐
+    │   CTC    │  │ Precis Main      │  │ VResume  │
+    │ Research │  │ unified LMS/site │  │          │
+    │ (5070)   │  │ (8074 / 3000)    │  │ (5072)   │
     └──────────┘  └──────────┘  └──────────┘
          │              │             │
          └──────────────┼─────────────┘
@@ -33,41 +33,60 @@
 |---------|-----------|------|---------|
 | Traefik Proxy | `default-proxy` | 80, 443, 8080 | HTTPS reverse proxy |
 | CTC Research | `precis-ctc-website` | 5070 | Django app |
-| LMS Demo | `lms-website` | 5071 | Django app |
+| Precis Main | `precis-main-backend` + `precis-main-frontend` | 8074 / 3000 | Unified Django/Astro app |
 | VResume | `vresume-website` | 5072 | Django app |
 | PostgreSQL | `postgres` | 5432 | Primary database |
 | Redis | `default-redis` | 6379 | Cache & sessions |
 | Nginx Media | `shared-proxy` | 80 | Static/media files |
 
+## Current Precis deployment reference
+
+The old `lms-website`/LMS Demo description is retired. `structa.cloud` and
+`lms.structa.cloud` are compatibility hosts for
+`projects/precis/precis-main/`. Deploy and verify it with:
+
+```bash
+docker compose --env-file .env \
+  -f projects/precis/precis-main/docker-compose.yml up -d --build
+curl -k -sS -L -o /dev/null \
+  -w 'Wagtail: %{http_code} %{url_effective}\n' \
+  https://lms.structa.cloud/admin
+```
+
+See [`precis-main-proxy-admin.md`](precis-main-proxy-admin.md) for the complete
+Traefik contract.
+
 ## Project layout
 
 ```
 /home/structa.cloud/
-├── projects/                       # Django monorepo
-│   ├── precis-ctc/
-│   ├── lms/
-│   ├── VResume/
-│   ├── libs/django-fusion/
-│   ├── libs/ceptor-ai/
-│   ├── assets/
-│   ├── configs/
-│   └── www/
+├── projects/
+│   ├── precis/precis-main/          # unified Precis LMS + landing
+│   ├── precis/precis-landing/       # kept legacy Precis Landing copy
+│   ├── precis/precis-ctc/           # standalone CTC Research
+│   ├── configs/                     # shared Django configuration
+│   └── assets/                      # shared product assets
+├── libs/django-fusion/              # shared library submodule
 ├── application/
-│   ├── proxy/                  # Traefik config
-│   └── databases/              # Postgres/Redis compose
-├── docs/                       # Documentation
-├── Makefile                    # Root dispatcher
-└── docker-compose.yml
+│   ├── proxy/                       # Traefik + shared Nginx
+│   └── databases/                   # PostgreSQL + Redis Compose
+├── docs/                            # authored documentation
+└── Makefile                         # root dispatcher
 ```
 
-## Build a site image
+## Build and start an application stack
+
+Use the owning product Compose file rather than the retired generic
+`projects/compose/Dockerfile` path:
 
 ```bash
-docker build \
-  --build-arg PROJECT_PATH=precis-ctc \
-  -f projects/compose/Dockerfile \
-  -t structa-precis-ctc:latest \
-  .
+# Unified Precis
+docker compose --env-file .env \
+  -f projects/precis/precis-main/docker-compose.yml up -d --build
+
+# CTC Research
+cd projects/precis/precis-ctc
+make redeploy
 ```
 
 ## Start all services
@@ -117,17 +136,18 @@ docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 # View all containers
 docker ps -a
 
-# View logs
-docker logs precis-ctc-website --tail 50 -f
+# Precis Main logs
+docker logs precis-main-backend --tail 50
 
-# Restart a container
-docker restart precis-ctc-website
+# CTC logs
+docker logs precis-ctc-website --tail 50
 
-# Django check
+# Django checks
+docker exec precis-main-backend python manage.py check
 docker exec precis-ctc-website python manage.py check
 
-# Collect static
-docker exec precis-ctc-website python manage.py collectstatic --noinput
+# Collect static for the selected application
+docker exec precis-main-backend python manage.py collectstatic --noinput
 ```
 
 ## Troubleshooting
@@ -158,5 +178,14 @@ docker stats precis-ctc-website
 ```bash
 docker ps | grep shared-proxy
 docker logs shared-proxy
-docker exec precis-ctc-website python manage.py collectstatic --noinput
+docker exec precis-main-backend python manage.py collectstatic --noinput
 ```
+
+## Remarks & Notes
+
+- This guide is a cross-product deployment reference; use the owning product
+  runbook for exact Compose variables, migrations, seeds, and rollback steps.
+- `precis-main` is the current LMS/landing runtime. Historical `lms-website`,
+  `precis-lms-*`, and `precis-landing-*` containers are not deployment targets.
+- Never print secrets, restore a database, or run `docker compose down --volumes`
+  as part of routine deployment troubleshooting.

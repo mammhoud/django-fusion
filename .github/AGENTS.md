@@ -11,7 +11,7 @@ monorepo paths and project aliases in `projects/Makefile`.
 | Area | Current paths | Typical validation |
 |---|---|---|
 | Workspace Python | `tests/`, `projects/precis/precis-main/`, `libs/django-fusion/` | `uv run pytest`, Django checks |
-| Landing-Fusion | `projects/precis/precis-landing/` | backend tests, Astro check/build, Playwright |
+| Precis Landing | `projects/precis/precis-landing/` | backend tests, Astro check/build, Playwright |
 | Syntara/Cypercloud | `projects/syntara/` | Django checks/tests, asset build |
 | Formints POS | `projects/formints/` | pytest, Vitest, TypeScript, Rust, Playwright |
 | Infrastructure | `application/`, root Makefile | Compose/YAML/proxy/deploy preflight |

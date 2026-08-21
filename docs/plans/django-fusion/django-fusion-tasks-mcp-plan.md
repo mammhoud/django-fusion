@@ -61,7 +61,7 @@ observability, and deployment-host verification.
 | Gap | Impact |
 |---|---|
 | **No unified task API in django-fusion** | Each project hardcodes its broker (Dramatiq, Celery, django-rq). Migration between brokers requires rewriting every task. |
-| **Fusion projects lack background tasks** | Precis and Landing-Fusion removed `www.worker` but have no replacement for email dispatch, content processing, or scheduled work. |
+| **Fusion projects lack background tasks** | Precis and Precis Landing removed `www.worker` but have no replacement for email dispatch, content processing, or scheduled work. |
 | **Celery is redundant** | The worker consolidation plan is incomplete. Per-site Celery workers duplicate the Dramatiq worker's function. |
 | **`dispatch_job` hardcodes django-rq** | Cannot be used in Dramatiq/Celery deployments. The `BackgroundTaskLog` model is coupled to RQ's job ID schema. |
 | **No MCP tooling for task management** | AI agents cannot inspect queues, retry failures, or trigger background work. |
@@ -994,7 +994,7 @@ def generate_ai_course_description(course_id: int):
     ...
 ```
 
-### 7.2 Landing-Fusion (`projects/precis/landi/`)
+### 7.2 Precis Landing (`projects/precis/landi/`)
 
 ```python
 # apps/tasks/email_tasks.py
@@ -1305,7 +1305,7 @@ Agent:  "Retry those failed email tasks."
 | 1. **Add `django_fusion.tasks` without removing Celery** | django-fusion package only | None — new code, no consumers |
 | 2. **Add MCP tools** | django-fusion + ceptor-ai | None — read-only tools |
 | 3. **Wire Precis LMS tasks** | `projects/precis/precis-lms/` | Low — no existing tasks to break |
-| 4. **Wire Landing-Fusion tasks** | `projects/precis/landi/` | Low — no existing tasks to break |
+| 4. **Wire Precis Landing tasks** | `projects/precis/landi/` | Low — no existing tasks to break |
 | 5. **Wire Formint tasks** | `projects/formints/` | Medium — existing sync tasks need migration |
 | 6. **Migrate shared worker tasks** | `projects/configs/` | Medium — existing Celery tasks → Dramatiq |
 | 7. **Remove Celery** | All projects | Medium — requires Docker/CI updates |
@@ -1468,7 +1468,7 @@ class BackgroundTaskLogAdmin(admin.ModelAdmin):
 - [ ] `BackgroundTaskLog` records every task execution with status, duration, and error details
 - [ ] MCP tools (`task.inspect`, `task.queues`, `task.history`, `task.retry`, `task.trigger`, `task.stats`, `task.purge`, `task.workers`) return correct results
 - [ ] Precis LMS has task modules for email, courses, content
-- [ ] Landing-Fusion has task modules for email, content
+- [ ] Precis Landing has task modules for email, content
 - [ ] Formint has task modules for sync, reports
 - [ ] APScheduler replaces Celery Beat for all scheduled work
 - [ ] `docker-compose.tasks.yml` deploys a single `shared-worker` + `shared-scheduler`

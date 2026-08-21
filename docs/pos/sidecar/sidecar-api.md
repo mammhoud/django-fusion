@@ -1,5 +1,11 @@
 # 🌐 Sidecar API Reference
 
+> **⛔ ARCHIVED (21 Aug 2026):** this file documents the retired Robyn/Sanic
+> sidecar, which was removed from every current edition. See
+> [README.md](README.md) for the canonical sources.
+>
+> ---
+
 Full API reference for the POS Sanic sidecar server (`projects/formints/sidecar/server.py`).
 
 ## Tag Legend

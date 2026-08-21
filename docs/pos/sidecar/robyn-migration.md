@@ -1,5 +1,11 @@
 # 🦋 Robyn Migration — Complete ✅
 
+> **⛔ ARCHIVED (21 Aug 2026):** this file documents the retired Robyn/Sanic
+> sidecar, which was removed from every current edition. See
+> [README.md](README.md) for the canonical sources.
+>
+> ---
+
 > **Status:** Migration complete — both Solo and Full editions now use Robyn with Django ORM.
 > The old Sanic-based sidecar has been fully replaced.
 
@@ -91,4 +97,4 @@ Old files preserved as backward-compatible re-export shims.
 | Sidecar overview | [sidecar-readme.md](sidecar-readme.md) |
 | POS editions | [../editions.md](../editions.md) |
 | Cloud sync plan | [../cloud/sync-plan.md](../cloud/sync-plan.md) |
-| Sidecar v2 Reference | [SIDECAR_V2.md](../../../projects/formints/docs/SIDECAR_V2.md) |
+| Server v2 Reference (archived) | [legacy/SERVER_V2.md](../../../projects/formints/docs/legacy/SERVER_V2.md) |

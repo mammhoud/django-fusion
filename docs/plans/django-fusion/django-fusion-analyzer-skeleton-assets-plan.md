@@ -812,8 +812,8 @@ Allow each project to override skeleton CSS and variants:
 ```python
 # projects/precis/landi/backend/settings.py
 FUSION_SKELETON = {
-    "SKELETON_CSS_PATH": "landing_fusion/styles/skeletons.css",
-    "SKELETON_TEMPLATE_DIR": "landing_fusion/skeletons/",
+    "SKELETON_CSS_PATH": "precis_landing/styles/skeletons.css",
+    "SKELETON_TEMPLATE_DIR": "precis_landing/skeletons/",
 }
 ```
 

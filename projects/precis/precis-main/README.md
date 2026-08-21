@@ -4,14 +4,14 @@
 > **Tags:** #precis #landing #lms #astro #django #wagtail #aha-stack #fusion
 > **Stack:** Astro 5 + Tailwind CSS 4 + HTMX + Alpine.js (frontend) · Django 5.2 + Wagtail 7.4 + django-fusion (backend)
 
-Precis is the unified Structa Cloud product, merging the Landing-Fusion
+Precis is the unified Structa Cloud product, merging the Precis Landing
 marketing shell with the Precis LMS learning platform (courses, enrollment,
 progress, profiles, assistant). It serves both the public/catalog pages and
 the learning application from one Astro frontend and one Django + Wagtail
 backend, using the **AHA stack** (Astro + HTMX + Alpine.js) with django-fusion
 `PageHandler` views for server-rendered HTML and HTMX fragments.
 
-> This directory was previously documented as a plain Landing-Fusion slice;
+> This directory was previously documented as a plain Precis Landing slice;
 > that (older) landing-only variant still lives at
 > [`../precis-landing/`](../precis-landing/README.md).
 
@@ -64,13 +64,13 @@ projects/precis/precis-main/
 
 ## Quick start
 
-> 📖 Full step-by-step setup & build: [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md)
+> 📖 Full step-by-step setup & build: [`../docs/precis-main/SETUP_AND_BUILD.md`](../docs/precis-main/SETUP_AND_BUILD.md)
 
 ### Frontend (Astro)
 
 ```bash
 cd projects/precis/precis-main
-make install          # cd frontend && npm install
+just install          # cd frontend && npm install
 make dev              # http://localhost:4321
 make check            # astro check
 ```
@@ -79,7 +79,7 @@ make check            # astro check
 
 ```bash
 cd projects/precis/precis-main/backend
-make install          # workspace venv (uv sync)
+just install          # workspace venv (uv sync)
 make migrate          # makemigrations + migrate (SQLite)
 make seed             # create site + full page tree (idempotent)
 make dev              # http://localhost:8074 — Wagtail admin at /admin/
@@ -100,7 +100,7 @@ make dev              # Astro :4321
 
 > Full detailed steps — prerequisites, asset builds, tests, production
 > build, Docker, troubleshooting — are in
-> [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md).
+> [`../docs/precis-main/SETUP_AND_BUILD.md`](../docs/precis-main/SETUP_AND_BUILD.md).
 
 ## Key features
 
@@ -137,8 +137,8 @@ make dev              # Astro :4321
 
 ## See also
 
-- [`docs/SETUP_AND_BUILD.md`](docs/SETUP_AND_BUILD.md) — step-by-step setup & build
-- [`docs/PROJECT_DESIGN.md`](docs/PROJECT_DESIGN.md) — design notes
+- [`../docs/precis-main/SETUP_AND_BUILD.md`](../docs/precis-main/SETUP_AND_BUILD.md) — step-by-step setup & build
+- [`../docs/precis-main/PROJECT_DESIGN.md`](../docs/precis-main/PROJECT_DESIGN.md) — design notes
 - [`../precis-landing/README.md`](../precis-landing/README.md) — landing-only slice
 - [`../precis-lms/README.md`](../precis-lms/README.md) — standalone LMS variant
 - [`../../libs/django-fusion/README.md`](../../libs/django-fusion/README.md) — component library

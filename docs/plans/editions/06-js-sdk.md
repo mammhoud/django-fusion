@@ -1,5 +1,7 @@
 # Formints JS/TS Client Bundle — Local Completion Record
 
+> Tags: `#formints` `#pos` `#sdk` `#typescript` `#client` — status ✅ done (21 Aug 2026); registry release is an owner action.
+
 **Canonical package:** `projects/formints/packages/formints-client/`
 **Consumer:** `projects/formints/formint-cloud/frontend/`
 

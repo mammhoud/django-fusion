@@ -47,6 +47,6 @@ curl -I https://media.structa.cloud/docs/en/
 
 ## الترجمة
 
-أضف الصفحة العربية في `docs/docus/ar-content/` مع الحفاظ على نفس مسار الصفحة
+أضف الصفحة العربية في `docs/ar-content/` مع الحفاظ على نفس مسار الصفحة
 الإنجليزية. استخدم `dir: rtl` الذي توفره إعدادات i18n ولا تضف اتجاه RTL إلى
 كود Markdown نفسه.

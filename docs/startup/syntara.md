@@ -81,13 +81,41 @@ links:
 | Ops/Infra engineer | Must keep data self-hosted | Hosted AI data concerns | Compliance policy | $150–500/mo |
 | Agency (AI vertical) | Ships chat/customizer features for clients | Repeatable runtime to reuse | New client AI project | Project + retainer |
 
-## 6. Research Needed
+## 6. Competitive Landscape
 
-- [ ] Competitive matrix: Intercom Fin, Copilot-style assistants, open-source RAG stacks — where is the customization wedge unique?
+> Names are public-market facts; size/positioning claims carry confidence tags.
+
+### 6.1 Competitor map
+
+| Competitor | Category | Target | Strengths | Our edge / gap |
+|-----------|----------|--------|-----------|----------------|
+| Intercom Fin | AI customer-service assistant | Support teams | Enterprise support workflows, integrations | Support-specific; we are a general chat + customization runtime |
+| OpenAI / Anthropic / Google APIs | Model providers | Every AI builder | Frontier models, scale | We are provider-agnostic and self-hostable (Ollama) — no API lock |
+| Dify / Langflow / n8n AI | Low-code AI app builders | Ops teams | Visual workflows, connectors | Workflow-centric; we own the template-discovery + code-customization path |
+| LibreChat / Open WebUI | OSS chat frontends | Self-hosters | Clean chat UX, model switching | Chat-only; no template customization pipeline |
+| Bolt.new / v0 / Lovable | AI code generation | Frontend builders | Generate full apps from prompts | Codegen-first; we customize templates inside the product, not standalone app gen |
+| Cursor / Copilot | AI coding assistants | Developers | IDE-native coding help | Editor-focused; we are a runtime + template layer for the product itself |
+
+### 6.2 Positioning vs. alternatives
+
+| Dimension | Us | Direct competitors | Indirect substitutes |
+|-----------|----|--------------------|---------------------|
+| Deployment | Self-hosted (Ollama or any provider) | SaaS (Intercom, Dify cloud) | Building chat from scratch |
+| Model ownership | Bring-your-own-model | Vendor-hosted | None |
+| Price posture | Open-core free + managed tier | Per-seat/per-usage SaaS | Dev time |
+| Differentiator | Template discovery → customization → streaming in one monorepo, MCP-ready | Single-layer tools (chat OR gen OR builder) | Hand-rolled chat |
+
+> **Gaps to attack (🟡):** the customization pipeline (template → adapted code → running stream) is the wedge — no competitor owns discovery + customization + runtime together.
+
+## 7. Research Needed
+
+- [ ] Position the customization wedge against Dify/Langflow and Bolt/v0 (two different attack surfaces — validate which converts).
 - [ ] Measure OSS self-host → managed conversion (needs a working managed tier).
 - [ ] Validate pricing sensitivity for streaming/usage-based billing.
 - [ ] Confirm Ollama-vs-hosted-provider split in target segments (cost + privacy trade-offs).
 - [ ] Template registry research: what template types drive the most customization reuse?
+
+> **Citation status:** competitor names are public-market facts. Market-size figures are directional (🟡/🔴) until verified against a named public report.
 
 ## Remarks & Notes
 

@@ -430,7 +430,7 @@ cargo check --manifest-path src-tauri/Cargo.toml
 
 ```bash
 cd projects/formints/formint-pro
-make install              # Backend .venv + deps + npm install + migrate
+just install              # Backend .venv + deps + npm install + migrate
 make seed                 # Demo data (admin@formint.local / admin123)
 make env                  # Tmux: backend :8767 + frontend :4321
 make test                 # Backend + frontend contract tests
@@ -441,7 +441,7 @@ make build                # Frontend production + collectstatic
 
 ```bash
 cd projects/formints/formint-cloud
-make install
+just install
 make migrate
 make check
 make test

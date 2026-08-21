@@ -36,7 +36,7 @@ A prompt is assembled from four layers, in this order:
 3. **Skill pack:** one or more `skill.*` task prompts;
 4. **Task context:** the user's request, exact files, constraints, and desired output.
 
-Example composition for a Landing-Fusion Wagtail block:
+Example composition for a Precis Landing Wagtail block:
 
 ```text
 project.precis-landing
@@ -50,7 +50,7 @@ editing. Catalog text is guidance, not a substitute for source inspection.
 
 ## Available project packs
 
-### Landing-Fusion
+### Precis Landing
 Astro 5 + Tailwind 4 + HTMX/Alpine frontend paired with Django 5.2/Wagtail 7.4.
 The prompt preserves both the Astro/data-API road and Django/Fusion/HTMX road,
 with project-owned content, assets, translations, SEO, and route ordering.
@@ -65,6 +65,12 @@ A separated family of Community, Standard, Professional, Cloud, and Client
 editions. The prompt requires the edition to be named first, prevents Python
 sidecars in native editions, prevents Robyn reintroduction into Cloud, and
 preserves typed API/sync/transaction contracts.
+
+Tags: `#formints` `#pos` `#tauri` `#rust` `#diesel` `#sqlite` `#django`
+`#channels` `#unfold` `#django-fusion`. Edition status (21 Aug 2026):
+Community/Standard/Pro **done**, Cloud **staging**, pos-client **dev** — see
+[`docs/plans/editions/09-completion-plan.md`](../plans/editions/09-completion-plan.md)
+for the remaining promotion steps.
 
 ### Syntara
 Django + HTMX + SSE + Webpack/SCSS AI chat/customizer. The prompt uses

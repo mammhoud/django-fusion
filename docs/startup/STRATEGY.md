@@ -30,7 +30,7 @@ links:
   - label: "Precis strategy 🔒"
     to: "/docs/en/startup/precis"
     icon: "i-lucide-graduation-cap"
-  - label: "CTC strategy 🔒"
+  - label: "CTC sample 🔒"
     to: "/docs/en/startup/precis-ctc"
     icon: "i-lucide-hospital"
   - label: "Syntara strategy 🔒"
@@ -42,6 +42,9 @@ links:
   - label: "Loop-CRM strategy 🔒"
     to: "/docs/en/startup/loop-crm"
     icon: "i-lucide-handshake"
+  - label: "Portfolio comparison 🔒"
+    to: "/docs/en/startup/comparison"
+    icon: "i-lucide-scale"
 ---
 
 # 🚀 Full Startup Strategy — Portfolio Master 🔒
@@ -72,7 +75,7 @@ links:
 | 1 | **Loop-CRM** — sales + marketing workspace | Smallest wedge: one team, one pain (contacts + campaigns split across tools). Fastest to demo and sell. |
 | 2 | **Formint POS** — offline-first restaurant POS | Clear buyer (restaurant owner), clear ROI (orders + payments offline), desktop distribution. |
 | 3 | **Precis** — LMS + catalog | Education buyers need trust and content; longer cycle but highest contract size. |
-| 4 | **CTC Research** — medical research center site | Anchor customer with real publishing requirements; validates content pipeline. |
+| 4 | **CTC Research** *(sample)* — medical research center site | Agentic-coding sample (built with Precis) validating the content pipeline; seeds the 🔬 Precis Research wedge. |
 | 5 | **Syntara** — AI chat/customizer | Horizontal AI layer that makes every other product more valuable; sells as an add-on. |
 
 ### 1.3 Portfolio moat
@@ -100,7 +103,7 @@ links:
 | Canvas cell | Portfolio answer |
 |-------------|------------------|
 | **Problem** | Fragmented tools: CRM, POS, LMS, CMS, AI chat are separate products with separate logins, data, and deployment. |
-| **Solution** | One self-hosted platform: Loop-CRM (sales), Formint (commerce), Precis (learning), CTC (publishing), Syntara (AI) on one Django + django-fusion core. |
+| **Solution** | One self-hosted platform: Loop-CRM (sales), Formint (commerce), Precis (learning), CTC (publishing — sample), Syntara (AI) on one Django + django-fusion core. |
 | **Key metrics** | MRR per product · self-host installs · active workspaces · content pages published · orders processed · AI conversations |
 | **Unfair advantage** | The shared django-fusion framework + monorepo velocity: every product ships the same components, tables, forms, and auth. |
 | **Channels** | Docs site (Docus), GitHub monorepo, product landing pages, CTC anchor case study, POS reseller partners. |
@@ -115,7 +118,7 @@ links:
 | Product | TAM | SAM | SOM (24 mo) | Confidence | Source anchor |
 |---------|-----|-----|-------------|------------|---------------|
 | 🎓 Precis | LMS + corporate training worldwide | Regional edtech + corporate LMS buyers | Early adopters in 1–2 segments | 🟡 | [`precis.md`](precis.md) |
-| 🏥 CTC Research | Medical research center digital presence | Research centers with publishing needs | CTC + 1–2 similar centers | 🟡 | [`precis-ctc.md`](precis-ctc.md) |
+| 🏥 CTC Research *(sample)* | Medical research center digital presence | Research centers with publishing needs | Reference only — not a commercial line | 🔴 | [`precis-ctc.md`](precis-ctc.md) |
 | 🤖 Syntara | AI chat/customizer market | Teams already on the platform | Add-on attach to existing products | 🔴 | [`syntara.md`](syntara.md) |
 | 💳 Formint POS | Restaurant/café POS market | Offline-first independent restaurants | Local restaurant cluster | 🟡 | [`formints.md`](formints.md) |
 | 🤝 Loop-CRM | CRM + marketing automation market | Small sales teams replacing 2–3 tools | Pilot teams in one vertical | 🔴 | [`loop-crm.md`](loop-crm.md) |
@@ -126,12 +129,28 @@ links:
 |--------------|----------|-----------------|--------|
 | **Workspace SaaS** | Loop-CRM, Precis | Per-seat monthly | 🔴 assumption |
 | **Commerce SaaS** | Formint Cloud | Per-outlet monthly + hardware-free | 🟡 estimate |
-| **Publishing SaaS** | CTC Research, Precis landing | Per-site retainer | 🟡 estimate |
+| **Publishing SaaS** | Precis landing (CTC sample is the reference) | Per-site retainer | 🟡 estimate |
 | **AI add-on** | Syntara | Usage-based (tokens) on top of any product | 🔴 assumption |
 | **Self-host license** | All | One-time + support | 🟡 estimate |
-| **Implementation services** | CTC, Loop-CRM, Precis | Project-based | 🟢 sourced (CTC anchor) |
+| **Implementation services** | CTC *(sample reference)*, Loop-CRM, Precis | Project-based | 🟢 sourced (CTC reference) |
 
-## 5. Ideal Clients (Portfolio Personas)
+## 5. Competitive Landscape (Portfolio View)
+
+> Head-to-head tables per product live in [`comparison.md`](comparison.md);
+> this is the consolidated picture. Competitor names are public-market facts;
+> positioning claims carry confidence tags.
+
+| Market | Our product | Direct competitors | Indirect substitutes | Our defensible wedge |
+|--------|-------------|--------------------|---------------------|----------------------|
+| LMS | Precis | Moodle, Canvas, Docebo, TalentLMS, Teachable | YouTube, PDF manuals, spreadsheets | LMS + landing catalog shell, self-host, AR/RTL |
+| Research-center web | CTC Research *(sample)* | Silverchair, Atypon, health/WordPress agencies | Static brochure sites, print-first publishing | Research publishing workflow + EN/AR parity (sample → Precis Research vision) |
+| AI chat/customization | Syntara | Intercom Fin, Dify/Langflow, LibreChat, Bolt/v0 | Building chat from scratch | Template discovery → customization → runtime, self-host |
+| Restaurant POS | Formint | Toast, Square, Lightspeed, Clover, Loyverse | Paper/legacy registers, Excel | Offline-first, gaming-center vertical, multi-edition funnel |
+| CRM + marketing | Loop-CRM | HubSpot, Pipedrive, Zoho, Twenty, Postiz, HighLevel | Sheets + Mailchimp + calendar | One data model for pipeline + marketing + landing, self-host |
+
+**Cross-product gaps to attack (prioritized):** LTI/SCORM for Precis 🟡 · EN/AR parity cost evidence for CTC 🟡 · POS telemetry on the community funnel 🟡 · Loop-CRM MENA localization 🟡 · Syntara customization-wedge validation 🔴.
+
+## 6. Ideal Clients (Portfolio Personas)
 
 | Persona | Product | Pains | Buying trigger |
 |---------|---------|-------|----------------|
@@ -141,7 +160,7 @@ links:
 | **Research center director** | CTC | Outdated site, no publishing workflow, translation burden | Grant cycle / conference season |
 | **Product engineer** | Syntara | Wants AI in the product without vendor lock | Trial of a competing AI tool |
 
-## 6. Cross-Product Research Backlog
+## 7. Cross-Product Research Backlog
 
 > Each item is the open question that must be answered before doubling down.
 > The owning product doc carries the full backlog; this is the consolidated priority.
@@ -155,7 +174,7 @@ links:
 | 5 | What is the per-token margin at self-host scale? | Syntara | 🔴 Medium |
 | 6 | Which bundle (CRM+POS, LMS+CRM) has the shortest sales cycle? | Portfolio | 🔴 Low |
 
-## 7. Sequencing (What We Build Next)
+## 8. Sequencing (What We Build Next)
 
 ```mermaid
 graph LR

@@ -40,7 +40,7 @@ docs/assets/
 | Formint admin screenshots | `projects/formints/docs/screenshots/admin/` | Original captures |
 | Formint frontend screenshots | `projects/formints/docs/screenshots/frontend/` | Original captures |
 | Formint product previews | `projects/precis/precis-landing/backend/assets/static/previews/formints/` | Used on landing site |
-| Landing-Fusion related images | `projects/precis/precis-landing/backend/assets/static/related/formints/` | Product feature images |
+| Precis Landing related images | `projects/precis/precis-landing/backend/assets/static/related/formints/` | Product feature images |
 
 ## Adding New Assets
 
@@ -62,4 +62,4 @@ product-named subdirectory there. The path is exported by
 ## Related
 
 - [Previews naming convention](https://github.com/mammhoud/structa.cloud/blob/generic/docs/README.md)
-- [Landing-Fusion preview assets](../../projects/precis/precis-landing/backend/assets/static/previews/)
+- [Precis Landing preview assets](../../projects/precis/precis-landing/backend/assets/static/previews/)

@@ -1,5 +1,7 @@
 # Community Version — Standalone Public Repo (`formint-community`)
 
+> Tags: `#formints` `#pos` `#community` `#opensource` `#publish` — status 🟡 publish pending (21 Aug 2026); code complete, GitHub publish is the owner action.
+
 **Goal:** Ship the Community edition as a standalone open-source repo at
 `github.com/mammhoud/formint-community`, renamed **Formints Community**, with
 CI, a release pipeline, and the landing site pointing at it — while keeping

@@ -2,7 +2,7 @@
 
 > **Editions:** `formint/` (Pro) → `formint-cloud/` (Cloud)  
 > **Last updated:** 2026-08-10  
-> **Related docs:** [Editions](editions.md) · [Server v2](../SERVER_V2.md) · [Sync Architecture](../SYNC_ARCHITECTURE.md)
+> **Related docs:** [Editions](editions.md) · [legacy Server v2](../legacy/SERVER_V2.md) · [legacy Sync Architecture](../legacy/SYNC_ARCHITECTURE.md)
 
 ---
 

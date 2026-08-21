@@ -1,129 +1,125 @@
-# POS — Restaurant Point of Sale Desktop App
+# Formints POS — Restaurant Point of Sale
 
-> **v1.1** — 3 Edition System | Tauri 2 + React 19 + Rust + SQLite
+> **Multi-edition restaurant point-of-sale family** — Tauri 2 + React/Rust +
+> SQLite (desktop) with optional Django backends (Pro/Cloud) and a Vue 3
+> client. Offline-first at the core, cloud-connected at the top.
 
 <p align="center">
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.1.0-blue" alt="Version"/></a>
-  <a href="../../docs/sites/pos.md"><img src="https://img.shields.io/badge/docs-site-green" alt="Documentation"/></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.3.0-blue" alt="Version"/></a>
+  <a href="docs/README.md"><img src="https://img.shields.io/badge/docs-repo-green" alt="Documentation"/></a>
   <a href="PUBLISH.md"><img src="https://img.shields.io/badge/publish-marketplace-orange" alt="Publish"/></a>
   <a href="https://github.com/mammhoud/POS"><img src="https://img.shields.io/badge/support-github-lightgrey" alt="Support"/></a>
 </p>
 
-<p align="center">
-  <img src="../precis/landi/backend/assets/static/related/formints/pro-admin-dashboard.jpg" alt="Formint POS — Unfold Admin Dashboard" width="600"/>
-</p>
-
-POS is a modern, offline-first desktop point-of-sale application for
-restaurants, cafes, and food-service businesses. Built with Tauri, React,
-Rust, and SQLite — works on Windows, macOS, Linux, Android, and iOS.
+Formints is a modern, offline-first point-of-sale family for restaurants,
+cafes, and food-service businesses. Every edition runs natively on Windows,
+macOS, Linux, Android, and iOS via Tauri; higher tiers add a Django backend,
+multi-terminal sync, and a hosted cloud master.
 
 ---
 
 ## 📦 Editions
 
-| Edition | Contents | Target |
-|---------|----------|--------|
-| **Mini** (`forge-pos/`) | Core POS (Tauri + Rust + SQLite) | Offline-only deployments |
-| **Formint** (`formint-pos/`) | **Merged package** — Astro frontend + Django Ninja backend + Robyn server + Unfold admin (consolidates the former Full + Solo editions) | Enterprise multi-device |
-| **Client** (`pos-client/`) | Vue 3 + Tauri desktop | Separate client app |
-| **Cloud** (`formint-cloud/`) | Django ASGI + Unfold + Bolt dashboard | Cloud CRM master |
+| Edition | Directory | Backend | Status |
+|---------|-----------|---------|--------|
+| **Community** | `formint-community/` | Rust/Diesel + SQLite (no server) | ✅ done |
+| **Standard** | `formint-standard/` | Rust/Diesel + SQLite (+ optional Django sidecar) | ✅ done |
+| **Pro** | `formint-pro/` | Django + django-fusion + Unfold (required) | ✅ done |
+| **Cloud** | `formint-cloud/` | Django (multi-tenant, Channels) — hosted master | 🟡 staging |
+| **pos-client** | `formint-client/` | Vue 3 + Tauri + Django shop backend | 🔵 dev |
+| **JS/TS SDK** | `packages/formints-client/` | TypeScript (`@formints/client`) | ✅ done |
 
-> **`formint-pos/`** merges the former `pos-full` + `pos-solo` editions into one
-> product boundary. The legacy React UIs are archived under `formint-pos/legacy-react/`.
+> Canonical edition plans + capability matrix:
+> [`docs/plans/editions/`](../../docs/plans/editions/README.md) (Community `01` ·
+> Standard `02` · Pro `03` · Cloud `04` · pos-client `05` · SDK `06` ·
+> Community version `07` · tenant schemas `08`) and
+> [`comparison.md`](../../docs/plans/editions/comparison.md).
 
 ---
 
 ## 🚀 Quick Start
 
-> 📖 Full step-by-step setup & build for every edition: [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md)
+> Full step-by-step setup for every edition:
+> [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md)
 
-### Mini Edition (no server)
+### Community / Standard (desktop, no server)
+
 ```bash
-cd forge-pos
+cd formint-community        # or formint-standard
 pnpm install
 cd src-tauri && cargo fetch && cd ..
 pnpm dev          # Vite dev server at localhost:1420
 pnpm dev:desktop  # Full Tauri desktop app
 ```
 
-### Formint POS (merged package — recommended)
+### Pro (merged package — backend + web + desktop)
+
 ```bash
-cd formint-pos
-make install      # backend .venv + deps + migrate + frontend npm install
+cd formint-pro
+just install      # backend .venv + deps + migrate + frontend npm install
+make seed         # migrate + superuser + demo data
 make env          # backend :8767 + frontend :4321 (tmux)
 make test         # backend + frontend contract tests
 make check        # django check + astro check
 ```
 
-### Using Root Makefile
-```bash
-make formint-install   # Install merged package
-make formint-env       # Run full env (backend + frontend)
-make server-test       # Run merged server test suite
-make screenshots       # Capture marketplace screenshots
-make clean             # Delete build artifacts
-```
-
-### Formint POS Professional (merged package)
-
-> **`formint-pos/`** is the merged package that consolidates `pos-full` + `pos-solo`
-> into one product boundary with the same Tauri architecture. The backend uses
-> **Django Ninja + ninja-extra** for the REST API (django-fusion encoder/decoder
-> on every response) and **django-fusion data components** (tables + forms) for
-> HTMX fragments.
+### Cloud (hosted SaaS master)
 
 ```bash
-cd formint-pos/backend && python3 -m venv .venv && . .venv/bin/activate
-pip install -e . && python manage.py migrate
-python manage.py runserver 127.0.0.1:8000   # API at /api/v1/, HTMX at /htmx/
-
-cd ../frontend && pnpm install && pnpm dev  # Astro shell (proxies /api and /htmx)
+cd formint-cloud
+just install && make migrate
+make dev-backend   # Django :8082 (Unfold admin + bolt analytics)
+make dev-api       # Django :8767 (daphne — API + WebSocket sync)
+make dev-frontend  # Astro :4323
 ```
 
-API surface: `/api/v1/health`, `/api/v1/stats`, `/api/v1/openapi.json`, `/api/v1/docs`,
-plus paginated CRUD for 45 resources (products, sales, inventory, suppliers,
-purchase orders, loyalty, CRM, HR, …).
+### pos-client (Vue 3 desktop)
 
-See [`formint-pos/README.md`](formint-pos/README.md) and
-[`formint-pos/migration/compatibility-manifest.json`](formint-pos/migration/compatibility-manifest.json).
+```bash
+cd formint-client
+just install
+make dev           # Vite dev server
+```
 
----
+### SDK
 
-## 📸 Screenshots
+```bash
+cd packages/formints-client
+pnpm install && pnpm build && pnpm test
+```
 
-| | | |
-|:---:|:---:|:---:|
-| ![Dashboard](../precis/landi/backend/assets/static/related/formints/pro-admin-dashboard.jpg) | ![Products](../precis/landi/backend/assets/static/related/formints/pro-admin-products.jpg) | ![Customers](../precis/landi/backend/assets/static/related/formints/pro-admin-customers.jpg) |
-| **Unfold Admin — Dashboard** | **Unfold Admin — Products** | **Unfold Admin — Customers** |
-| ![Sales](../precis/landi/backend/assets/static/related/formints/pro-admin-sales.jpg) | ![Loyalty](../precis/landi/backend/assets/static/related/formints/pro-admin-loyalty.jpg) | ![Settings](../precis/landi/backend/assets/static/related/formints/pro-admin-settings.jpg) |
-| **Unfold Admin — Sales** | **Unfold Admin — Loyalty** | **Unfold Admin — Settings** |
+### Using the root Makefile
+
+```bash
+make community-test · standard-test · pro-env · cloud-check · client-test · sdk-test
+make install-all · check-all · test-all · stop-all · clean-all
+```
 
 ---
 
 ## 🏗️ Architecture
 
 ```
-formint-pos/                 # Merged package (formerly pos-full + pos-solo)
-├── frontend/                # Astro + Alpine.js + HTMX shell
-│   └── src/                 # Pages, components, contract tests
-├── backend/                 # Django + Ninja + django-fusion + Unfold admin
-│   ├── formint/             # Models (45), views, api, fusion, handlers
-│   ├── configs/             # Settings + URL routing
-│   └── Makefile             # dev/check/migrate/test/seed targets
-├── server/                 # Merged Robyn server (streams, ws_client, sync)
-│   ├── server.py            # Robyn REST + WebSocket (60-70+ endpoints)
-│   ├── routes/              # CRUD + state + webhooks + reports
-│   ├── services/            # sync, scheduler, webhook services
-│   ├── models/              # Django ORM models (organized packages)
-│   └── tests/               # Pytest suites (171 passing)
-├── src-tauri/               # Tauri 2 desktop shell (Django is data authority)
-├── legacy-react/            # Archived React UIs (pos-full + pos-solo)
-├── docs/                    # Screenshots + architecture docs
-└── Makefile                 # install/env/test/check/build orchestration
+formint-community/          # Free, offline-first desktop POS (Rust/Diesel, no server)
+formint-standard/           # + currencies, tax profiles, roles, export, offline sync queue
+formint-pro/                # Django-first: 45-resource Ninja API, fusion render-mode,
+│                           #   Unfold admin, KDS, gaming, gift cards, tables, delivery,
+│                           #   kiosk, forecasting, scheduling, customer display, sync
+formint-cloud/              # Hosted master: Organization → Branch, async sync,
+│                           #   backups + monitoring, schema-per-tenant (flip-on)
+formint-client/             # Vue 3 + Tauri desktop client + Django shop backend
+packages/formints-client/   # @formints/client — modular TS fetch SDK
+tests/                      # Shared POS validation (pytest, Vitest, Playwright e2e)
+docs/                       # This documentation tree
+```
 
-forge-pos/                   # Mini edition — Tauri + Rust/Diesel
-pos-client/                  # Vue 3 + Tauri desktop client
-formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
+Data flows (per tier):
+
+```text
+Community/Standard:  React → Tauri invoke → Rust/Diesel → SQLite
+Pro:                 Astro/HTMX → Django Ninja → Django ORM → SQLite (daphne :8767)
+Cloud:               Branches → sync push → Django ASGI (Channels) → pos_cloud.db
+pos-client:          Vue 3 → Tauri invoke → Rust → SQLite + Django shop backend
 ```
 
 ---
@@ -132,53 +128,50 @@ formint-cloud/               # Django ASGI + Unfold + Bolt cloud CRM master
 
 | Layer | Technology |
 |-------|-----------|
-| Frontend | Astro, Alpine.js, HTMX (merged) · React 19 (archived legacy) |
-| Backend | Django 5 + Ninja + django-fusion + django-tables2 |
-| Server | Python 3, Robyn, Django ORM (mirror), WebSocket streams |
-| Admin | django-unfold (dashboard, KPI cards, charts) |
-| Desktop | Rust (Tauri 2) |
-| Testing | pytest (server + backend), Vitest (frontend contract) |
-| Build | make, pnpm/npm, pip/.venv |
+| Desktop | Tauri 2 + Rust (Diesel ORM, SQLite) |
+| Frontend | React 19 (Community/Standard) · Astro 5 + Alpine + HTMX (Pro/Cloud) · Vue 3 (pos-client) |
+| Backend (Pro/Cloud) | Django 5 + django-fusion + django-ninja + django-unfold |
+| Sync | Channels WebSocket (Pro multi-terminal, Cloud master) |
+| SDK | `@formints/client` — framework-agnostic TypeScript |
+| Testing | pytest (backend) · Vitest (frontend) · Playwright (e2e, `tests/pos-e2e/`) · cargo test (Rust) |
+| Build | make, pnpm, uv/.venv |
 
 ---
 
 ## ✨ Key Features
 
-- **Cross-platform desktop POS** — Windows, macOS, Linux, Android, iOS
-- **Merged Formint package** — one boundary for frontend + backend + server
-- **Django Ninja REST API** — 45 paginated resources with django-fusion encoder/decoder
-- **Unfold admin panel** — KPI dashboard, charts, loyalty & settings management
-- **Robyn server** — WebSocket streams, data sync, webhooks, scheduler
-- **Role-based auth** — Superuser with 2FA support
-- **Inventory tracking** — Low-stock alerts, purchase orders, supplier management
-- **Kitchen display system** — Ticket flow: pending → preparing → ready → delivered
-- **POS-KO Gaming Center** — Token-based gaming sessions with time tracking
-- **Customer database** — Loyalty points, purchase history
-- **Advanced receipts** — Tax, commercial, proforma, credit invoice templates
-- **Automated tax reports** — PDF and Excel export
-- **Employee management** — Scheduling, payroll, role assignments
-- **HTMX data components** — django-fusion tables + forms server-rendered
+- **Offline-first desktop POS** — Community/Standard run with no server; data
+  stays in local SQLite
+- **Refunds & returns** — Rust `refund_sale` + confirm dialog (Community+)
+- **Multi-currency, tax profiles, roles, CSV/JSON export** — Standard tier
+- **45-resource Django Ninja REST API** — django-fusion encoder/decoder envelope
+- **Unfold admin** — KPI dashboard, charts, loyalty & settings management
+- **Fusion render-mode** — HTMX fragments / data API dual-mode contract
+- **Kitchen Display System (KDS)** — ticket flow with station routing + timers
+- **POS-KO Gaming Center** — token-based gaming sessions with time tracking
+- **Gift cards, table management, delivery integration, kiosk, forecasting,
+  scheduling, customer display, purchase-order workflow** — Pro tier modules
+- **Multi-terminal sync + offline queue** — durable outbox with backoff
+- **Cloud master** — Organization → Branch hierarchy, async sync pipeline,
+  conflict resolution, automatic backups + monitoring
+- **i18n** — en/fr/ar (Community) · en/zh-CN (pos-client)
+- **Theme system** — 5 variants with Theme Studio (Community)
 
 ---
 
 ## 📚 Documentation
 
 | Document | Description |
-| [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) | **Setup & build guide** — step-by-step startup/build for every edition |
 |----------|-------------|
-| [`SERVER_V2.md`](docs/SERVER_V2.md) | **Server v2 reference** — Robyn + Django ORM, 70+ APIs, WS streams, signals, approval, sync, cloud plan |
+| [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) | Setup & build guide for every edition |
+| [`docs/README.md`](docs/README.md) | In-repo docs index (architecture, reference, legacy) |
+| [`docs/architecture/editions.md`](docs/architecture/editions.md) | Per-edition components & features |
+| [`docs/architecture/pos-architecture.md`](docs/architecture/pos-architecture.md) | Cross-edition architecture |
+| [`docs/COMMANDS.md`](docs/COMMANDS.md) | CLI / Makefile commands reference |
 | [`CHANGELOG.md`](CHANGELOG.md) | Full version history |
 | [`PUBLISH.md`](PUBLISH.md) | Marketplace publish kit (ThemeForest, CodeCanyon, Gumroad) |
-| [`docs/README.md`](docs/README.md) | Editions overview & architecture |
-| [`docs/START_HERE.md`](docs/START_HERE.md) | Getting started guide |
-| [`docs/commands.md`](docs/commands.md) | All CLI commands reference |
-| [`docs/project-tree.md`](docs/project-tree.md) | Full project tree |
-| [`docs/rust-code.md`](docs/rust-code.md) | Rust backend documentation |
-| [`docs/customization-react.md`](docs/customization-react.md) | React customization guide |
-| [`docs/customization-tauri.md`](docs/customization-tauri.md) | Tauri customization guide |
-| [`docs/i18n-conventions.md`](docs/i18n-conventions.md) | Translation conventions |
-| [`docs/server/README.md`](docs/server/README.md) | Server API reference [Solo/Full] |
-| [`docs/back-env/README.md`](docs/back-env/README.md) | Backend environment setup [Full] |
+| [`../../docs/plans/editions/README.md`](../../docs/plans/editions/README.md) | Canonical edition plans + finish board |
+| [`../../docs/pos/README.md`](../../docs/pos/README.md) | Reader-facing docs site entry |
 
 ---
 

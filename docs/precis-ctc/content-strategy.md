@@ -1,142 +1,201 @@
-# CTC Research — Content Strategy, ICP & Market Research
+---
+title: CTC Research — Content Strategy, ICP & Market Research
+description: Editorial content strategy, audience segments, ICP signals, market research, topic clusters, and validation rules for ctc-research.com.
+navigation:
+  title: Content strategy
+  icon: i-lucide-pen-tool
+object:
+  type: "guide"
+  id: "docs.precis-ctc.content-strategy"
+attributes:
+  source_path: "precis-ctc/content-strategy.md"
+  canonical_route: "/docs/en/precis-ctc/content-strategy"
+  source_of_truth: "repository-markdown"
+  owner: "precis-ctc"
+  status: "maintained"
+tags:
+  - structa-cloud
+  - precis
+  - precis-ctc
+  - ctc-research
+  - content
+  - strategy
+  - seo
+  - market-research
+links:
+  - label: "CTC home"
+    to: "/docs/en/precis-ctc"
+    icon: "i-lucide-heart-pulse"
+  - label: "CTC market strategy 🔒"
+    to: "/docs/en/startup/precis-ctc"
+    icon: "i-lucide-rocket"
+  - label: "Publishing workflow"
+    to: "/docs/en/precis-ctc/publishing-and-production"
+    icon: "i-lucide-send"
+---
 
-> **Canonical project:** `projects/precis/precis-ctc/`
-> **Public site:** `ctc-research.com`
-> **Audience:** academic medical researchers, clinicians who teach, research-adjacent teams, and institutions.
+# 🎯 CTC Research — Content Strategy, ICP & Market Research
+
+> **Canonical project:** `projects/precis/precis-ctc/`  
+> **Public site:** `ctc-research.com`  
+> **Audience:** academic medical researchers, clinician-educators, research
+> operations teams, and institutions.
 
 <!-- AI-generated: review needed -->
 
-## Bottom line
+## 🧭 How to use this document
 
-CTC Research sells **evidence and research capability**, not software. Content
-should be split into three pillars that map directly onto the product surface
-already shipped (courses, publications, services). The recommended starting
-plan is 3 pillars × 10 seed topics, publishing one piece per week, with every
-piece routed through the `## Production notes` workflow in
-[`publishing-and-production.md`](publishing-and-production.md).
+This is the **editorial strategy** for CTC Research. It turns the commercial
+positioning and buyer assumptions in the private
+[CTC market strategy](../startup/precis-ctc.md) into briefs, topic clusters,
+internal links, and measurable publishing experiments.
 
-Confidence tags below follow the content-strategy convention:
-🟢 verified from the codebase · 🟡 reasonable inference · 🔴 assumption that
-needs CTC subject-matter review before publication.
+Keep the sources separate:
 
----
+- **Market strategy** answers *which organization should buy and why*.
+- **Content strategy** answers *which audience should read what next*.
+- **Publishing workflow** answers *how approved content becomes a safe,
+  localized production release*.
 
-## 1. Ideal Customer Profiles (ICP)
+The three documents form one workflow; none should copy the others.
 
-Four personas. Content must stay evidence-led and never imply clinical advice.
+## 👥 Editorial ICP and audience signals
 
-| Persona | Who they are | Job-to-be-done | Content they need | Confidence |
+The commercial ICP remains the source for buyer and pricing assumptions. The
+editorial layer uses four audience segments so each piece has one clear job.
+
+| Segment | Reader signal | Job-to-be-done | Best content | Conversion path |
 |---|---|---|---|---|
-| **Early-career researcher** | PhD/postdoc building a first protocol | Design a defensible study and write it up | Methods explainers, protocol templates, worked publication examples | 🟡 |
-| **Clinician-educator** | Physician/health professional who teaches | Turn clinical work into teachable material | Course catalog, module/lesson previews, CME-style outcomes | 🟡 |
-| **Research team lead / PI** | Runs a lab or trial program | Stand up evidence pipelines and train staff | Services, analytics, collaboration, team onboarding | 🟡 |
-| **Institution / program buyer** | Department, training program, or institute | License a coherent research curriculum | Pricing, catalog, outcomes, compliance, i18n coverage | 🔴 |
+| **Early-career researcher** | Searches for methods, protocols, or publication help | Design a defensible study and communicate it clearly | Methods guides, checklists, worked examples | Relevant course → enrollment |
+| **Clinician-educator** | Looks for curriculum, teaching, or evidence translation ideas | Turn clinical expertise into teachable material | Curriculum explainers, lesson previews, teaching cases | Course catalog → inquiry |
+| **Research team lead / PI** | Needs repeatable processes for a lab or program | Improve team evidence operations and output | Workflow guides, service explainers, case studies | Services → consultation |
+| **Institution / program buyer** | Evaluates credibility, outcomes, language coverage, and governance | Choose a reliable research-learning partner | Buyer guides, outcomes, implementation notes | Contact / proposal |
 
-**ICP dilution warning:** do not write one piece for all four. Assign each
-topic to exactly one persona, and put the persona in the brief.
+**Briefing rule:** assign exactly one primary segment, one job-to-be-done, and
+one conversion path to every planned piece. Secondary audiences may be listed,
+but they must not change the piece's promise.
 
----
+**ICP validation signals to collect:** search queries, course-page clicks,
+publication downloads, newsletter signups, inbound questions, consultation
+requests, and the language/locale selected. These are signals, not proof of
+willingness to pay; commercial validation belongs in the startup strategy.
 
-## 2. Market research (positioning snapshot)
+## 🔬 Market research snapshot
 
-> 🟡/🔴 — directional only. Treat the competitor claims below as assumptions
-> to verify before citing them in public copy.
+> 🟢 = verified from the repository or live product contract · 🟡 = working
+> inference · 🔴 = assumption requiring CTC subject-matter or customer research.
 
-| Dimension | Observation | Implication |
-|---|---|---|
-| **Category** | Research-methods education + evidence services, not a generic LMS | Avoid "online courses" positioning; lead with research workflow |
-| **Differentiator** | A research-center site with a **publication/document library** + a **localized medical curriculum** in one product | Publish the methods, then the courses — the library is the moat |
-| **Adjacent competitors** | Academic LMS platforms, publisher CME libraries, freelance research-writing services | Most competitors are either *content-only* or *platform-only*; few own both |
-| **Content gap** | Clear, protocol-level "how to run a study" guidance in 6+ languages | i18n is a real, defensible gap to target |
-| **Trust gate** | Medical/legal claims require expert review | Every public claim needs a review gate (see publishing doc) |
-
-**Primary keyword families (to validate):** "medical research methods",
-"how to write a research protocol", "systematic review tutorial",
-"clinical research training", "research publication guide".
-
----
-
-## 3. Content pillars
-
-| Pillar | Rationale | Maps to product |
-|---|---|---|
-| **1. Research methods** | Core search demand; builds authority | Publications library (`/documents/`), blog |
-| **2. Learning & curriculum** | Converts readers into enrolled learners | Courses (`/courses/`), modules/lessons |
-| **3. Evidence & outcomes** | Shareable proof; drives referrals | Services, testimonials, stats, events |
-
----
-
-## 4. Priority topics (10 seed topics)
-
-| # | Topic (working title) | Type | Keyword / angle | Pillar | Persona | Searchable / Shareable |
-|---|---|---|---|---|---|---|
-| 1 | How to write a research protocol: a step-by-step guide | Guide | "how to write a research protocol" | Methods | Early-career researcher | 🟢 Searchable |
-| 2 | Systematic review vs scoping review: which fits your question | Comparison | "systematic review vs scoping review" | Methods | Early-career researcher | 🟢 Searchable |
-| 3 | Designing a study: population, exposure, outcome | Explainer | "design a clinical study" | Methods | Early-career researcher | 🟢 Searchable |
-| 4 | From clinical question to teachable module | Thought leadership | curriculum design | Learning | Clinician-educator | 🟡 Shareable |
-| 5 | What we learned teaching research methods in 6 languages | Case study (original data) | i18n research education | Learning | Institution | 🟡 Shareable |
-| 6 | Reading a paper critically: a 10-minute checklist | Checklist | "how to read a research paper" | Methods | Clinician-educator | 🟢 Searchable |
-| 7 | Publication ethics for first-time authors | Guide | "publication ethics" | Methods | Early-career researcher | 🟢 Searchable |
-| 8 | Building an evidence pipeline for a research team | Use-case | research operations | Evidence | Team lead | 🟡 Both |
-| 9 | Choosing a medical research training program | Buyer's guide | "research training program" | Learning | Institution | 🟡 Searchable |
-| 10 | Course outcomes: measured progress, not just certificates | Proof point | learning outcomes | Evidence | Institution | 🟡 Shareable |
-
----
-
-## 5. Topic cluster map
-
-```text
-Research methods (pillar 1)
-├─ How to write a research protocol (1)
-│   ├─ Systematic vs scoping review (2)
-│   └─ Publication ethics (7)
-├─ Designing a study (3)
-└─ Reading a paper critically (6)
-
-Learning & curriculum (pillar 2)
-├─ From clinical question to teachable module (4)
-├─ Choosing a research training program (9)
-└─ Teaching methods in 6 languages (5)
-
-Evidence & outcomes (pillar 3)
-├─ Building an evidence pipeline (8)
-└─ Course outcomes proof (10)
-```
-
-Internal linking rule: pillar-1 guides link **down** to the matching course;
-course pages link **up** to the methods guide that justifies them; outcomes
-pieces link **across** to services and testimonials.
-
----
-
-## 6. Publishing calendar (starter)
-
-| Week | Piece | Owner (role) | Review gate |
+| Question | Current hypothesis | Evidence to collect | Status |
 |---|---|---|---|
-| 1 | #1 Research protocol guide | Content producer | Medical review |
-| 2 | #3 Designing a study | Content producer | Medical review |
-| 3 | #2 Systematic vs scoping | Content producer | Editorial |
-| 4 | #6 Reading a paper checklist | Clinician-educator | Medical review |
-| 5 | #4 Clinical question → module | Content producer | Editorial |
-| 6 | #7 Publication ethics | Content producer | Legal + medical |
-| 7 | #9 Choosing a program | Marketing | CTC owner |
-| 8 | #5 i18n teaching case study | Marketing | CTC owner |
-| 9 | #8 Evidence pipeline | Team lead | CTC owner |
-| 10 | #10 Outcomes proof | Marketing | CTC owner |
+| What category are we in? | Research-methods education plus evidence services, not a generic LMS | Interviews, search-intent review, course inquiries | 🟡 |
+| Why should readers trust CTC? | Research-center context, structured curriculum, publication library, and bilingual delivery | Expert review, testimonials, publication/course engagement | 🟡 |
+| Where is the content gap? | Practical protocol-level guidance that connects methods to teachable curriculum | SERP review, competitor inventory, user questions | 🔴 |
+| Which language need is strongest? | EN/AR parity is a useful wedge for MENA research organizations | Locale analytics, interviews, translated-content engagement | 🟡 |
+| What is the commercial outcome? | Educational content should create qualified course and publishing-service conversations | UTM data, assisted conversions, CRM notes | 🔴 |
 
----
+### Research rules
+
+1. Do not publish market-size numbers from this page; use the private
+   [market strategy](../startup/precis-ctc.md) and upgrade figures only with a
+   named source.
+2. Treat competitor names as research leads, not endorsements or comparative
+   claims.
+3. Never turn a keyword gap into a medical claim, clinical recommendation, or
+   promise of research outcome.
+4. Record each validation pass with date, source, audience, and decision in the
+   owning brief or research log.
+
+## 🧱 Content pillars and product mapping
+
+| Pillar | Editorial promise | Product surface | Primary KPI |
+|---|---|---|---|
+| **Research methods** | Make complex research tasks understandable and defensible | Publications library, blog, methods resources | Qualified organic visits and publication engagement |
+| **Learning and curriculum** | Show how CTC turns questions into structured learning | Courses, modules, lessons | Course-detail clicks and enrollments |
+| **Evidence and outcomes** | Demonstrate useful practice without inventing results | Services, events, testimonials, case studies | Qualified inquiries and return visits |
+
+Use the pillar to choose the format, not to force every idea into every surface.
+A methods guide can link to a course; it should not repeat the course syllabus.
+
+## 🗂️ Priority topic cluster
+
+### Research methods
+
+- **Pillar:** How to write a research protocol: a step-by-step guide.
+- **Supporting:** systematic review vs. scoping review; study population,
+  exposure, and outcome; critical-reading checklist; publication ethics.
+- **Audience:** early-career researcher, with clinician-educator as secondary.
+- **Conversion:** matching methods course or publication resource.
+
+### Learning and curriculum
+
+- **Pillar:** From clinical question to teachable module.
+- **Supporting:** choosing a research training program; teaching methods in
+  multiple languages; lesson-preview and curriculum-design explainers.
+- **Audience:** clinician-educator and institution/program buyer.
+- **Conversion:** course catalog or institutional inquiry.
+
+### Evidence and outcomes
+
+- **Pillar:** Building an evidence pipeline for a research team.
+- **Supporting:** outcomes reporting, team onboarding, service workflow, and
+  carefully sourced case studies.
+- **Audience:** research team lead / PI and institution/program buyer.
+- **Conversion:** publishing services or consultation.
+
+### Internal-linking rules
+
+- Methods guides link **down** to one relevant course or publication.
+- Course pages link **up** to the methods guide that explains the learner's
+  problem; do not duplicate the lesson content in the guide.
+- Evidence/outcomes pieces link **across** to the relevant service and one
+  supporting publication or course.
+- Every page has one primary CTA and no more than two secondary CTAs.
+
+## 🗓️ Ten-week starter calendar
+
+| Week | Working title | Segment | Format | Gate |
+|---|---|---|---|---|
+| 1 | How to write a research protocol | Early-career researcher | Guide | Medical |
+| 2 | Designing a study: population, exposure, outcome | Early-career researcher | Explainer | Medical |
+| 3 | Systematic review vs. scoping review | Early-career researcher | Comparison | Medical + editorial |
+| 4 | Reading a paper critically: a 10-minute checklist | Clinician-educator | Checklist | Medical |
+| 5 | From clinical question to teachable module | Clinician-educator | Thought leadership | Editorial |
+| 6 | Publication ethics for first-time authors | Early-career researcher | Guide | Medical + legal |
+| 7 | Choosing a medical research training program | Institution buyer | Buyer guide | CTC owner |
+| 8 | Teaching research methods across languages | Institution buyer | Case study | CTC owner + linguistic |
+| 9 | Building an evidence pipeline for a research team | Team lead / PI | Use case | CTC owner |
+| 10 | Course outcomes: measured progress, not just certificates | Institution buyer | Proof point | Evidence review |
+
+Before adding a new item, search this table and the publication/course catalog.
+Extend an existing cluster rather than creating a second page for the same
+search intent.
+
+## 📏 Measurement and decision loop
+
+Track each piece with a stable slug, persona, pillar, locale, publication date,
+review status, and CTA. Review at 30 and 90 days:
+
+| Signal | Decision |
+|---|---|
+| High impressions, low clicks | Improve title, description, and search intent match |
+| High clicks, low engagement | Improve opening, structure, evidence, or internal links |
+| High engagement, no conversion | Rework CTA and course/service bridge |
+| Strong EN performance, weak AR performance | Check translation quality, RTL layout, and local search intent |
+| Repeated expert corrections | Narrow the brief and strengthen the review gate |
+
+Do not optimize medical content solely for traffic. Accuracy, trust, and useful
+reader action outrank volume.
 
 ## Remarks & Notes
 
-- This document is **direction, not clinical or legal copy.** Every public
-  claim must pass the review gates in
-  [`publishing-and-production.md`](publishing-and-production.md) before release.
-- All four personas and the competitive positioning are assumptions until a CTC
-  subject-matter owner confirms them; do not quote this file as validated
-  market research.
-- The public page map and medical-content rules (no invented statistics, no
-  clinical-advice implication, label educational material) are in
-  [`../../projects/precis/precis-ctc/docs/CONTENTS.md`](../../projects/precis/precis-ctc/docs/CONTENTS.md)
-  and override anything here that conflicts.
-- Keyword volumes are not yet validated — run the topic-cluster and keyword
-  validation passes before committing budget to a pillar.
+- This page is **editorial direction, not clinical or legal advice**. Every
+  public claim passes the gates in
+  [Publishing workflow & production](publishing-and-production.md).
+- The private startup strategy remains the source of truth for commercial ICP,
+  pricing, TAM/SAM/SOM, and sales assumptions; link to it instead of copying
+  those figures here.
+- The public page map and medical-content rules in
+  `projects/precis/docs/precis-ctc/CONTENTS.md` override this page if they
+  conflict.
+- Keyword volumes, competitor positioning, and outcome claims remain
+  unvalidated until a dated research pass records named sources.

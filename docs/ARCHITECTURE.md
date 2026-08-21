@@ -84,7 +84,7 @@ Client (Browser / Astro / HTMX / MCP)
 └────────────────────────────────────────────────────────────────────┘
 ```
 
-### Dual Rendering (Landing-Fusion pattern)
+### Dual Rendering (Precis Landing pattern)
 
 Some projects use a **render-first / data-API** contract where a single endpoint may return
 different formats:
@@ -459,7 +459,7 @@ projects/precis/precis-main/webpack/
 └── precis.config.js         # Extends base, per-project entries/output
 ```
 
-### 6.3 Full Build Chain (Landing-Fusion)
+### 6.3 Full Build Chain (Precis Landing)
 
 ```
 make build
@@ -484,7 +484,7 @@ make build
 
 ## 7. Data Flow Across Projects
 
-### 7.1 Landing-Fusion — Marketing Site
+### 7.1 Precis Landing — Marketing Site
 
 ```
 ┌─ Wagtail Admin ────────────────────────────────────────────────────┐
@@ -508,7 +508,7 @@ make build
 ┌─ Template ─────────────────────────────────────────────────────────┐
 │  {% comp "blocks/hero.html" /%}                                    │
 │  {% fusion_page_skeleton template_path="pages/home.html" %}        │
-│  {% render_bundle 'landing_fusion' %}                              │
+│  {% render_bundle 'landing' %}                                    │
 └────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -624,7 +624,7 @@ WEBPACK_LOADER = {
 │                                                                   │
 │  Database per site:                                                │
 │    precis_db       → Precis LMS (courses, enrollment, progress)    │
-│    landing_db      → Landing-Fusion (Wagtail pages, blog)          │
+│    landing_db      → Precis Landing (Wagtail pages, blog)          │
 │    syntara_db      → Syntara (chat conversations, templates)       │
 │    formint_cloud   → Formint Cloud (organizations, sync, backups)  │
 │                                                                   │

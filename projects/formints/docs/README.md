@@ -1,51 +1,49 @@
-# POS — Point of Sale System
+# Formints POS — Documentation
 
-> Structa Cloud multi-edition POS platform: Tauri + React + Rust
+> **Canonical home for Formints POS docs** (`projects/formints/`). The
+> reader-facing docs site pointers live in [`docs/pos/`](../../../docs/pos/README.md).
+> Edition plans and the capability matrix are the **source of truth** for what
+> each edition ships:
+> [`docs/plans/editions/`](../../../docs/plans/editions/README.md).
 
-## Editions
+## Editions status (21 Aug 2026)
 
-| Edition | Package | Branch | Description |
-|---------|---------|--------|-------------|
-| **formint-pos** | Formint POS Professional | `generic` | **Merged package** (formerly pos-full + pos-solo) — Astro shell + Django Ninja + ninja-extra API with django-fusion encoder/decoder and data components (tables + forms) |
-| **pos-mini / forge-pos** | Mini | `mini` | Lightweight minimal POS |
+| Edition | Directory | Status |
+|---------|-----------|--------|
+| **Community** | `formint-community/` | ✅ done |
+| **Standard** | `formint-standard/` | ✅ done |
+| **Pro** | `formint-pro/` | ✅ done |
+| **Cloud** | `formint-cloud/` | 🟡 staging |
+| **pos-client** | `formint-client/` | 🔵 dev |
 
-> ⚠️ The former `pos-full` (Cloud Master) and `pos-solo` (Standalone) editions
-> were merged into `formint-pos/` (legacy React UIs archived at
-> `formint-pos/legacy-react/`).
+See the [finish board](../../../docs/plans/editions/README.md#finish-board-status-per-edition--21-aug-2026)
+for what remains per edition.
 
-> **Formint** is the canonical Professional POS product name. `formint-pos/` is the
-> new product boundary (Astro shell + Django data/API layer + Tauri). See
-> [`../formint-pos/README.md`](../formint-pos/README.md) and
-> [`../formint-pos/migration/compatibility-manifest.json`](../formint-pos/migration/compatibility-manifest.json).
+## Index
 
-## Quick Links
+| Document | Description |
+|----------|-------------|
+| [`GETTING_STARTED.md`](GETTING_STARTED.md) | **Setup & build guide** — step-by-step startup/build for every edition |
+| [`architecture/editions.md`](architecture/editions.md) | Per-edition components & features (Community → Pro → Cloud → pos-client) |
+| [`architecture/pos-architecture.md`](architecture/pos-architecture.md) | Cross-edition POS architecture |
+| [`architecture/pro-cloud-sync-contract.md`](architecture/pro-cloud-sync-contract.md) | Pro ↔ Cloud sync contract |
+| [`architecture/server-migration-guide.md`](architecture/server-migration-guide.md) | Server migration guide (legacy → Django) |
+| [`architecture/table-column-comparison.md`](architecture/table-column-comparison.md) | Table & column comparison across editions |
+| [`FORMINT_ARCHITECTURE.md`](FORMINT_ARCHITECTURE.md) | Formint POS Professional architecture (merged package) |
+| [`COMMANDS.md`](COMMANDS.md) | CLI / Makefile commands reference |
+| [`ROLE_SYSTEM.md`](ROLE_SYSTEM.md) | Roles & permissions design |
+| [`THEME_SYSTEM.md`](THEME_SYSTEM.md) | Theme variant system |
+| [`TEMPLATES.md`](TEMPLATES.md) | Template architecture (Django + django-fusion) |
+| [`adr/`](adr/) | Architecture Decision Records |
+| [`seed-data/`](seed-data/) | Seed data reference (presets, JSON) |
+| [`screenshots/`](screenshots/) | Admin + frontend screenshots |
+| [`legacy/`](legacy/README.md) | **Archived** pre-merge / Robyn-era docs (history only) |
 
-- [Architecture Overview](architecture/pos-architecture.md)
-- [Editions Comparison](architecture/editions.md)
-- [Getting Started](guides/quick-start.md)
-- [API Reference](api/rest-api.md)
-- [Formint POS Package](../formint-pos/README.md)
-- [Migration Manifest](../formint-pos/migration/compatibility-manifest.json)
+## Canonical plans & comparison
 
-## Tech Stack
-
-- **Frontend:** React + TypeScript + Vite + TailwindCSS (editions) / Astro + Alpine + HTMX (formint-pos)
-- **Backend:** Rust (Tauri) + Python (Robyn/Django server)
-- **API (formint-pos):** Django Ninja + ninja-extra, django-fusion encoder/decoder
-- **State:** RTK Query + Pinia
-- **Desktop:** Tauri v2
-
-## Directory Structure
-
-```
-projects/pos/
-├── formint-pos/       # Merged package (formerly pos-full + pos-solo)
-├── forge-pos/         # Mini edition
-├── pos-mini/          # Minimal edition
-├── formint-pos/       # Merged package (Django Ninja API + fusion data components)
-├── pos-client/        # Shared client library
-├── shared/            # Cross-edition shared modules
-├── docs/              # This documentation
-├── assets/            # Shared assets
-└── tests/             # Integration tests
-```
+- **Edition plans (canonical):** [`docs/plans/editions/`](../../../docs/plans/editions/README.md)
+  — Community (`01`), Standard (`02`), Pro (`03`), Cloud (`04`), pos-client
+  (`05`), JS/TS SDK (`06`), Community version (`07`), tenant schemas (`08`).
+- **Feature/buyer matrix:** [`docs/plans/editions/comparison.md`](../../../docs/plans/editions/comparison.md).
+- **Product home README:** [`projects/formints/README.md`](../README.md).
+- **Strategy (private):** [`docs/startup/formints.md`](../../../docs/startup/formints.md).

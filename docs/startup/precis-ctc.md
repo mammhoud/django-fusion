@@ -1,8 +1,8 @@
 ---
-title: CTC Research — Market Strategy 🔒
-description: Private strategy for CTC Research — market strategy, MVP canvas, TAM/SAM/SOM, SaaS services, ideal clients, research backlog.
+title: CTC Research — Sample Project (Agentic Coding with Precis) 🔒
+description: Sample record for CTC Research — a medical research center site built with agentic coding on the Precis stack; market strategy, MVP canvas, and research kept as reference material.
 navigation:
-  title: CTC strategy 🔒
+  title: CTC sample 🔒
   icon: i-lucide-heart-pulse
 object:
   type: "private-strategy"
@@ -18,6 +18,8 @@ tags:
   - structa-cloud
   - startup
   - precis-ctc
+  - sample
+  - agentic-coding
   - research
   - healthcare
   - publishing
@@ -28,11 +30,31 @@ links:
   - label: "CTC product docs"
     to: "/docs/en/precis-ctc"
     icon: "i-lucide-heart-pulse"
+  - label: "Content strategy"
+    to: "/docs/en/precis-ctc/content-strategy"
+    icon: "i-lucide-pen-tool"
+  - label: "Publishing workflow"
+    to: "/docs/en/precis-ctc/publishing-and-production"
+    icon: "i-lucide-send"
 ---
 
-# 🏥 CTC Research — Market Strategy 🔒
+# 🏥 CTC Research — Sample Project (Agentic Coding with Precis) 🔒
 
 > Private · Owner: `precis-ctc` · Confidence tags: 🟢 sourced · 🟡 estimate · 🔴 assumption
+
+> ## 🧪 Sample status — not a commercial product
+>
+> **CTC Research** (`projects/precis/precis-ctc/`) is a **sample project built
+> with agentic coding on the Precis stack** — a live medical research center
+> site (ctc-research.com) demonstrating the Precis platform, EN/AR publishing,
+> and the production workflow. It is **not offered as a product**; the market
+> strategy, MVP canvas, and research below are retained as reference material
+> for the 🔬 Precis Research vision and for teams using Precis + agentic coding
+> to build similar sites. See the
+> [client production case study](../precis-ctc/client-production.md).
+>
+> Editorial planning belongs in the [content strategy](../precis-ctc/content-strategy.md),
+> and release operations belong in the [publishing workflow](../precis-ctc/publishing-and-production.md).
 
 ## 1. Market Strategy
 
@@ -73,7 +95,11 @@ links:
 | Bilingual enablement | EN/AR content ops + RTL QA | Setup + per-article | 🟡 beta |
 | Visibility & reporting | Traffic/impact analytics for institutes | Included / add-on | 🔴 planned |
 
-## 5. Ideal Clients
+## 5. Commercial ICP
+
+The commercial ICP is intentionally kept in this strategy document so pricing,
+market sizing, and buying triggers have one source of truth. Editorial reader
+segments and content-to-conversion paths live in the [content strategy](../precis-ctc/content-strategy.md).
 
 | Persona | Description | Pain | Buying trigger | Willingness to pay |
 |---------|-------------|------|----------------|--------------------|
@@ -81,13 +107,40 @@ links:
 | Research ops lead | Manages publications & team output | Scattered outputs, no EN/AR parity | New accreditation or grant round | $10–30k/yr |
 | Agency (health vertical) | Builds sites for medical clients | Needs repeatable research-center capability | New healthcare client RFP | White-label fees |
 
-## 6. Research Needed
+## 6. Competitive Landscape
+
+> Names are public-market facts; size/positioning claims carry confidence tags.
+
+### 6.1 Competitor map
+
+| Competitor | Category | Target | Strengths | Our edge / gap |
+|-----------|----------|--------|-----------|----------------|
+| Silverchair | Scholarly publishing platform | Publishers & societies | Journal hosting, peer-review integrations, domain authority | Journal-centric; we target the research-center *institutional site* (teams, studies, publications, EN/AR) |
+| Atypon (Literatum) | Publishing platform | Publishers & libraries | Large-scale journal platforms | Same — enterprise journal infrastructure, not research-center websites |
+| University/health web agencies | Custom website build | Universities, hospitals, institutes | Design, brand, custom features | One-off builds with no publishing workflow; we productize the workflow |
+| WordPress/Wagtail agencies | CMS builds | Any organization | Cheap, flexible | Same — no research-publishing domain playbook or EN/AR pipeline |
+| Quartzy / lab-management suites | Lab operations | Research labs | Lab inventory/ops | Adjacent (operations, not digital presence/publishing) — not a direct competitor |
+
+### 6.2 Positioning vs. alternatives
+
+| Dimension | Us | Direct competitors | Indirect substitutes |
+|-----------|----|--------------------|---------------------|
+| Deployment | Self-hosted Django/Wagtail + Astro frontend | Agency one-off builds | Static brochure sites |
+| Workflow | Research publishing pipeline (production, EN/AR parity, checks) | Agencies without a repeatable workflow | PDF/print-first publishing |
+| Price posture | License + publishing retainer | Six-figure agency builds | In-house webmasters |
+| Differentiator | Vertical research-center domain knowledge + content strategy playbook | Generic web vendors | Spreadsheets/static pages |
+
+> **Gaps to attack (🟡):** citation/visibility analytics as a sellable add-on, RTL-first content ops for Arabic centers, and a published “research publishing” case study from the live ctc-research.com deployment.
+
+## 7. Research Needed
 
 - [ ] Survey 10 research centers (MENA/EU) on digital publishing pain and budget.
 - [ ] Quantify the EN/AR parity cost saving — the wedge needs a defensible number.
-- [ ] Competitive scan: institutional website vendors (e.g., Quartzy-adjacent, university CMS providers).
+- [ ] Formalize the Silverchair/Atypon boundary: when does a center graduate to a journal platform?
 - [ ] Validate pricing for publishing retainer vs one-off build.
 - [ ] Define the "research publishing pipeline" product boundary — where does the service become software?
+
+> **Citation status:** competitor names are public-market facts. Market-size figures are directional (🟡/🔴) until verified against a named public report.
 
 ## Remarks & Notes
 

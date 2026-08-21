@@ -342,7 +342,7 @@ for loyalty + settings models.
 ```bash
 # One-shot: install + seed + run both servers (backend :8767 + frontend :4321)
 cd projects/pos/formint-pos
-make install        # backend .venv + deps + migrate + frontend npm install
+just install        # backend .venv + deps + migrate + frontend npm install
 make seed           # migrate + idempotent superuser (admin@formint.local / admin123)
 make env            # tmux: backend :8767 + frontend :4321 (proxies /api, /htmx, /fusion)
 #   API      → http://127.0.0.1:8767/api/v1/docs
@@ -365,7 +365,7 @@ precis-landing's root + backend split):
 
 | Command | Action |
 |---|---|
-| `make install` | Backend .venv + deps + migrate + frontend npm install |
+| `just install` | Backend .venv + deps + migrate + frontend npm install |
 | `make seed` | Migrate + idempotent superuser |
 | `make env` | Run backend (:8767) + frontend (:4321) in tmux + health check |
 | `make dev-backend` / `make dev-frontend` | Foreground servers |
@@ -408,10 +408,11 @@ Parent `projects/pos/Makefile` delegates: `make formint-install`,
 
 ## 11. Related docs
 
-- [`README.md`](../formint-pos/README.md) — package readme
-- [`compatibility-manifest.json`](../formint-pos/migration/compatibility-manifest.json)
-- [`POS_ARCHITECTURE.md`](POS_ARCHITECTURE.md) — all-editions architecture
-- [`SERVER_V2.md`](SERVER_V2.md) — server API reference
+- [`README.md`](../formint-pro/README.md) — package readme
+- [`compatibility-manifest.json`](../formint-pro/migration/compatibility-manifest.json)
+- [`architecture/editions.md`](architecture/editions.md) — per-edition components & features
+- [`legacy/POS_ARCHITECTURE.md`](legacy/POS_ARCHITECTURE.md) — archived pre-merge architecture (history only)
+- [`legacy/SERVER_V2.md`](legacy/SERVER_V2.md) — archived Robyn server v2 reference (history only)
 - [`tests/README.md`](../tests/README.md) — unified test suite
 
 ## 12. django-fusion enhancement surface (all wired)

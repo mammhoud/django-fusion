@@ -1,5 +1,7 @@
 # Tenant Schemas — Multi-Tenancy Plan (django-tenants) for Every Edition
 
+> Tags: `#formints` `#pos` `#cloud` `#tenancy` `#django-tenants` `#postgres` — status 🟡 Postgres flip-on pending (21 Aug 2026).
+
 > **Status:** Row-level model work complete and verified on SQLite — `Tenant`
 > + `Domain` (migration 0008), `BranchSettings` (+ `Branch.branch_settings`
 > accessor), Unfold admin + public-schema URLconf, 14 SQLite unit tests, and

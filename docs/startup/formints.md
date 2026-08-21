@@ -83,13 +83,42 @@ links:
 | Small chain ops manager | 3–20 stores | No unified multi-store reporting | Scaling to new store | $100–300/mo |
 | Reseller/installer | Serves F&B clients | Repeatable POS to install | Client demand | Margin on license+install |
 
-## 6. Research Needed
+## 6. Competitive Landscape
+
+> Names are public-market facts; size/positioning claims carry confidence tags.
+
+### 6.1 Competitor map
+
+| Competitor | Category | Target | Strengths | Our edge / gap |
+|-----------|----------|--------|-----------|----------------|
+| Toast | Restaurant SaaS POS | Mid-large restaurants | Integrated payments, kitchen tech, ecosystem | Cloud-only, payment-processor lock, per-terminal fees |
+| Square for Restaurants | SaaS POS | Small F&B | Free/low-cost hardware, payments, ease | Cloud-dependent, payment-ecosystem lock, US-centric |
+| Lightspeed Restaurant | SaaS POS | Cafés & restaurants | Multi-location reporting, menu management | SaaS fees, online-only |
+| Clover | SaaS POS | SMB retail/F&B | Hardware ecosystem, app market | App-store fees, online dependency |
+| TouchBistro | SaaS POS | Restaurants | iPad-native, menu tools | Cloud/payments lock |
+| Loyverse | Freemium POS | Small cafés | Free tier, simple | Limited vertical depth (no gaming center, offline-first gaps) |
+| Local MENA/FR POS vendors | Regional POS | Regional F&B | Local payments/tax, language | Fragmented, weaker cloud story |
+
+### 6.2 Positioning vs. alternatives
+
+| Dimension | Us | Direct competitors | Indirect substitutes |
+|-----------|----|--------------------|---------------------|
+| Deployment | Offline-first desktop (Rust/Tauri) + optional Django cloud | Cloud-only SaaS (Toast, Square) | Paper/legacy registers, Excel |
+| Connectivity | Works with zero internet; syncs when online | Online-only | None |
+| Price posture | Free community → one-time Pro → cloud SaaS | Per-terminal SaaS + payments % | Cheapest legacy |
+| Differentiator | One core across 5 editions; gaming-center + KDS verticals; i18n en/fr/ar | Single-market, payments-locked platforms | Manual cash registers |
+
+> **Gaps to attack (🟡):** offline-first reliability, gaming-center vertical, multi-edition funnel (community → pro → cloud), and local-language/tax support — none of the cloud incumbents cover all four.
+
+## 7. Research Needed
 
 - [ ] Install telemetry on community edition to measure activations & conversion funnel (required to firm SOM).
-- [ ] Competitive matrix: Square, Toast, Lightspeed, Loyverse — feature/price gaps to attack in each market.
+- [ ] Price/feature teardown vs Toast, Square, Lightspeed, Loyverse per target market.
 - [ ] Validate gaming-center vertical willingness-to-pay (niche but underserved).
 - [ ] Test Cloud SaaS pricing anchors (per-store vs per-terminal vs % of sales).
 - [ ] Market-entry research: EU vs MENA regulatory (tax/VAT receipts, GDPR) for billing features.
+
+> **Citation status:** competitor names are public-market facts. Market-size figures are directional (🟡/🔴) until verified against a named public report.
 
 ## Remarks & Notes
 

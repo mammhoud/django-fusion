@@ -36,7 +36,7 @@
 - `application/docker-compose.tasks.yml` runs `rundramatiq` plus
   `python -m django_fusion.tasks.scheduler`; Celery Beat is no longer used by
   this stack.
-- The shared worker mounts active task packages from Landing-Fusion, Loop-CRM,
+- The shared worker mounts active task packages from Precis Landing, Loop-CRM,
   and Formint Cloud. Precis/LMS task paths are intentionally absent.
 - Product workers, shared actors, and the former Temporal campaign flow now live
   under each product's `backend/plugins/workers/` boundary and use Dramatiq;
@@ -46,7 +46,7 @@
 
 - `projects/Makefile` aggregate checks, project iteration, population, health,
   and full-site loops no longer include LMS.
-- `docker-deploy-websites` deploys active Landing-Fusion and Loop-CRM only.
+- `docker-deploy-websites` deploys active Precis Landing and Loop-CRM only.
 - Explicit `WEBSITE=precis-lms` maintenance commands remain available.
 
 ### Nx baseline

@@ -8,7 +8,7 @@ stack.
 
 ```text
 Product web services
-  ├─ Landing-Fusion      backend/plugins/workers/
+  ├─ Precis Landing      backend/plugins/workers/
   ├─ Loop-CRM            backend/plugins/workers/
   └─ Formint Cloud       backend/plugins/workers/
           │

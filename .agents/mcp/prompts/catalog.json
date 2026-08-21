@@ -895,8 +895,9 @@
   "projects": [
     {
       "id": "project.precis-landing",
-      "name": "Landing-Fusion",
+      "name": "Precis Landing",
       "path": "projects/precis/precis-landing/",
+      "tags": ["precis", "landing", "astro", "wagtail", "marketing", "catalog", "django-fusion"],
       "description": "Public marketing and catalog product combining an Astro 5 frontend with a Django 5.2/Wagtail 7.4 backend and django-fusion rendering.",
       "stack": [
         "Astro 5",
@@ -917,7 +918,7 @@
         "test-engineer",
         "code-reviewer"
       ],
-      "prompt": "Enhance Landing-Fusion as one dual-road product. Read projects/precis/precis-landing/AGENTS.md, README.md, frontend and backend Makefiles, the matching Astro page/client, Django URL/API/PageHandler code, and focused tests. Preserve both the Astro/data-API road and Django/Fusion/HTMX road. Keep Wagtail content editable, assets project-owned, SEO metadata complete, translations intact, and Wagtail catch-all routes last. For UI work, audit hierarchy, real assets, responsive states, accessibility, and conversion before editing. Validate with frontend check/build and targeted backend checks; run E2E only when the browser contract changes. Never use the deprecated local plan directory as the canonical implementation source.",
+      "prompt": "Enhance Precis Landing as one dual-road product. Read projects/precis/precis-landing/AGENTS.md, README.md, frontend and backend Makefiles, the matching Astro page/client, Django URL/API/PageHandler code, and focused tests. Preserve both the Astro/data-API road and Django/Fusion/HTMX road. Keep Wagtail content editable, assets project-owned, SEO metadata complete, translations intact, and Wagtail catch-all routes last. For UI work, audit hierarchy, real assets, responsive states, accessibility, and conversion before editing. Validate with frontend check/build and targeted backend checks; run E2E only when the browser contract changes. Never use the deprecated local plan directory as the canonical implementation source.",
       "checks": [
         "cd projects/precis/precis-landing && make check",
         "cd projects/precis/precis-landing && make build",
@@ -938,6 +939,7 @@
       "id": "project.precis",
       "name": "Precis LMS",
       "path": "projects/precis/precis-main/",
+      "tags": ["precis", "lms", "learning", "courses", "wagtail", "django-fusion", "allauth"],
       "description": "The production learning platform for courses, enrollment, payments, progress, certificates, profiles, and multilingual Wagtail content.",
       "stack": [
         "Django 5.2",
@@ -957,7 +959,7 @@
         "test-engineer",
         "code-reviewer"
       ],
-      "prompt": "Enhance Precis without confusing it with Landing-Fusion or retired precis-lms paths. Read projects/precis/precis-main/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
+      "prompt": "Enhance Precis without confusing it with Precis Landing or retired precis-lms paths. Read projects/precis/precis-main/AGENTS.md, backend/AGENTS.md, assets/templates/AGENTS.md, the relevant learning/page/profile modules, frontend client, and tests. Preserve course discovery, detail, syllabus, enrollment, wishlist, progress, certificate, auth, localization, permissions, API, HTMX fragment, and full-page contracts. Use `{% comp %}` for registered components and `{% include_block %}` for Wagtail blocks. Keep product styles/assets in Precis and never hand-edit generated bundles. Validate the narrowest backend and frontend checks, then expand to learning/browser tests when affected.",
       "checks": [
         "cd projects/precis/precis-main/backend && make check",
         "cd projects/precis/precis-main/backend && make test",
@@ -979,6 +981,7 @@
       "id": "project.formint",
       "name": "Formint POS editions",
       "path": "projects/formints/",
+      "tags": ["formints", "pos", "point-of-sale", "tauri", "rust", "diesel", "sqlite", "astro", "react", "vue", "django", "channels", "unfold", "django-fusion"],
       "description": "A deliberately separated POS family: Community/Standard native Tauri-Rust editions, Professional Django boundary, Cloud Django master, and a separate Vue client.",
       "stack": [
         "Tauri 2",
@@ -1001,7 +1004,7 @@
         "security-auditor",
         "code-reviewer"
       ],
-      "prompt": "Enhance Formint only after naming the exact edition and reading projects/formints/AGENTS.md plus the edition AGENTS.md, README, Makefile, and tests. Keep frontend/backend/native contracts synchronized. Community and Standard prompts must use Rust/Diesel/SQLite and never invent Django or sidecar code. Professional changes belong in its sidecar/backend/frontend boundary. Cloud serves its API from Django/Channels and must not reintroduce Robyn merely because SIDECAR_BASE remains as a compatibility name. Preserve typed schemas, role authorization, sync/WebSocket frames, transaction safety, offline boundaries, and edition-local assets. Validate with the edition's narrowest check/test commands before cross-edition tests.",
+      "prompt": "Enhance Formint only after naming the exact edition and reading projects/formints/AGENTS.md plus the edition AGENTS.md, README, Makefile, and tests. Edition status (21 Aug 2026): Community/Standard/Pro done, Cloud staging, pos-client dev — follow docs/plans/editions/09-completion-plan.md for remaining promotion steps. Keep frontend/backend/native contracts synchronized. Community and Standard prompts must use Rust/Diesel/SQLite and never invent Django or sidecar code. Professional changes belong in its server/backend/frontend boundary. Cloud serves its API from Django/Channels and must not reintroduce Robyn merely because SERVER_BASE remains as a compatibility name. Preserve typed schemas, role authorization, sync/WebSocket frames, transaction safety, offline boundaries, and edition-local assets. Validate with the edition's narrowest check/test commands before cross-edition tests.",
       "checks": [
         "cd projects/formints/formint-community && pnpm test",
         "cd projects/formints/formint-standard && pnpm test",
@@ -1020,6 +1023,7 @@
       "id": "project.syntara",
       "name": "Syntara / Cypercloud",
       "path": "projects/syntara/",
+      "tags": ["syntara", "cypercloud", "ai", "chat", "htmx", "sse", "streaming", "ceptor-ai", "django"],
       "description": "Django AI chat and template customizer with HTMX, streaming responses, Monaco-style editing, template discovery, and Ceptor-AI provider boundaries.",
       "stack": [
         "Django",
@@ -1030,7 +1034,7 @@
         "Ceptor-AI",
         "Ollama/OpenAI/Anthropic adapters"
       ],
-      "boundary": "Syntara may inspect configured product templates but must not implicitly mutate Precis, Landing-Fusion, or other products.",
+      "boundary": "Syntara may inspect configured product templates but must not implicitly mutate Precis, Precis Landing, or other products.",
       "agent_sequence": [
         "product-manager",
         "ceptor-ai-toolsmith",
@@ -1056,6 +1060,7 @@
       "id": "project.django-fusion",
       "name": "django-fusion library",
       "path": "libs/django-fusion/",
+      "tags": ["django-fusion", "library", "django", "wagtail", "components", "fragments", "forms", "tables", "htmx", "mcp", "webpack"],
       "description": "Reusable Django/Wagtail framework library providing registered components, routing, fragments, forms, tables, health, assets, webpack base config, per-project webpack support, interactive designer with MCP routing (GET + POST JSON-RPC), API-key auth, skeleton loading analyzer integration, prompt catalog, and safe designer/MCP metadata.",
       "stack": [
         "Python",

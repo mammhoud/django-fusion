@@ -17,7 +17,7 @@ background-task and MCP architecture. It covers:
 - MCP tools for AI-assisted component and model design;
 - asynchronous execution through `django_fusion.tasks`;
 - deterministic caching and optional streaming for long-running generation;
-- project-owned adoption in Precis, Landing-Fusion, and Formint; and
+- project-owned adoption in Precis, Precis Landing, and Formint; and
 - security, privacy, approval, observability, and test gates.
 
 This is an implementation plan, not evidence that every provider, model, MCP
@@ -37,7 +37,7 @@ clear value.
 
 The initial implementation should not require Django Ninja or Django REST
 Framework. Project APIs remain project-owned, consistent with the existing LMS
-and Landing-Fusion boundaries.
+and Precis Landing boundaries.
 
 ### 2.2 Keep task execution and LLM access separate
 
@@ -89,7 +89,7 @@ an MCP tool.
 | Dramatiq backend | `django_fusion.tasks.backends.dramatiq` | Existing surface; production verification required |
 | Task MCP definitions | `django_fusion.tasks.mcp_tools` | Existing task-management tools |
 | Task MCP handlers/views | `mcp_handlers.py`, `mcp_views.py` | Existing surface; auth and deployment gates remain |
-| Project task modules | Precis, Landing-Fusion, and Formint plan targets | Planned adoption |
+| Project task modules | Precis, Precis Landing, and Formint plan targets | Planned adoption |
 | Provider-neutral LLM gateway | No canonical gateway identified | Not started |
 | AI model-level registry | Not started | Planned |
 | Generation cache | Not started as a django-fusion contract | Planned |
@@ -290,7 +290,7 @@ Project-owned tasks may expose safe content operations such as:
 
 - Precis: draft course descriptions, summarize lesson content, or suggest SEO
   metadata for review;
-- Landing-Fusion: draft newsletter or blog metadata, warm approved page cache,
+- Precis Landing: draft newsletter or blog metadata, warm approved page cache,
   and generate preview copy for editorial review; and
 - Formint: produce read-only sales/report explanations and anomaly summaries.
 
@@ -434,7 +434,7 @@ Initial AI scope:
 Required tests cover permissions, PII redaction, course ownership, task retry,
 structured output validation, and no-publish-without-approval behavior.
 
-### 9.2 Landing-Fusion
+### 9.2 Precis Landing
 
 Owner: `projects/precis/landi/backend/`.
 
@@ -537,7 +537,7 @@ the base package.
 | D | Add one approved provider adapter behind an optional dependency | Planned |
 | E | Add queued generation/validation tasks | Planned |
 | F | Add read-only AI MCP tools and authenticated local endpoint | Planned |
-| G | Integrate one Precis and one Landing-Fusion editorial workflow | Planned |
+| G | Integrate one Precis and one Precis Landing editorial workflow | Planned |
 | H | Integrate Formint read-only reporting for Pro/Cloud only | Planned |
 | I | Add streaming endpoint and client verification | Planned |
 | J | Security, cost, load, failure, and rollback review | Planned |
@@ -576,7 +576,7 @@ the base package.
 ### Project tests
 
 - Precis course/content permission and approval flows;
-- Landing-Fusion editorial draft and publish separation;
+- Precis Landing editorial draft and publish separation;
 - Formint report scope, offline behavior, and no mutation guarantees;
 - frontend status/loading/error/timeout states; and
 - clean install without optional provider SDKs.
@@ -609,7 +609,7 @@ labels.
 - [ ] Streaming is verified with a real supported client and bounded timeouts.
 - [ ] AI MCP tools are authenticated, allowlisted, schema-validated, and
       disabled by default in production until approved.
-- [ ] Precis and Landing-Fusion have one reviewed editorial AI workflow each.
+- [ ] Precis and Precis Landing have one reviewed editorial AI workflow each.
 - [ ] Formint Pro/Cloud has read-only advisory reporting without changing POS
       authority or DataToken synchronization.
 - [ ] No generated code, model, migration, content, campaign, price, stock, or
@@ -623,7 +623,7 @@ labels.
 | Unified tasks and task MCP | [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md) |
 | django-fusion enhancements | [`django-fusion-enhancements.md`](django-fusion-enhancements.md) |
 | Worker consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
-| Landing-Fusion plan | [`../precis/landi/README.md`](../precis/landi/README.md) |
+| Precis Landing plan | [`../precis/landi/README.md`](../precis/landi/README.md) |
 | Precis product handoff | [`../../../projects/precis/precis-lms/README.md`](../../../projects/precis/precis-lms/README.md) |
 | Precis backend guidance | [`../../../projects/precis/precis-lms/backend/AGENTS.md`](../../../projects/precis/precis-lms/backend/AGENTS.md) |
 | Formint Professional plan | [`../editions/03-pro.md`](../editions/03-pro.md) |

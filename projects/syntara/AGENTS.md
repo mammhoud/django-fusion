@@ -41,7 +41,7 @@ syntara/
 ```
 
 The template catalog is intentionally a bridge into other products. It may
-inspect templates from Precis, Landing-Fusion, and legacy site paths, but it
+inspect templates from Precis, Precis Landing, and legacy site paths, but it
 must not mutate those products implicitly. Generated suggestions should be
 reviewable and written only through explicit user actions.
 

@@ -46,19 +46,21 @@ links:
 graph LR
     subgraph Platforms
         PRECIS[🎓 Precis<br/>LMS + Landing]
-        CTC[🏥 CTC Research]
         CRM[🤝 Loop-CRM]
         SYN[🤖 Syntara]
         POS[💳 Formint POS]
+    end
+    subgraph Samples
+        CTC[🏥 CTC Research<br/>agentic-coding sample]
     end
     subgraph Shared
         FUSION[🧩 django-fusion]
         INFRA[🏗️ Infrastructure]
     end
     PRECIS --> FUSION
-    CTC --> FUSION
     CRM --> FUSION
     POS --> FUSION
+    CTC --> FUSION
     SYN --> INFRA
     POS --> INFRA
 ```
@@ -68,14 +70,35 @@ graph LR
 | Scope | Doc | Covers |
 |-------|-----|--------|
 | **Full portfolio master** 🔒 | [`STRATEGY.md`](STRATEGY.md) | Consolidated market strategy, combined MVP canvas, TAM/SAM/SOM table, SaaS service lines, ideal clients, research backlog, sequencing |
+| **Portfolio comparison** 🔒 | [`comparison.md`](comparison.md) | Products vs. each other, head-to-head vs. named competitors, bundle logic, decision guide |
+| **Product plan & launch** 🔒 | [`PLAN.md`](PLAN.md) | Goals/targets, scope, stakeholders (RACI), roadmap, launch plan, PR calendar |
+| **Pricing, offers & services** 🔒 | [`PRICING.md`](PRICING.md) | Packages/tiers, offers, services, side customizations, bundle logic, discount policy |
+| **Sales playbook** 🔒 | [`SALES.md`](SALES.md) | Requirements to sell, proposal/contract checklist, zero-utilities/zero-hardware onboarding, delivery handover |
+| **Company profile** 🔒 | [`company-profile.md`](company-profile.md) | Overview, mission, vision, focus areas, product ecosystem, tech stack, competitive advantages |
+| **Product profiles** 🔒 | [`product-profiles.md`](product-profiles.md) | Consolidated profiles: Loop-CRM, Precis Platform (CMS/Builder/LMS/Research), django-fusion — live 🟢 vs vision 🔴 status |
+| **Revenue model** 🔒 | [`revenue-model.md`](revenue-model.md) | Revenue streams, pricing strategy, ARR projections, unit economics (CAC/LTV/churn/margin) |
+| **Master deck** 🔒 | [`presentation.md`](presentation.md) | 25-slide executive presentation outline with per-slide source links |
+| **Progressive plan** 🔒 | [`../plans/repository/startup-docs-enhancement-plan.md`](../plans/repository/startup-docs-enhancement-plan.md) | Gap analysis of the 14-doc startup pack vs the monorepo — what was added, what was not added, and why |
 
 | Product | Doc | Core Offering |
 |---------|-----|---------------|
 | 🎓 Precis (LMS + landing) | [`precis.md`](precis.md) | Learning platform + marketing/catalog shell |
-| 🏥 CTC Research | [`precis-ctc.md`](precis-ctc.md) | Medical research center digital presence & publishing |
 | 🤖 Syntara (Cypercloud) | [`syntara.md`](syntara.md) | AI chat + template customization runtime |
 | 💳 Formint POS | [`formints.md`](formints.md) | Multi-edition restaurant/cafe point-of-sale |
 | 🤝 Loop-CRM | [`loop-crm.md`](loop-crm.md) | Unified sales + marketing CRM |
+
+### Reference samples — agentic coding with Precis
+
+🏥 **CTC Research** (`projects/precis/precis-ctc/`) is a **sample project built
+with agentic coding on the Precis stack** — a medical research center site
+(ctc-research.com) demonstrating the Precis platform, EN/AR publishing, and the
+production workflow. It is not a commercial product with its own market
+strategy; the research material that used to live here is retained as reference:
+
+- [Sample record & market research](precis-ctc.md) — agentic-coding sample; MVP/TAM research kept as reference
+- [Content strategy, editorial ICP & market research](../precis-ctc/content-strategy.md)
+- [Publishing workflow & production notes](../precis-ctc/publishing-and-production.md)
+- [Client production case study](../precis-ctc/client-production.md)
 
 ## 📋 What Every Strategy Document Contains
 
@@ -86,7 +109,10 @@ Each product page follows the same template ([`_template.md`](_template.md)):
 3. **TAM / SAM / SOM** — sizing table with sources and confidence tags
 4. **SaaS services** — service lines, pricing posture, packaging
 5. **Ideal clients** — personas, pains, buying triggers
-6. **Research needed** — the open questions that must be answered before doubling down
+6. **Competitive landscape** — named competitor map + positioning vs. alternatives
+7. **Research needed** — the open questions that must be answered before doubling down
+
+Plus the business layer: **[Plan & Launch](PLAN.md)** (targets, scope, stakeholders, roadmap, PR), **[Pricing & Offers](PRICING.md)** (packages, services, customizations), and the **[Sales Playbook](SALES.md)** (requirements to sell, zero-utilities onboarding, handover).
 
 ## 🔬 Sizing Conventions
 
@@ -111,4 +137,7 @@ Each product page follows the same template ([`_template.md`](_template.md)):
 
 - This section is private by policy; if it is ever published, strip the 🔒 research backlogs and pricing assumptions first.
 - Keep `docs/startup/_template.md` in sync — every product doc mirrors its section order.
+- `PLAN.md` / `PRICING.md` / `SALES.md` are the business layer; per-product strategy docs feed them and stay the source of market facts.
+- `company-profile.md`, `product-profiles.md`, `revenue-model.md`, and `presentation.md` are the narrative layer; they link to the strategy docs and never restate TAM/SAM/SOM or pricing.
+- The progressive plan that tracks what from the startup pack is added vs declined lives in [`docs/plans/repository/startup-docs-enhancement-plan.md`](../plans/repository/startup-docs-enhancement-plan.md).
 - Market figures here are starting hypotheses (🔴/🟡), not validated claims — validate before investor or board use.

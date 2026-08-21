@@ -60,7 +60,7 @@ structa.cloud/
 ├── projects/                  # Product code + shared Django config
 │   ├── precis/                # Precis product group
 │   │   ├── precis-main/       # Unified Precis (LMS + landing, canonical)
-│   │   ├── precis-landing/    # Legacy Landing-Fusion copy (kept)
+│   │   ├── precis-landing/    # Legacy Precis Landing copy (kept)
 │   │   └── precis-ctc/        # CTC Research (ctc-research.com)
 │   ├── syntara/               # Cypercloud AI chat/customizer runtime
 │   ├── formints/              # POS editions (community/pro/cloud/standard/client)

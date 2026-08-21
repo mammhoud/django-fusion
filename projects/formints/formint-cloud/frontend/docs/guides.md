@@ -423,7 +423,7 @@ sqlite3 restaurant.db "VACUUM;"                  # Optimize
 
 ```bash
 make clean             # Remove all build artifacts
-make install           # Reinstall dependencies
+just install           # Reinstall dependencies
 make build             # Rebuild
 ```
 

@@ -60,13 +60,13 @@
 
 | Command | Description |
 |---------|-------------|
-| `make install` | Install all deps (`pnpm install` + `cargo fetch`) |
+| `just install` | Install all deps (`pnpm install` + `cargo fetch`) |
 | `make install-tauri-cli` | Install/update Tauri CLI |
 | `make lint` | Run all linters (typecheck + clippy) |
 | `make format` | Format Rust code (`cargo fmt`) |
 | `make clean` | Remove all build artifacts (`dist/`, `target/`, `node_modules/`) |
 | `make clean-build` | Clean everything + reinstall + rebuild |
-| `make screenshots` | Capture 6 polished JPG screenshots → Landing-Fusion `related/formints/` |
+| `make screenshots` | Capture 6 polished JPG screenshots → Precis Landing `related/formints/` |
 | `make info` | Show installed tool versions |
 | `make port-kill` | Kill any process on port 1420 |
 

@@ -1,6 +1,7 @@
 ---
 name: structa-docs
 description: "Structa Cloud documentation conventions — the monorepo-personalized documentation skill. Use for any documentation work in this repo: writing or updating docs/ pages, ADRs, runbooks, API specs, product guides, and the docs/ai/ agent-integration docs. Encodes the repo's actual docs layout, ADR format, Remarks & Notes rule, AI-generated review markers, and the requirement to keep documentation paths synchronized with the real tree and Makefile aliases."
+tags: [documentation, docs, adr, runbook, api-spec, structa-cloud]
 argument-hint: "<what to document and which product>"
 ---
 
@@ -23,7 +24,7 @@ docs/
 ├── ai/                        # agent integration docs (mcp-integration.md, prompts, agents.md)
 ├── assets/  auth/  design/  dev/  features/  guides/
 ├── plans/                     # ADR-style decisions, migration plans, case studies
-├── precis/  landing-fusion/   # product docs (backend-api.md, deployment.md, frontend.md)
+├── precis/  precis-landing/   # product docs (backend-api.md, deployment.md, frontend.md)
 ├── formints/  pos/  cypercloud/  libs/  shared/
 ├── project-structure.md  overview.md  recent-changes.md  recommendations.md
 └── changelogs/
@@ -48,11 +49,11 @@ MkDocs site.
 - When to use → prerequisites/access → step-by-step → rollback → escalation.
 - Include the actual commands from the Makefile dispatcher (`cd projects && make check WEBSITE=precis-main`, `make run-dev WEBSITE=precis-landing`, etc.).
 
-### API Docs (per product, e.g. `docs/landing-fusion/backend-api.md`)
+### API Docs (per product, e.g. `docs/precis-landing/backend-api.md`)
 - Endpoint reference with request/response examples, auth, error codes, rate limits, pagination.
 - Document the render-first/data-API contract where it exists (server-rendered HTML vs HTMX fragment vs JSON for Astro) — preserve explicit endpoint contracts and headers.
 
-### Product Guide (e.g. `docs/landing-fusion/frontend.md`)
+### Product Guide (e.g. `docs/precis-landing/frontend.md`)
 - Setup, key systems and how they connect, common tasks with walkthroughs, who to ask for what.
 
 ## 4. Format Rules (mandatory)

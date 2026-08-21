@@ -3,7 +3,7 @@
 # scripts/dev/capture-formint-screenshots.sh
 #
 # Captures the Formint POS frontend and Unfold admin dashboard screenshots
-# into Landing-Fusion's canonical related media directory for the README and product pages.
+# into Precis Landing's canonical related media directory for the README and product pages.
 #
 #   Frontend (headless Chromium, no auth):
 #     01_frontend_home        → http://127.0.0.1:4321/
@@ -91,4 +91,4 @@ for mapping in \
 done
 
 rm -rf "${CAPTURES_DIR}"
-echo "── ✓ Screenshots written to Landing-Fusion related/formints/ ──"
+echo "── ✓ Screenshots written to Precis Landing related/formints/ ──"

@@ -1,12 +1,66 @@
-# Precis LMS — Architecture Decision Record
+---
+title: Precis — Architecture Decision Record
+description: The unified Precis (LMS + landing) architecture — ADRs, data model, request lifecycle, build pipeline, and conventions for the Django + Wagtail + django-fusion + Astro stack.
+navigation:
+  title: Architecture
+  icon: i-lucide-landmark
+object:
+  type: "reference"
+  id: "docs.precis.architecture"
+attributes:
+  source_path: "precis/ARCHITECTURE.md"
+  canonical_route: "/docs/en/precis/architecture"
+  source_of_truth: "repository-markdown"
+  owner: "precis-main"
+  status: "maintained"
+tags:
+  - structa-cloud
+  - precis
+  - precis-main
+  - architecture
+  - adr
+  - django
+  - wagtail
+  - astro
+links:
+  - label: "Precis home"
+    to: "/docs/en/precis"
+    icon: "i-lucide-graduation-cap"
+  - label: "CMS / Builder profile"
+    to: "/docs/en/precis/cms-builder"
+    icon: "i-lucide-blocks"
+---
 
-> **Status:** Active (2026-08-10)
-> **Product:** Precis LMS / learning platform
+# 🏗️ Precis — Architecture Decision Record
+
+> **Status:** Active (2026-08-10) · **Updated:** 10 August 2026
+> **Product:** Precis LMS + landing (unified `precis-main`)
 > **Stack:** Django 5.2 + Wagtail 7.4 + django-fusion + Astro 5 + HTMX + Alpine.js
-> **Updated:** 10 August 2026
 > **Path:** `projects/precis/precis-main/`
 
 ---
+
+## 🧭 System at a glance
+
+```mermaid
+graph LR
+    subgraph Client
+        B[Browser]
+    end
+    subgraph Edge
+        T[Traefik] --> N[shared-proxy / Nginx]
+    end
+    subgraph Precis Stack
+        N --> A[Astro frontend<br/>precis-main-frontend :3000]
+        T --> D[Django/Wagtail backend<br/>precis-main-backend :8074]
+        D --> P[(PostgreSQL)]
+        D --> R[(Redis)]
+        D --> W[worker + scheduler]
+        A -->|data API / fragments| D
+    end
+    B --> T
+    B --> N
+```
 
 ## Context
 
@@ -23,6 +77,7 @@ pipeline for reusable UI.
   models own enrollments, progress, and certificates.
 - **Hybrid rendering.** Full Django pages for SEO, HTMX fragments for
   interactivity, Astro for the learner dashboard and marketing pages.
+  (Legacy docs that say "Next.js" are stale — the frontend is Astro.)
 - **Background processing.** Long-running tasks (video transcoding, email
   digests, course completion sync) run via `django_fusion.tasks.@task`.
 - **Skeleton loading.** Build-time skeleton manifest → Astro bridge → RUM
@@ -59,7 +114,7 @@ not through tight ORM coupling.
 
 **Decision:** Public-facing pages (catalog, blog, marketing) render
 server-side through Django/Wagtail. The learner dashboard and interactive
-course player use Next.js with API data from Django endpoints.
+course player use Astro with API data from Django endpoints.
 
 **Rendering matrix:**
 
@@ -267,7 +322,7 @@ PaymentWebhookLog
 ## Request Lifecycle
 
 ```
-Client (Browser / Next.js SPA)
+Client (Browser / Astro SPA)
   │
   ▼
 ┌─ Traefik / Docker ───────────────────────────────────────────────────┐
@@ -319,7 +374,7 @@ make build
 |:--------|:------|:----:|:--------|
 | `backend` | `precis-backend` | 8000 | Django WSGI (gunicorn) |
 | `worker` | `precis-worker` | — | Dramatiq task worker |
-| `frontend` | `precis-frontend` | 4321 | Astro development server |
+| `frontend` | `precis-main-frontend` | 3000 | Astro public shell |
 | `db` | `postgres:16` | 5432 | PostgreSQL (production) |
 | `redis` | `redis:7` | 6379 | Dramatiq broker + cache |
 
@@ -433,9 +488,17 @@ make frontend-dev       # Astro dev server
 
 ## Related
 
-- [`/docs/ARCHITECTURE.md`](/docs/ARCHITECTURE.md) — Monorepo-wide architecture
-- [`projects/precis/precis-main/backend/AGENTS.md`](/projects/precis/precis-main/backend/AGENTS.md) — Backend agent instructions
-- [`projects/precis/precis-main/README.md`](/projects/precis/precis-main/README.md) — Project README (note: stack line references Next.js; source is Astro)
-- [`/docs/ARCHITECTURE.md`](/docs/ARCHITECTURE.md) — Monorepo MCP integration (Kilo server, designer/task tools)
-- [`docs/plans/django-fusion/django-fusion-tasks-mcp-plan.md`](/docs/plans/django-fusion/django-fusion-tasks-mcp-plan.md) — Tasks & MCP plan
-- [`docs/plans/django-fusion/django-fusion-analyzer-skeleton-assets-plan.md`](/docs/plans/django-fusion/django-fusion-analyzer-skeleton-assets-plan.md) — Skeleton pipeline plan
+- [`../README.md`](README.md) — Precis product index
+- [`cms-builder.md`](cms-builder.md) — Assets-based CMS / Builder profile (under development)
+- [`../ARCHITECTURE.md`](../ARCHITECTURE.md) — Monorepo-wide architecture
+- [`../startup/precis.md`](../startup/precis.md) — Precis market strategy 🔒
+- [`../../projects/precis/precis-main/README.md`](../../projects/precis/precis-main/README.md) — Project README
+- [`../plans/django-fusion/`](../plans/django-fusion/) — Shared framework plans (tasks, MCP, skeleton assets)
+
+## Remarks & Notes
+
+- The frontend is **Astro**, never Next.js; older docs referencing Next.js are stale and should be corrected.
+- `precis-main` is the canonical product; `precis-lms` / `precis-landing` are legacy aliases routed to the same runtime.
+- The CTC research site shares the Precis group and django-fusion but is a separate runtime — see [`../precis-ctc/README.md`](../precis-ctc/README.md).
+
+<!-- AI-generated: review needed -->

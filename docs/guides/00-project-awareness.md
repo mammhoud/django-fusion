@@ -49,7 +49,7 @@ The repository is organized as linked objects rather than one flat application:
 ```text
 workspace
 ├── projects/                 product objects and shared project configuration
-│   ├── precis/               Precis LMS, Landing-Fusion, CTC Research
+│   ├── precis/               Precis LMS, Precis Landing, CTC Research
 │   ├── formints/             POS editions and shared POS tests
 │   ├── syntara/              AI chat/customizer runtime
 │   └── loop-crm/             CRM and social scheduling monolith
@@ -99,7 +99,7 @@ The current canonical product identities are:
 | Runtime identity | Canonical path | Compatibility aliases |
 |---|---|---|
 | `precis-main` | `projects/precis/precis-main/` | `precis-lms`, `precis-landing` dispatcher aliases where documented |
-| `precis-landing` | `projects/precis/precis-landing/` | legacy Landing-Fusion runtime copy |
+| `precis-landing` | `projects/precis/precis-landing/` | legacy Precis Landing runtime copy |
 | `precis-ctc` | `projects/precis/precis-ctc/` | `ctc`, `ctc-website`, `ctc-research.com` |
 | `syntara` | `projects/syntara/` | `cypercloud` runtime alias where required |
 | Formint editions | `projects/formints/<edition>/` | historical Formint/POS names only as documented aliases |

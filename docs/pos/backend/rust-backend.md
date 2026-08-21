@@ -16,9 +16,11 @@ Tauri 2 + Diesel + SQLite backend for the POS desktop application.
 - **Purpose:** Resolve the SQLite path (env var or platform app-data dir), run pending Diesel migrations automatically on every launch, open connections
 - **Key traits:** Auto-migration at startup means zero manual DB setup; path overridable via `DATABASE_URL` env var 🔴 migration system is core infrastructure
 
-### 4. Sidecar Process Management (`sidecar.rs`)
-- **Purpose:** Spawn, monitor, and terminate the Python/Sanic sidecar process — providing HTTP + WebSocket APIs (chat, tickets, data) alongside the Rust backend
-- **Key traits:** Auto-launched by Rust on app start; lifecycle must match Tauri plugin API (🔴 not customizable); sidecar communicates on `127.0.0.1:8765`
+### 4. Sidecar Process Management (`sidecar.rs`) — ⛔ removed
+- **Purpose (historical):** spawn, monitor, and terminate the Python/Sanic sidecar process.
+  The sidecar (Robyn/Sanic) was **removed** — Community and Standard are offline-first
+  (Rust/Diesel only); Pro and Cloud serve their APIs from Django. The `sidecar.rs`
+  module and `127.0.0.1:8765` port no longer exist in the current editions.
 
 ---
 
@@ -47,7 +49,6 @@ src-tauri/src/
 │   ├── settings.rs          # 🟢 Settings CRUD
 │   ├── analytics.rs         # 🟢 Dashboard analytics
 │   ├── roles.rs             # 🟢 RBAC roles
-│   ├── sidecar.rs           # 🔴 Sidecar lifecycle (start/stop/status)
 │   └── ...                  # (other operations)
 ├── email.rs                 # 🟢 SMTP email sending
 └── bin/
@@ -71,7 +72,6 @@ src-tauri/src/
 | `auth.rs` | Security-critical: password hashing, session validation |
 | `db/mod.rs` | Migration system, connection pooling |
 | `db/schema.rs` | Auto-generated from migrations — edit `.sql` files instead |
-| `sidecar.rs` | Process lifecycle, must match Tauri plugin API |
 | `lib.rs` | Tauri command registration, setup orchestration |
 
 ### 🟡 Delegate Pattern
@@ -110,7 +110,7 @@ open_conn(db_path: &PathBuf) -> Result<SqliteConnection, String>
 ## Tests
 
 ```bash
-cd projects/formints/src-tauri
+cd projects/formints/formint-community/src-tauri   # or formint-standard/src-tauri
 cargo test                          # Run all Rust tests
 cargo test auth                     # Run only auth tests
 cargo test -- --test-threads=1      # Serial (env var tests)

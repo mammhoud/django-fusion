@@ -1,5 +1,11 @@
 # 🐍 Django ORM — Sidecar Integration
 
+> **⛔ ARCHIVED (21 Aug 2026):** this file documents the retired Robyn/Sanic
+> sidecar, which was removed from every current edition. See
+> [README.md](README.md) for the canonical sources.
+>
+> ---
+
 > How the POS sidecar uses Django ORM to mirror the Rust/SQLite database, enabling Django Admin, fixtures, and complex queries.
 
 ---

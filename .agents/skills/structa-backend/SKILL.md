@@ -1,6 +1,7 @@
 ---
 name: structa-backend
 description: "Structa Cloud backend conventions — Django + Wagtail + django-fusion. Use for any backend work in this monorepo: models, services, viewsets/PageHandlers, HTMX fragments, {% comp %} components, routing, migrations, and management commands. Encodes the real package architecture (src/django_fusion/comp, routes, fragments, core), product app layout (models/services/handlers/api), canonical django_fusion.* imports (no re-export shims), and the repo's validation workflow (make check / manage.py check / pytest)."
+tags: [django, wagtail, django-fusion, backend, htmx, python, structa-cloud]
 argument-hint: "<backend feature or area>"
 ---
 
@@ -61,7 +62,7 @@ already provide it.
 - BEM-style classes for reusable UI; never use IDs for styling.
 
 ### Dual rendering
-Landing-Fusion and Formint use a render-first/data-API contract: a request may
+Precis Landing and Formint use a render-first/data-API contract: a request may
 receive complete server-rendered HTML, an HTMX fragment, or JSON for an Astro
 client. Preserve explicit endpoint contracts and headers. Do NOT replace a
 server-rendered fragment with a client-only mock.

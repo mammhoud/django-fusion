@@ -149,7 +149,7 @@
 - **Merged edition** — `pos-full` + `pos-solo` consolidated into `formint-pos/` (Astro frontend + Django Ninja backend + Robyn server + Unfold admin); legacy React UIs archived under `formint-pos/legacy-react/`
 - **Robyn server** — Merged from the former Full/Solo servers (streams, ws_client, sync signals, services, middleware, routes) into `formint-pos/server/`
 - **Server test fixes** — `bolt_api` collection crash fixed (removed stale `namespace` kwarg); `test_bolt_api` gracefully skips when `AsyncTestClient` is unavailable
-- **Screenshots** — Unfold admin screenshots consolidated into Landing-Fusion `related/formints/`
+- **Screenshots** — Unfold admin screenshots consolidated into Precis Landing `related/formints/`
 
 ### Added (formint-cloud — cloud backups + monitoring)
 - **Automatic backups** — `BackupRun` model + `manage.py backup_db` management command (online SQLite backup with `sqlite3.Connection.backup()`, timestamped filenames, per-run status tracking)
@@ -186,7 +186,7 @@
 ## v1.2.0 — 20 July 2026
 
 ### Added
-- **Server v2 Documentation** — Comprehensive [`docs/SERVER_V2.md`](docs/SERVER_V2.md) with full architecture, 70+ API catalog, WebSocket streams, Django signals, and cloud bridge plan
+- **Server v2 Documentation** — Comprehensive [`docs/legacy/SERVER_V2.md`](docs/legacy/SERVER_V2.md) with full architecture, 70+ API catalog, WebSocket streams, Django signals, and cloud bridge plan
 - **`docs/README.md` updated** — Modernised edition overview (Solo→Robyn, Full→Cloud Master), shared module map, and new whatʼ s new section
 - **`README.md` updated** — `SERVER_V2.md` added as top entry in documentation table
 

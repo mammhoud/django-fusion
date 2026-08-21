@@ -20,7 +20,7 @@
 | TypeScript check | `make typecheck` | `make typecheck` | `make typecheck` | — |
 | Rust check | `make cargo-check` | `make cargo-check` | `make cargo-check` | — |
 | Tests | `make test` | `make test` | `make test` | — |
-| Install deps | `make install` | `make install` | `make install` | `make install` |
+| Install deps | `just install` | `just install` | `just install` | `just install` |
 | Clean artifacts | `make clean` | `make clean` | `make clean` | `make clean` |
 | DB seed | `make seed` | `make seed` | `make seed` | — |
 | Frontend port | `:1420` | `:1420` | `:1420` | `:1420` |
@@ -147,13 +147,13 @@ make cargo-check        # Rust compilation check
 
 | Command | Description |
 |---------|-------------|
-| `make install` | Install all dependencies (pnpm + cargo fetch) |
+| `just install` | Install all dependencies (pnpm + cargo fetch) |
 | `make install-tauri-cli` | Install/update Tauri CLI |
 | `make lint` | Run all linters (`typecheck` + `cargo-clippy`) |
 | `make format` | Format Rust code (`cargo fmt`) |
 | `make clean` | Remove `dist/`, `src-tauri/target/`, `node_modules/`, `src-tauri/gen/` |
 | `make clean-build` | Clean everything, reinstall, rebuild from scratch |
-| `make screenshots` | Capture 6 polished screenshots into Landing-Fusion `related/formints/` |
+| `make screenshots` | Capture 6 polished screenshots into Precis Landing `related/formints/` |
 | `make info` | Show installed tool versions (pnpm, node, rustc, cargo, tauri, sqlite) |
 | `make port-kill` | Kill any process on port 1420 (prevents port conflict) |
 
@@ -174,7 +174,7 @@ make cargo-check        # Rust compilation check
 
 | Command | Description |
 |---------|-------------|
-| `make install` | Backend .venv + deps + migrate + frontend npm install |
+| `just install` | Backend .venv + deps + migrate + frontend npm install |
 | `make seed` | Migrate + idempotent superuser (admin@formint.local) |
 | `make env` | Run backend + frontend in tmux (formint-be / formint-fe) |
 | `make dev-backend` | Run backend runserver `:8767` (foreground) |
@@ -196,7 +196,7 @@ make cargo-check        # Rust compilation check
 | Command | Description |
 |---------|-------------|
 | `make backend-seed` | Create/update superuser from env (idempotent) |
-| `make screenshots` | Capture Unfold admin dashboard screenshots → Landing-Fusion `related/formints/` |
+| `make screenshots` | Capture Unfold admin dashboard screenshots → Precis Landing `related/formints/` |
 
 ### Build & Maintenance
 
@@ -235,7 +235,7 @@ make cargo-check        # Rust compilation check
 
 | Command | Description |
 |---------|-------------|
-| `make install` | Install all dependencies (pnpm + cargo fetch if `src-tauri/Cargo.toml` exists) |
+| `just install` | Install all dependencies (pnpm + cargo fetch if `src-tauri/Cargo.toml` exists) |
 | `make clean` | Remove `dist/`, `node_modules/`, `src-tauri/target/`, `src-tauri/gen/` |
 | `make info` | Show installed tool versions |
 
@@ -365,4 +365,4 @@ make cargo-clippy          # Detailed linting with suggestions
 ---
 
 > See the individual edition `Makefile` for the exact commands and
-> `docs/POS_ARCHITECTURE.md` for the full architecture reference.
+> `docs/architecture/editions.md` for the per-edition architecture reference.

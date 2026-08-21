@@ -646,7 +646,7 @@ override the user's design system.
 | `docs/ai/templates-and-request-flows.md` | The translation flow (backend + frontend) the i18n section mirrors |
 | `libs/django-fusion/docs/06-forms-and-tables.md` + `COMPONENT_FORMS_TABLES.md` | Framework forms/tables reference for §15 |
 | `libs/django-fusion/docs/10-wagtail-integration.md` + `18-render-contract.md` | Wagtail integration + render contract for Phases 1–3 |
-| `docs/plans/landing-fusion.md` | Landing plan pattern (checks-before-blocks, plan dir conventions) |
+| `docs/plans/precis-landing.md` | Landing plan pattern (checks-before-blocks, plan dir conventions) |
 | `docs/plans/loop-crm/merge-plan.md` | The Loop-CRM merge roadmap this plan extends (license header, adapters, AI hub) |
 | `docs/plans/loop-crm/formint-integration-finance-workflows.md` | Formint↔Loop-CRM finance + workflow expansion — related surface |
 | `docs/plans/editions/08-tenant-schemas.md` | django-tenants migration pattern reference (§6) |

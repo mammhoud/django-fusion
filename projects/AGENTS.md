@@ -11,7 +11,7 @@ projects/
 ├── precis/             # Product grouping: unified Precis, landing, and research sites
 │   ├── precis-main/    # Unified Precis product (merged precis-landing + precis-lms)
 │   ├── precis-ctc/     # Medical research center site
-│   └── precis-landing/ # Legacy Landing-Fusion copy (kept; dispatcher routes to precis-main)
+│   └── precis-landing/ # Legacy Precis Landing copy (kept; dispatcher routes to precis-main)
 ├── syntara/            # Cypercloud AI chat/customizer runtime
 ├── formints/           # POS editions and their shared test suites
 ├── loop-crm/           # Unified CRM + social scheduling (Twenty + Postiz merge)
@@ -84,7 +84,7 @@ Avoid importing one product's settings into another product.
 - Precis: `precis/precis-main/backend/AGENTS.md`; backend app code is under
   `precis/precis-main/backend/apps/`, with product assets beside `backend/` and the Astro
   frontend under `precis/precis-main/frontend/`.
-- Landing-Fusion: `precis/precis-landing/AGENTS.md`; keep the Astro frontend and
+- Precis Landing: `precis/precis-landing/AGENTS.md`; keep the Astro frontend and
   Django/Wagtail backend contracts synchronized.
 - CTC Research: `precis/precis-ctc/AGENTS.md`; standalone medical research
   center site, separated from the Precis LMS runtime.

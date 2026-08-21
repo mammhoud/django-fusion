@@ -61,7 +61,7 @@ Tauri commands backed by Diesel.
 | [Calculations](docs/calculations.md) | All formulas: sales, tax, delivery, payroll, loyalty |
 | [Roles & Permissions](docs/roles-permissions.md) | Permission flags, default roles, UI hiding rules |
 | [Customization](docs/customization.md) | Theme variants, product colors, receipts, i18n, presets |
-| [Shared Architecture](../../docs/POS_ARCHITECTURE.md) | Cross-edition architecture & API documentation |
+| [Editions & features](../../docs/architecture/editions.md) | Cross-edition architecture & API documentation |
 
 ## Quick Start
 

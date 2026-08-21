@@ -30,7 +30,7 @@ npm install
 ## تشغيل فحوصات الوثائق
 
 ```bash
-cd docs/docus
+cd docs
 npm install
 npm run build
 ```

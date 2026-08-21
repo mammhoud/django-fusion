@@ -52,7 +52,7 @@ Astro frontend (:4323) ──┬── /organizations /branches /leads /deals �
 ## Quick start
 
 ```bash
-make install        # backend venv + frontend deps
+just install        # backend venv + frontend deps
 make migrate        # apply Django migrations
 make dev-backend    # Django :8082 (Unfold admin + bolt analytics)
 make dev-api        # Django :8767 (server-compatible API surface)

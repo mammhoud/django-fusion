@@ -14,7 +14,7 @@ All engineering plans now belong under [`docs/plans/`](plans/README.md), organiz
 
 - `plans/repository/` — cross-repository architecture, cleanup, and delivery work;
 - `plans/editions/` — Formint edition execution chain;
-- `plans/precis-landing/` — Landing site architecture and content work;
+- `plans/precis-landing.md` — Landing site architecture and content work;
 - `plans/django-fusion/` — shared framework work (tasks, MCP, sync, POS enhancements).
 
 Do not create new plans under `docs/dev/plans/`, `projects/*/docs/`, or `docs/plans/migrated/`.
@@ -23,7 +23,7 @@ Do not create new plans under `docs/dev/plans/`, `projects/*/docs/`, or `docs/pl
 
 1. **Formint edition chain** — continue from the canonical [editions index](plans/editions/README.md).
 2. **Formint Cloud (`cloud` edition)** — continue Channels/WebSocket sync + Bolt dashboard work.
-3. **Landing-Fusion** (`projects/precis/precis-landing/`) — keep the content rendering contract covered by focused tests before adding new blocks.
+3. **Precis Landing** (`projects/precis/precis-landing/`) — keep the content rendering contract covered by focused tests before adding new blocks.
 4. **Precis LMS** (`projects/precis/precis-main/`) — close remaining frontend and deployment tasks with owned verification commands.
 
 ### 3. Treat migration and legacy material as evidence, not scope
@@ -41,7 +41,7 @@ Completed phase reports are deleted once superseded and must not be presented as
 | Priority | Action | Source of truth | Verification |
 |:--:|---|---|---|
 | P0 | Formint edition extension chain — next executable task | [`plans/editions/README.md`](plans/editions/README.md) | Edition-specific tests |
-| P0 | Landing-Fusion content work — preserve rendering contract | [`plans/precis-landing/`](plans/precis-landing/) | Backend tests + `npm run check` |
+| P0 | Precis Landing content work — preserve rendering contract | [`plans/precis-landing.md`](plans/precis-landing.md) | Backend tests + `npm run check` |
 | P1 | Precis LMS — close frontend/deployment gates | `projects/precis/precis-main/backend/` | Site checks, tests, builds |
 | P1 | Repository cleanup — don't delete compatibility sources prematurely | [`plans/repository/migration-cleanup-master.md`](plans/repository/migration-cleanup-master.md) | Reference scan |
 | P2 | django-fusion tasks & MCP — unified bg task API, Celery removal, MCP tooling | [`plans/django-fusion/django-fusion-tasks-mcp-plan.md`](plans/django-fusion/django-fusion-tasks-mcp-plan.md) | `uv run pytest libs/django-fusion/` |

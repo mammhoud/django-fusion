@@ -104,7 +104,7 @@ rendered fragments and lean HTMX data-only responses (see `formint/fusion.py`).
 
 ```bash
 cd projects/formints/formint-pro
-make install   # backend .venv + deps + migrate + frontend npm install
+just install   # backend .venv + deps + migrate + frontend npm install
 make seed      # migrate + superuser + demo data (admin@formint.local / admin123)
 make seed-force  # wipe + re-seed all demo data
 #   Demo data: 9 products · 5 customers · 3 loyalty tiers · 12 sales ·
@@ -159,7 +159,7 @@ Validation: `make check` (django check + astro check), `make test`.
 
 ```bash
 cd projects/formints/formint-pro/frontend
-make install   # npm install
+just install   # npm install
 make dev       # astro dev :4321
 ```
 

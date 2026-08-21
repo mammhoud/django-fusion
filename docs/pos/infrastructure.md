@@ -1,134 +1,40 @@
 # 🔧 POS — Infrastructure
 
-> Infrastructure specifics for the POS (Point of Sale) Tauri desktop application.
+> **Archived (21 Aug 2026).** This page previously described the retired
+> `Minimal` / `Solo` / `Full` editions and their **Robyn + Django-ORM sidecar**
+> infrastructure (`pos-solo/sidecar`, `pos-full/sidecar`, ports 8765/8766,
+> `projects/formints/shared/`). The sidecar was removed — Robyn no longer
+> exists in any current edition.
 
----
+## Current infrastructure (canonical)
 
-## Editions & Infrastructure
+| Edition | Runtime | Ports | Database |
+|---------|---------|-------|----------|
+| **Community** (`formint-community/`) | Tauri 2 + Rust/Diesel, offline-first, no server | 1420 (Vite) | SQLite (`restaurant.db`) |
+| **Standard** (`formint-standard/`) | Tauri 2 + Rust/Diesel, offline-first | 1430 (Vite) | SQLite |
+| **Pro** (`formint-pro/`) | Django (daphne ASGI) + django-fusion + Unfold | 8767 (API) / 4321 (frontend) | SQLite / Postgres |
+| **Cloud** (`formint-cloud/`) | Django (daphne + Channels), hosted master | 8767 (API) / 8082 (admin) / 4323 (frontend) | `formint_cloud.db` / Postgres |
+| **pos-client** (`formint-client/`) | Vue 3 + Tauri + Django shop backend | 1433 (Vite) | SQLite |
 
-| Edition | Backend | Frontend | Database |
-|---------|---------|----------|----------|
-| **Minimal** | Embedded Rust | React 19 (Tauri) | SQLite (file) |
-| **Solo** | Robyn + Django ORM (sidecar) | React 19 (Tauri) | SQLite (file, solo_portal.db) |
-| **Full** | Robyn + Django ORM + posapp (sidecar) | React 19 (Tauri) | SQLite (file, full_portal.db) |
+## Canonical sources
 
----
+| Topic | Canonical doc |
+|-------|---------------|
+| Edition chain + data model + E2E matrix | [`docs/plans/editions/README.md`](../plans/editions/README.md) |
+| Feature/capability comparison + buyer guide | [`docs/plans/editions/comparison.md`](../plans/editions/comparison.md) |
+| Cloud edition (hosted master, sync, backups) | [`docs/plans/editions/04-cloud.md`](../plans/editions/04-cloud.md) |
+| Pro ↔ Cloud sync contract | [`projects/formints/docs/architecture/pro-cloud-sync-contract.md`](../../projects/formints/docs/architecture/pro-cloud-sync-contract.md) |
+| Setup & build per edition | [`projects/formints/docs/GETTING_STARTED.md`](../../projects/formints/docs/GETTING_STARTED.md) |
 
-## Sidecar Architecture
-
-Both editions use **Robyn** (Rust-powered Python async framework) with **Django ORM**.
-
-### Solo (Standalone Node)
-
-```
-┌────────────────────────────────────────────┐
-│     Tauri App / REST Client                 │
-│     (port 1420 for dev)                     │
-└──────────────────┬─────────────────────────┘
-                   │ HTTP REST / WebSocket
-┌──────────────────▼─────────────────────────┐
-│  Robyn Server (port 8765)                   │
-│  ┌─────────────────────────────────────┐   │
-│  │  Django ORM (solo_portal.db)        │   │
-│  │  models/pos.py, menu.py, node.py,   │   │
-│  │  models/config.py, sync.py          │   │
-│  └─────────────────────────────────────┘   │
-│  • 60+ REST endpoints                      │
-│  • WebSocket /ws/config                    │
-│  • Cloud sync client → Full master         │
-└────────────────────────────────────────────┘
-```
-
-### Full (Cloud Master)
-
-```
-┌──────────────────┐     ┌──────────────────┐
-│  Tauri App #1    │     │  Tauri App #2    │
-└────────┬─────────┘     └────────┬─────────┘
-         │                        │
-         └──────────┬─────────────┘
-                    │ HTTP REST
-┌───────────────────▼─────────────────────────┐
-│  Robyn Server (port 8766)                   │
-│  ┌─────────────────────────────────────┐   │
-│  │  Django ORM (full_portal.db)        │   │
-│  │  models/node.py, config.py, sync.py │   │
-│  │  posapp/models.py (Rust-backed)     │   │
-│  └─────────────────────────────────────┘   │
-│  • 70+ REST endpoints                      │
-│  • WebSocket /ws/nodes + /ws/config        │
-│  • Approval + product sync engine          │
-│  • django-bolt API (option, 60k+ RPS)      │
-└────────────────────────────────────────────┘
-
-                    │ accepts pushes from
-┌───────────────────▼─────────────────────────┐
-│  POS Solo / Minimal Nodes                   │
-│  (port 8765)                                │
-└────────────────────────────────────────────┘
-```
-
-### Shared Module Infrastructure
-
-```
-projects/formints/shared/        (reusable across both editions)
-├── signals/                Django signal definitions
-├── models/                 Shared models (audit, approval, token)
-├── handlers/               @receiver signal handlers
-├── services/               ProductSyncEngine
-├── middleware/              Auth middleware (bearer token + API key)
-├── api/                    CRUD helpers (_ser, _register_crud)
-├── portal_viewsets.py      Django Portal viewsets
-└── portal_urls.py          Portal URL patterns
-```
-
----
-
-## Network Requirements
-
-| Edition | Network |
-|---------|---------|
-| Minimal | None (embedded) |
-| Solo | None (localhost sidecar) |
-| Full | LAN/WiFi for multi-terminal |
-
-### Port Assignments
+## Port reference (current)
 
 | Service | Port | Protocol |
 |---------|------|----------|
-| Solo Robyn API | `8765` | HTTP REST + WebSocket |
-| Full Robyn API | `8766` | HTTP REST + WebSocket |
-| Solo Django Portal | `8080` | HTTP (Django) |
-| Full Django Portal | `8082` | HTTP (Django) |
-| Full Bolt API | `8082/bolt` | HTTP (django-bolt) |
-| Tauri Dev Server | `1420` | HTTP (Vite) |
-| Cloud CRM (legacy) | `8767` | HTTP (planned) |
-
----
-
-## Build
-
-```bash
-# Solo sidecar
-cd projects/formints/pos-solo/sidecar
-pip install -r requirements.txt
-python3 server.py --port 8765
-DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v  # 155 tests
-
-# Full sidecar
-cd projects/formints/pos-full/sidecar
-pip install -r requirements.txt
-python3 server.py --port 8766
-DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v  # 63 tests
-```
-
----
-
-## Related
-
-| Topic | Path |
-|-------|------|
-| POS editions | [`editions.md`](editions.md) |
-| Rust backend | [`rust-backend.md`](backend/rust-backend.md) |
-| TypeScript frontend | [`typescript-frontend.md`](frontend/typescript-frontend.md) |
-| Sidecar API | [`sidecar-readme.md`](sidecar/README.md) |
+| Community Vite dev | `1420` | HTTP (Vite) |
+| Standard Vite dev | `1430` | HTTP (Vite) |
+| Pro Django API | `8767` | HTTP + WebSocket (daphne) |
+| Pro Astro frontend | `4321` | HTTP |
+| Cloud Django admin | `8082` | HTTP |
+| Cloud Django API | `8767` | HTTP + WebSocket (Channels) |
+| Cloud Astro frontend | `4323` | HTTP |
+| pos-client Vite dev | `1433` | HTTP |

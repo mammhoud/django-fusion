@@ -81,13 +81,42 @@ links:
 | Marketing lead (SMB) | Runs campaigns + landing pages | No unified lead source | Launching a new campaign | $50–150/mo |
 | Agency (growth) | Manages client pipelines + funnels | Repeatable stack for clients | New client acquisition | White-label fees |
 
-## 6. Research Needed
+## 6. Competitive Landscape
+
+> Names are public-market facts; size/positioning claims carry confidence tags.
+
+### 6.1 Competitor map
+
+| Competitor | Category | Target | Strengths | Our edge / gap |
+|-----------|----------|--------|-----------|----------------|
+| HubSpot | All-in-one CRM + marketing | SMB → mid-market | Brand, ecosystem, marketing automation | Expensive per-seat tiers, vendor-hosted, data lock |
+| Pipedrive | Sales pipeline CRM | Small sales teams | Pipeline UX, simplicity | Sales-only — no marketing automation/landing |
+| Zoho CRM | Suite CRM | SMB | Breadth (whole Zoho suite), price | Suite sprawl, clunkier UX |
+| Twenty (OSS) | Open-source CRM | Developers/SMB | Modern OSS CRM, self-host | Sales-focused; we add marketing automation on the same data model |
+| Postiz (OSS) | Social publishing/scheduling | Marketers | Social scheduling breadth | Scheduling-only; we unify it with pipeline + landing |
+| HighLevel | Agency CRM + funnels | Agencies | Funnels, agency white-label | Heavier, US-centric, vendor lock |
+| Salesforce (SMB SKUs) | Enterprise CRM | Mid-large | Features, ecosystem | Overkill pricing/ops for SMB |
+
+### 6.2 Positioning vs. alternatives
+
+| Dimension | Us | Direct competitors | Indirect substitutes |
+|-----------|----|--------------------|---------------------|
+| Deployment | Self-hosted Django/Wagtail | SaaS (HubSpot, Pipedrive, Zoho) | Sheets + Mailchimp + calendar |
+| Data model | One model powers sales + marketing + landing | Two products, sync breaks | Manual sync |
+| Price posture | Freemium seats → paid automation tier | Per-seat SaaS | Free/spreadsheets |
+| Differentiator | Twenty + Postiz lineage, Wagtail landing pages, self-host | Single-layer CRMs or single-layer schedulers | Status quo |
+
+> **Gaps to attack (🟡):** the “two subscriptions → one” pitch against HubSpot/Pipedrive+Mailchimp stacks, self-hosting for data-sensitive SMBs, and EN/AR localization for MENA/GCC buyers.
+
+## 7. Research Needed
 
 - [ ] Validate the "two tools → one" value prop with 10 SMB interviews (pricing anchors).
-- [ ] Competitive matrix: HubSpot, Pipedrive, Zoho, Twenty OSS — feature gaps and migration pain points.
+- [ ] Feature-gap matrix vs HubSpot, Pipedrive, Zoho, Twenty OSS, Postiz — migration pain points.
 - [ ] Measure PLG funnel (signup → paid) once telemetry ships.
 - [ ] Confirm MENA/GCC CRM localization demand (Arabic RTL, VAT, integrations).
 - [ ] Define marketing automation scope: email vs social publishing vs landing pages — what ships first?
+
+> **Citation status:** competitor names are public-market facts. Market-size figures are directional (🟡/🔴) until verified against a named public report.
 
 ## Remarks & Notes
 

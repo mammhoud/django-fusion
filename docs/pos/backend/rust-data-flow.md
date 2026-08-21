@@ -1,9 +1,11 @@
 # 🦀 Rust — Data Flow
 
-> **Related Names:** `data flow`, `architecture`, `SQLite`, `Tauri invoke`, `sidecar`, `React`, `HTTP`, `WebSocket`, `IPC`, `read-only`
+> **Related Names:** `data flow`, `architecture`, `SQLite`, `Tauri invoke`, `React`, `IPC`, `read-only`
 > **Tags:** #rust #data-flow #architecture #cross-layer
 
-How data moves between Rust, SQLite, the Python sidecar, and the React frontend in POS.
+How data moves between Rust, SQLite, and the React frontend in POS
+(Community / Standard editions — offline-first, no sidecar). Pro and Cloud
+serve their APIs from Django; see [editions](../editions.md).
 
 ---
 
@@ -23,33 +25,30 @@ How data moves between Rust, SQLite, the Python sidecar, and the React frontend 
 │  │  Rust command returns JSON ──────┼───►│  operations/*.rs            ││
 │  │                                  │    │    │ open_conn(&db_path)     ││
 │  │                                  │    │    ▼                        ││
-│  │  src/api/*.ts                    │    │  Diesel ORM ────────┐       ││
-│  │    │ sidecar.get/post()          │    │                     │       ││
-│  │    ▼                             │    │    ┌────────────────▼──────┐ ││
-│  │  HTTP/WS to 127.0.0.1:8765 ─────┼────┼───►│  SQLite (restaurant.db) │ ││
-│  └──────────────────────────────────┘    │    │  Read/Write via Diesel  │ ││
-│                                          │    └────────┬───────────────┘ ││
-│                                          │             │ read-only        ││
-│  ┌──────────────────────────────────┐    │    ┌────────▼───────────────┐ ││
-│  │    Python Sidecar (Sanic)        │    │    │  Sidecar SQLite access  │ ││
-│  │    projects/formints/sidecar/server.py      │    │    │  file:path?mode=ro      │ ││
-│  │                                  │    │    └────────────────────────┘ ││
-│  │  HTTP Routes                     │    │                               ││
-│  │    GET  /api/sales               │    │    ┌─────────────────────────┐││
-│  │    GET  /api/products            │    │    │  Migration System        │││
-│  │    GET  /api/settings            │    │    │  embed_migrations!()     │││
-│  │    GET  /invoice/render/:id      │    │    │  run_pending_migrations()│││
-│  │  WebSocket                       │    │    └─────────────────────────┘││
-│  │    WS   /ws/chat/:room           │    │                               ││
-│  │                                  │    │    ┌─────────────────────────┐││
-│  │  JSON File Storage               │    │    │  Seed Binary             │││
-│  │    data/chat_*.json              │    │    │  bin/seed.rs              │││
-│  │    data/tickets_*.json           │    │    │  PRESET=all|base|gaming   │││
-│  └──────────────────────────────────┘    │    │  |coffee                  │││
+│  │                                  │    │  Diesel ORM ────────┐       ││
+│  │                                  │    │                     │       ││
+│  │                                  │    │    ┌────────────────▼──────┐ ││
+│  │                                  │    └───►│  SQLite (restaurant.db) │ ││
+│  │                                  │    │    │  Read/Write via Diesel  │ ││
+│  └──────────────────────────────────┘    │    └────────────────────────┘ ││
+│                                          │    ┌─────────────────────────┐││
+│                                          │    │  Migration System        │││
+│                                          │    │  embed_migrations!()     │││
+│                                          │    │  run_pending_migrations()│││
+│                                          │    └─────────────────────────┘││
+│                                          │    ┌─────────────────────────┐││
+│                                          │    │  Seed Binary             │││
+│                                          │    │  bin/seed.rs              │││
+│                                          │    │  PRESET=all|base|gaming   │││
+│                                          │    │  |coffee                  │││
 │                                          │    └─────────────────────────┘││
 │                                          └─────────────────────────────┘│
 └─────────────────────────────────────────────────────────────────────────┘
 ```
+
+> **⛔ Sidecar paths removed:** the former Python/Sanic sidecar (`sidecar/server.py`,
+> `127.0.0.1:8765`, JSON-file chat/tickets) no longer exists. Community/Standard
+> do all data access through Tauri `invoke()` → Rust/Diesel; Pro/Cloud use Django.
 
 ---
 
@@ -68,27 +67,17 @@ React page
 
 > 🔴 **Not customizable:** This is the core Tauri IPC path. All CRUD operations use this pattern.
 
-### Path 2: React ↔ Sidecar (HTTP/WS)
+### Path 2: React ↔ Sidecar (HTTP/WS) — ⛔ removed
 
 ```
 React component
-  └── sidecar.get('/api/sales')
+  └── sidecar.get('/api/sales')      # no longer exists
        └── HTTP GET 127.0.0.1:8765/api/sales
-            └── Sanic handler → SQLite read-only → JSON response
 ```
 
-> 💡 **Tip:** The sidecar only READS from SQLite (`?mode=ro`). All writes go through Rust via Tauri invoke.
-
-### Path 3: Sidecar ↔ JSON Files (Chat/Tickets)
-
-```
-ChatSupport.tsx
-  └── createChatWs({ room: 'support' })
-       └── WebSocket 127.0.0.1:8765/ws/chat/support
-            └── Sanic handler → read/write data/chat_support.json
-```
-
-> 🟢 **Customizable:** Chat and ticket data is stored in JSON files. You can replace with a real database.
+> The sidecar paths are historical. In current editions every read and write
+> goes through `invoke()` → Rust/Diesel (Community/Standard) or the Django API
+> (Pro/Cloud).
 
 ---
 
@@ -96,13 +85,10 @@ ChatSupport.tsx
 
 | Data Category | Write Path | Read Path |
 |--------------|------------|-----------|
-| Products | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke OR Sidecar GET /api/products |
-| Sales | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke OR Sidecar GET /api/sales |
-| Inventory | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke only |
-| Settings | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke OR Sidecar GET /api/settings |
-| Chat messages | WebSocket → Sidecar → JSON file | WebSocket OR Sidecar GET /chat/:room |
-| Support tickets | Sidecar POST /api/support/ticket | Sidecar GET /api/support/tickets |
-| Invoice render | — | Sidecar GET /invoice/render/:id (reads SQLite) |
+| Products | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke |
+| Sales | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke |
+| Inventory | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke |
+| Settings | Tauri invoke → Rust → Diesel → SQLite | Tauri invoke |
 
 ---
 
@@ -142,19 +128,12 @@ const products = await invoke<Product[]>('get_products');
 const sale = await invoke<Sale>('add_sale', { newSale, items });
 ```
 
-### Sidecar HTTP
+### Pro/Cloud HTTP (Django)
 
-```typescript
-import { sidecar, data } from '../api';
-
-// Health check before making calls
-const ok = await sidecar.healthCheck();
-
-// Typed responses
-const sales = await data.listSales();
-const products = await data.listProducts();
-const invoiceUrl = data.getInvoiceUrl(42, { type: 'commercial', design: 'modern' });
-```
+Pro and Cloud serve their API from Django (daphne ASGI); the frontend uses
+`@formints/client` or the fusion render-mode contract. See
+[Pro README](../../projects/formints/formint-pro/README.md) and
+[Cloud README](../../projects/formints/formint-cloud/README.md).
 
 ---
 
@@ -167,13 +146,8 @@ const invoiceUrl = data.getInvoiceUrl(42, { type: 'commercial', design: 'modern'
      ├── check_auth_required(&db_path) → determines auth mode
      └── ensure_superuser_exists(&db_path) → creates superuser from env
 
-2. Sidecar spawns (if configured)
-     └── start_sidecar(app) → python server.py --db <path> --port 8765
-
-3. React loads
-     ├── App.tsx → Auth gate (login screen or Home)
-     ├── sidecar.healthCheck() → verify sidecar running
-     └── Pages invoke Rust commands as needed
+2. React loads
+     └── App.tsx → Auth gate (login screen or Home) → Pages invoke Rust commands
 ```
 
 ---
@@ -184,18 +158,15 @@ const invoiceUrl = data.getInvoiceUrl(42, { type: 'commercial', design: 'modern'
 | What | How |
 |------|-----|
 | Add a Tauri command | Create ops function → register in lib.rs → invoke from React |
-| Add sidecar endpoint | Add route in server.py → add client in src/api/ |
-| Sidecar data storage | Replace JSON files with database |
-| Read pattern | Use sidecar for read-heavy pages, Tauri for writes |
+| Add a Django endpoint (Pro/Cloud) | Add a service/route in the edition's backend → frontend type |
+| Read pattern | Tauri invoke (Community/Standard) or Django API (Pro/Cloud) |
 
 ### 🔴 Not Customizable
 | What | Why not |
 |------|---------|
 | Tauri IPC protocol | Must use `invoke()` — the bridge between JS and Rust |
-| Sidecar read-only SQLite | `?mode=ro` prevents write conflicts with Rust |
 | Command naming | Must match between lib.rs and React invoke() calls |
-| Startup order | Rust → Sidecar → React — changing breaks initialization |
 
 ---
 
-→ [Back to Rust docs](README.md) | [Database Layer](../backend/rust-database.md) | [Sidecar Docs](../sidecar/README.md)
+→ [Back to Rust docs](README.md) | [Database Layer](../backend/rust-database.md) | [Editions](../editions.md)

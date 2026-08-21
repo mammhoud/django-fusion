@@ -24,6 +24,7 @@ The canonical component system and routing framework. Features:
 - Health checks (`/health/`)
 
 📖 Full docs: [`libs/django-fusion/README.md`](../../../libs/django-fusion/README.md)
+📖 Language contract: [`django-fusion-language.md`](django-fusion-language.md)
 
 ---
 
@@ -47,7 +48,7 @@ High-performance Rust-backed API framework. 60k+ RPS throughput.
 
 | Topic | Link |
 |-------|------|
-| Landing Fusion | [`../precis/precis-landing/README.md`](../precis/precis-landing/README.md) |
+| Precis Landing | [`../precis/precis-landing/README.md`](../precis/precis-landing/README.md) |
 | Precis LMS | [`../precis/README.md`](../precis/README.md) |
 | Formints POS | [`../pos/README.md`](../pos/README.md) |
 | Infrastructure | [`../../infrastructure/`](../../infrastructure/) |

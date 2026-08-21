@@ -89,5 +89,5 @@ DJANGO_SETTINGS_MODULE='' python3 -m pytest      # Run tests
 ## Related Docs
 
 - [Architecture](ARCHITECTURE.md)
-- [Server v2 Reference](../../docs/SERVER_V2.md)
+- [Server v2 Reference (archived)](../../docs/legacy/SERVER_V2.md)
 - [POS Editons Overview](../README.md)

@@ -1,5 +1,5 @@
 /**
- * Landing-Fusion Webpack Workspace (for django-fusion webpack)
+ * Precis Landing Webpack Workspace (for django-fusion webpack)
  *
  * ⚠️  This is a WORKSPACE CONFIG consumed by libs/django-fusion/webpack.config.js
  *     via FUSION_WEBPACK_WORKSPACE_PATH. It only defines django-fusion component
@@ -58,7 +58,7 @@ module.exports = {
   /** Workspace metadata */
   metadata: {
     name: "landing",
-    label: "Landing-Fusion Workspace",
+    label: "Precis Landing Workspace",
     description: "Asset bundle for the precis-landing Astro + Django/Wagtail site.",
     version: "1.0.0",
     project: "projects/precis/precis-landing/",

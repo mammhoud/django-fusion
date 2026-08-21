@@ -74,10 +74,34 @@ links:
 |---------|-------------|------|----------------|--------------------|
 | ... | ... | ... | ... | ... |
 
-## 6. Research Needed
+## 6. Competitive Landscape
+
+> Who else plays in this market, how we compare, and the wedge we defend.
+> Names are public-market facts; size/positioning claims carry confidence tags.
+
+### 6.1 Competitor map
+
+| Competitor | Category | Target | Strengths | Our edge / gap |
+|-----------|----------|--------|-----------|----------------|
+| ... | ... | ... | ... | ... |
+
+### 6.2 Positioning vs. alternatives
+
+| Dimension | Us | Direct competitors | Indirect substitutes |
+|-----------|----|--------------------|---------------------|
+| Deployment | Self-hosted (one Compose stack) | SaaS multi-tenant | Spreadsheets/status quo |
+| Data ownership | Customer DB | Vendor-hosted | None |
+| Price posture | License + services | Per-seat SaaS | Free/status quo |
+| Differentiator | Shared django-fusion foundation across products | Single-product vendors | Manual workflows |
+
+## 7. Research Needed
 
 - [ ] _Open question 1_ — what we need to learn, who to ask, how to validate.
 - [ ] _Open question 2_ — ...
+
+> **Citation status:** competitor names are public-market facts. Market-size
+> figures are directional (🟡/🔴) until verified against a named public report;
+> upgrade each tag to 🟢 only with a citation.
 
 ## Remarks & Notes
 

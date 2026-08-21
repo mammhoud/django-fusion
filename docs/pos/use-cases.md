@@ -1,10 +1,14 @@
 # 🎯 POS — Use Cases
 
-> Real-world scenarios and deployment patterns for the POS Tauri desktop application across all three editions.
+> **Superseded edition names.** This page uses the retired `Minimal` / `Solo` /
+> `Full` tiers. Map them to the current chain: **Minimal → Community**,
+> **Solo → Standard**, **Full → Pro/Cloud**. The scenarios below stay valid as
+> deployment patterns; the canonical buyer guide and capability matrix live in
+> [`docs/plans/editions/comparison.md`](../plans/editions/comparison.md).
 
 ---
 
-## Minimal Edition — Single Terminal POS
+## Minimal Edition (now Community) — Single Terminal POS
 
 **Best for**: Small retail shops, market stalls, pop-up stores.
 
@@ -48,8 +52,7 @@ A cafe with 2 locations, each running independently but syncing to a cloud CRM:
 - **Catalog**: ~200 products (menu items, modifiers)
 - **Sales**: 200–400 transactions/day per location
 - **Hardware**: Windows tablets at each counter
-- **Online**: Syncs sales + customers to Cloud CRM every 60 seconds
-- **Sidecar**: Embedded Python/Sanic API handles sync, Django portal for admin
+- **Online**: Syncs sales + customers to Cloud CRM every 60 seconds (Standard sync client → Cloud master)
 
 ### What Solo ADDS Over Minimal
 
@@ -62,27 +65,23 @@ A cafe with 2 locations, each running independently but syncing to a cloud CRM:
 | Discount rules | Percentage/flat/buy-X-get-Y |
 | Payment methods | Cash, card, mobile, tab |
 
-### Solo Sync Architecture
+### Solo Sync Architecture (now Standard → Cloud)
 
 ```
 POS Terminal (Tauri)
-    │ pnpm tauri (calls Rust commands)
+    │ invoke() (calls Rust commands)
     ▼
-Rust Core (lib.rs)
-    │ spawn sidecar binary
+Rust Core (lib.rs) + offline sync queue
+    │ flush pending sync
     ▼
-Sidecar API (:3000)     ──sync every 60s──▶   Cloud CRM (:8082)
-    │ HTTP REST                                  │
-    ▼                                            ▼
-Django Portal (:8000)              Products, Sales, Customers DB
-    │ Web admin UI
+Cloud master (:8082 / Django)   ← products, sales, customers
     ▼
-SQLite (solo_portal.db)
+Products, Sales, Customers DB
 ```
 
 ---
 
-## Full Edition — Multi-Terminal Enterprise
+## Full Edition (now Pro/Cloud) — Multi-Terminal Enterprise
 
 **Best for**: Supermarkets, department stores, warehouses with multiple POS stations.
 
@@ -91,9 +90,9 @@ SQLite (solo_portal.db)
 A supermarket with 10 checkout stations, warehouse management, and real-time inventory:
 - **Catalog**: 10,000+ products with variants and attributes
 - **Sales**: 2,000+ transactions/day
-- **Hardware**: 10 Windows terminals + 1 Ubuntu server
-- **Real-time**: WebSocket broadcasts inventory changes instantly
-- **Multi-terminal**: All stations share one sidecar API server
+- **Hardware**: 10 Windows terminals + 1 server
+- **Real-time**: Channels WebSocket sync (Pro multi-terminal / Cloud master)
+- **Multi-terminal**: terminals sync through the Django master
 
 ### What Full ADDS Over Solo
 
@@ -108,27 +107,26 @@ A supermarket with 10 checkout stations, warehouse management, and real-time inv
 | Role-based access | Admin, manager, cashier roles |
 | Barcode scanning | Batch scanning, inventory counts |
 
-### Full Architecture
+### Full Architecture (now Pro/Cloud)
 
 ```
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│ Terminal 1   │  │ Terminal 2   │  │ Terminal 10  │
-│ (Windows)    │  │ (Windows)    │  │ (Windows)    │
+│ Terminal 1   │  │ Terminal 2   │  │ Terminal N   │
+│ (Tauri)      │  │ (Tauri)      │  │ (Tauri)      │
 └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
        │                 │                 │
        └─────────────────┼─────────────────┘
-                         │ HTTP REST + WebSocket
+                         │ sync push + WebSocket (Channels)
               ┌──────────▼──────────┐
-              │  Sidecar API Server │
-              │  (Rust HTTP :3000)  │
-              │  WebSocket :3001    │
+              │  Django master      │
+              │  (Pro :8767 / Cloud)│
               └──────────┬──────────┘
                          │
      ┌───────────────────┼───────────────────┐
      │                   │                   │
 ┌────▼─────┐    ┌────────▼──────┐    ┌───────▼──────┐
-│ SQLite   │    │ Django ORM    │    │ Cloud CRM    │
-│ pos.db   │    │ (Django 5.1)  │    │ :8766        │
+│ SQLite   │    │ Django ORM    │    │ Cloud sync   │
+│ pos.db   │    │ (formint_cloud)│   │ queue/broker │
 └──────────┘    └───────────────┘    └──────────────┘
 ```
 
@@ -159,10 +157,12 @@ A supermarket with 10 checkout stations, warehouse management, and real-time inv
 
 | Your Business | Recommended Edition |
 |---------------|-------------------|
-| Single register, offline, <500 products | **Minimal** |
-| 1–3 registers, want cloud backup, need customer tracking | **Solo** |
-| 3+ registers, multi-location, real-time inventory, purchase orders | **Full** |
-| Gaming cafe, LAN center, token-based time billing | **Full + POS-KO** |
+| Single register, offline, <500 products | **Community** |
+| 1–3 registers, want money/tax/roles/export, need customer tracking | **Standard** |
+| 3+ registers, KDS/tables/delivery/loyalty, purchase orders | **Pro** |
+| Multi-branch chain, hosted sync + monitoring | **Cloud** |
+| Retail shop with own catalog + online storefront | **Client** |
+| Gaming cafe, LAN center, token-based time billing | **Pro (POS-KO)** |
 
 ---
 

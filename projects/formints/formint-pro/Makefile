@@ -93,7 +93,7 @@ help: ## Show all commands
 	@echo '  make release          check + test + web build + desktop bundle'
 	@echo ''
 	@echo '── Screenshots ─────────────────────────────────────────────'
-	@echo '  make screenshots      Capture frontend + admin screenshots → Landing-Fusion related/formints/'
+	@echo '  make screenshots      Capture frontend + admin screenshots → Precis Landing related/formints/'
 	@echo ''
 
 
@@ -176,10 +176,10 @@ clean: ## Remove build artifacts + db + node_modules
 	$(MAKE) -C $(FRONTEND_DIR) clean
 	@echo '✅ Formint POS cleaned'
 
-screenshots: ## Capture frontend + admin screenshots → Landing-Fusion related/formints/
+screenshots: ## Capture frontend + admin screenshots → Precis Landing related/formints/
 	@echo 'ℹ️  Re-capturing screenshots (requires: make env + make seed, chromium, selenium, imagemagick)'
 	bash ../scripts/dev/capture-formint-screenshots.sh
-	@echo '✅ Screenshots updated in Landing-Fusion related/formints/'
+	@echo '✅ Screenshots updated in Precis Landing related/formints/'
 
 # ── Backend delegation ────────────────────────────────────────────────────
 

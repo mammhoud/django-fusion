@@ -135,7 +135,7 @@ make build    # SCSS compilation and asset pipeline
 
 - Do not use old `plugins.*`, `www.*`, or `projects/precis-lms/` paths in new
   imports or files.
-- Do not move Landing-Fusion-only APIs or templates into Precis.
+- Do not move Precis Landing-only APIs or templates into Precis.
 - Do not hand-edit generated static bundles or collected static files.
 - Do not add compatibility re-exports when a canonical import already exists.
 - Do not place app-specific templates in the backend root.

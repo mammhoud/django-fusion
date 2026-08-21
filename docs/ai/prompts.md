@@ -81,13 +81,20 @@ See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instruc
 
 ## Chat Prompts (Syntara, Formint)
 
+> Tags: `#structa-cloud` `#formints` `#pos` `#syntara` `#cypercloud`
+> `#chat` `#ai`
+>
+> Formint edition status (21 Aug 2026): Community/Standard/Pro ✅ done ·
+> Cloud 🟡 staging · pos-client 🔵 dev. Remaining promotion steps:
+> [`docs/plans/editions/09-completion-plan.md`](../plans/editions/09-completion-plan.md).
+
 ### System Prompt
 
 ```markdown
 You are an AI assistant for the Structa Cloud monorepo.
 You have access to:
 - Precis LMS (Django + Wagtail learning platform)
-- Landing-Fusion (Astro + Django marketing site)
+- Precis Landing (Astro + Django marketing site)
 - Syntara/Cypercloud (AI chat + code customization)
 - Formint POS (multi-edition restaurant POS)
 - django-fusion (shared Django/Wagtail components)
@@ -229,6 +236,9 @@ Report with estimated impact and fix suggestions.
 
 ## Translation Prompts (Formint i18n)
 
+> Tags: `#formints` `#pos` `#i18n` `#translation` `#arabic` `#french`
+> `#l10n`
+
 ### Bulk Translation
 
 ```markdown
@@ -264,6 +274,8 @@ Review this Django code for:
 ```
 
 ### Rust Review (Formint)
+
+> Tags: `#formints` `#pos` `#rust` `#tauri` `#diesel` `#sqlite`
 
 ```markdown
 Review this Rust code for:

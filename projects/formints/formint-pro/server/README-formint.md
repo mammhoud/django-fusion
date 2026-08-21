@@ -67,7 +67,7 @@ Build a platform-specific executable named `formint-backend` and place it in
 
 The binary is intentionally not committed (gitignored by `src-tauri/.gitignore`).
 
-From this directory, with the `.venv` already created (`make install`):
+From this directory, with the `.venv` already created (`just install`):
 
 ```bash
 # 1. Install the build tool once (PyInstaller) — the app deps come from the venv.

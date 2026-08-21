@@ -22,7 +22,7 @@ replacement for every app template.
   `backend/apps/pages/<feature>/templates/` tree.
 - Reusable framework components — use `libs/django-fusion` or registered local
   components.
-- Templates for Landing-Fusion or another product.
+- Templates for Precis Landing or another product.
 
 ## Override process
 
