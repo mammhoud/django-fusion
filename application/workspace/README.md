@@ -8,16 +8,15 @@ terminal. It does not provision AFFiNE, FileGator, or any application database.
 
 ## Access model
 
-The shared proxy owns AFFiNE and public routing:
+The shared proxy owns public routing:
 
-- `https://space.structa.cloud/` → permanent AFFiNE
-- `https://coder.structa.cloud/` → Coder control plane
-- `https://code.structa.cloud/` → secure redirect to Coder
+- `https://space.structa.cloud/` → Coder control plane (workspace origin)
+- `https://tools.structa.cloud/space/` → AFFiNE (path-based)
 
-`blinko.structa.cloud` remains a legacy redirect to `space.structa.cloud`.
-`affine.pro` and FileGator routes are intentionally absent. DNS records must
-point public hosts to the proxy outside this repository; Traefik requests the
-Let's Encrypt certificates.
+`coder.structa.cloud`, `code.structa.cloud`, and `blinko.structa.cloud` are
+retired aliases. `affine.pro` and FileGator routes are intentionally absent.
+DNS records must point public hosts to the proxy outside this repository;
+Traefik requests the Let's Encrypt certificates.
 
 The workspace Coder apps are authenticated through Coder. No workspace service
 publishes a host port.
@@ -82,7 +81,7 @@ dashboard. AFFiNE is independent of the workspace lifecycle.
 ```bash
 docker compose \
   --env-file application/proxy/.env \
-  -f application/proxy/docker-compose.nginx.yml config -q
+  -f application/tools/docker-compose.nginx.yml config -q
 
 docker compose -f .devcontainer/docker-compose.yml config -q
 terraform fmt -check application/workspaces/workspace
@@ -120,7 +119,7 @@ The `devcontainers-cli` module always installs the devcontainer CLI, and
 the `devcontainer` parameter is enabled (off by default); it can otherwise be
 started manually from the dashboard. AFFiNE is not installed by or stopped with
 a workspace; it is a permanent service in
-`application/proxy/docker-compose.nginx.yml` using shared PostgreSQL/Redis
+`application/tools/docker-compose.nginx.yml` using shared PostgreSQL/Redis
 and proxy-owned persistent data.
 
 The Coder template disables VS Code Desktop and provides VS Code Web plus a
@@ -134,7 +133,7 @@ specified.
 |---|---|
 | PostgreSQL + Redis | `application/databases/docker-compose.yml` |
 | Coder control plane | `application/docker-compose.yml` |
-| AFFiNE, shared-proxy, and Docus | `application/proxy/docker-compose.nginx.yml` |
+| AFFiNE, shared-proxy, and Docus | `application/tools/docker-compose.nginx.yml` |
 | AFFiNE routing | `application/proxy/configs/traefik/dynamic/space.yml` |
 | Code/Coder routing | `application/proxy/configs/traefik/dynamic/code.yml` and `coder.yml` |
 | Docker networks | `common`, `traefik-net`, `warehouse-net` |

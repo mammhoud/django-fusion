@@ -6,9 +6,14 @@
 # server, which:
 #   - serves per-site static/media volumes;
 #   - proxies /docs/ and docs.structa.cloud to `docus:3000`;
-#   - proxies space.structa.cloud to `proxy-affine:3010`.
+#   - proxies tools.structa.cloud/space/ (and origin paths) to `proxy-affine:3010`.
 # Both upstreams resolve by container_name on the external `common` network, so
 # they can be started/stopped independently of the proxy.
+#
+# Moved under application/tools/ (with the nginx config at
+# application/tools/nginx/) so the tools proxy lives with the services it
+# fronts. Deploy with: make deploy-media (root) or
+# docker compose -f application/tools/docker-compose.nginx.yml up -d.
 # =============================================================================
 
 networks:
@@ -20,7 +25,7 @@ networks:
 x-media-base: &media-base
   build:
     context: ../..
-    dockerfile: application/proxy/configs/nginx/Dockerfile
+    dockerfile: application/tools/nginx/Dockerfile
   restart: unless-stopped
   networks:
     - traefik-net

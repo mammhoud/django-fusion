@@ -30,7 +30,7 @@ import sys
 import yaml
 
 PROXY_DIR = pathlib.Path(__file__).resolve().parents[1]
-DYNAMIC_DIR = PROXY_DIR / "traefik" / "dynamic"
+DYNAMIC_DIR = PROXY_DIR / "configs" / "traefik" / "dynamic"
 
 RESOLVERS = ("1.1.1.1", "8.8.8.8")
 

@@ -22,13 +22,18 @@ and AAAA records:
 structa.cloud            A      187.77.166.222          (this server, IPv4)
 structa.cloud            AAAA   2a02:4780:28:4cb8::1    (this server, IPv6 — or leave unset)
 space.structa.cloud      CNAME  structa.cloud
-coder.structa.cloud      CNAME  structa.cloud
 docs.structa.cloud       CNAME  structa.cloud
 media.structa.cloud      CNAME  structa.cloud
 ```
 
 Because the subdomains are CNAMEs, fixing the **single** apex A/AAAA record
 fixes every subdomain at once.
+
+> **Retired aliases — remove from DNS:** `coder.structa.cloud` and
+> `code.structa.cloud` no longer have Traefik routers (the workspace control
+> plane is served at `space.structa.cloud`). Delete their `CNAME` records at
+> Hostinger to stop the stale resolvers; they are not checked by
+> `check-dns-records.py` and serve no cert.
 
 ---
 
@@ -83,11 +88,11 @@ application/proxy/
 │   └── traefik/
 │       ├── dynamic.yml           # static config — certificatesResolvers
 │       └── dynamic/
-│           ├── space.yml         # space.structa.cloud / space.localhost
-│           ├── coder.yml         # coder.structa.cloud / coder.localhost
-│           ├── code.yml          # code.structa.cloud redirect alias
+│           ├── space.yml         # space.structa.cloud / space.localhost (Coder)
 │           ├── docs.yml          # docs.structa.cloud
 │           └── ...               # one file per product host
+│                               (affine.yml + dashboard.yml removed 2026-08-21
+│                                as dead: legacy alias + no-DNS dashboard)
 ├── data/
 │   └── certs/                    # local mkcert/self-signed fallback for .localhost
 ├── scripts/
@@ -124,7 +129,7 @@ challenge and stores the cert in `acme.json`.
 ## Verify the certificate is served
 
 ```bash
-for h in space.structa.cloud coder.structa.cloud docs.structa.cloud structa.cloud; do
+for h in space.structa.cloud docs.structa.cloud structa.cloud; do
   iss=$(echo | openssl s_client -connect "$h:443" -servername "$h" 2>/dev/null \
         | openssl x509 -noout -issuer 2>/dev/null | sed 's/^issuer=//')
   echo "$h -> $iss"

@@ -79,7 +79,7 @@ professional/cloud backend code into this edition.
 ```bash
 # Professional package
 cd projects/formints/formint-pro
-make install
+just install              # root Justfile: just install → just install
 make migrate
 make check
 make test
@@ -87,7 +87,7 @@ make env                 # effectful: starts backend/frontend sessions
 
 # Cloud master
 cd projects/formints/formint-cloud
-make install
+just install              # root Justfile: just install → just install
 make migrate
 make check
 make test

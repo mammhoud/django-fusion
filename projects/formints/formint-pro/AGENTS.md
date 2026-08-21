@@ -73,7 +73,7 @@ formint-pro/
 
 ```bash
 cd projects/formints/formint-pro
-make install          # Backend .venv + deps + frontend npm install + migrate
+just install          # Backend .venv + deps + frontend npm install + migrate
 make seed             # Migrate + superuser + demo data (admin@formint.local / admin123)
 make env              # Tmux: backend :8767 + frontend :4321
 make check            # Django check + astro check

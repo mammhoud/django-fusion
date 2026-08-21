@@ -8,18 +8,17 @@ not a workspace resource.
 
 ```text
 browser
-  │ https://space.structa.cloud/ → AFFiNE
+  │ https://space.structa.cloud/ → Coder control plane
   ▼
 Traefik (:80/:443, Let's Encrypt)
-  ▼
-shared-proxy Nginx
-  └─ / → proxy-affine:3010
+  └─ coder:7080
 ```
 
-The Coder workspace page separately exposes VS Code Web, a web-based File
-Browser, and the web terminal. `coder.structa.cloud` routes to the Coder control
-plane, while `code.structa.cloud` redirects to it. No workspace application
-port is published on the host.
+AFFiNE is served at `https://tools.structa.cloud/space/` (path-based split by
+the shared-proxy Nginx). The Coder workspace page separately exposes VS Code
+Web, a web-based File Browser, and the web terminal. The retired
+`coder.structa.cloud` and `code.structa.cloud` aliases are gone. No workspace
+application port is published on the host.
 
 ## Ownership boundaries
 

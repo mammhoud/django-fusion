@@ -8,20 +8,48 @@ and AFFiNE. AFFiNE is independent of Coder workspaces and uses the external
 
 | Host/path | Service |
 |---|---|
-| `space.structa.cloud/` | AFFiNE web/API/WebSocket (`proxy-affine:3010`) |
+| `space.structa.cloud/` | Coder control plane (workspace origin) |
 | `docs.structa.cloud/` | Docus |
-| `coder.structa.cloud/` | Coder control plane |
-| `code.structa.cloud/` | Secure redirect to Coder |
-| `blinko.structa.cloud` | Legacy redirect to `space.structa.cloud` |
+| `tools.structa.cloud/space/` | AFFiNE (`proxy-affine:3010`, path-based) |
 | `crm.structa.cloud/` | Loop-CRM (frontend shell + backend path fallback) |
-| `lms.structa.cloud/` | Precis LMS (`precis-lms` frontend + backend) |
+| `lms.structa.cloud/` | Precis Main compatibility host (`precis-main-frontend` + `precis-main-backend`) |
 | `ctc-research.com/` | CTC Research (`precis-ctc` frontend + backend) |
-| `structa.cloud/`, `www.structa.cloud/` | Landing-Fusion (frontend + backend path fallback) |
+| `structa.cloud/`, `www.structa.cloud/` | Precis Main public host (`precis-main-frontend` + `precis-main-backend`) |
 
-`affine.pro` and FileGator hosts have no router or certificate request. The DNS
+`coder.structa.cloud` and `code.structa.cloud` are retired aliases; the
+workspace control plane is served at `space.structa.cloud`. `affine.pro` and
+FileGator hosts have no router or certificate request. The DNS
 provider must point active public hosts at this proxy; Traefik requests public
 certificates through the `letsencrypt-http` resolver. External DNS records
 cannot be created from this repository.
+
+## Precis Main routing contract
+
+The historical `precis-landing` and `lms-fusion` router files are compatibility
+identities for the unified Precis product. Their load-balancer targets are:
+
+| Router file | Backend target | Frontend target | Backend health check |
+|---|---|---|---|
+| `configs/traefik/dynamic/precis-landing.yml` | `http://precis-main-backend:8074` | `http://precis-main-frontend:3000` | `/apis/pages/` |
+| `configs/traefik/dynamic/lms-fusion.yml` | `http://precis-main-backend:8074` | `http://precis-main-frontend:3000` | `/apis/pages/` |
+
+The admin paths are backend-owned on both public hosts:
+
+- `/admin` → `/admin/` → Wagtail login
+- `/django-admin` → `/django-admin/` → Django admin login
+
+Validate the proxy and deploy the application from the repository root:
+
+```bash
+python3 application/proxy/scripts/validate-traefik-config.py
+docker compose --env-file application/proxy/.env \
+  -f application/proxy/docker-compose.yml config -q
+docker compose --env-file .env \
+  -f projects/precis/precis-main/docker-compose.yml up -d --build
+```
+
+See [`../../docs/dev/infrastructure/precis-main-proxy-admin.md`](../../docs/dev/infrastructure/precis-main-proxy-admin.md)
+for the full request lifecycle, health checks, smoke tests, and rollback notes.
 
 ## Shared services
 
@@ -63,11 +91,11 @@ python3 application/proxy/scripts/validate-traefik-config.py
 
 docker compose \
   --env-file application/proxy/.env \
-  -f application/proxy/docker-compose.nginx.yml config -q
+  -f application/tools/docker-compose.nginx.yml config -q
 
 docker compose \
   --env-file application/proxy/.env \
-  -f application/proxy/docker-compose.nginx.yml up -d --build
+  -f application/tools/docker-compose.nginx.yml up -d --build
 
 docker ps --format 'table {{.Names}}\t{{.Status}}'
 ```
@@ -81,3 +109,13 @@ Traefik stores ACME state in `configs/acme.json`, which must remain mode 0600
 and is ignored by Git. Use the existing certificate scripts for backup and
 inspection. Never commit ACME state, DNS API tokens, database passwords, or
 AFFiNE private configuration.
+
+## Remarks & Notes
+
+- The router/service identifiers may still contain historical Precis Landing or
+  LMS names; only the target URLs define the active Precis Main containers.
+- A running proxy cannot make an absent application stack healthy; deploy
+  `projects/precis/precis-main/docker-compose.yml` before diagnosing a 503 as a
+  routing defect.
+- ACME/DNS failures for unrelated configured hosts should be handled as
+  separate certificate operations.

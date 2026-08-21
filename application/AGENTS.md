@@ -11,12 +11,13 @@ application/
 │   ├── docker-compose.yml
 │   ├── postgres/             # image, entrypoint, init SQL, maintenance
 │   └── redis/                # redis.conf
-├── proxy/                   # Traefik, Nginx media, TLS/cert operations
+├── proxy/                   # Traefik, TLS/cert operations
 │   ├── docker-compose*.yml
 │   ├── configs/traefik/      # static/dynamic routers and middleware
-│   ├── configs/nginx/        # shared static/media server
 │   └── scripts/              # certificate validation/backup/restore
 ├── tools/                   # self-hosted auxiliary services
+│   ├── nginx/                # shared-proxy Nginx (tools + docs + media front door)
+│   ├── docker-compose.nginx.yml  # shared-proxy compose
 │   ├── affine/  docus/  ollama/  adminer/  mailpit/  monitoring/
 ├── docker-compose.yml       # Coder control-plane Compose stack
 ├── docker-compose.tasks.yml # shared-worker + shared-scheduler compose

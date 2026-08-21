@@ -10,7 +10,7 @@
 #
 # All tools join the external `common` and `traefik-net` networks (created by
 # `make create-networks`), and are routed path-based from tools.structa.cloud
-# by the shared-proxy Nginx (application/proxy/configs/nginx/default.conf.template).
+# by the shared-proxy Nginx (application/tools/nginx/default.conf.template).
 #
 # NOTE: Docus is intentionally NOT included here — it is a product service
 # deployed from docs/docker-compose.yml (see `make deploy-docs`).
@@ -18,7 +18,9 @@
 
 include:
   - affine/docker-compose.yml
-  - adminer/docker-compose.yml
   - mailpit/docker-compose.yml
-  - monitoring/docker-compose.yml
-  - ollama/docker-compose.yml
+  # - adminer/docker-compose.yml
+  # - monitoring/docker-compose.yml
+  # - ollama/docker-compose.yml
+
+  - ./docker-compose.nginx.yml

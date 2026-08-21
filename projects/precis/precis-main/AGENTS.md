@@ -1,4 +1,4 @@
-# Landing-Fusion — AI Agent Instructions
+# Precis Landing — AI Agent Instructions
 
 **Path:** `projects/precis/precis-landing/`  
 **Stack:** Astro 5 + Tailwind CSS 4 + HTMX + Alpine.js; Django 5.2 + Wagtail 7.4 + django-fusion
@@ -40,7 +40,7 @@ contracts synchronized across both directories.
 
 ## Rendering contract
 
-Landing-Fusion supports two roads:
+Precis Landing supports two roads:
 
 1. **Astro/data API road:** Astro requests `/apis/*` data and renders pages.
 2. **Django/Fusion road:** Django `PageHandler`/Wagtail routes render full HTML
@@ -76,7 +76,7 @@ silently fall back to hard-coded demo content when an API is unavailable.
 
 ```bash
 cd projects/precis/precis-landing
-make install                 # frontend npm dependencies
+just install                 # root Justfile: just install → just install
 make dev                     # Astro frontend
 make check                   # Astro diagnostics
 make build                   # CSS + Astro production build

@@ -14,7 +14,7 @@ structa.cloud/
 ├── projects/                 # Product code, shared Django config, and assets
 │   ├── precis/               # Product grouping: unified Precis, landing, and research sites
 │   │   ├── precis-main/      # Unified Precis product (merged precis-landing + precis-lms)
-│   │   ├── precis-landing/   # Legacy Landing-Fusion copy (kept; dispatcher routes to precis-main)
+│   │   ├── precis-landing/   # Legacy Precis Landing copy (kept; dispatcher routes to precis-main)
 │   │   └── precis-ctc/       # Medical research center site
 │   ├── syntara/              # Cypercloud AI chat/customizer runtime
 │   ├── formints/             # POS editions, cloud backend, and shared tests
@@ -38,7 +38,7 @@ structa.cloud/
 | Product | Canonical path | Main responsibility | Local guidance |
 |---|---|---|---|
 | Precis (unified) | `projects/precis/precis-main/` | Merged product: LMS courses/enrollment/progress/profile + landing marketing/catalog shell | `projects/precis/precis-main/AGENTS.md` |
-| Landing-Fusion | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/precis/precis-landing/AGENTS.md` |
+| Precis Landing | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/precis/precis-landing/AGENTS.md` |
 | Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
 | Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
 | django-fusion | `libs/django-fusion/` | Shared Django/Wagtail components, routing, fragments, forms, tables, and assets | `libs/django-fusion/AGENTS.md` |
@@ -52,7 +52,7 @@ structa.cloud/
   shell). The dispatcher accepts `WEBSITE=precis-main`; `WEBSITE=precis-lms` and
   `WEBSITE=precis-landing` are legacy aliases that both map to
   `projects/precis/precis-main/`.
-- `precis/precis-landing` is a kept legacy copy of the Landing-Fusion marketing
+- `precis/precis-landing` is a kept legacy copy of the Precis Landing marketing
   site; `precis-landing` remains its runtime/site identity.
 - `precis/precis-ctc` is the standalone medical research center site, mapped
   from `WEBSITE=ctc` / `precis-ctc` to `projects/precis/precis-ctc/`.
@@ -130,7 +130,7 @@ do not grow large view functions or templates into service layers.
 
 ### Dual rendering
 
-Landing-Fusion and Formint use a render-first/data-API contract. A request may
+Precis Landing and Formint use a render-first/data-API contract. A request may
 receive complete server-rendered HTML, an HTMX fragment, or JSON for an Astro
 client. Preserve explicit endpoint contracts and headers when changing either
 road. Do not replace a server-rendered fragment with a client-only mock.
@@ -207,9 +207,18 @@ make check WEBSITE=precis-landing
 make test WEBSITE=precis-landing   # workspace pytest target; use the project backend test below for focused coverage
 make run-dev WEBSITE=precis-ctc   # legacy site alias if present in checkout
 
-# Landing-Fusion direct workflows
+# Workspace command layer (root Justfile — delegates to make/nx)
+just install                       # full workspace install (uv sync + JS + Formints + docs)
+just check                         # nx run-many check --all
+just test                          # nx run-many test --all
+just deploy                        # full stack deploy (postgres-first)
+just deploy-docs                   # deploy Docus (nx run docs:deploy)
+just deploy-tools                  # deploy self-hosted tools (affine, adminer, …)
+just nx run docs:build             # delegate any target to Nx
+
+# Precis Landing direct workflows
 cd projects/precis/precis-landing
-make install
+just install                  # root Justfile: just install → just install
 make check
 make build
 make backend-migrate

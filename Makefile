@@ -12,6 +12,8 @@ WORKSPACE_ROOT    := .
 CORE_DIR          := projects
 PROXY_DIR         := application/proxy
 SERVICES_DIR      := application/tools
+# The shared-proxy Nginx compose moved under tools/ with the services it fronts.
+TOOLS_PROXY_COMPOSE := application/tools/docker-compose.nginx.yml
 DATABASES_DIR     := application/databases
 POS_DIR           := projects/formints
 SOURCE_DIR        := source
@@ -88,7 +90,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
 .PHONY: deploy-preflight deploy-ci preflight-network check-docker create-networks status logs logs-common stop restart
-.PHONY: prune prune-containers prune-volumes prune-images clean
+.PHONY: prune prune-containers prune-volumes prune-images cleanup clean
 .PHONY: cert cert-generate cert-backup cert-restore cert-validate cert-check
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
@@ -304,6 +306,7 @@ help:
 	@echo "  make prune-containers  - Remove stopped containers"
 	@echo "  make prune-volumes     - Remove unused volumes"
 	@echo "  make prune-images      - Remove unused images"
+	@echo "  make cleanup           - Prune stopped containers, dangling images, and build cache (keeps volumes)"
 	@echo "  make clean             - Stop and remove all containers, volumes, and images"
 	@echo "  make verify-release    - Sanity-check a published Composite Action tag (default v1.0.0) end-to-end"
 	@echo "  make bump-action-{patch|minor|major} - Bump the deploy-preflight Composite Action version (uvx bumpver)"
@@ -587,7 +590,7 @@ deploy-media:
 	@docker rm -f shared-proxy 2>/dev/null || true
 	# NOTE: no host-wide `docker volume prune` here — that would wipe volumes
 	# from other projects. If you need to prune, run `make prune-volumes`.
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d
+	@docker compose -f $(TOOLS_PROXY_COMPOSE) up -d
 
 deploy-docs:
 	@docker compose -f docs/docker-compose.yml up -d --build
@@ -982,7 +985,7 @@ stop:
 	@echo "🛑 Stopping all services..."
 	@cd $(PROXY_DIR) && $(MAKE) stop || true
 	@$(MAKE) -C $(CORE_DIR) docker-down || true
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml down 2>/dev/null || true
+	@docker compose -f $(TOOLS_PROXY_COMPOSE) down 2>/dev/null || true
 	@docker compose -f $(DATABASES_DIR)/docker-compose.yml down 2>/dev/null || true
 	@docker compose -f $(SOURCE_DIR)/docker-compose.yml down 2>/dev/null || true
 	@echo "✅ All services stopped"
@@ -1012,6 +1015,17 @@ prune-images:
 	@echo "🗑️  Removing unused images..."
 	@docker image prune -f
 	@echo "✅ Images pruned"
+
+# Safe post-build cleanup: removes stopped containers, dangling images and
+# the build cache, but deliberately does NOT touch volumes (they hold
+# database/media data for running services). This is the target to run after
+# `make build` / image rebuilds to reclaim disk without risking data loss.
+cleanup:
+	@echo "🧹 Cleaning up unused Docker data (stopped containers, dangling images, build cache)..."
+	@docker container prune -f
+	@docker image prune -f
+	@docker builder prune -f
+	@echo "✅ Cleanup complete"
 
 # Aggressive teardown — strips the project containers, volumes, and images.
 # Scoped to this compose project so it won't nuke other tenants on the host.
@@ -1067,7 +1081,7 @@ build-app:
 	@$(MAKE) -C $(CORE_DIR) docker-build
 
 build-media:
-	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml build shared-proxy
+	@docker compose -f $(TOOLS_PROXY_COMPOSE) build shared-proxy
 
 build-docs:
 	@docker compose -f docs/docker-compose.yml build

@@ -1,7 +1,7 @@
 # =============================================================================
 # AFFiNE — permanent shared workspace service
 # =============================================================================
-# Split out of application/proxy/docker-compose.nginx.yml: AFFiNE is a shared
+# Split out of application/tools/docker-compose.nginx.yml: AFFiNE is a shared
 # application, not a proxy concern. It runs independently of Coder workspaces,
 # so deleting a workspace cannot take down the public space origin.
 #
@@ -52,7 +52,7 @@ services:
       REDIS_SERVER_HOST: default-redis
       REDIS_SERVER_PORT: "6379"
       REDIS_SERVER_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
-      AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL:-https://space.structa.cloud}
+      AFFINE_SERVER_EXTERNAL_URL: ${AFFINE_SERVER_EXTERNAL_URL:-https://tools.structa.cloud}
       AFFINE_SERVER_PORT: "3010"
       AFFINE_INDEXER_ENABLED: "false"
       # Email notifications/invites (Gmail SMTP via an app password).

@@ -10,7 +10,7 @@ echo "[$(date -u +%H:%M:%S)] watcher started; waiting for AAAA repoint (old=$OLD
 
 repointed() {
   local ip
-  ip=$(timeout 8 dig +short AAAA coder.structa.cloud @1.1.1.1 2>/dev/null)
+  ip=$(timeout 8 dig +short AAAA space.structa.cloud @1.1.1.1 2>/dev/null)
   case "$ip" in
     *"$NEW"*) return 0 ;;
     *"$OLD"*) return 1 ;;

@@ -138,7 +138,7 @@ Dockerfile: docs/Dockerfile
 Application: docs/ (app root, flattened from docs/docus/)
 Container: docus:3000
 Proxy: application/proxy/configs/traefik/dynamic/docs.yml
-Nginx: application/proxy/configs/nginx/default.conf.template
+Nginx: application/tools/nginx/default.conf.template (shared-proxy moved under application/tools/)
 ```
 
 The image copies the full `docs/` tree because the preparation script walks the

@@ -7,7 +7,7 @@ database admin, mail capture, monitoring, docs, workspace).
 Each tool lives in its own directory with a `docker-compose.yml` + `Makefile`,
 and is reachable through a single Traefik entry point at
 `tools.structa.cloud/<tool>/` (path-based split performed by the shared-proxy
-Nginx — see `application/proxy/configs/nginx/default.conf.template`).
+Nginx — see `application/tools/nginx/default.conf.template`).
 
 ```
 application/tools/
@@ -55,7 +55,7 @@ make deploy-utilities   # monitoring (Prometheus + Grafana)
 make deploy-ollama      # Ollama + Open WebUI
 make deploy-adminer     # Adminer
 make deploy-mailpit     # Mailpit
-make deploy-affine      # AFFiNE workspace (space.structa.cloud)
+make deploy-affine      # AFFiNE workspace (tools.structa.cloud/space/)
 ```
 
 ### Networks
@@ -69,9 +69,29 @@ make create-networks
 
 ### Environment
 
-Tool versions and secrets come from the repo-root `.env` (see `.env.example`):
+Every variable referenced by the tool compose files lives in
+**`application/tools/.env.example`** (versions, ports, designs, and generated
+RANDOM defaults for secrets) — covering all tools, including the ones
+commented out of the aggregate file (`adminer/`, `monitoring/`, `ollama/`):
 `OLLAMA_VERSION`, `OPEN_WEBUI_SECRET_KEY`, `ADMINER_DESIGN`, `MAILPIT_VERSION`,
-`GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD`, etc.
+`GRAFANA_ADMIN_USER`, `GRAFANA_ADMIN_PASSWORD`, `AFFINE_DB_PASSWORD`, …
+
+```bash
+cd application/tools/<tool>
+make setup     # creates ../.env from ../.env.example (only if missing)
+make up        # compose --env-file ../.env
+```
+
+Each tool Makefile resolves `ENV_FILE ?= $(if $(wildcard ../.env),../.env,../../../.env)`
+— the tools env (`application/tools/.env`) wins when present, otherwise the
+repo-root `.env` keeps existing deployments working untouched. The aggregate
+file (`application/tools/docker-compose.yml`) interpolates from
+`application/tools/.env` when run from this directory.
+
+> **AFFiNE note:** `AFFINE_DB_PASSWORD` / `REDIS_PASSWORD` are shared with the
+> database cluster — they must match `application/databases/.env`. The
+> generated defaults in `.env.example` only work against a fresh cluster;
+> rotate/align them before pointing AFFiNE at a live one.
 
 ## Per-tool notes
 

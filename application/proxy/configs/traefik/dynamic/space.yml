@@ -1,14 +1,16 @@
 # =============================================================================
-# Workspace origin — space.structa.cloud (all workspace services, path-based)
+# Workspace control plane — space.structa.cloud (Coder)
 # =============================================================================
-# Routes space.localhost / space.structa.cloud to the shared-proxy nginx,
-# which serves AFFiNE at the root (see
-# application/proxy/nginx/default.conf.template). The affine.pro host remains
-# removed; AFFiNE is served only at the root of the shared space origin.
+# Routes space.localhost / space.structa.cloud to the Coder control plane
+# (coder container, port 7080). The workspace product is branded "space";
+# coder.structa.cloud and code.structa.cloud are retired aliases.
+#
+# AFFiNE is served at tools.structa.cloud/space/ (path-based split performed
+# by the shared-proxy Nginx, see application/tools/nginx/default.conf.template).
 #
 # Public host uses Let's Encrypt; the .localhost host stays on the mkcert
 # default cert. They are split because a single certResolver router bundling
-# a .localhost SAN fails ACME (\".localhost\" is not a public suffix), which
+# a .localhost SAN fails ACME (".localhost" is not a public suffix), which
 # would block issuance for the public domain too.
 # =============================================================================
 http:
@@ -40,5 +42,5 @@ http:
     space-service:
       loadBalancer:
         servers:
-          - url: 'http://shared-proxy:80'
+          - url: 'http://coder:7080'
         passHostHeader: true

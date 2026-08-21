@@ -42,9 +42,29 @@ Every deletion must have a recorded replacement, archive, evidence scan, hold de
 | DOC-0018 | Public `affine.pro` host (Traefik router + cert + nginx server_name) | delete | All workspace services consolidated under `space.structa.cloud` (root = AFFiNE); affine.pro removed entirely | `application/proxy/configs/traefik/dynamic/space.yml` + nginx template | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
 | DOC-0019 | Workspace code-server + FileGator services (containers, Coder apps, `filegator.structa.cloud` route, `application/proxy/filegator/`) | delete | Bundled services removed from the devcontainer; the IDE runs inside the devcontainer and no file manager is shipped | `.devcontainer/docker-compose.yml` (AFFiNE only) + nginx `space.structa.cloud` root | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
 | DOC-0020 | `application/templates/devcontainer/` (Docker-in-Docker template) | merge | Templates merged into ONE: the `devcontainer` template's features (devcontainer auto-start, VS Code Web, display_apps) folded into `workspace`; the merged template binds the host checkout instead of cloning | `application/templates/workspace/` | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
-| DOC-0021 | `docs/plans/CODEBASE_AUDIT_AND_MIGRATION_PLAN.md` | delete | Audited `projects/precis-lms/` + `projects/cms-fusion/` apps no longer exist; superseded by Precis/Landing-Fusion | `docs/plans/README.md` | Git history | completed | none | pending review | 2026-08-16 | Docs |
+| DOC-0021 | `docs/plans/CODEBASE_AUDIT_AND_MIGRATION_PLAN.md` | delete | Audited `projects/precis-lms/` + `projects/cms-fusion/` apps no longer exist; superseded by Precis/Precis Landing | `docs/plans/README.md` | Git history | completed | none | pending review | 2026-08-16 | Docs |
 | DOC-0022 | `docs/plans/FUSION_LMS_CMS_DESIGN.md` | delete | Design doc for retired `precis-lms`/`cms-fusion` product lines | `docs/plans/README.md` | Git history | completed | none | pending review | 2026-08-16 | Docs |
 | DOC-0023 | `docs/plans/ASSETS_MIGRATION_INVENTORY.md` | delete | Inventory for retired `precis-lms`/`cms-fusion` backends | `docs/plans/README.md` | Git history | completed | none | pending review | 2026-08-16 | Docs |
+
+## 2026-08-19 deletion (owner-approved)
+
+Legacy docs + verified-orphan precis-ctc assets removed (≈94 MB). Every item is
+recoverable from git history; the deletion gate's replacement test is satisfied
+by the live pipeline that regenerates each removed artifact.
+
+| ID | Path | Action | Reason | Replacement | Archive |
+|---|---|---|---|---|---|
+| DOC-0024 | `docs/plans/legacy-archive/` (dead-code audit, deployment-reports, dev-notes) | delete | Retired audits/reports/notes superseded by the plans registry | `docs/plans/README.md` + `docs/recommendations.md` | Git history |
+| DOC-0025 | `projects/precis/precis-ctc/backend/assets/staticfiles/` (38 MB) | delete | Generated `STATIC_ROOT`; `/prepare` runs `collectstatic --noinput` at every container start | `manage.py collectstatic` | Git history |
+| DOC-0026 | `projects/precis/precis-ctc/backend/assets/static/` (3 stale files: `skeleton-manifest.json`, `css/fusion.css`, `js/fusion-bridge.js`) | delete | Legacy duplicate under the `site/precis-ctc/` namespace — `settings/assets.py` itself flags that namespace as a collectstatic duplicate; no template/proxy reference | `projects/precis/precis-ctc/assets/static/` (root namespace) | Git history |
+| DOC-0027 | `projects/precis/precis-ctc/assets/staticfiles/site/precis-ctc/` (28 MB) | delete | Stale collected duplicate in the nginx-served tree; unreferenced (`/static/site/precis-ctc/` has no callers) | Nginx `/static` root namespace | Git history |
+| DOC-0028 | `projects/precis/precis-ctc/assets/staticfiles/workspace-assets/` (27 MB) | delete | Stale collected namespace; unreferenced | Nginx `/static` root namespace | Git history |
+| DOC-0029 | `docs/pos/editions.md` | update | Content superseded by the Formints edition chain (retired 3-edition/Robyn model); replaced with a canonical pointer | `docs/plans/editions/README.md` + `comparison.md` | same path (pointer) | replaced 2026-08-20 | none | n/a | 2026-08-20 | Docs |
+| DOC-0030 | `docs/pos/cloud-edition.md` | update | Content superseded by formint-cloud (Django master, no Robyn sidecar); replaced with a canonical pointer | `docs/plans/editions/04-cloud.md` + `08-tenant-schemas.md` | same path (pointer) | replaced 2026-08-20 | none | n/a | 2026-08-20 | Docs |
+| DOC-0031 | Traefik routers `coder.yml` + `code.yml` + middlewares `redirect-code-*` | delete | Workspace control plane renamed coder → space (`space.structa.cloud`); alias hosts retired | `application/proxy/configs/traefik/dynamic/space.yml` | Git history | completed in working tree | none | pending review | 2026-08-21 | Infrastructure |
+| DOC-0032 | DNS CNAMEs `coder.structa.cloud` + `code.structa.cloud` (Hostinger hPanel) | delete | No Traefik router or cert remains for the retired aliases; the control plane is served at `space.structa.cloud` | `application/proxy/LETSENCRYPT.md` DNS topology | Hostinger hPanel → DNS | pending | external DNS (no API integration) | pending | 2026-08-21 | Infrastructure |
+
+Verified after removal: `/`, `/static/css/fusion.css`, `/static/bundles/ctc-research/bundles.json`, `/admin/login/`, and `/static/admin/css/base.css` all serve 200 on ctc-research.com.
 
 ## Deletion gate
 
@@ -89,7 +109,7 @@ The retired plan directories `docs/plans/pos/`, `docs/plans/migrated/`,
 `docs/plans/cms-fusion/`, and `docs/plans/precis-lms/` were permanently removed
 (47 files). Each had a verified replacement — the Formints `editions/` chain
 (`03-pro.md` → `formint-pro`, `04-cloud.md` → `formint-cloud`) for the retired
-`projects/pos/` scope, and Precis/Landing-Fusion for the CMS/LMS migration
+`projects/pos/` scope, and Precis/Precis Landing for the CMS/LMS migration
 plans. The pre-migration originals under `migrated/` were duplicates of the
 superseded copies and are recoverable from git history. Indexes
 (`README.md`, `document-lifecycle.md`, `editions/README.md`, `mkdocs.yml`,

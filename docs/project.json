@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "name": "docus",
+  "name": "docs",
   "root": "docs",
   "projectType": "application",
   "tags": ["type:docs", "stack:node"],
@@ -28,6 +28,18 @@
     "prepare-content": {
       "executor": "nx:run-commands",
       "options": { "command": "npm run prepare-content", "cwd": "docs" }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["prepare-content"],
+      "options": { "command": "make check", "cwd": "docs" }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["check"],
+      "options": { "command": "docker compose -f docker-compose.yml up -d --build", "cwd": "docs" }
     }
   }
 }
