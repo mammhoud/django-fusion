@@ -14,8 +14,11 @@ Traefik Proxy (default-proxy)
   │  SSL via Let's Encrypt (Cloudflare DNS-01)
   │
   ├── ctc-research.com ──────→ precis-ctc-website:5070
-  ├── structa.cloud ─────────→ lms-web:5071
-  ├── vresume.structa.cloud ─→ vresume-web:5072
+  ├── structa.cloud ─────────→ precis-main-backend:8074 / frontend:3000
+  ├── lms.structa.cloud ─────→ precis-main-backend:8074 / frontend:3000
+  ├── crm.structa.cloud ─────→ loop-crm-backend / frontend
+  ├── space.structa.cloud ───→ coder:7080 (Coder control plane)
+  ├── tools.structa.cloud ───→ shared-proxy:80 (tools + AFFiNE /space/)
   ├── media.structa.cloud ───→ shared-proxy:80
   │
   └── Internal services (on common network):
@@ -23,7 +26,7 @@ Traefik Proxy (default-proxy)
        ├── redis:6379
        ├── shared-worker (Dramatiq)
        ├── shared-scheduler (Celery Beat)
-       └── coder:7080
+       └── coder:7080 (workspace control plane, branded "space")
 ```
 
 ---
@@ -71,6 +74,13 @@ make status              # Full deployment status
 ```
 
 ---
+
+## Current Precis routing
+
+The historical LMS and Precis Landing public hosts share the unified
+`projects/precis/precis-main/` stack. Use the dedicated
+[Precis Main proxy/admin runbook](precis-main-proxy-admin.md) for router targets,
+admin smoke tests, health checks, and rollback guidance.
 
 ## Related
 

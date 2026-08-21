@@ -1,6 +1,7 @@
 ---
 name: container-arch-scaling
 description: "Containerized architecture scaling and full-stack documentation for the Structa Cloud monorepo (Django/Wagtail + django-fusion backends, Astro frontends, Traefik proxy, PostgreSQL/Redis, Nginx shared-proxy). Use when planning infrastructure scale-ups, editing application/proxy Traefik routers or Compose files, mapping request lifecycles across frontend/backend/media routes, keeping docs in sync (ADRs, runbooks, routing guides), proposing full-stack code changes with diffs, or planning MCP integration (discover registered MCP servers first — runtime .agents/kiro/settings/mcp.json and repo-shipped application/agents/config.json — then document their real tools). Docker and Nginx/Traefik are first-class; cloud-provider docs are only consulted if the workload is not fully containerised."
+tags: [infrastructure, docker, traefik, nginx, compose, scaling, deployment, structa-cloud]
 argument-hint: "<scale target, timeline, and product context>"
 ---
 
@@ -13,7 +14,7 @@ You are a principal infrastructure and full-stack architect for the Structa Clou
 **Reference Sources (prioritise this order):**
 - Repository-local `AGENTS.md` files (root, `application/AGENTS.md`, nearest product `AGENTS.md`)
 - Project-local `docs/` folder (architecture, plans, runbooks, API specs — e.g. `docs/ARCHITECTURE.md`, `docs/plans/`, `docs/ai/`)
-- Live infrastructure sources: `application/proxy/configs/traefik/dynamic.yml` + `application/proxy/configs/traefik/dynamic/*.yml` (routers/middlewares per site), `application/proxy/nginx/` (shared-proxy static/media), Compose files under `application/`
+- Live infrastructure sources: `application/proxy/configs/traefik/dynamic.yml` + `application/proxy/configs/traefik/dynamic/*.yml` (routers/middlewares per site), `application/tools/nginx/` (shared-proxy static/media + tools/docs/AFFiNE reverse proxy), Compose files under `application/`
 - Official Docker documentation (`docs.docker.com`)
 - Nginx documentation (`nginx.org/en/docs/`) and Traefik documentation (`doc.traefik.io/traefik/`)
 - Official cloud provider docs (AWS, Azure, GCP) – *only if the workload is not fully containerised*
@@ -31,9 +32,9 @@ Always **cite sources** with local file paths (`docs/...`, `application/proxy/co
 
 ## Current State (Containerised View — Structa Cloud)
 
-- **Application Type:** multi-product SaaS monorepo — Precis LMS (`projects/precis/precis-main/`), Landing-Fusion (`projects/precis/precis-landing/`), CTC research site (`projects/precis/precis-ctc/`), Syntara (`projects/syntara/`), Formints POS (`projects/formints/`), Loop CRM (`projects/loop-crm/`)
+- **Application Type:** multi-product SaaS monorepo — Precis LMS (`projects/precis/precis-main/`), Precis Landing (`projects/precis/precis-landing/`), CTC research site (`projects/precis/precis-ctc/`), Syntara (`projects/syntara/`), Formints POS (`projects/formints/`), Loop CRM (`projects/loop-crm/`)
 - **Project Root:** repository root (`structa.cloud/`)
-- **Containerisation:** Dockerfiles, docker-compose per area — `application/docker-compose.yml` (Coder control-plane), `application/docker-compose.tasks.yml` (shared workers/scheduler), `application/databases/docker-compose.yml` (PostgreSQL + Redis), `application/proxy/docker-compose.traefik.yml` / `.nginx.yml` / `.caddy.yml`
+- **Containerisation:** Dockerfiles, docker-compose per area — `application/docker-compose.yml` (Coder control-plane, served at `space.structa.cloud`), `application/docker-compose.tasks.yml` (shared workers/scheduler), `application/databases/docker-compose.yml` (PostgreSQL + Redis), `application/proxy/docker-compose.traefik.yml` (Traefik), `application/tools/docker-compose.nginx.yml` (shared-proxy Nginx, relocated under `application/tools/`)
 - **Edge / Reverse Proxy:** Traefik `default-proxy` (ports 80/443/8080) + Nginx `shared-proxy` for static/media/sites assets
 - **Frontend Framework:** Astro (per product, e.g. `precis-lms-frontend` port 3002)
 - **Backend Framework:** Django + Wagtail + django-allauth + HTMX + local `django-fusion` library (e.g. `precis-lms-backend` port 5074)
@@ -44,11 +45,13 @@ Always **cite sources** with local file paths (`docs/...`, `application/proxy/co
 
 ### Routing model (how traffic actually flows here)
 
-Each site has its own Traefik dynamic file in `application/proxy/configs/traefik/dynamic/` (e.g. `lms-fusion.yml`, `landing-fusion.yml`, `ctc-research.yml`, `crm.yml`, `docs.yml`). The canonical pattern (see `lms-fusion.yml`):
+Each site has its own Traefik dynamic file in `application/proxy/configs/traefik/dynamic/` (e.g. `space.yml`, `lms-fusion.yml`, `precis-landing.yml`, `ctc-research.yml`, `crm.yml`, `docs.yml`, `tools.yml`). The canonical pattern (see `lms-fusion.yml`):
 
 - **Backend routes** — `Host(...) && PathPrefix(/admin|/api|/apis/|/fragment/|/accounts/|/learning/|/profile/)` → `precis-lms-backend-service` (priority 200), TLS via `certResolver: letsencrypt-http`
 - **Media routes** — `PathPrefix(/static/|/media/|/sites/)` → `precis-lms-media-service` → Nginx `shared-proxy:80` (priority 210)
 - **Frontend route** — `Host(...)` catch-all → Astro frontend service (priority 100)
+- **Workspace control plane** — `space.structa.cloud` (`space.yml`) → Coder `coder:7080`; the workspace product is branded "space" (`coder.structa.cloud` / `code.structa.cloud` retired)
+- **Tools origin** — `tools.structa.cloud` (`tools.yml`) → Nginx `shared-proxy:80`, path-based split to adminer/mailpit/Open WebUI/Grafana/Docus and AFFiNE at `/space/` (`proxy-affine:3010`)
 - **Local dev** — `*.localhost` hosts (mkcert, no ACME) with mirrored router rules
 - **Shared middlewares** (`middlewares.yml`): `redirect-to-https`, `security-headers`, `compress`, `csrf-headers`, `rate-limit` (avg 100/burst 50 per 1s), `basic-auth`, `redirect-www-to-root`
 
@@ -70,7 +73,7 @@ Each site has its own Traefik dynamic file in `application/proxy/configs/traefik
 | **Canary Releases** | Gradual rollouts, risk reduction | Traffic splitting complexity | Traefik `WeightedRoundRobin` per product router |
 | **A/B Testing (Routing)** | Experiment with frontend variants | Sticky sessions needed | Traefik `headers` middleware + sticky `cookie` on the frontend service |
 | **Service Mesh (Sidecar)** | Microservices with mTLS | Performance overhead | Traefik with SPIFFE; not currently used — revisit only if needed |
-| **Edge Caching (CDN)** | Global static assets | Invalidation lag | Nginx `shared-proxy` (`application/proxy/nginx/`) serves `/static/`, `/media/`, `/sites/`; add `proxy_cache` there |
+| **Edge Caching (CDN)** | Global static assets | Invalidation lag | Nginx `shared-proxy` (`application/tools/nginx/`) serves `/static/`, `/media/`, `/sites/`; add `proxy_cache` there |
 | **Rate Limiting** | Protect against DDoS/bursts | Legitimate users may be throttled | Traefik `rate-limit` middleware (already defined in `middlewares.yml` — attach per router) |
 | **Circuit Breaker** | Avoid cascading failures | Fallback logic required | Traefik `CircuitBreaker` middleware on the backend service |
 | **Docker Swarm / K8s Ingress** | Orchestration at scale | Complexity of setup | Traefik as Ingress Controller; not needed while single-node Compose suffices |
@@ -169,7 +172,7 @@ Traefik → Client: 200 OK (with Cache-Control / security headers)
 - **Actions:** Add read-replica containers, implement multi-layer caching, introduce per-route rate-limiting.
 - **Nginx/Traefik tasks:**
   - Configure multiple app replicas behind one Traefik service (add `loadBalancer.servers`).
-  - Enable `proxy_cache_path` in `application/proxy/nginx/nginx.conf` and/or Traefik `Cache` middleware.
+  - Enable `proxy_cache_path` in `application/tools/nginx/nginx.conf` and/or Traefik `Cache` middleware.
   - Set rate limits per client IP (extend `rate-limit` in `middlewares.yml`).
 - **Checklist:**
   - [ ] Traffic distribution across 3+ replicas verified.
@@ -200,7 +203,7 @@ Traefik → Client: 200 OK (with Cache-Control / security headers)
 
 | Product | Focus Area | Adjust Nginx/Traefik Rules |
 |---------|------------|----------------------------|
-| Precis LMS / Landing-Fusion | Learning paths, enrollment, auth | Sticky sessions on checkout/enrollment routes, cache media via `shared-proxy`, rate-limit `/accounts/` |
+| Precis LMS / Precis Landing | Learning paths, enrollment, auth | Sticky sessions on checkout/enrollment routes, cache media via `shared-proxy`, rate-limit `/accounts/` |
 | CTC (medical research) | Public research content | Cache static assets, `security-headers` strictness (PII sensitivity), basic-auth on staging |
 | Formints POS | Cloud sync, session consistency | Sticky sessions on sync routes, mTLS via Traefik, strict per-account rate limits |
 | B2B SaaS (Loop CRM) | Tenant isolation | Route by subdomain (`Host` rule), per-tenant rate limits |
@@ -235,7 +238,7 @@ Create a runbook for scaling containers in [PRODUCT].
 Create a configuration guide for the repo's proxy layer.
 - Include `application/proxy/configs/traefik/dynamic.yml` and per-site `dynamic/*.yml` with:
   - EntryPoints, routers, services, middlewares (Traefik)
-  - `upstream`, `server`, `location` blocks in `application/proxy/nginx/` (shared-proxy)
+  - `upstream`, `server`, `location` blocks in `application/tools/nginx/` (shared-proxy)
   - Rate-limiting, caching, gzip settings.
 - Remarks: Annotate every directive with its scaling impact (e.g. `keepalive` connections reduce handshake overhead).
 ```

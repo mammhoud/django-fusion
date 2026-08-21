@@ -21,13 +21,27 @@ and AAAA records:
 ```text
 structa.cloud            A      187.77.166.222          (this server, IPv4)
 structa.cloud            AAAA   2a02:4780:28:4cb8::1    (this server, IPv6 — or leave unset)
+www.structa.cloud        CNAME  structa.cloud
 space.structa.cloud      CNAME  structa.cloud
 docs.structa.cloud       CNAME  structa.cloud
+tools.structa.cloud      CNAME  structa.cloud
 media.structa.cloud      CNAME  structa.cloud
+crm.structa.cloud        CNAME  structa.cloud
+www.crm.structa.cloud    CNAME  structa.cloud     ⚠ MISSING — add at Hostinger
+lms.structa.cloud        CNAME  structa.cloud
+ctc-research.com         A      187.77.166.222     (independent apex)
+www.ctc-research.com     CNAME  ctc-research.com
+arch.ctc-research.com    CNAME  ctc-research.com
+media.ctc-research.com   CNAME  ctc-research.com
 ```
 
 Because the subdomains are CNAMEs, fixing the **single** apex A/AAAA record
 fixes every subdomain at once.
+
+> **Required — add to DNS:** `www.crm.structa.cloud` has **no record
+> (NXDOMAIN)** yet. The CRM router (`crm.yml`) requests a Let's Encrypt cert
+> for it, so issuance fails until you add `www.crm.structa.cloud → CNAME
+> structa.cloud` at Hostinger hPanel → DNS.
 
 > **Retired aliases — remove from DNS:** `coder.structa.cloud` and
 > `code.structa.cloud` no longer have Traefik routers (the workspace control
