@@ -1,0 +1,190 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-btn — BEM button primitives for the default theme.
+   Extracted and converted from .archives/theme/elements/_button.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-btn {
+  padding: 0 1.625rem;
+  background: hsl(var(--fu-default-primary));
+  height: 3.75rem;
+  line-height: 3.75rem;
+  color: hsl(var(--fu-default-card));
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  z-index: 1;
+  transition: all var(--fu-default-transition-standard);
+  border-radius: var(--fu-default-radius-md);
+  border: 0;
+  outline: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid hsl(var(--fu-default-link));
+    outline-offset: 2px;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ── Color variants ── */
+  &--secondary {
+    background: hsl(var(--fu-default-secondary));
+    &:hover { background: hsl(var(--fu-default-primary)); }
+  }
+
+  &--outline {
+    background: transparent;
+    border: 2px solid hsl(var(--fu-default-line));
+    color: hsl(var(--fu-default-ink));
+    line-height: calc(3.75rem - 4px);
+    &:hover {
+      background: hsl(var(--fu-default-primary));
+      border-color: hsl(var(--fu-default-primary));
+      color: hsl(var(--fu-default-card));
+    }
+  }
+
+  &--ghost {
+    background: transparent;
+    color: hsl(var(--fu-default-muted));
+    &:hover {
+      color: hsl(var(--fu-default-ink));
+      background: hsl(var(--fu-default-line) / 0.3);
+    }
+  }
+
+  &--white {
+    box-shadow: var(--fu-default-shadow-card);
+    background: hsl(var(--fu-default-card));
+    color: hsl(var(--fu-default-ink));
+    &:hover {
+      background: hsl(var(--fu-default-primary));
+      color: hsl(var(--fu-default-card));
+    }
+  }
+
+  /* ── Gradient variants ── */
+  &--gradient {
+    color: hsl(var(--fu-default-card));
+    background-size: 300% 100%;
+    background-image: linear-gradient(
+      to right,
+      hsl(var(--fu-default-primary)),
+      hsl(var(--fu-default-secondary)),
+      hsl(var(--fu-default-secondary)),
+      hsl(var(--fu-default-primary))
+    );
+    &:hover {
+      background-position: 102% 0;
+    }
+  }
+
+  /* ── Link variant ── */
+  &--link {
+    color: hsl(var(--fu-default-ink));
+    position: relative;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    transition: var(--fu-default-transition-standard);
+
+    &::after {
+      position: absolute;
+      content: "";
+      bottom: 0;
+      left: auto;
+      right: 0;
+      background: currentColor;
+      width: 0;
+      height: 2px;
+      transition: var(--fu-default-transition-standard);
+    }
+
+    &:hover {
+      color: hsl(var(--fu-default-primary));
+      &::after {
+        width: 100%;
+        left: 0;
+        right: auto;
+      }
+    }
+  }
+
+  /* ── Round / icon button ── */
+  &--round {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: var(--fu-default-radius-full);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--fu-default-line) / 0.4);
+    color: hsl(var(--fu-default-ink));
+    border: 0;
+    cursor: pointer;
+    transition: var(--fu-default-transition-standard);
+    &:hover {
+      background: hsl(var(--fu-default-primary));
+      color: hsl(var(--fu-default-card));
+      transform: scale(1.05);
+    }
+  }
+
+  /* ── Size variants ── */
+  &--xs {
+    padding: 0 0.875rem;
+    font-size: 0.75rem;
+    height: 1.875rem;
+    line-height: 1.875rem;
+  }
+
+  &--sm {
+    padding: 0 1.375rem;
+    font-size: 0.8125rem;
+    height: 2.8125rem;
+    line-height: 2.75rem;
+  }
+
+  &--md {
+    padding: 0 1.5625rem;
+    font-size: 0.875rem;
+    height: 3.125rem;
+    line-height: 3rem;
+  }
+
+  &--lg {
+    height: 4.375rem;
+    line-height: 4.375rem;
+    padding: 0 2.1875rem;
+    font-size: 1.125rem;
+  }
+
+  &--xl {
+    padding: 0 2.8125rem;
+    font-size: 1.25rem;
+    height: 4.6875rem;
+    line-height: 4.6875rem;
+  }
+
+  &--block {
+    width: 100%;
+  }
+
+  &:hover {
+    background-color: hsl(var(--fu-default-secondary));
+    color: hsl(var(--fu-default-card));
+    transform: translate3d(0, -2px, 0);
+    box-shadow: var(--fu-default-shadow-card-hover);
+  }
+}

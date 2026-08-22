@@ -122,6 +122,15 @@ else ifeq ($(WEBSITE),precis-main)
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
+else ifeq ($(WEBSITE),precis-dev)
+  # precis-dev — merged development copy of the unified Precis product.
+  SITE := precis-dev
+  PROJECT_DIR := precis/precis-dev
+  TEST_WEBSITE := precis-dev
+  COMPOSE_FILE ?= precis/precis-dev/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
+  PYTHON := uv run python
+
 else ifeq ($(WEBSITE),precis-lms)
   # Legacy alias — precis-lms was merged into precis-main.
   SITE := precis-main
@@ -161,7 +170,7 @@ DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
 DOCKER_SERVICE := $(if $(filter $(SITE),precis-ctc),precis-ctc-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),precis-main loop-crm),backend,$(SITE)))))
 # Internal health-check port for the selected website container.
-DOCKER_HEALTH_PORT := $(if $(filter $(SITE),precis-ctc),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),precis-main loop-crm),8074,8000))))
+DOCKER_HEALTH_PORT := $(if $(filter $(SITE),precis-ctc),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),precis-main precis-dev loop-crm),8074,8000))))
 # Per-site worker service name, resolved from the per-site Compose file.
 # The shared Dramatiq worker owns cross-product background execution. Precis/LMS
 # is deliberately mapped to a non-existent worker name so explicit LMS web
@@ -177,7 +186,7 @@ export SERVER_TYPE
 # the project's own backend tree (with its PYTHONPATH + uv wiring) instead of
 # the generic `uv run <module>` fallback. Sites without a backend tree keep
 # the MANAGE fallback (legacy aliases: vresume, cms-fusion, ...).
-BACKEND_MAKE := $(if $(filter $(SITE),precis-ctc),precis/precis-ctc/backend,$(if $(filter $(SITE),precis-main),precis/precis-main/backend,$(if $(filter $(SITE),loop-crm),loop-crm/backend,)))
+BACKEND_MAKE := $(if $(filter $(SITE),precis-ctc),precis/precis-ctc/backend,$(if $(filter $(SITE),precis-main),precis/precis-main/backend,$(if $(filter $(SITE),precis-dev),precis/precis-dev/backend,$(if $(filter $(SITE),loop-crm),loop-crm/backend,))))
 
 .PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate superuser server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy redeploy-with-stack docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
@@ -251,6 +260,9 @@ scripts script:
 website-ctc:
 	$(MAKE) -C precis/precis-ctc $(filter-out $@,$(MAKECMDGOALS))
 
+website-precis-dev:
+	$(MAKE) -C precis/precis-dev $(filter-out $@,$(MAKECMDGOALS))
+
 website-precis:
 	$(MAKE) -C precis/precis-main $(filter-out $@,$(MAKECMDGOALS))
 
@@ -277,7 +289,7 @@ website-pos: website-formints  ## Alias — POS editions dispatcher (projects/fo
 # Precis remains available through WEBSITE=precis-main for explicit maintenance,
 # but it is not part of repository-wide install/check/deploy workflows.
 projects:
-	@for project in precis/precis-main loop-crm formints; do \
+	@for project in precis/precis-main precis/precis-dev loop-crm formints; do \
 		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
 		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
 	done
@@ -319,7 +331,8 @@ validate-compose-env:
 build-assets:
 	@case '$(SITE)' in \
 	  precis-ctc)   $(MAKE) -C precis/precis-ctc build-assets ;; \
-	  precis-main)  $(MAKE) -C precis/precis-main build-assets ;; \
+	  precis-main)  $(MAKE) -C precis/precis-main build-assets ;;
+	  precis-dev)   $(MAKE) -C precis/precis-dev build-assets ;; \
 	  loop-crm)     $(MAKE) -C loop-crm build ;; \
 	  *) echo "No asset pipeline registered for $(SITE)"; exit 1 ;; \
 	esac

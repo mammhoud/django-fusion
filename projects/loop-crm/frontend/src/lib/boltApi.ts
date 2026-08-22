@@ -309,7 +309,20 @@ export class BoltApiClient {
     const headers = new Headers(init.headers);
     if (token) headers.set('Authorization', `Bearer ${token}`);
     const url = `${this.baseUrl}${prefix}${path.startsWith('/') ? path : `/${path}`}`;
-    return this.fetchImpl(url, { ...init, headers });
+    const response = await this.fetchImpl(url, { ...init, headers });
+    // Warn when the deprecated /api/v1/ fallback is engaged, so operators
+    // and developers see it in the console before the sunset date.
+    if (prefix === this.fallbackPrefix && this.fallbackPrefix !== this.apiPrefix) {
+      const deprecation = response.headers.get('Deprecation');
+      if (deprecation === 'true') {
+        const sunset = response.headers.get('Sunset') ?? 'unknown';
+        console.warn(
+          `[Loop CRM] /api/v1/ road is deprecated (Sunset: ${sunset}). ` +
+            `Migrate to /apis/core/ (named road) or /bolt/ (Bolt runtime).`,
+        );
+      }
+    }
+    return response;
   }
 
   private async parse<T>(response: Response): Promise<T> {

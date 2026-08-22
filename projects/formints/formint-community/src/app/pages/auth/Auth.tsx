@@ -8,7 +8,7 @@ import AnimatedBackground from '../../../components/layout/AnimatedBackground';
 import { invoke } from '@tauri-apps/api/core';
 import { iconClass, Ic } from '../../../lib/icons';
 import AnimatePresence from '../../../components/ui/AnimatePresence';
-import posCrest from '../../../../assets/images/formint-crest.svg';
+import posCrest from '@formints-assets/images/formint-crest.svg';
 
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login' | 'forgotPassword' | 'resetPassword';
 

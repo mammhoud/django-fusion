@@ -1,0 +1,70 @@
+# =============================================================================
+# Redis — shared cache + message broker (standalone service)
+# =============================================================================
+# Every Django project uses this Redis instance for both caching (db 0) and
+# Dramatiq background task brokering (db 1). The container_name `default-redis`
+# is the stable DNS name every service resolves.
+#
+# This file is included by application/databases/docker-compose.yml, which
+# also brings up PostgreSQL.  Start just Redis with:
+#
+#   docker compose -f application/databases/redis/docker-compose.yml up -d
+#
+# Container name: default-redis
+# Networks: common, warehouse-net, internal, traefik-net, site_network
+# =============================================================================
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  internal:
+    external: true
+  traefik-net:
+    external: true
+    name: traefik-net
+  site_network:
+    name: site_network
+
+volumes:
+  redis_data:
+    name: redis_data
+
+services:
+  default-redis:
+    image: redis:7-alpine
+    container_name: default-redis
+    restart: always
+    command: >-
+      redis-server /usr/local/etc/redis/redis.conf
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+    env_file:
+      - ../../../.env
+      - path: ../.env
+        required: false
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf:ro
+      - redis_data:/data
+    networks:
+      - common
+      - warehouse-net
+      - internal
+      - traefik-net
+      - site_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M

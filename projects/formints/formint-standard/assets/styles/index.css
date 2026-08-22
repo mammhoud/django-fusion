@@ -5,11 +5,11 @@
 @import "flyonui/variants.css";
 
 /* ── Icon & Font Assets ──────────────────────────────────────── */
-/* Remix Icon font (icons/*.woff2 in assets/icons/remix/). */
-@import "./fonts/remixicon.css";
+/* Remix Icon font (icons/*.woff2 in @formints-assets/icons/remix/). */
+@import "@formints-assets/styles/fonts/remixicon.css";
 /* Optional text fonts copied from the Fusion design system. */
-@import "./fonts/outfit.css";
-@import "./fonts/roboto.css";
+@import "@formints-assets/styles/fonts/outfit.css";
+@import "@formints-assets/styles/fonts/roboto.css";
 
 /* ── Base Design Tokens ──────────────────────────────────────── */
 @import "./base/_variables.css";

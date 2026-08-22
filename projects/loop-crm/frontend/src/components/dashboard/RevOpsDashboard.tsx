@@ -189,7 +189,7 @@ function Board() {
     return (
       <div className="loop-dash loop-dash__error">
         <strong>Could not load the dashboard.</strong>
-        <p>The /api/v1/dashboard endpoint did not respond. Check that the backend is running.</p>
+        <p>The dashboard endpoint did not respond. Check that the backend is running.</p>
         <Button type="button" onClick={() => { setStatus('loading'); window.location.reload(); }}>Retry</Button>
       </div>
     );

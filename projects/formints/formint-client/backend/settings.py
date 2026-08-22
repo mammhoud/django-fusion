@@ -16,6 +16,12 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
+FORMINT_SHARED_ASSETS = Path(
+    os.environ.get(
+        "FORMINT_SHARED_ASSETS",
+        str(BASE_DIR.parent.parent / "assets" / "shared"),
+    )
+)
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "formintc-purchase-dev-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
@@ -297,6 +303,9 @@ USE_I18N_URL_PATTERNS = False
 # ── Static / media ─────────────────────────────────────────────────────
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Keep shared product branding discoverable to Django's staticfiles finder;
+# output remains isolated in this Client backend.
+STATICFILES_DIRS = [str(FORMINT_SHARED_ASSETS / "static")]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 

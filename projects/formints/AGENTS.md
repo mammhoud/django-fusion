@@ -17,10 +17,33 @@ several related products; choose the edition deliberately before editing.
 | `formint-client/` | POS Client | Tauri 2 + Vue 3 + TypeScript + Pinia | Separate desktop client |
 | `tests/` | Shared POS validation | pytest, Vitest, API tests, Selenium, Playwright | Cross-edition contracts and flows |
 | `scripts/` | Build/release/dev tooling | Node/Python/shell | Packaging, screenshots, i18n, checks |
+| `packages/design-system/` | Shared design system | React components, CSS tokens, Double-Bezel architecture | Unified UI language across editions |
+| `assets/` | Shared asset registry | Canonical brand/fonts/icons + static delegation | Multi-edition asset ownership |
+| `configs/` | Product config contracts | Asset and environment cascade definitions | Shared settings metadata |
 
 The old `pos-mini`, `pos-solo`, `pos-full`, `forge-pos`, and `pos-cloud` names
 may appear in migration docs or compatibility manifests. Do not use them for
 new source paths unless the compatibility contract specifically requires it.
+
+## Shared packages layout
+
+```text
+packages/
+├── design-system/          # @formints/design-system
+│   ├── src/tokens/         # Design tokens (spacing, colors, typography, motion)
+│   ├── src/components/     # React components (BezelCard, CompactInput, CompactButton)
+│   ├── src/css/            # CSS variables and animations
+│   └── README.md           # Documentation and usage guide
+└── formints-client/        # @formints/client (API client)
+```
+
+The design system provides a unified design language across all Formint editions.
+Import `@formints/design-system` for tokens, components, and CSS utilities.
+
+Shared binary and public assets are owned by `assets/shared/` rather than copied
+into each edition. The ownership and wiring contract is recorded in
+`configs/assets.yml`; edition configs expose it through `@formints-assets`,
+`publicDir`, or Django `STATICFILES_DIRS` as appropriate.
 
 ## Professional package layout
 
@@ -124,6 +147,7 @@ or start services.
 
 ## Testing matrix
 
+- `packages/design-system/tests/`: design tokens and component unit tests.
 - `formint-pro/server/tests/`: backend models, APIs, fragments, sync, WebSockets.
 - `formint-pro/frontend/src/**/test*`: frontend contract/unit tests.
 - `formint-cloud/backend/apps/test_*.py`: cloud surface and WebSocket parity tests.

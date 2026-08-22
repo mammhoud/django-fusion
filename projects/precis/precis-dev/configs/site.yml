@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# precis-main — site.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Site identity + public domains for the unified Precis product. Both the
+# Django backend (backend/settings.py via the config cascade) and the Astro
+# frontend (frontend/ — PUBLIC_* env or the shared cascade module) resolve
+# their identity defaults from here; environment variables override.
+#
+# Public hosts: structa.cloud / www.structa.cloud (marketing + catalog + LMS)
+#               lms.structa.cloud (compatibility host for the LMS surface)
+# Traefik routes these in application/proxy/configs/traefik/dynamic/
+#   precis-landing.yml + lms-fusion.yml → precis-main-backend / -frontend.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  SITE:
+    name: precis-dev
+    aliases:
+      - precis-development
+      - dev
+    primary_domain: dev.structa.cloud
+    domains:
+      - dev.structa.cloud
+    allowed_hosts:
+      - dev.structa.cloud
+      - localhost
+      - 127.0.0.1
+      - precis-dev-backend
+      - precis-dev-frontend
+    default_email: "Structa Cloud <structa.cloud@gmail.com>"
+    module: CMS
+    wagtail_site_name: "StructAI Softwares"

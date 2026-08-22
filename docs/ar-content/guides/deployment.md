@@ -25,8 +25,8 @@ docs.structa.cloud أو media.structa.cloud/docs/
 نفذ من جذر المستودع:
 
 ```bash
-docker compose -f application/proxy/docker-compose.nginx.yml build shared-proxy
-docker compose -f application/proxy/docker-compose.nginx.yml up -d shared-proxy
+docker compose -f application/tools/docker-compose.nginx.yml build shared-proxy
+docker compose -f application/tools/docker-compose.nginx.yml up -d shared-proxy
 ```
 
 مرحلة Node داخل Docker تقوم بتثبيت Docus، وتوليد محتوى `en` و`ar`، ثم تنفيذ
@@ -35,7 +35,7 @@ docker compose -f application/proxy/docker-compose.nginx.yml up -d shared-proxy
 ## التحقق
 
 ```bash
-docker compose -f application/proxy/docker-compose.nginx.yml config -q
+docker compose -f application/tools/docker-compose.nginx.yml config -q
 docker inspect --format '{{json .State.Health}}' shared-proxy
 curl -I https://docs.structa.cloud/en/
 curl -I https://docs.structa.cloud/ar/

@@ -6,6 +6,12 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+FORMINT_SHARED_ASSETS = Path(
+    os.environ.get(
+        "FORMINT_SHARED_ASSETS",
+        str(BASE_DIR.parent.parent / "assets" / "shared"),
+    )
+)
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "formint-cloud-secret-key-change-me")
 DEBUG = os.environ.get("DJANGO_DEBUG", "True").lower() == "true"
@@ -223,6 +229,9 @@ USE_TZ = True
 # ── Static files ──
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Read shared product assets from the parent registry; collectstatic writes
+# into Cloud's own output directory.
+STATICFILES_DIRS = [str(FORMINT_SHARED_ASSETS / "static")]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 

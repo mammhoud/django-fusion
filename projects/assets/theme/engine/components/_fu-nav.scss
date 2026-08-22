@@ -1,0 +1,166 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component Standard: fu-nav — theme-agnostic BEM navigation primitives.
+   Includes: top bar, tabs, breadcrumb, mobile menu. Consumes
+   --fu-token-* semantic aliases.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Horizontal nav bar ── */
+.fu-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--fu-token-space-md);
+  padding: var(--fu-token-space-sm) var(--fu-token-space-lg);
+  background: var(--fu-token-card);
+  border-bottom: 1px solid var(--fu-token-line);
+
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fu-token-space-sm);
+    font-weight: var(--fu-token-weight-bold);
+    font-size: var(--fu-token-text-lg);
+    color: var(--fu-token-ink);
+    text-decoration: none;
+    img { max-height: 2rem; }
+  }
+
+  &__list {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-token-space-md);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex: 1;
+  }
+
+  &__item {
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: var(--fu-token-space-xs) var(--fu-token-space-sm);
+      font-size: var(--fu-token-text-sm);
+      font-weight: var(--fu-token-weight-medium);
+      color: var(--fu-token-muted);
+      border-radius: var(--fu-token-radius-md);
+      transition: color var(--fu-token-transition-fast),
+                  background var(--fu-token-transition-fast);
+      &:hover {
+        color: var(--fu-token-primary);
+        background: hsl(var(--fu-default-primary) / 0.06);
+      }
+    }
+
+    &.active a {
+      color: var(--fu-token-primary);
+      font-weight: var(--fu-token-weight-semibold);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-token-space-sm);
+  }
+
+  &__toggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--fu-token-line);
+    border-radius: var(--fu-token-radius-md);
+    padding: var(--fu-token-space-xs) var(--fu-token-space-sm);
+    cursor: pointer;
+    color: var(--fu-token-ink);
+
+    @media (max-width: 768px) {
+      display: inline-flex;
+    }
+  }
+
+  /* ── Mobile collapse ── */
+  @media (max-width: 768px) {
+    &__list {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      background: var(--fu-token-card);
+      padding: var(--fu-token-space-md);
+      box-shadow: var(--fu-token-shadow-modal);
+
+      &.open { display: flex; }
+    }
+  }
+
+  /* ── Sticky variant ── */
+  &--sticky {
+    position: sticky;
+    top: 0;
+    z-index: var(--fu-token-z-sticky);
+    backdrop-filter: blur(8px);
+    background: hsl(var(--fu-default-card) / 0.9);
+  }
+
+  /* ── Transparent variant (over hero) ── */
+  &--transparent {
+    background: transparent;
+    border-bottom: 0;
+    .fu-nav__item a { color: var(--fu-token-card); }
+    .fu-nav__brand { color: var(--fu-token-card); }
+  }
+}
+
+/* ── Tabs ── */
+.fu-nav-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--fu-token-line);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__item {
+    a {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--fu-token-space-xs);
+      padding: var(--fu-token-space-sm) var(--fu-token-space-md);
+      font-size: var(--fu-token-text-sm);
+      font-weight: var(--fu-token-weight-medium);
+      color: var(--fu-token-muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color var(--fu-token-transition-fast),
+                  border-color var(--fu-token-transition-fast);
+      &:hover {
+        color: var(--fu-token-ink);
+      }
+    }
+
+    &.active a {
+      color: var(--fu-token-primary);
+      border-bottom-color: var(--fu-token-primary);
+    }
+  }
+
+  /* ── Pill variant ── */
+  &--pills {
+    border-bottom: 0;
+    gap: var(--fu-token-space-xs);
+
+    .fu-nav-tabs__item a {
+      border: 0;
+      border-radius: var(--fu-token-radius-full);
+      padding: var(--fu-token-space-xs) var(--fu-token-space-md);
+
+      &.active,
+      .fu-nav-tabs__item.active & {
+        background: var(--fu-token-primary);
+        color: var(--fu-token-card);
+      }
+    }
+  }
+}

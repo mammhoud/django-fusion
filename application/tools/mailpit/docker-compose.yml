@@ -27,7 +27,9 @@ services:
       - common
       - traefik-net
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8025/ >/dev/null 2>&1 || exit 1"]
+      # MP_WEBROOT=/mailpit/ moves the UI under /mailpit/, so the root URL
+      # 404s — probe the prefixed path instead.
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8025/mailpit/ >/dev/null 2>&1 || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -13,6 +13,12 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DB_PATH = BASE_DIR.parent / "restaurant.db"
+FORMINT_SHARED_ASSETS = Path(
+    os.environ.get(
+        "FORMINT_SHARED_ASSETS",
+        str(BASE_DIR.parent.parent / "assets" / "shared"),
+    )
+)
 
 # ── Optional django-bolt (high-performance Rust-backed API) ────────────────
 # The django-fusion ``apis`` plugin checks this at runtime: when django-bolt is
@@ -160,6 +166,9 @@ TEMPLATES = [
 # ── Static files (admin CSS/JS) ──
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Shared product assets are read-only inputs; collectstatic still writes only
+# to this edition's STATIC_ROOT so Pro and Cloud never share generated output.
+STATICFILES_DIRS = [str(FORMINT_SHARED_ASSETS / "static")]
 
 # ── Unfold Admin Theme Settings ──
 UNFOLD = {
@@ -288,7 +297,7 @@ FUSION_COMPONENTS = {
 # server proxies to the backend in development instead.
 _FRONTEND_DIST = BASE_DIR.parent / "frontend" / "dist"
 if _FRONTEND_DIST.exists():
-    STATICFILES_DIRS = [str(_FRONTEND_DIST)]
+    STATICFILES_DIRS.append(str(_FRONTEND_DIST))
 
 # ── Server Config ──
 HOST = os.environ.get("POS_FULL_HOST", "0.0.0.0")

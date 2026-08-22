@@ -19,7 +19,6 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | **Formint** (canonical) | [`editions/README.md`](editions/README.md) | Community → Standard → Pro → Cloud → Client → SDK execution chain — the main, latest product + edition plans |
 | Precis Landing | [`precis-landing.md`](precis-landing.md) | Landing site architecture, content, and frontend work |
 | Loop-CRM | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) | Unified CRM + social scheduling (Twenty + Postiz merge) |
-| Precis LMS + Syntara merge | [`repository/precis-syntara-merge.md`](repository/precis-syntara-merge.md) | Fold Syntara (Cypercloud AI chat) into the Precis LMS main site as Precis Assistant |
 | Loop-CRM finance + workflows + integrations | [`loop-crm/formint-integration-finance-workflows.md`](loop-crm/formint-integration-finance-workflows.md) | Formint POS financial data → Loop-CRM finance module; workflow + connector expansion |
 | Loop-CRM Wagtail landing + billing + webapp | [`loop-crm/wagtail-landing-plan.md`](loop-crm/wagtail-landing-plan.md) | Wagtail-managed public landing (precis-landing pattern), Stripe subscriptions, sidenav/guided UX, employees + report catalog, shared-locale i18n, license removal |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
@@ -37,7 +36,6 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 
 1. **Formints vertical slice:** Formints is the canonical product; continue the edition chain in the order shown in [`editions/README.md`](editions/README.md). `formint-cloud` is the current cloud master (renamed from `formintB`/`pos-cloud`), `formint-pro` is the merged Professional (from `pos-full` + `pos-solo`).
 2. **Precis Landing quality:** preserve the post-only code-rendering contract and run its backend/frontend checks before adding new content blocks.
-3. **Precis LMS:** continue from the Precis backend with course system, profile, and content work.
 4. **Repository cleanup:** use the lifecycle policy and deletion manifest. Archive evidence before deleting duplicates.
 5. **Documentation maintenance:** update this index and the relevant scope README whenever a plan is added, moved, superseded, or completed.
 
@@ -46,9 +44,9 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Plan | Status | Canonical path |
 |---|:---:|---|
 | Formint edition chain (canonical, latest) | Active | [`editions/README.md`](editions/README.md) |
+| Formint cross-edition audit & reconciliation | Proposed — audit dated 2026-08-22 | [`editions/10-formint-audit-and-reconciliation-2026-08-22.md`](editions/10-formint-audit-and-reconciliation-2026-08-22.md) |
 | Precis Landing | Active | [`precis-landing.md`](precis-landing.md) |
 | Loop-CRM merge | Foundation + tenancy/auth + tenant-scoped CRUD + channels + allauth + real screens shipped; AI hub & remaining adapters next | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) |
-| Precis LMS + Syntara merge | Planned | [`repository/precis-syntara-merge.md`](repository/precis-syntara-merge.md) |
 | CTC Research publish | Active | [`repository/ctc-research-publish-2026-08-18.md`](repository/ctc-research-publish-2026-08-18.md) |
 | CTC Research cross-module workflows | Proposed | [`repository/precis-ctc-workflows.md`](repository/precis-ctc-workflows.md) |
 | Active project closeout | Audit complete | [`repository/active-project-closeout-2026-08-11.md`](repository/active-project-closeout-2026-08-11.md) |

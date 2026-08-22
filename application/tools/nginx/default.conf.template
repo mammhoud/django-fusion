@@ -3,7 +3,7 @@
 resolver 127.0.0.11 valid=30s ipv6=off;
 
 # The workspace control plane is space.structa.cloud (Coder, routed by
-# Traefik directly). AFFiNE is served at tools.structa.cloud/space/.
+# Traefik directly). Blinko is served at tools.structa.cloud/notes/.
 
 # Fusion sites use the same public /static/ and /media/ URLs. Select their
 # named-volume roots by the Host header while preserving the legacy shared
@@ -312,16 +312,11 @@ server {
 #   /             → tools navigation page (nginx/www/tools/index.html)
 #   /adminer/     → adminer:8080
 #   /mailpit/     → mailpit:8025   (MP_WEBROOT=/mailpit/)
-#   /ai/          → open-webui:8080
 #   /grafana/     → grafana:3000   (serve_from_sub_path=true)
 #   /docs/        → docus:3000
-#   /space/       → proxy-affine:3010
+#   /notes/       → blinko:1111
 #
-# AFFiNE's own redirects and SPA are origin-absolute (it redirects to
-# `/admin/setup`, `/workspace`, … and loads assets/API from origin paths), so
-# the catch-all below proxies every non-tool path to proxy-affine:3010.
-# /admin/setup, /workspace, /api/, /graphql, and AFFiNE assets all resolve
-# through it; the tools nav page keeps the exact `/` location above.
+# Blinko is served at /notes/ with a catch-all for SPA routing.
 server {
     listen 80;
     server_name tools.structa.cloud tools.localhost;
@@ -366,20 +361,7 @@ server {
         proxy_read_timeout 120s;
     }
 
-    location /ai/ {
-        set $open_webui_upstream open-webui:8080;
-        proxy_pass http://$open_webui_upstream;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_read_timeout 300s;
-        client_max_body_size 128m;
-    }
+
 
     location /grafana/ {
         set $grafana_upstream grafana:3000;
@@ -410,9 +392,23 @@ server {
         proxy_buffering off;
     }
 
-    location /space/ {
-        set $tools_affine_upstream proxy-affine:3010;
-        proxy_pass http://$tools_affine_upstream;
+    # Blinko serves its Next.js application from `/`, while the public
+    # contract is `/notes/`. Strip the public prefix before proxying so the
+    # upstream does not return a route-level 404 for `/notes/`.
+    location = /notes {
+        absolute_redirect off;
+        return 301 /notes/;
+    }
+
+    location ^~ /notes/ {
+        # NB: `set` must run BEFORE the `rewrite ... break` — `break` stops
+        # processing of all remaining rewrite-module directives, so a `set`
+        # placed after it never runs and proxy_pass sees an empty upstream
+        # ("invalid URL prefix in http://" → HTTP 500).
+        set $blinko_upstream blinko:1111;
+        rewrite ^/notes/(.*)$ /$1 break;
+        proxy_pass http://$blinko_upstream;
+        proxy_set_header X-Forwarded-Prefix /notes;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
@@ -425,11 +421,10 @@ server {
         client_max_body_size 128m;
     }
 
-    # Catch-all → AFFiNE at origin paths (setup, workspace, assets, APIs).
-    # Keeps /admin/setup working after AFFiNE's absolute redirects.
+    # Catch-all → Blinko SPA routing.
     location / {
-        set $tools_affine_upstream proxy-affine:3010;
-        proxy_pass http://$tools_affine_upstream;
+        set $blinko_upstream blinko:1111;
+        proxy_pass http://$blinko_upstream;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;

@@ -29,7 +29,7 @@ formintA/
 │   ├── icons/                # Desktop icons
 │   ├── Cargo.toml            # Rust dependencies
 │   └── tauri.conf.json       # Desktop packaging/configuration
-├── assets/                   # CSS and product assets
+├── assets/                   # Edition-owned styles; shared assets are at ../assets/shared
 ├── e2e/                      # Playwright auth/visual flows
 ├── docs/                     # Product architecture and customization docs
 ├── scripts/                  # Local/release helpers

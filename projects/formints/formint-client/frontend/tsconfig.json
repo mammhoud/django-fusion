@@ -3,7 +3,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@formints-assets/*": ["../../assets/shared/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],

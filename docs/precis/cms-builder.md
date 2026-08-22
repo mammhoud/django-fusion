@@ -62,6 +62,15 @@ scratch.
 
 ## 🏗️ CMS / Builder under development
 
+> **Update (Aug 2026):** the **thin Landing Builder MVP now exists** as
+> `django_fusion.builder` — an abstract `BuilderPage` (theme/brand/dark +
+> `template_context` + section StreamField), a `BuilderRenderer`, the
+> `/apis/builder/` JSON road, and fu-* section templates — mounted in
+> Loop-CRM (`apps.pages.BuilderPage`, `seed_builder`). It is the first real
+> consumer of the theme engine. What remains before the Solo/Business
+> builder surface is sellable: visual canvas, site scaffolding, and tenant
+> isolation.
+
 The builder capability is not shipped as a separate product yet; it is the
 **underlying asset model** of Precis today:
 

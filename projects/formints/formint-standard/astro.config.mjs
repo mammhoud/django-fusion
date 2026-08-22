@@ -21,6 +21,7 @@ const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
 // (e.g. mobile devices). Falls back to localhost-only, mirroring the old
 // vite.config.ts.
 const host = process.env.TAURI_DEV_HOST;
+const SHARED_ASSETS = fileURLToPath(new URL('../assets/shared', import.meta.url));
 
 /** Dev server port — keep 1420 for Tauri (tauri.conf.json devUrl is fixed). */
 const PORT = Number(envVal('PORT', 1420));
@@ -37,7 +38,7 @@ export default defineConfig({
   },
 
   // Same public folder the old Vite config used (Logo.svg, bg-texture.svg…).
-  publicDir: './assets/public',
+  publicDir: fileURLToPath(new URL('../assets/shared/public', import.meta.url)),
 
   vite: {
     plugins: [tailwindcss()],
@@ -57,6 +58,7 @@ export default defineConfig({
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@formints-assets': SHARED_ASSETS,
         // formintA now navigates through Astro's file-based routing — every
         // navigation is a full page load. The app components were written
         // against react-router hooks; this alias maps `react-router-dom` to a
@@ -68,6 +70,7 @@ export default defineConfig({
       },
     },
     server: {
+      fs: { allow: [SHARED_ASSETS] },
       watch: {
         // Don't watch the Rust backend while developing the frontend.
         ignored: ['**/src-tauri/**'],

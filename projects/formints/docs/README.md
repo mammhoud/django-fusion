@@ -45,5 +45,6 @@ for what remains per edition.
   — Community (`01`), Standard (`02`), Pro (`03`), Cloud (`04`), pos-client
   (`05`), JS/TS SDK (`06`), Community version (`07`), tenant schemas (`08`).
 - **Feature/buyer matrix:** [`docs/plans/editions/comparison.md`](../../../docs/plans/editions/comparison.md).
+- **Cross-edition audit and reconciliation plan:** [`docs/plans/editions/10-formint-audit-and-reconciliation-2026-08-22.md`](../../../docs/plans/editions/10-formint-audit-and-reconciliation-2026-08-22.md).
 - **Product home README:** [`projects/formints/README.md`](../README.md).
 - **Strategy (private):** [`docs/startup/formints.md`](../../../docs/startup/formints.md).

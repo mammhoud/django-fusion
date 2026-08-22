@@ -5,9 +5,13 @@
 // Astro's <slot /> keeps working (you can't nest Astro slots inside a React
 // component). Mirrors precis-landing's Layout.astro with a CRM-tuned theme.
 import '../styles/globals.css';
+// Shared theme engine (projects/assets/theme): activates the CRM theme's
+// --fu-token-* semantic layer. Existing --loop-* surfaces are untouched;
+// fu-crm-* BEM components become available to new surfaces.
+import '../styles/theme.css';
 ---
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="crm" data-brand="loop" class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

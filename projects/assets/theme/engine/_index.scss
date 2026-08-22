@@ -1,0 +1,30 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Theme Engine Index — the runtime layer that makes theme switching work.
+   ─────────────────────────────────────────────────────────────────────
+   Import order matters:
+
+     1. theme/default  → loads fu-default-* base tokens
+     2. theme/lms      → loads fu-lms-* tokens
+     3. theme/crm      → loads fu-crm-* tokens
+     4. theme/pos      → loads fu-pos-* tokens
+     5. engine/tokens  → defines --fu-token-* semantic aliases (→ fu-default-*)
+     6. engine/engine  → remaps --fu-token-* per [data-theme] / .dark / [data-brand]
+     7. engine/components → generic BEM components consuming --fu-token-*
+
+   After this, set data-theme on <html> to activate a theme:
+
+     <html data-theme="lms" data-brand="precis">
+     <html data-theme="pos" data-brand="formint" class="dark">
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Semantic token aliases (base mapping → fu-default-*) ── */
+@import 'fu-tokens';
+
+/* ── Theme engine: inheritance, dark mode, multi-brand, runtime ── */
+@import 'fu-engine';
+
+/* ── Generic component standards (theme-agnostic, consume --fu-token-*) ── */
+@import 'components/fu-form';
+@import 'components/fu-alert';
+@import 'components/fu-nav';
+@import 'components/fu-table';

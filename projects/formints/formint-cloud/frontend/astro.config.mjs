@@ -24,6 +24,7 @@ const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
 const SERVER = envVal('SERVER_URL', 'http://127.0.0.1:8767');
 const BACKEND = envVal('BACKEND_URL', 'http://127.0.0.1:8082');
 const PORT = Number(envVal('PORT', 4323));
+const SHARED_ASSETS = fileURLToPath(new URL('../../assets/shared', import.meta.url));
 
 export default defineConfig({
   output: 'static',
@@ -34,13 +35,14 @@ export default defineConfig({
   },
 
   // Same public folder the formintA Vite config used (Logo.svg, …).
-  publicDir: './assets/public',
+  publicDir: fileURLToPath(new URL('../../assets/shared/public', import.meta.url)),
 
   vite: {
     plugins: [tailwindcss()],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@formints-assets': SHARED_ASSETS,
         // The app components were written against react-router hooks; this
         // alias maps `react-router-dom` to a thin MPA shim so pages keep
         // working without rewrites.
@@ -50,6 +52,7 @@ export default defineConfig({
       },
     },
     server: {
+      fs: { allow: [SHARED_ASSETS] },
       proxy: {
         // Server REST + fusion API (Django, Formint Cloud ORM)
         '/health': { target: SERVER, changeOrigin: true },

@@ -1,0 +1,171 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Unified Design Tokens — Semantic Alias Layer
+   ─────────────────────────────────────────────────────────────────────
+   This file is the heart of the design system. It defines a set of
+   SEMANTIC token aliases (--fu-token-*) that every component consumes.
+   Each semantic alias resolves to the active theme's fu-<theme>-* custom
+   property, so switching themes at runtime instantly restyles every
+   component without touching component CSS.
+
+   Inheritance chain (CSS cascade order — last wins):
+
+     1. fu-default-*          (base, always loaded)
+     2. fu-<active-theme>-*   (product theme override)
+     3. --fu-token-*           (this semantic layer, resolves from above)
+     4. .dark / [data-theme]  (dark mode + runtime overrides)
+
+   A component never references --fu-lms-primary directly. It references
+   --fu-token-primary, which resolves to whatever theme is active.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────────
+   1. COLOR TOKENS
+   ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Brand */
+  --fu-token-primary:        hsl(var(--fu-default-primary));
+  --fu-token-primary-dark:   hsl(var(--fu-default-primary-dark));
+  --fu-token-primary-light:  hsl(var(--fu-default-primary-light));
+  --fu-token-secondary:      hsl(var(--fu-default-secondary));
+  --fu-token-accent:         hsl(var(--fu-default-accent));
+
+  /* Semantic states */
+  --fu-token-success:  hsl(var(--fu-default-success));
+  --fu-token-warning:  hsl(var(--fu-default-warning));
+  --fu-token-error:    hsl(var(--fu-default-error));
+  --fu-token-info:     hsl(var(--fu-default-info));
+
+  /* Neutral surfaces */
+  --fu-token-paper:  hsl(var(--fu-default-paper));
+  --fu-token-ink:    hsl(var(--fu-default-ink));
+  --fu-token-muted:  hsl(var(--fu-default-muted));
+  --fu-token-line:   hsl(var(--fu-default-line));
+  --fu-token-card:   hsl(var(--fu-default-card));
+  --fu-token-link:   hsl(var(--fu-default-link));
+  --fu-token-mark:   hsl(var(--fu-default-mark));
+  --fu-token-live:   hsl(var(--fu-default-live));
+
+  /* Neutral ramp (0–9 for fine-grained opacity tints) */
+  --fu-token-neutral-0:  hsl(var(--fu-default-card));
+  --fu-token-neutral-1:  hsl(var(--fu-default-paper));
+  --fu-token-neutral-3:  hsl(var(--fu-default-line));
+  --fu-token-neutral-5:  hsl(var(--fu-default-muted) / 0.5);
+  --fu-token-neutral-7:  hsl(var(--fu-default-muted));
+  --fu-token-neutral-9:  hsl(var(--fu-default-ink));
+
+  /* ─────────────────────────────────────────────────────────────────
+     2. TYPOGRAPHY TOKENS
+     ───────────────────────────────────────────────────────────────── */
+
+  --fu-token-font-sans:    var(--fu-default-font-sans);
+  --fu-token-font-mono:    var(--fu-default-font-mono);
+  --fu-token-font-display: var(--fu-default-font-display);
+
+  /* Font sizes — modular scale (1.250 — Major Third) */
+  --fu-token-text-xs:   0.75rem;    /* 12px */
+  --fu-token-text-sm:   0.875rem;   /* 14px */
+  --fu-token-text-base: 1rem;       /* 16px */
+  --fu-token-text-lg:   1.125rem;  /* 18px */
+  --fu-token-text-xl:   1.25rem;   /* 20px */
+  --fu-token-text-2xl:  1.5rem;    /* 24px */
+  --fu-token-text-3xl:  1.875rem;  /* 30px */
+  --fu-token-text-4xl:  2.25rem;   /* 36px */
+  --fu-token-text-5xl:  3rem;      /* 48px */
+  --fu-token-text-6xl:  3.75rem;   /* 60px */
+
+  /* Font weights */
+  --fu-token-weight-thin:       100;
+  --fu-token-weight-extralight: 200;
+  --fu-token-weight-light:      300;
+  --fu-token-weight-regular:    400;
+  --fu-token-weight-medium:    500;
+  --fu-token-weight-semibold:  600;
+  --fu-token-weight-bold:      700;
+  --fu-token-weight-extrabold: 800;
+  --fu-token-weight-black:     900;
+
+  /* Line heights */
+  --fu-token-leading-none:    1;
+  --fu-token-leading-tight:   1.25;
+  --fu-token-leading-snug:    1.375;
+  --fu-token-leading-normal:  1.5;
+  --fu-token-leading-relaxed: 1.625;
+  --fu-token-leading-loose:   2;
+
+  /* Letter spacing */
+  --fu-token-tracking-tighter: -0.05em;
+  --fu-token-tracking-tight:   -0.025em;
+  --fu-token-tracking-normal:  0;
+  --fu-token-tracking-wide:    0.025em;
+  --fu-token-tracking-wider:   0.05em;
+  --fu-token-tracking-widest:  0.1em;
+
+  /* ─────────────────────────────────────────────────────────────────
+     3. SPACING TOKENS
+     ───────────────────────────────────────────────────────────────── */
+
+  /* Margin / padding scale (shared by all themes; overridden per-theme) */
+  --fu-token-space-0:    0;
+  --fu-token-space-px:   1px;
+  --fu-token-space-xs:   var(--fu-default-space-xs);
+  --fu-token-space-sm:   var(--fu-default-space-sm);
+  --fu-token-space-md:   var(--fu-default-space-md);
+  --fu-token-space-lg:   var(--fu-default-space-lg);
+  --fu-token-space-xl:   var(--fu-default-space-xl);
+  --fu-token-space-2xl:  var(--fu-default-space-2xl);
+  --fu-token-space-3xl:  var(--fu-default-space-3xl);
+
+  /* Section padding */
+  --fu-token-section-lg: var(--fu-default-section-lg);
+  --fu-token-section-xl: var(--fu-default-section-xl);
+
+  /* ─────────────────────────────────────────────────────────────────
+     4. GRID SYSTEM
+     ───────────────────────────────────────────────────────────────── */
+
+  --fu-token-grid-columns:    12;
+  --fu-token-grid-gutter:     var(--fu-default-space-md);
+  --fu-token-grid-gutter-sm:  var(--fu-default-space-sm);
+  --fu-token-grid-gutter-lg:  var(--fu-default-space-lg);
+  --fu-token-grid-max-width: 80rem;     /* 1280px */
+  --fu-token-container-sm:    40rem;     /* 640px  */
+  --fu-token-container-md:    48rem;     /* 768px  */
+  --fu-token-container-lg:    64rem;     /* 1024px */
+  --fu-token-container-xl:    80rem;     /* 1280px */
+  --fu-token-container-2xl:   96rem;     /* 1536px */
+
+  /* Breakpoints (informational — used in media queries via SCSS vars) */
+  --fu-token-bp-sm:  640px;
+  --fu-token-bp-md:  768px;
+  --fu-token-bp-lg:  1024px;
+  --fu-token-bp-xl:  1280px;
+  --fu-token-bp-2xl: 1536px;
+
+  /* ─────────────────────────────────────────────────────────────────
+     5. RADIUS, SHADOW, MOTION, Z-INDEX
+     ───────────────────────────────────────────────────────────────── */
+
+  --fu-token-radius-sm:    var(--fu-default-radius-sm);
+  --fu-token-radius-md:    var(--fu-default-radius-md);
+  --fu-token-radius-lg:    var(--fu-default-radius-lg);
+  --fu-token-radius-xl:    var(--fu-default-radius-xl);
+  --fu-token-radius-full:  var(--fu-default-radius-full);
+
+  --fu-token-shadow-card:        var(--fu-default-shadow-card);
+  --fu-token-shadow-card-hover:  var(--fu-default-shadow-card-hover);
+  --fu-token-shadow-modal:      var(--fu-default-shadow-modal);
+  --fu-token-shadow-toast:      var(--fu-default-shadow-toast);
+
+  --fu-token-transition-fast:     var(--fu-default-transition-fast);
+  --fu-token-transition-standard: var(--fu-default-transition-standard);
+  --fu-token-transition-slow:     var(--fu-default-transition-slow);
+  --fu-token-transition-reveal:   var(--fu-default-transition-reveal);
+
+  --fu-token-z-dropdown:        var(--fu-default-z-dropdown);
+  --fu-token-z-sticky:          var(--fu-default-z-sticky);
+  --fu-token-z-modal-backdrop:  var(--fu-default-z-modal-backdrop);
+  --fu-token-z-modal:           var(--fu-default-z-modal);
+  --fu-token-z-toast:           var(--fu-default-z-toast);
+  --fu-token-z-tooltip:         var(--fu-default-z-tooltip);
+}

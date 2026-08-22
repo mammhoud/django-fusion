@@ -9,67 +9,67 @@ import SearchInput from '../../../components/ui/SearchInput';
 import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import PrepStepsEditor from '../../../components/notes/PrepStepsEditor';
 import { parseNoteSteps, serializeNoteSteps } from '../../../utils/noteSteps';
+import Card from '../../../components/ui/Card';
 
 // ── Category color mapping ──
 const CATEGORY_COLORS: Record<string, string> = {
-  general: 'tag--ghost',
-  idea: 'tag--primary',
-  task: 'tag--warning',
-  recipe: 'tag--success',
-  receipt: 'tag--primary',
-  preparation: 'tag--info',
-  'chef-tips': 'tag--warning',
-  allergen: 'tag--error',
-  plating: 'tag--success',
-  inventory: 'tag--info',
-  staff: 'tag--secondary',
-  finance: 'tag--primary',
-  customer: 'tag--error',
-  other: 'tag--ghost',
+  general: 'bg-base-200 text-base-content/60',
+  idea: 'bg-primary/10 text-primary',
+  task: 'bg-warning/10 text-warning',
+  recipe: 'bg-success/10 text-success',
+  receipt: 'bg-primary/10 text-primary',
+  preparation: 'bg-info/10 text-info',
+  'chef-tips': 'bg-warning/10 text-warning',
+  allergen: 'bg-error/10 text-error',
+  plating: 'bg-success/10 text-success',
+  inventory: 'bg-info/10 text-info',
+  staff: 'bg-secondary/10 text-secondary',
+  finance: 'bg-primary/10 text-primary',
+  customer: 'bg-error/10 text-error',
+  other: 'bg-base-200 text-base-content/60',
 };
 
 const NOTE_CATEGORIES = [
-  { value: '', label: 'General', color: 'tag--ghost' },
-  { value: 'idea', label: 'Idea', color: 'tag--primary' },
-  { value: 'task', label: 'Task', color: 'tag--warning' },
-  { value: 'receipt', label: 'Receipt Template', color: 'tag--primary' },
-  { value: 'recipe', label: 'Recipe', color: 'tag--success' },
-  { value: 'preparation', label: 'Preparation Steps', color: 'tag--info' },
-  { value: 'chef-tips', label: 'Chef Tips', color: 'tag--warning' },
-  { value: 'allergen', label: 'Allergen Info', color: 'tag--error' },
-  { value: 'plating', label: 'Plating Guide', color: 'tag--success' },
-  { value: 'inventory', label: 'Inventory', color: 'tag--info' },
-  { value: 'staff', label: 'Staff', color: 'tag--secondary' },
-  { value: 'finance', label: 'Finance', color: 'tag--primary' },
-  { value: 'customer', label: 'Customer', color: 'tag--error' },
-  { value: 'other', label: 'Other', color: 'tag--ghost' },
+  { value: '', label: 'General', color: 'bg-base-200 text-base-content/60' },
+  { value: 'idea', label: 'Idea', color: 'bg-primary/10 text-primary' },
+  { value: 'task', label: 'Task', color: 'bg-warning/10 text-warning' },
+  { value: 'receipt', label: 'Receipt Template', color: 'bg-primary/10 text-primary' },
+  { value: 'recipe', label: 'Recipe', color: 'bg-success/10 text-success' },
+  { value: 'preparation', label: 'Preparation Steps', color: 'bg-info/10 text-info' },
+  { value: 'chef-tips', label: 'Chef Tips', color: 'bg-warning/10 text-warning' },
+  { value: 'allergen', label: 'Allergen Info', color: 'bg-error/10 text-error' },
+  { value: 'plating', label: 'Plating Guide', color: 'bg-success/10 text-success' },
+  { value: 'inventory', label: 'Inventory', color: 'bg-info/10 text-info' },
+  { value: 'staff', label: 'Staff', color: 'bg-secondary/10 text-secondary' },
+  { value: 'finance', label: 'Finance', color: 'bg-primary/10 text-primary' },
+  { value: 'customer', label: 'Customer', color: 'bg-error/10 text-error' },
+  { value: 'other', label: 'Other', color: 'bg-base-200 text-base-content/60' },
 ];
 
 function getCategoryColor(cat: string | null | undefined): string {
-  if (!cat) return 'tag--ghost';
-  return CATEGORY_COLORS[cat.toLowerCase()] || 'tag--ghost';
+  if (!cat) return 'bg-base-200 text-base-content/60';
+  return CATEGORY_COLORS[cat.toLowerCase()] || 'bg-base-200 text-base-content/60';
 }
 
-
-function getCategoryBorder(cat: string | null | undefined): string {
-  if (!cat) return 'border-l-base-300';
-  const borders: Record<string, string> = {
-    general: 'border-l-base-300',
-    idea: 'border-l-primary',
-    task: 'border-l-warning',
-    recipe: 'border-l-success',
-    receipt: 'border-l-accent',
-    preparation: 'border-l-info',
-    'chef-tips': 'border-l-warning',
-    allergen: 'border-l-error',
-    plating: 'border-l-success',
-    inventory: 'border-l-info',
-    staff: 'border-l-secondary',
-    finance: 'border-l-accent',
-    customer: 'border-l-error',
-    other: 'border-l-base-300',
+function getCategoryAccent(cat: string | null | undefined): string {
+  if (!cat) return 'var(--color-base-300)';
+  const accents: Record<string, string> = {
+    general: 'var(--color-base-300)',
+    idea: 'var(--color-primary)',
+    task: 'var(--color-warning)',
+    recipe: 'var(--color-success)',
+    receipt: 'var(--color-primary)',
+    preparation: 'var(--color-info)',
+    'chef-tips': 'var(--color-warning)',
+    allergen: 'var(--color-error)',
+    plating: 'var(--color-success)',
+    inventory: 'var(--color-info)',
+    staff: 'var(--color-secondary)',
+    finance: 'var(--color-primary)',
+    customer: 'var(--color-error)',
+    other: 'var(--color-base-300)',
   };
-  return borders[cat.toLowerCase()] || 'border-l-base-300';
+  return accents[cat.toLowerCase()] || 'var(--color-base-300)';
 }
 
 function getCategoryLabel(cat: string | null | undefined): string {
@@ -152,7 +152,6 @@ export default function Notes() {
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const copyTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /** Copy a note's body to the clipboard with transient "Copied" feedback. */
   const handleCopy = async (note: Note) => {
     const text = note.template_body || '';
     if (!text) return;
@@ -192,7 +191,6 @@ export default function Notes() {
     }
   };
 
-  // A note is valid when it has a name AND (a plain-text body OR prep steps)
   const hasBody = form.template_body.trim().length > 0;
   const hasSteps = form.category === 'preparation' && form.steps.length > 0;
   const canSave = !!form.name.trim() && (hasBody || hasSteps);
@@ -220,7 +218,6 @@ export default function Notes() {
         });
       } else {
         const result = await invoke<Note>('add_note', { template: payload });
-        // If is_default is checked, update after creation
         if (form.is_default && result) {
           await invoke('update_note', {
             id: result.id,
@@ -299,7 +296,6 @@ export default function Notes() {
     }
   };
 
-  // ── Bulk actions ──
   const toggleSelect = (id: number) => {
     setSelectedNotes(prev => {
       const next = new Set(prev);
@@ -343,7 +339,6 @@ export default function Notes() {
     }
   };
 
-  // ── E6: Export filtered notes as JSON ──
   const handleExport = () => {
     const data = filteredNotes.map(n => ({
       name: n.name,
@@ -368,18 +363,15 @@ export default function Notes() {
     setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false, selectable: false, steps: [] });
   };
 
-  // ── Unique categories from notes for the filter bar ──
   const availableCategories = useMemo(() => {
     const cats = new Set(notes.map(n => (n.category || '').toLowerCase()).filter(Boolean));
     return Array.from(cats);
   }, [notes]);
 
-  // ── Filtered + sorted notes ──
   const q = debouncedSearch.trim().toLowerCase();
   const filteredNotes = useMemo(() => {
     let result = notes;
 
-    // Search filter
     if (q) {
       result = result.filter(n =>
         n.name.toLowerCase().includes(q) ||
@@ -388,17 +380,14 @@ export default function Notes() {
       );
     }
 
-    // Category filter
     if (categoryFilter) {
       result = result.filter(n => (n.category || '').toLowerCase() === categoryFilter);
     }
 
-    // Selectable filter
     if (selectableFilter) {
       result = result.filter(n => !!n.selectable);
     }
 
-    // Sort
     const sorted = [...result];
     switch (sortKey) {
       case 'name-asc': sorted.sort((a, b) => a.name.localeCompare(b.name)); break;
@@ -412,12 +401,10 @@ export default function Notes() {
     return sorted;
   }, [notes, q, categoryFilter, selectableFilter, sortKey]);
 
-  // Clear selectedNotes when filtered notes change (search/category filter)
   useEffect(() => {
     const visibleIds = new Set(filteredNotes.map(n => n.id));
     setSelectedNotes(prev => {
       const filtered = new Set([...prev].filter(id => visibleIds.has(id)));
-      // Only update state if something was removed (avoids infinite loops)
       if (filtered.size === prev.size) return prev;
       return filtered;
     });
@@ -428,11 +415,18 @@ export default function Notes() {
   return (
     <PageLayout title={t('notes.title') || 'Notes'}>
       <div className="space-y-4">
+        {/* ── Eyebrow tag ── */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">
+            <span className="ri-sticky-note-2-line ri-12px" />
+            Documentation
+          </span>
+        </div>
+
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h1 className="text-2xl font-bold text-base-content flex items-center gap-2">
-              <span className="ri-sticky-note-2-line ri-24px text-primary" />
               {t('notes.title') || 'Notes'}
             </h1>
             <p className="text-sm text-base-content/50 mt-0.5">
@@ -452,18 +446,17 @@ export default function Notes() {
             </button>
             <button
               onClick={() => { setEditing(null); setForm({ name: '', template_body: '', category: '', is_default: false, use_as_template: false, selectable: false, steps: [] }); setShowForm(true); }}
-              className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
+              className="btn btn-primary btn-sm gap-1 shrink-0 active:scale-[0.98] transition-transform"
             >
-              <span className="ri-add-line" />
+              <span className="ri-add-line ri-14px" />
               {t('notes.addTemplate') || 'New Note'}
             </button>
           </div>
         </div>
 
-        {/* ── Search + Sort + Category Filter Bar ── */}
-        <div className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-xl p-3 shadow-sm">
+        {/* ── Search + Sort + Category Filter Bar — compact bezel ── */}
+        <Card padding="sm" variant="bezel">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            {/* Search */}
             <SearchInput
               value={search}
               onChange={setSearch}
@@ -474,48 +467,40 @@ export default function Notes() {
               className="flex-1"
             />
 
-            {/* Sort */}
-            <div className="field field--sm sm:w-40">
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as typeof sortKey)}
-                aria-label={t('notes.sortBy') || 'Sort by'}
-                className="select"
-              >
-                <option value="pinned">{t('notes.sortPinned') || 'Pinned first'}</option>
-                <option value="newest">{t('notes.sortNewest') || 'Newest'}</option>
-                <option value="oldest">{t('notes.sortOldest') || 'Oldest'}</option>
-                <option value="name-asc">{t('notes.sortNameAsc') || 'Name (A→Z)'}</option>
-                <option value="name-desc">{t('notes.sortNameDesc') || 'Name (Z→A)'}</option>
-              </select>
-            </div>
+            <select
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as typeof sortKey)}
+              aria-label={t('notes.sortBy') || 'Sort by'}
+              className="select h-8 text-xs sm:w-40"
+            >
+              <option value="pinned">{t('notes.sortPinned') || 'Pinned first'}</option>
+              <option value="newest">{t('notes.sortNewest') || 'Newest'}</option>
+              <option value="oldest">{t('notes.sortOldest') || 'Oldest'}</option>
+              <option value="name-asc">{t('notes.sortNameAsc') || 'Name (A→Z)'}</option>
+              <option value="name-desc">{t('notes.sortNameDesc') || 'Name (Z→A)'}</option>
+            </select>
 
-            {/* Category filter */}
             {availableCategories.length > 0 && (
-              <div className="field field--sm sm:w-36">
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  aria-label="Filter by category"
-                  className="select"
-                >
-                  <option value="">All categories</option>
-                  {availableCategories.map(cat => (
-                    <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
-                  ))}
-                </select>
-              </div>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                aria-label="Filter by category"
+                className="select h-8 text-xs sm:w-36"
+              >
+                <option value="">All categories</option>
+                {availableCategories.map(cat => (
+                  <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
+                ))}
+              </select>
             )}
 
-            {/* Selectable-only filter */}
             <button
               type="button"
               onClick={() => setSelectableFilter(f => !f)}
               aria-pressed={selectableFilter}
-              className={`tag tag--sm cursor-pointer transition-all ${
-                selectableFilter ? 'tag--primary' : 'tag--ghost hover:tag--primary'
+              className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-xs font-medium transition-all ${
+                selectableFilter ? 'bg-primary/10 text-primary' : 'bg-base-200 text-base-content/50 hover:bg-primary/10 hover:text-primary'
               }`}
-              title={t('notes.selectableFilterHint') || 'Only quick-select notes'}
             >
               <span className="ri-cursor-line ri-12px" />
               {t('notes.selectable') || 'Selectable'}
@@ -530,18 +515,18 @@ export default function Notes() {
               />
               <span className="text-[10px] text-base-content/40">All</span>
             </label>
-            <span className="text-xs text-base-content/40 whitespace-nowrap px-2">
+            <span className="text-[10px] text-base-content/40 whitespace-nowrap px-2">
               {filteredNotes.length} / {notes.length}
             </span>
           </div>
-        </div>
+        </Card>
 
         {/* ── Create/Edit Note Form (slide-up) ── */}
         <AnimatePresence>
           {showForm && (
             <form
               onSubmit={handleSubmit}
-              className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-xl p-5 space-y-4 shadow-lg overflow-hidden"
+              className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-2xl p-5 space-y-4 shadow-lg overflow-hidden"
             >
               <div className="flex items-center justify-between mb-1">
                 <h3 className="font-semibold text-base-content flex items-center gap-2">
@@ -551,13 +536,12 @@ export default function Notes() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="btn btn-ghost btn-sm btn-square"
+                  className="w-7 h-7 rounded-full bg-base-200 flex items-center justify-center hover:bg-base-300 transition-colors"
                 >
-                  <span className="ri-close-line ri-16px" />
+                  <span className="ri-close-line ri-14px" />
                 </button>
               </div>
 
-              {/* Category-aware helper strip */}
               {form.category === 'preparation' && (
                 <p className="-mt-2 text-[11px] text-base-content/40 flex items-center gap-1.5">
                   <span className="ri-check-double-line ri-14px text-info" />
@@ -566,10 +550,9 @@ export default function Notes() {
               )}
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {/* Title */}
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-medium text-base-content/70 mb-1">
-                    {t('notes.name') || 'Title'}
+                <div className="sm:col-span-2 space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+                    {t('notes.name') || 'Title'} <span className="text-error">*</span>
                   </label>
                   <input
                     type="text"
@@ -577,20 +560,19 @@ export default function Notes() {
                     onChange={e => setForm({ ...form, name: e.target.value })}
                     placeholder={t('notes.titlePlaceholder') || 'Note title...'}
                     required
-                    className="input w-full"
+                    className="input input-compact w-full"
                     autoFocus
                   />
                 </div>
 
-                {/* Category */}
-                <div>
-                  <label className="block text-sm font-medium text-base-content/70 mb-1">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
                     {t('notes.category') || 'Category'}
                   </label>
                   <select
                     value={form.category}
                     onChange={e => setForm({ ...form, category: e.target.value })}
-                    className="select w-full"
+                    className="select w-full h-8 text-xs"
                   >
                     {NOTE_CATEGORIES.map(cat => (
                       <option key={cat.value} value={cat.value}>
@@ -601,10 +583,9 @@ export default function Notes() {
                 </div>
               </div>
 
-              {/* Prep steps editor — shown for the 'preparation' category */}
               {form.category === 'preparation' ? (
-                <div>
-                  <label className="block text-sm font-medium text-base-content/70 mb-2">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
                     {t('notes.stepsTitle') || 'Preparation Steps'}
                   </label>
                   <PrepStepsEditor
@@ -613,8 +594,8 @@ export default function Notes() {
                   />
                 </div>
               ) : (
-                <div>
-                  <label className="block text-sm font-medium text-base-content/70 mb-1">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
                     {t('notes.body') || 'Content'}
                   </label>
                   <textarea
@@ -628,44 +609,40 @@ export default function Notes() {
                 </div>
               )}
 
-              {/* Toggle row: Pin + Template */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-base-300/30">
                 <div className="flex flex-wrap items-center gap-4">
-                  {/* Pin toggle */}
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={form.is_default}
                       onChange={e => setForm({ ...form, is_default: e.target.checked })}
-                      className="toggle toggle-primary toggle-sm"
+                      className="checkbox checkbox-primary checkbox-sm"
                     />
-                    <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
+                    <span className="text-xs text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
                       <span className="ri-pushpin-2-line ri-14px" />
                       {t('notes.setAsDefault') || 'Pin note'}
                     </span>
                   </label>
-                  {/* Use as receipt template toggle */}
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={form.use_as_template}
                       onChange={e => setForm({ ...form, use_as_template: e.target.checked })}
-                      className="toggle toggle-accent toggle-sm"
+                      className="checkbox checkbox-primary checkbox-sm"
                     />
-                    <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
+                    <span className="text-xs text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
                       <span className="ri-receipt-line ri-14px" />
                       {t('notes.useAsReceiptTemplate') || 'Use as receipt template'}
                     </span>
                   </label>
-                  {/* Selectable toggle — quick-pick on Sale */}
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input
                       type="checkbox"
                       checked={form.selectable}
                       onChange={e => setForm({ ...form, selectable: e.target.checked })}
-                      className="toggle toggle-primary toggle-sm"
+                      className="checkbox checkbox-primary checkbox-sm"
                     />
-                    <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
+                    <span className="text-xs text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
                       <span className="ri-cursor-line ri-14px" />
                       {t('notes.selectable') || 'Quick-select on Sale'}
                     </span>
@@ -676,11 +653,11 @@ export default function Notes() {
                   <button type="button" onClick={resetForm} className="btn btn-ghost btn-sm">
                     {t('common.cancel')}
                   </button>
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-sm gap-1.5"
-                  disabled={!canSave}
-                >
+                  <button
+                    type="submit"
+                    className="btn btn-primary btn-sm gap-1.5"
+                    disabled={!canSave}
+                  >
                     <span className="ri-check-line ri-14px" />
                     {editing ? (t('common.update') || 'Update') : (t('common.save') || 'Save')}
                   </button>
@@ -713,7 +690,7 @@ export default function Notes() {
           </div>
         )}
 
-        {/* ── Notes Grid ── */}
+        {/* ── Notes Grid — Double-Bezel cards ── */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-3">
@@ -722,9 +699,7 @@ export default function Notes() {
             </div>
           </div>
         ) : filteredNotes.length === 0 ? (
-          <div
-            className="flex flex-col items-center justify-center py-20 text-base-content/40"
-          >
+          <div className="flex flex-col items-center justify-center py-20 text-base-content/40">
             <span className="ri-sticky-note-line w-16 h-16 mb-4 opacity-30" />
             <p className="text-lg font-medium">
               {debouncedSearch || categoryFilter
@@ -742,111 +717,127 @@ export default function Notes() {
             )}
           </div>
         ) : (
-          <div className="grid grid--auto">
-            {filteredNotes.map((note) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filteredNotes.map((note, idx) => (
               <div
                 key={note.id}
-                className={`group bg-base-100/70 backdrop-blur-sm border border-base-300/30 border-l-4
-                  rounded-xl p-4 hover:shadow-lg hover:shadow-base-300/20
-                  hover:border-primary/30 hover:bg-base-100/90
-                  transition-all duration-200 relative ${note.category ? getCategoryBorder(note.category) : 'border-l-base-300'}`}
+                className={`
+                  group relative
+                  overflow-hidden
+                  bg-base-200/40 dark:bg-white/5
+                  border border-base-300/25 dark:border-white/10
+                  rounded-[1.5rem]
+                  p-1.5
+                  shadow-[var(--shadow-bezel-outer)]
+                  transition-all duration-500 ease-[var(--ease-fluid)]
+                  hover:-translate-y-0.5 hover:shadow-[var(--shadow-bezel-hover)]
+                  animate-fade-up delay-${Math.min(idx * 75, 450)}
+                `}
               >
-                {/* Selection checkbox */}
-                <div className="absolute top-2 left-2 z-10" onClick={e => e.stopPropagation()}>
-                  <input
-                    type="checkbox"
-                    checked={selectedNotes.has(note.id)}
-                    onChange={() => toggleSelect(note.id)}
-                    className="checkbox checkbox-primary checkbox-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                  />
-                </div>
-                <div className="cursor-pointer" onClick={() => handleEdit(note)}>
-                {/* Pin indicator */}
-                {note.is_default && (
-                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20">
-                    <span className="ri-pushpin-2-line ri-12px text-primary-content" />
+                {/* Category accent bar */}
+                <div
+                  className="absolute top-0 bottom-0 inset-inline-start-0 w-1 rounded-l-[inherit]"
+                  style={{ backgroundColor: getCategoryAccent(note.category) }}
+                />
+
+                {/* Inner core */}
+                <div className="bg-base-100 dark:bg-base-900 rounded-[1.125rem] p-4 shadow-[var(--shadow-bezel-inner)] h-full">
+                  {/* Selection checkbox */}
+                  <div className="absolute top-2 left-3 z-10" onClick={e => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={selectedNotes.has(note.id)}
+                      onChange={() => toggleSelect(note.id)}
+                      className="checkbox checkbox-primary checkbox-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                    />
                   </div>
-                )}
 
-                {/* Badges row */}
-                <div className="flex flex-wrap items-center gap-1.5 mb-2">
-                  {note.category && (
-                    <span className={`tag tag--sm ${getCategoryColor(note.category)}`}>
-                      <span className={getNoteIconClass(note.category)} /> {getCategoryLabel(note.category)}
-                    </span>
+                  {/* Pin indicator */}
+                  {note.is_default && (
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/20 z-10">
+                      <span className="ri-pushpin-2-line ri-12px text-primary-content" />
+                    </div>
                   )}
-                  {note.use_as_template && (
-                    <span className="tag tag--sm tag--primary">
-                      <span className="ri-receipt-line ri-12px" />
-                      Template
-                    </span>
-                  )}
-                  {note.selectable && (
-                    <span className="tag tag--sm tag--success">
-                      <span className="ri-cursor-line ri-12px" />
-                      {t('notes.selectable') || 'Selectable'}
-                    </span>
-                  )}
-                  {note.category === 'preparation' && (note.steps || '').length > 2 && (
-                    <span className="tag tag--sm tag--info">
-                      <span className="ri-check-double-line ri-12px" />
-                      {parseNoteSteps(note.steps).length} steps
-                    </span>
-                  )}
-                </div>
 
-                {/* Title */}
-                <h3 className="font-semibold text-base-content text-sm leading-snug mb-1.5 line-clamp-2">
-                  {note.name}
-                </h3>
+                  {/* Badges row */}
+                  <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                    {note.category && (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${getCategoryColor(note.category)}`}>
+                        <span className={getNoteIconClass(note.category)} /> {getCategoryLabel(note.category)}
+                      </span>
+                    )}
+                    {note.use_as_template && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary">
+                        <span className="ri-receipt-line ri-12px" />
+                        Template
+                      </span>
+                    )}
+                    {note.selectable && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-success/10 text-success">
+                        <span className="ri-cursor-line ri-12px" />
+                        {t('notes.selectable') || 'Selectable'}
+                      </span>
+                    )}
+                    {note.category === 'preparation' && (note.steps || '').length > 2 && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-info/10 text-info">
+                        <span className="ri-check-double-line ri-12px" />
+                        {parseNoteSteps(note.steps).length} steps
+                      </span>
+                    )}
+                  </div>
 
-                {/* Content preview */}
-                <div className="text-xs text-base-content/50 leading-relaxed mb-3 line-clamp-3 font-[inherit] whitespace-pre-wrap">
-                  {getContentPreview(note.template_body)}
-                </div>
+                  {/* Title */}
+                  <h3 className="font-semibold text-base-content text-sm leading-snug mb-1.5 line-clamp-2 cursor-pointer" onClick={() => handleEdit(note)}>
+                    {note.name}
+                  </h3>
 
-                </div>
-                {/* Footer */}
-                <div className="flex items-center justify-between pt-2 border-t border-base-300/20">
-                  <span className="text-[10px] text-base-content/30">
-                    {formatDate(note.updated_at || note.created_at)}
-                  </span>
-                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleCopy(note); }}
-                      className="p-1.5 rounded-lg text-base-content/30 hover:text-info hover:bg-info/10 transition-colors"
-                      title={copiedId === note.id ? 'Copied!' : 'Copy note text'}
-                    >
-                      {copiedId === note.id
-                        ? <span className="ri-check-line ri-14px text-success" />
-                        : <span className="ri-clipboard-line ri-14px" />}
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDuplicate(note); }}
-                      disabled={duplicatingId === note.id}
-                      className="p-1.5 rounded-lg text-base-content/30 hover:text-info hover:bg-info/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                      title="Duplicate note"
-                    >
-                      <span className="ri-file-copy-line ri-14px" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleTogglePin(note); }}
-                      className={`p-1.5 rounded-lg transition-colors ${
-                        note.is_default
-                          ? 'text-primary hover:bg-primary/10'
-                          : 'text-base-content/30 hover:text-base-content/60 hover:bg-base-300/30'
-                      }`}
-                      title={note.is_default ? 'Unpin' : 'Pin note'}
-                    >
-                      <span className="ri-pushpin-2-line ri-14px" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setToDelete(note); }}
-                      className="p-1.5 rounded-lg text-base-content/30 hover:text-error hover:bg-error/10 transition-colors"
-                      title={t('common.delete')}
-                    >
-                      <span className="ri-delete-bin-line ri-14px" />
-                    </button>
+                  {/* Content preview */}
+                  <div className="text-[11px] text-base-content/50 leading-relaxed mb-3 line-clamp-3 font-[inherit] whitespace-pre-wrap cursor-pointer" onClick={() => handleEdit(note)}>
+                    {getContentPreview(note.template_body)}
+                  </div>
+
+                  {/* Footer */}
+                  <div className="flex items-center justify-between pt-2 border-t border-base-300/20">
+                    <span className="text-[10px] text-base-content/30">
+                      {formatDate(note.updated_at || note.created_at)}
+                    </span>
+                    <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={e => e.stopPropagation()}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleCopy(note); }}
+                        className="w-7 h-7 rounded-lg text-base-content/30 hover:text-info hover:bg-info/10 flex items-center justify-center transition-all duration-200 active:scale-95"
+                        title={copiedId === note.id ? 'Copied!' : 'Copy note text'}
+                      >
+                        {copiedId === note.id
+                          ? <span className="ri-check-line ri-14px text-success" />
+                          : <span className="ri-clipboard-line ri-14px" />}
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDuplicate(note); }}
+                        disabled={duplicatingId === note.id}
+                        className="w-7 h-7 rounded-lg text-base-content/30 hover:text-info hover:bg-info/10 flex items-center justify-center transition-all duration-200 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+                        title="Duplicate note"
+                      >
+                        <span className="ri-file-copy-line ri-14px" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleTogglePin(note); }}
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all duration-200 active:scale-95 ${
+                          note.is_default
+                            ? 'text-primary hover:bg-primary/10'
+                            : 'text-base-content/30 hover:text-base-content/60 hover:bg-base-300/30'
+                        }`}
+                        title={note.is_default ? 'Unpin' : 'Pin note'}
+                      >
+                        <span className="ri-pushpin-2-line ri-14px" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setToDelete(note); }}
+                        className="w-7 h-7 rounded-lg text-base-content/30 hover:text-error hover:bg-error/10 flex items-center justify-center transition-all duration-200 active:scale-95"
+                        title={t('common.delete')}
+                      >
+                        <span className="ri-delete-bin-line ri-14px" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

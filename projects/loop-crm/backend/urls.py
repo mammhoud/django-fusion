@@ -7,11 +7,13 @@ public URLs stay on the Astro frontend.
 """
 from django.contrib import admin
 from django.urls import include, path
+from django_fusion.builder.api import builder_page_data, builder_page_list
 from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images import urls as wagtailimages_urls
 
+from apps.core import apis_core_urls
 from apps.core import views as core_views
 from apps.core.api import me_api as core_views_me
 from apps.core.api import reports_api as core_views_reports
@@ -49,6 +51,11 @@ urlpatterns = [
     path("fragments/marketing/channels/connect/", marketing_views.channel_connect, name="channel_connect"),
     path("fragments/marketing/channels/<int:pk>/disconnect/", marketing_views.channel_disconnect, name="channel_disconnect"),
     path("fragments/marketing/channels/<int:pk>/refresh/", marketing_views.channel_refresh, name="channel_refresh"),
+    # ── Canonical named-API road (replacing deprecated /api/v1/ paths).
+    # Board, workspace identity, dashboard, deal moves, and reports live at
+    # /apis/core/ so consumers (frontend, SDK, operators) have one forward
+    # road that does not carry deprecation headers.
+    path("apis/core/", include(apis_core_urls)),
     # Report catalog for the webapp /reports/ surface.
     path("apis/reports/", core_views_reports, name="reports_api"),
     # Session-based current-user identity for the Astro profile road (/account/profile/).
@@ -58,6 +65,14 @@ urlpatterns = [
     # public HTML (the trailing Wagtail catch-all below is preview-only).
     path("apis/pages/", pages_api.page_list_api, name="page_list_api"),
     path("apis/pages/<slug:slug>/", pages_api.page_data_api, name="page_data_api"),
+    # ── Landing builder road — generic BuilderPage JSON for the Astro
+    # frontend (theme/brand/dark + resolved sections + preview issues).
+    path("apis/builder/", builder_page_list, name="builder_page_list"),
+    path("apis/builder/<slug:slug>/", builder_page_data, name="builder_page_data"),
+    # ── Deprecated /api/v1/ compatibility road.
+    # These routes carry Deprecation/Sunset/Warning headers via
+    # APIV1DeprecationMiddleware. Consumers should migrate to /apis/core/
+    # (named road) or /bolt/ (Bolt runtime road) before the sunset date.
     path("api/v1/", include("apps.core.urls")),
     path("api/v1/", include("apps.crm.urls")),
     path("api/v1/", include("apps.marketing.urls")),
@@ -66,9 +81,10 @@ urlpatterns = [
     path("api/v1/", include("apps.pos.urls")),
     # SaaS billing roads — checkout/portal/webhook + public plan catalog.
     path("", include("apps.billing.urls")),
-    # Generic detail road for every registered resource: GET/PATCH/DELETE
-    # ``/api/v1/<resource>/<pk>/``. Declared after the explicit app URLs so the
-    # specific routes (``deals/<pk>/stage/``, ``revenue/trend/``) win first.
+    # Deprecated generic detail road for every registered resource:
+    # GET/PATCH/DELETE ``/api/v1/<resource>/<pk>/``. Declared after the
+    # explicit app URLs so the specific routes (``deals/<pk>/stage/``,
+    # ``revenue/trend/``) win first. See /apis/core/ for the forward road.
     path("api/v1/<str:resource>/<int:pk>/", resource_api, name="resource_detail_api"),
     path("account/profile/", core_views.profile_view, name="profile"),
     path("connect/email/", include("apps.core.email_oauth_urls")),

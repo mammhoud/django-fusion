@@ -1,0 +1,80 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-counter — BEM counter/stat for the default theme.
+   Extracted and converted from .archives/theme/elements/_counterup.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-counter {
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  background-image: linear-gradient(
+    90deg,
+    hsl(var(--fu-default-primary)),
+    hsl(var(--fu-default-secondary))
+  );
+  background-size: 100% 2px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  transition: var(--fu-default-transition-slow);
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 3.5rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--fu-default-radius-full);
+    background: hsl(var(--fu-default-primary-light));
+    color: hsl(var(--fu-default-primary));
+
+    img {
+      max-width: 2rem;
+      max-height: 2rem;
+    }
+  }
+
+  &__content {
+    h3 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: hsl(var(--fu-default-ink));
+      line-height: 1;
+      margin-bottom: 0.25rem;
+
+      .counter {
+        display: inline-block;
+      }
+    }
+    .subtitle {
+      font-size: 0.9375rem;
+      color: hsl(var(--fu-default-muted));
+      display: block;
+    }
+  }
+
+  /* ── Variations ── */
+  &--icon-top {
+    .fu-counter__inner {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+  &--bordered {
+    border: 1px solid hsl(var(--fu-default-line));
+    border-radius: var(--fu-default-radius-md);
+    padding: 1.5rem;
+  }
+
+  &:hover {
+    transform: translateY(-0.25rem);
+  }
+}

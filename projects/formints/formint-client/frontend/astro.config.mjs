@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import alpinejs from '@astrojs/alpinejs';
 import { readFileSync, existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 
 // ── Dependency-free .env loader ─────────────────────────────────────────────
 // Shell env wins, then .env.local, then .env (see frontend/.env.example).
@@ -25,6 +26,9 @@ const PORT = Number(envVal('PORT', 4322));
 const BACKEND = envVal('BACKEND_URL', 'http://localhost:8075');
 /** Canonical site URL (SEO). */
 const SITE_URL = envVal('PUBLIC_SITE_URL', 'http://localhost:4322');
+// Shared assets are available for future shell surfaces; Client keeps its
+// own storefront favicon and Fontsource bundle as edition-specific overlays.
+const SHARED_ASSETS = fileURLToPath(new URL('../../assets/shared', import.meta.url));
 
 // https://astro.build/config
 export default defineConfig({
@@ -36,7 +40,13 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@formints-assets': SHARED_ASSETS,
+      },
+    },
     server: {
+      fs: { allow: [SHARED_ASSETS] },
       proxy: {
         // Auth + shop + employee are owned by the Django backend (:8075).
         // The Astro dev server proxies every backend route so the AHA

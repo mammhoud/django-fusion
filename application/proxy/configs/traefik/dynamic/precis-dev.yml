@@ -1,0 +1,60 @@
+# =============================================================================
+# Precis Dev — Traefik router config  [ACTIVE]
+# =============================================================================
+# Containers: precis-dev-backend (Django/Wagtail, port 8074)
+#             precis-dev-frontend (Astro static, port 3000)
+# Domain: dev.structa.cloud
+# Backend paths (/accounts, /apis, /admin, /django-admin, /static, /media,
+# /fragment, /learning, /i18n) are routed to the backend with priority 200.
+# All other paths (the public document shell) are served from the frontend.
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
+# =============================================================================
+
+http:
+  routers:
+    precis-dev-backend-http:
+      rule: 'Host(`dev.structa.cloud`) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`) || PathPrefix(`/i18n`))'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: precis-dev-backend
+      priority: 200
+    precis-dev-backend-https:
+      rule: 'Host(`dev.structa.cloud`) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`) || PathPrefix(`/i18n`))'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: precis-dev-backend
+      priority: 200
+      tls:
+        certResolver: letsencrypt-http
+    precis-dev-site-http:
+      rule: 'Host(`dev.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: precis-dev-frontend
+      priority: 100
+    precis-dev-site-https:
+      rule: 'Host(`dev.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: precis-dev-frontend
+      priority: 100
+      tls:
+        certResolver: letsencrypt-http
+
+  services:
+    precis-dev-backend:
+      loadBalancer:
+        servers:
+          - url: 'http://precis-dev-backend:8074'
+        healthCheck:
+          path: /apis/pages/
+          interval: 15s
+          timeout: 10s
+    precis-dev-frontend:
+      loadBalancer:
+        servers:
+          - url: 'http://precis-dev-frontend:3000'
+        healthCheck:
+          path: /
+          interval: 15s
+          timeout: 10s

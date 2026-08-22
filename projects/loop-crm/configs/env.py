@@ -100,7 +100,7 @@ ENV_VARS: tuple[tuple[str, Any, str], ...] = (
     ("PUBLIC_SITE_URL", "https://crm.structa.cloud", "Canonical public site URL (SEO/sitemap)."),
     ("PUBLIC_BACKEND_URL", "http://127.0.0.1:8000", "Browser-visible backend base for the data-API road."),
     ("PUBLIC_API_PREFIX", "/bolt", "Canonical API prefix (frontend store)."),
-    ("PUBLIC_API_FALLBACK_PREFIX", "/api/v1", "Fallback API prefix when bolt is unavailable."),
+    ("PUBLIC_API_FALLBACK_PREFIX", "/api/v1", "Fallback API prefix when bolt is unavailable. /api/v1 is deprecated; prefer /apis/core/."),
 )
 
 #: Variables that must be set (or have a non-empty value) outside local dev.

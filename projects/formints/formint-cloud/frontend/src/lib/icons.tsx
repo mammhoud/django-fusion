@@ -2,8 +2,8 @@
  * Centralized Icon System — Remix Icons
  * =====================================
  * Single icon set: **Remix Icon** (font-based, loaded from
- * `assets/styles/fonts/remixicon.css` with font files in
- * `assets/icons/remix/`). All helpers normalize the legacy multi-set
+ * `@formints-assets/styles/fonts/remixicon.css` with font files in
+ * `@formints-assets/icons/remix/`). All helpers normalize the legacy multi-set
  * vocabulary (tabler/lucide/mdi/ph/heroicons/carbon/solar + `hi:` Heroicons)
  * into the equivalent `ri-*` class.
  *

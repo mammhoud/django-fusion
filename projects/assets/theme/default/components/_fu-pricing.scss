@@ -1,0 +1,109 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-pricing — BEM pricing table for the default theme.
+   Extracted and converted from .archives/theme/elements/_pricingtable.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-pricing {
+  background: hsl(var(--fu-default-card));
+  box-shadow: var(--fu-default-shadow-card);
+  border-radius: var(--fu-default-radius-lg);
+  overflow: hidden;
+  transition: var(--fu-default-transition-slow);
+  height: 100%;
+
+  &:hover {
+    box-shadow: var(--fu-default-shadow-card-hover);
+    transform: translateY(-0.25rem);
+  }
+
+  &__header {
+    padding: 2rem 1.5rem 1.25rem;
+    text-align: center;
+    border-bottom: 1px solid hsl(var(--fu-default-line));
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: hsl(var(--fu-default-ink));
+    margin-bottom: 0.75rem;
+  }
+
+  &__badge {
+    display: inline-flex;
+    margin-bottom: 1.25rem;
+  }
+
+  &__price-wrap {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.25rem;
+  }
+
+  &__amount {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: hsl(var(--fu-default-primary));
+  }
+
+  &__duration {
+    font-size: 0.875rem;
+    color: hsl(var(--fu-default-muted));
+  }
+
+  &__body {
+    padding: 1.5rem;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 0.5rem 0;
+      font-size: 0.9375rem;
+      color: hsl(var(--fu-default-muted));
+
+      i {
+        color: hsl(var(--fu-default-success));
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  &__footer {
+    padding: 0 1.5rem 2rem;
+    text-align: center;
+  }
+
+  /* ── Variations ── */
+  &--featured {
+    background: var(--fu-default-gradient-primary, hsl(var(--fu-default-ink)));
+    color: hsl(var(--fu-default-paper));
+
+    .fu-pricing__title,
+    .fu-pricing__amount,
+    .fu-pricing__list li {
+      color: hsl(var(--fu-default-paper));
+    }
+    .fu-pricing__duration,
+    .fu-pricing__list li {
+      color: hsl(var(--fu-default-paper) / 0.8);
+    }
+    .fu-pricing__header {
+      border-color: hsl(var(--fu-default-paper) / 0.2);
+    }
+  }
+
+  &--minimal {
+    background: transparent;
+    border: 1px solid hsl(var(--fu-default-line));
+    box-shadow: none;
+  }
+}

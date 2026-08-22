@@ -1,7 +1,7 @@
 # loop-crm backend — Django + django-fusion (unified sales + marketing)
 # Mirrors the precis-landing backend Makefile verb set so `make -C backend`
 # behaves identically across the workspace.
-.PHONY: help dev server worker scheduler install migrate static collectstatic superuser seed seed-demo seed-pages shell check test format lint fix i18n makemessages compilemessages
+.PHONY: help dev server worker scheduler install migrate static collectstatic superuser seed seed-demo seed-pages seed-builder shell check test format lint fix i18n makemessages compilemessages
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -53,6 +53,9 @@ seed-demo: ## Seed the demo workspace + demo accounts (idempotent, superuser)
 
 seed-pages: ## Seed the Wagtail landing pages (Home/Pricing/FAQ/Privacy/Terms)
 	@$(MANAGE) seed_pages
+
+seed-builder: ## Seed the landing-builder demo pages (theme + dynamic fields)
+	@$(MANAGE) seed_builder
 
 shell: ## Django shell
 	@$(MANAGE) shell

@@ -31,6 +31,9 @@
 >
 > **Completion plan:** the actionable steps to make every edition done —
 > [`09-completion-plan.md`](09-completion-plan.md).
+>
+> **Cross-edition audit:** the current frontend/backend/design/claims audit and
+> reconciliation roadmap — [`10-formint-audit-and-reconciliation-2026-08-22.md`](10-formint-audit-and-reconciliation-2026-08-22.md).
 
 ## The extension chain
 

@@ -31,7 +31,7 @@ three surfaces:
 
 1. Django render-first screens (`ResourceListView`),
 2. `GET /bolt/tables/{resource}` (canonical, JWT, workspace-scoped),
-3. `GET /api/v1/tables/{resource}/` (compatibility, session cookie).
+3. `GET /api/v1/tables/{resource}/` (deprecated compatibility, session cookie).
 
 Contract:
 
@@ -55,7 +55,7 @@ map falls back to its `read_fields` projection with all-`text` types.
 
 - **Bolt road** — `GET /bolt/tables/{resource}` (JWT bearer, workspace-scoped).
   Uses `apps/core/bolt_api.py`.
-- **Compatibility road** — `GET /api/v1/tables/{resource}/` (session cookie).
+- **Deprecated compatibility road** — `GET /api/v1/tables/{resource}/` (session cookie, carries Deprecation/Sunset headers). Migrate to `/bolt/tables/{resource}`.
   Uses `apps/core/api.py::tables_api`.
 
 Both resolve through `apps/core/resources.RESOURCES` and `resource_table()` so
@@ -64,8 +64,8 @@ the projection never drifts between roads.
 ## 4. Frontend renderer (`ResourceTable.tsx`)
 
 `frontend/src/components/dashboard/ResourceTable.tsx` is a bolt-first React
-island with a `/api/v1` fallback. Per-road path shape is handled explicitly:
-`/bolt` uses `/tables/{resource}` (no trailing slash), `/api/v1` uses
+island with a `/api/v1` (deprecated) fallback. Per-road path shape is handled explicitly:
+`/bolt` uses `/tables/{resource}` (no trailing slash), `/api/v1` (deprecated) uses
 `/tables/{resource}/`.
 
 The island is wrapped in `StoreProvider` (same as `PipelineBoard` and

@@ -1,0 +1,217 @@
+services:
+  backend:
+    build:
+      context: ../../..
+      dockerfile: projects/precis/precis-main/backend/Dockerfile
+    image: precis-main-backend:latest
+    container_name: precis-main-backend
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-precis-main-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: structa.cloud,www.structa.cloud,lms.structa.cloud,localhost,127.0.0.1,precis-main-backend,precis-main-frontend
+      CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,https://lms.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
+      CORS_ALLOWED_ORIGINS: https://structa.cloud,https://www.structa.cloud,https://lms.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
+      # Database wiring by type (configs/database.yml contract). postgres is
+      # the container default (shared cluster, application/databases, with
+      # credentials from .env); DB_TYPE=sqlite keeps the container on SQLite
+      # (CI/local runs). DJANGO_DB_NAME/USER/PASSWORD/HOST/PORT still win for
+      # explicit per-deploy overrides.
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME_LANDING:-db_precis_landing}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      # Gmail SMTP (structa.cloud@gmail.com) — resolved from .env; console
+      # backend stays the default so an unset .env cannot break local dev.
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      # Redis for cache + the Dramatiq task broker (shared cluster, named
+      # `default-redis` on the common network). Required so queued email
+      # workers and the scheduler can enqueue; mirrors precis-ctc.
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/0
+      # Dedicated broker DB (db2) so this product's queue never collides with
+      # precis-ctc's worker, which shares the same Redis cluster on db1 and
+      # subscribes to the same `email` queue with the same actor names.
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      WAGTAILADMIN_BASE_URL: https://structa.cloud
+      # Keep the data-API road as the deployment default; requests can still
+      # opt into fusion-render with X-Fusion-Render-First: true.
+      FUSION_RENDER_FIRST: "0"
+    volumes:
+      # Aligned with MEDIA_ROOT / STATIC_ROOT in backend/settings.py
+      # (backend/assets/media + backend/assets/staticfiles) so the startup
+      # collectstatic populates the named volumes and whitenoise serves them.
+      - precis-main-media:/app/precis-main/backend/assets/media
+      - precis-main-static:/app/precis-main/backend/assets/staticfiles
+      # Site-level Env overrides (kept in parity with the other Precis sites).
+      - ./Env:/app/precis-main/Env:ro
+      # Project config cascade (configs/*.yml) — YAML defaults for identity,
+      # admin, CSS panel, and the static-files reference. Also baked into the
+      # image by the backend Dockerfile; the mount keeps local edits live.
+      - ./configs:/app/precis-main/configs:ro
+    networks:
+      - common
+      - traefik-net
+    command: >-
+      sh -c "python manage.py migrate --noinput
+      && python manage.py collectstatic --noinput
+      && python manage.py seed_pages --force
+      && python manage.py seed_learning
+      && exec gunicorn wsgi:application --bind 0.0.0.0:8074 --workers 2 --timeout 120 --access-logfile - --error-logfile -"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8074/apis/pages/\", timeout=4)' "]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+  scheduler:
+    build:
+      context: ../../..
+      dockerfile: projects/precis/precis-main/backend/Dockerfile
+    image: precis-main-backend:latest
+    container_name: precis-main-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-precis-main-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,precis-main-backend
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME_LANDING:-db_precis_landing}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      WAGTAILADMIN_BASE_URL: https://structa.cloud
+    volumes:
+      # Shares the same Postgres DB (db_precis_landing) as the backend so the
+      # scheduler's sync_task_history job mirrors into the same TaskExecution
+      # table.
+      - ./Env:/app/precis-main/Env:ro
+      - ./configs:/app/precis-main/configs:ro
+    # The backend applies migrations at startup, so wait for it to be healthy.
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+    command: python -m django_fusion.tasks.scheduler
+
+  worker:
+    build:
+      context: ../../..
+      dockerfile: projects/precis/precis-main/backend/Dockerfile
+    image: precis-main-backend:latest
+    container_name: precis-main-worker
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-precis-main-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,precis-main-backend
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME_LANDING:-db_precis_landing}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      FUSION_TASK_BACKEND: dramatiq
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.legacy_email_tasks,plugins.workers.content_tasks
+      WAGTAILADMIN_BASE_URL: https://structa.cloud
+    volumes:
+      - ./Env:/app/precis-main/Env:ro
+      - ./configs:/app/precis-main/configs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues email,content,system,default
+
+  frontend:
+    build:
+      # Repository-root context, matching the backend service — the Astro
+      # build resolves the @fusion alias to libs/django-fusion/js/fusion-js
+      # (copied into the image by frontend/Dockerfile).
+      context: ../../..
+      dockerfile: projects/precis/precis-main/frontend/Dockerfile
+    image: precis-main-frontend:latest
+    container_name: precis-main-frontend
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3000"
+      PUBLIC_FUSION_API_URL: http://precis-main-backend:8074
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+      - traefik-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  precis-main-media:
+    name: precis-main-media
+  precis-main-static:
+    name: precis-main-static

@@ -369,15 +369,18 @@ Flash prevention script in `index.html`:
 ### Logo Files
 
 ```
-public/
-├── Logo.svg          # 1.1KB — SVG favicon
-├── Logo.png          # 28KB — PNG favicon
-└── Logo.png.placeholder.svg  # 1.1KB — Placeholder
+../../assets/shared/public/
+├── Logo.svg                    # Canonical SVG favicon
+├── Logo.png                    # Canonical raster favicon
+└── Logo.png.placeholder.svg    # Placeholder fallback
 
-src/assets/
-├── CompanyLogo.png   # 60KB — Invoice/receipt logo
-├── logo-img.png      # 60KB — UI logo variant
-└── pos-crest.svg     # 2.8KB — POS crest icon
+../../assets/shared/images/
+├── CompanyLogo.png             # Invoice/receipt logo
+├── logo-img.png                # UI logo variant
+└── formint-crest.svg           # POS crest used by React imports
+
+../../assets/shared/static/
+└── pos-crest.svg               # Django/static-compatible crest
 ```
 
 Referenced in `index.html`:

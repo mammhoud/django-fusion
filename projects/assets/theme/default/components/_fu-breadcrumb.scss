@@ -1,0 +1,91 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-breadcrumb — BEM breadcrumb for the default theme.
+   Extracted and converted from .archives/theme/elements/_breadcrumb.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-breadcrumb {
+  &__list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+
+    li {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: hsl(var(--fu-default-muted));
+
+      &.active {
+        color: hsl(var(--fu-default-muted));
+        opacity: 0.6;
+      }
+
+      a {
+        color: hsl(var(--fu-default-muted));
+        transition: var(--fu-default-transition-standard);
+        &:hover {
+          color: hsl(var(--fu-default-primary));
+        }
+      }
+    }
+  }
+
+  &__separator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: hsl(var(--fu-default-muted));
+    font-size: 0.875rem;
+  }
+
+  &__title {
+    color: hsl(var(--fu-default-ink));
+    margin-bottom: 0.3125rem;
+    font-size: 3.125rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  &__content {
+    .description {
+      color: hsl(var(--fu-default-ink));
+      font-size: 1rem;
+    }
+  }
+
+  /* ── Banner variant ── */
+  &--banner {
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    position: relative;
+    margin: 0 auto;
+    padding: 3.75rem 0 14.6875rem;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* ── Style 3 (image overlay) ── */
+  &--style-3 {
+    position: relative;
+    min-height: 30.625rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    padding: 5rem 0;
+  }
+}

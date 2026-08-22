@@ -1,0 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Educational Theme Tokens — fu-educational-*
+   ─────────────────────────────────────────────────────────────────────
+   Friendly warm blue-green palette. Rounded corners, generous spacing,
+   approachable and energetic. Optimised for learning platforms,
+   classrooms, and academic portals.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink ── */
+  --fu-educational-paper:        60 20% 98%;
+  --fu-educational-ink:          210 30% 15%;
+  --fu-educational-muted:        210 12% 46%;
+  --fu-educational-line:         210 18% 90%;
+  --fu-educational-card:         0 0% 100%;
+  --fu-educational-link:         200 80% 42%;
+  --fu-educational-link-dark:    200 70% 34%;
+  --fu-educational-mark:         45 95% 55%;
+  --fu-educational-live:         145 60% 38%;
+
+  /* ── Brand accent palette (friendly blue + warm amber) ── */
+  --fu-educational-primary:       200 80% 42%;
+  --fu-educational-primary-dark:  200 70% 34%;
+  --fu-educational-primary-light: 200 90% 95%;
+  --fu-educational-secondary:     35 90% 50%;
+  --fu-educational-secondary-light: 35 100% 96%;
+  --fu-educational-accent:        15 85% 58%;
+  --fu-educational-success:       145 60% 38%;
+  --fu-educational-warning:       38 92% 50%;
+  --fu-educational-error:         0 70% 52%;
+  --fu-educational-info:          199 89% 46%;
+
+  /* ── Pastel category surfaces ── */
+  --fu-educational-card-1: 48 100% 90%;
+  --fu-educational-card-2: 200 100% 94%;
+  --fu-educational-card-3: 145 100% 93%;
+  --fu-educational-card-4: 15 100% 95%;
+
+  /* ── Spacing (generous, friendly) ── */
+  --fu-educational-space-xs:  0.375rem;
+  --fu-educational-space-sm:  0.625rem;
+  --fu-educational-space-md:  1.25rem;
+  --fu-educational-space-lg:  1.75rem;
+  --fu-educational-space-xl:  2.5rem;
+  --fu-educational-space-2xl: 3.5rem;
+  --fu-educational-space-3xl: 5rem;
+
+  --fu-educational-section-lg: 6rem;
+  --fu-educational-section-xl: 8rem;
+
+  /* ── Radius (rounded, friendly) ── */
+  --fu-educational-radius-sm:   0.5rem;
+  --fu-educational-radius-md:   0.75rem;
+  --fu-educational-radius-lg:   1rem;
+  --fu-educational-radius-xl:   1.5rem;
+  --fu-educational-radius-full: 9999px;
+
+  /* ── Shadows (soft, playful) ── */
+  --fu-educational-shadow-card:        0 2px 8px 0 hsl(210 30% 15% / 0.05);
+  --fu-educational-shadow-card-hover:  0 8px 24px 0 hsl(210 30% 15% / 0.10);
+  --fu-educational-shadow-modal:       0 20px 56px 0 hsl(210 30% 15% / 0.14);
+  --fu-educational-shadow-toast:       0 8px 24px 0 hsl(210 30% 15% / 0.10);
+
+  /* ── Transitions (bouncy, friendly) ── */
+  --fu-educational-transition-fast:     150ms ease;
+  --fu-educational-transition-standard: 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --fu-educational-transition-slow:     400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  --fu-educational-transition-reveal:   600ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Z-index scale ── */
+  --fu-educational-z-dropdown:       100;
+  --fu-educational-z-sticky:         200;
+  --fu-educational-z-modal-backdrop: 300;
+  --fu-educational-z-modal:          400;
+  --fu-educational-z-toast:          500;
+  --fu-educational-z-tooltip:        600;
+
+  /* ── Typography (rounded, friendly) ── */
+  --fu-educational-font-sans:    'Nunito', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --fu-educational-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --fu-educational-font-display: 'Nunito', 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Dark mode override ── */
+.dark[data-theme="educational"],
+[data-theme="educational"].dark {
+  --fu-educational-paper:      210 25% 8%;
+  --fu-educational-ink:        210 20% 94%;
+  --fu-educational-muted:      210 12% 64%;
+  --fu-educational-line:       210 15% 18%;
+  --fu-educational-card:       210 16% 11%;
+  --fu-educational-link:       200 85% 70%;
+  --fu-educational-link-dark:  200 75% 58%;
+  --fu-educational-mark:       45 95% 62%;
+  --fu-educational-live:       145 60% 50%;
+}

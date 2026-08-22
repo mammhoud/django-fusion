@@ -17,6 +17,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@formints-assets': path.resolve(__dirname, '../../assets/shared'),
     },
   },
 });

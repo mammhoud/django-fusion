@@ -81,8 +81,8 @@ Legacy `blinko.structa.cloud` redirects to `space.structa.cloud`. The old
 ## Validation
 
 ```bash
-docker compose --env-file application/proxy/.env \
-  -f application/proxy/docker-compose.nginx.yml config -q
+docker compose --env-file application/tools/blinko/.env \
+  -f application/tools/docker-compose.yml config -q
 docker compose -f .devcontainer/docker-compose.yml config -q
 python3 application/proxy/scripts/validate-traefik-config.py
 terraform fmt -check application/workspaces/workspace

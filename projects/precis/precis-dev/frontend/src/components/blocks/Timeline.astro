@@ -1,0 +1,63 @@
+---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
+interface TimelineEvent {
+  date: string;
+  title: string;
+  description: string;
+  icon?: string;
+  highlight?: boolean;
+}
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  events: TimelineEvent[];
+}
+
+const { eyebrow, title = 'Our journey', description, events } = Astro.props;
+---
+
+<section class="timeline">
+  <div data-hydrate-skeleton>
+    <Skeleton variant="timeline" />
+  </div>
+  <div data-hydrate-content>
+    <div class="container-fusion">
+      <div class="timeline__header">
+        {eyebrow && <p class="tag-marker mb-4 reveal" x-data x-intersect="$el.classList.add('reveal-visible')">{eyebrow}</p>}
+        <h2 class="page-section__title reveal" x-data x-intersect="$el.classList.add('reveal-visible')">{title}</h2>
+        {description && <p class="mt-2 sm:mt-3 mb-10 sm:mb-14 max-w-2xl text-fu-muted reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="transition-delay: 50ms">{description}</p>}
+      </div>
+
+      <div class="timeline__track">
+        <div class="timeline__line" aria-hidden="true"></div>
+
+        <div class="timeline__items">
+          {events.map((event, i) => {
+            const isLeft = i % 2 === 0;
+            return (
+              <div class={`timeline__row ${!isLeft ? 'md:flex-row-reverse' : ''}`}>
+                <div
+                  class={`timeline__dot ${event.highlight ? 'timeline__dot--highlighted' : 'timeline__dot--default'}`}
+                  aria-hidden="true"
+                ></div>
+
+                <div class={`timeline__content ${isLeft ? 'md:pr-12 md:text-right' : 'md:pl-12'}`}>
+                  <div class="timeline__card" x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
+                    {event.date && <time class="timeline__date">{event.date}</time>}
+                    <h3 class="timeline__title">{event.title}</h3>
+                    <p class="timeline__text">{event.description}</p>
+                  </div>
+                </div>
+
+                <div class="timeline__spacer" aria-hidden="true"></div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,129 +1,22 @@
-# ============================================================
-# Networks – all networks from both files
-# ============================================================
-networks:
-  common:
-    external: true
-  warehouse-net:
-    external: true
-  internal:
-    external: true
-  traefik-net:
-    external: true
-    name: traefik-net
-  site_network:
-    name: site_network
+# =============================================================================
+# Shared Databases — include-based orchestrator
+# =============================================================================
+# Brings up PostgreSQL and Redis together via Compose `include`. Each service
+# keeps its own docker-compose.yml (postgres/ and redis/) so they can be
+# started independently or together.  All credentials come from the .env file
+# in *this* directory (application/databases/.env).
+#
+# Quick start:
+#   cd application/databases && make setup   # create .env from .env.example
+#   docker compose up -d                     # postgres + redis
+#
+# Root-level deploy:
+#   make deploy-databases                    # from the repo root
+#
+# Networks are managed by each service file — they share `common`,
+# `warehouse-net`, `internal`, `traefik-net`, and `site_network`.
+# =============================================================================
 
-# ============================================================
-# Volumes – named volumes from both files
-# ============================================================
-volumes:
-  postgres_data:
-    name: postgres_data
-  redis_data:
-    name: redis_data
-
-# ============================================================
-# Services
-# ============================================================
-services:
-  # ----------------------------------------------------------
-  # PostgreSQL – merged & fixed
-  # ----------------------------------------------------------
-  postgres:
-    build:
-      context: ./postgres
-      dockerfile: Dockerfile          # uses your custom entrypoint
-    container_name: postgres
-    restart: always
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
-    env_file:
-      # Repo-root .env fills gaps; the local application/databases/.env
-      # (copy .env.example) is listed LAST so it wins on conflicts — it is
-      # also the Compose interpolation source, keeping credentials consistent.
-      - ../../.env
-      - path: ./.env
-        required: false
-    environment:
-      # Core PostgreSQL settings — all sourced from .env (local .env.example
-      # ships generated random defaults; it overrides the repo-root .env).
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
-      POSTGRES_DB: ${POSTGRES_DB:-app_db}
-      PGDATA: /var/lib/postgresql/data/pgdata
-      # Multiple databases – comma-separated list: db:owner:password.
-      # Set POSTGRES_DATABASES in .env to override. The fallback reuses the
-      # same per-role credentials the site compose files read, so no secrets
-      # are hardcoded here — every password resolves from .env.
-      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_precis_lms:structa:${POSTGRES_PASSWORD},db_precis_ctc:structa:${POSTGRES_PASSWORD},db_vresume:structa:${POSTGRES_PASSWORD},coder:coder:${CODER_DB_PASSWORD:?CODER_DB_PASSWORD must be set in .env},db_loop_crm:structa:${POSTGRES_PASSWORD},db_precis_landing:structa:${POSTGRES_PASSWORD},affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
-
-      # ---- NEW: Force re‑initialization on every start ----
-      # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again
-      FORCE_REINIT: "${FORCE_REINIT:-false}"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./postgres/init:/docker-entrypoint-initdb.d
-      - ./postgres/backups:/backups:Z
-    networks:
-      - common
-      - warehouse-net
-      - internal
-      - traefik-net
-      - site_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d app_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2G
-        reservations:
-          cpus: '1'
-          memory: 1G
-
-  # ----------------------------------------------------------
-  # Redis – shared broker for Dramatiq
-  # Container name MUST be default-redis; every site + the shared
-  # task stack resolve it at redis://default-redis:6379/<db>.
-  # ----------------------------------------------------------
-  default-redis:
-    image: redis:7-alpine
-    container_name: default-redis
-    restart: always
-    command: >
-      redis-server /usr/local/etc/redis/redis.conf
-      --appendonly yes
-      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
-    env_file:
-      - ../../.env
-      - path: ./.env
-        required: false
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
-    volumes:
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-      - redis_data:/data
-    networks:
-      - common
-      - warehouse-net
-      - internal
-      - traefik-net
-      - site_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
-
+include:
+  - postgres/docker-compose.yml
+  - redis/docker-compose.yml

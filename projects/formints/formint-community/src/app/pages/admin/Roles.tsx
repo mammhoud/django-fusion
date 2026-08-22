@@ -68,8 +68,6 @@ export default function Roles() {
     } catch (error) {
       console.error('Error loading permission catalog from backend:', error);
       setCatalogError(true);
-      // No fallback — permission system is backend-driven; the UI will show
-      // a hint to use the custom permissions field below
     } finally {
       setCatalogLoading(false);
     }
@@ -100,7 +98,6 @@ export default function Roles() {
     setEditing(role);
     setFormName(role.name);
     const perms = parsePermissions(role.permissions);
-    // Separate known from custom
     const knownKeys = new Set(permissionCatalog.map(p => p.key));
     const known = new Set([...perms].filter(p => knownKeys.has(p)));
     const custom = [...perms].filter(p => !knownKeys.has(p)).join(', ');
@@ -120,7 +117,6 @@ export default function Roles() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Build full permission set: known + custom
     const customList = customPermissions
       .split(',')
       .map(s => s.trim())
@@ -160,7 +156,6 @@ export default function Roles() {
     }
   };
 
-  // Filtered + sorted roles
   const q = debouncedSearch.trim().toLowerCase();
   const filteredRoles = (() => {
     let result = q
@@ -184,21 +179,33 @@ export default function Roles() {
   return (
     <PageLayout title={t('roles.title')} background="bg-base-200/50">
       <div className="space-y-4">
+        {/* ── Eyebrow tag ── */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">
+            <span className="ri-shield-line ri-12px" />
+            Access Control
+          </span>
+        </div>
+
         {/* ── Header ── */}
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-base-content">{t('roles.title')}</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-base-content">{t('roles.title')}</h1>
+            <p className="text-sm text-base-content/50 mt-0.5">
+              {roles.length} {t('roles.totalRoles') || 'roles'}
+            </p>
+          </div>
           <button
             onClick={openAddForm}
-            className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
+            className="btn btn-primary btn-sm gap-1 shrink-0 active:scale-[0.98] transition-transform"
           >
-            <span className="ri-add-line ri-16px" /> {t('roles.addRole')}
+            <span className="ri-add-line ri-14px" /> {t('roles.addRole')}
           </button>
         </div>
 
-        {/* ── Search + sort ── */}
-        <Card padding="sm">
+        {/* ── Search + sort — compact bezel ── */}
+        <Card padding="sm" variant="bezel">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-            {/* Search */}
             <SearchInput
               value={search}
               onChange={setSearch}
@@ -209,19 +216,18 @@ export default function Roles() {
               className="flex-1"
             />
 
-            {/* Sort */}
             <select
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as 'newest' | 'name-asc' | 'name-desc')}
               aria-label={t('roles.sortBy') || 'Sort by'}
-              className="select sm:w-44"
+              className="select h-8 text-xs sm:w-44"
             >
               <option value="newest">{t('roles.sortNewest') || 'Newest'}</option>
               <option value="name-asc">{t('roles.sortNameAsc') || 'Name (A→Z)'}</option>
               <option value="name-desc">{t('roles.sortNameDesc') || 'Name (Z→A)'}</option>
             </select>
 
-            <span className="text-xs text-base-content/50 whitespace-nowrap px-2 tabular-nums">
+            <span className="text-[10px] text-base-content/40 whitespace-nowrap px-2 tabular-nums">
               {filteredRoles.length} / {roles.length}
             </span>
           </div>
@@ -229,110 +235,112 @@ export default function Roles() {
 
         {/* ── Add/Edit Form ── */}
         {showForm && (
-          <Card padding="md">
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <h3 className="text-lg font-semibold text-base-content flex items-center gap-2">
-                <span className="ri-shield-line ri-20px text-primary" />
+          <form onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-2xl p-5 space-y-4 shadow-lg overflow-hidden">
+            <div className="flex items-center justify-between mb-1">
+              <h3 className="font-semibold text-base-content flex items-center gap-2">
+                <span className="ri-shield-line ri-16px text-primary" />
                 {editing ? t('common.edit') : t('common.add')} Role
               </h3>
+              <button type="button" onClick={() => setShowForm(false)} className="w-7 h-7 rounded-full bg-base-200 flex items-center justify-center hover:bg-base-300 transition-colors">
+                <span className="ri-close-line ri-14px" />
+              </button>
+            </div>
 
-              {/* Role Name */}
-              <div>
-                <label className="label">
-                  <span className="label-text font-medium">{t('roles.name')}</span>
-                </label>
-                <input
-                  type="text"
-                  value={formName}
-                  onChange={e => setFormName(e.target.value)}
-                  placeholder="e.g. Manager, Cashier, Chef"
-                  required
-                  className="input w-full"
-                  autoFocus
-                />
-              </div>
+            {/* Role Name */}
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+                {t('roles.name')} <span className="text-error">*</span>
+              </label>
+              <input
+                type="text"
+                value={formName}
+                onChange={e => setFormName(e.target.value)}
+                placeholder="e.g. Manager, Cashier, Chef"
+                required
+                className="input input-compact w-full"
+                autoFocus
+              />
+            </div>
 
-              {/* Known Permissions — FlyonUI checkbox grid */}
-              <div>
-                <label className="label">
-                  <span className="label-text font-medium">Permissions</span>
-                  <span className="label-text-alt text-base-content/50">
-                    {formPermissions.size} of {catalogToUse.length} selected
-                  </span>
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-                  {catalogLoading ? (
-                    <div className="col-span-full flex items-center justify-center py-8">
-                      <span className="loading loading-spinner loading-md text-primary" />
-                    </div>
-                  ) : catalogError ? (
-                    <div className="col-span-full flex flex-col items-center justify-center py-6 gap-2">
-                      <span className="ri-shield-line ri-32px text-base-content/30" />
-                      <p className="text-sm text-base-content/50 text-center">
-                        Could not load permissions from backend. Use the custom permissions field below.
-                      </p>
-                    </div>
-                  ) : (
-                    catalogToUse.map(p => {
-                      const checked = formPermissions.has(p.key);
-                      return (
-                        <label
-                          key={p.key}
-                          className={`flex items-center gap-2.5 p-2 rounded-lg border cursor-pointer transition-all select-none ${
-                            checked
-                              ? 'border-primary bg-primary/10'
-                              : 'border-base-300/50 hover:border-base-300 bg-base-100/50'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            className="checkbox checkbox-primary checkbox-sm"
-                            checked={checked}
-                            onChange={() => togglePermission(p.key)}
-                          />
-                          <span className={iconClass(p.icon, 'w-3.5 h-3.5 text-base-content/60 shrink-0')} />
-                          <span className="text-xs font-medium text-base-content leading-tight">{p.label}</span>
-                        </label>
-                      );
-                    })
-                  )}
-                </div>
+            {/* Known Permissions — compact checkbox grid */}
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+                Permissions
+                <span className="text-base-content/40 font-normal ml-2">
+                  {formPermissions.size} of {catalogToUse.length} selected
+                </span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                {catalogLoading ? (
+                  <div className="col-span-full flex items-center justify-center py-8">
+                    <span className="loading loading-spinner loading-md text-primary" />
+                  </div>
+                ) : catalogError ? (
+                  <div className="col-span-full flex flex-col items-center justify-center py-6 gap-2">
+                    <span className="ri-shield-line ri-32px text-base-content/30" />
+                    <p className="text-xs text-base-content/50 text-center">
+                      Could not load permissions from backend. Use the custom permissions field below.
+                    </p>
+                  </div>
+                ) : (
+                  catalogToUse.map(p => {
+                    const checked = formPermissions.has(p.key);
+                    return (
+                      <label
+                        key={p.key}
+                        className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all select-none ${
+                          checked
+                            ? 'border-primary bg-primary/10'
+                            : 'border-base-300/50 hover:border-base-300 bg-base-100/50'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="checkbox checkbox-primary checkbox-sm"
+                          checked={checked}
+                          onChange={() => togglePermission(p.key)}
+                        />
+                        <span className={iconClass(p.icon, 'w-3.5 h-3.5 text-base-content/60 shrink-0')} />
+                        <span className="text-[11px] font-medium text-base-content leading-tight">{p.label}</span>
+                      </label>
+                    );
+                  })
+                )}
               </div>
+            </div>
 
-              {/* Custom permissions (comma-separated) */}
-              <div>
-                <label className="label">
-                  <span className="label-text font-medium">Custom Permissions</span>
-                  <span className="label-text-alt text-base-content/50">Comma-separated</span>
-                </label>
-                <input
-                  type="text"
-                  value={customPermissions}
-                  onChange={e => setCustomPermissions(e.target.value)}
-                  placeholder="e.g. manage:reports, view:audit"
-                  className="input w-full font-mono text-sm"
-                />
-                <p className="text-xs text-base-content/40 mt-1">
-                  Add custom permission keys not listed above, separated by commas.
-                </p>
-              </div>
+            {/* Custom permissions (comma-separated) */}
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+                Custom Permissions
+                <span className="text-base-content/40 font-normal ml-2">Comma-separated</span>
+              </label>
+              <input
+                type="text"
+                value={customPermissions}
+                onChange={e => setCustomPermissions(e.target.value)}
+                placeholder="e.g. manage:reports, view:audit"
+                className="input input-compact w-full font-mono text-xs"
+              />
+              <p className="text-[10px] text-base-content/40">
+                Add custom permission keys not listed above, separated by commas.
+              </p>
+            </div>
 
-              {/* Buttons */}
-              <div className="flex gap-2 pt-2">
-                <button type="submit" className="btn btn-primary gap-2">
-                  <span className="ri-save-3-line ri-16px" />
-                  {editing ? t('common.update') : t('common.save')}
-                </button>
-                <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost gap-2">
-                  <span className="ri-close-line ri-16px" />
-                  {t('common.cancel')}
-                </button>
-              </div>
-            </form>
-          </Card>
+            {/* Buttons */}
+            <div className="flex gap-2 justify-end pt-2 border-t border-base-300/30">
+              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost btn-sm">
+                {t('common.cancel')}
+              </button>
+              <button type="submit" className="btn btn-primary btn-sm gap-1.5">
+                <span className="ri-save-3-line ri-14px" />
+                {editing ? t('common.update') : t('common.save')}
+              </button>
+            </div>
+          </form>
         )}
 
-        {/* ── Role Cards Grid ── */}
+        {/* ── Role Cards Grid — Double-Bezel ── */}
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
             <span className="loading loading-spinner loading-lg text-primary" />
@@ -347,60 +355,83 @@ export default function Roles() {
             </p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredRoles.map(role => {
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {filteredRoles.map((role, idx) => {
               const perms = parsePermissions(role.permissions);
               const knownCount = [...perms].filter(p => catalogToUse.some(c => c.key === p)).length;
 
               return (
-                <Card key={role.id} padding="md" hover>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm shadow-sm
-                        ${role.is_active
-                          ? 'bg-primary/10 text-primary'
-                          : 'bg-base-300/50 text-base-content/40'
-                        }`}
-                      >
-                        <span className="ri-shield-line ri-20px" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-base-content text-sm">{role.name}</h3>
-                        <p className="text-xs text-base-content/50">
-                          {role.is_active ? t('common.active') : t('common.inactive')}
-                          {' · '}{knownCount} permissions
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <button onClick={() => openEditForm(role)} className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-info">
-                        <span className="ri-pencil-line ri-16px" />
-                      </button>
-                      <button onClick={() => setToDelete(role)} className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error">
-                        <span className="ri-delete-bin-line ri-16px" />
-                      </button>
-                    </div>
-                  </div>
+                <div
+                  key={role.id}
+                  className={`
+                    group relative
+                    overflow-hidden
+                    bg-base-200/40 dark:bg-white/5
+                    border border-base-300/25 dark:border-white/10
+                    rounded-[1.5rem]
+                    p-1.5
+                    shadow-[var(--shadow-bezel-outer)]
+                    transition-all duration-500 ease-[var(--ease-fluid)]
+                    hover:-translate-y-0.5 hover:shadow-[var(--shadow-bezel-hover)]
+                    ${!role.is_active ? 'opacity-60' : ''}
+                    animate-fade-up delay-${Math.min(idx * 75, 450)}
+                  `}
+                >
+                  {/* Accent bar */}
+                  <div
+                    className="absolute top-0 bottom-0 inset-inline-start-0 w-1 rounded-l-[inherit]"
+                    style={{ backgroundColor: role.is_active ? 'var(--color-primary)' : 'var(--color-base-300)' }}
+                  />
 
-                  {/* Permission badges */}
-                  {perms.size > 0 ? (
-                    <div className="flex flex-wrap gap-1.5">
-                      {catalogToUse.filter(p => perms.has(p.key)).map(p => (
-                        <span key={p.key} className="badge badge-soft badge-primary badge-sm gap-1">
-                          <span className={iconClass(p.icon, 'w-3 h-3')} />
-                          {p.label}
-                        </span>
-                      ))}
-                      {[...perms].filter(p => !catalogToUse.some(c => c.key === p)).map(p => (
-                        <span key={p} className="badge badge-soft badge-neutral badge-sm font-mono text-[10px]">
-                          {p}
-                        </span>
-                      ))}
+                  {/* Inner core */}
+                  <div className="bg-base-100 dark:bg-base-900 rounded-[1.125rem] p-4 shadow-[var(--shadow-bezel-inner)] h-full">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm shadow-sm ${
+                          role.is_active
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-base-300/50 text-base-content/40'
+                        }`}>
+                          <span className="ri-shield-line ri-20px" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-base-content text-sm">{role.name}</h3>
+                          <p className="text-[10px] text-base-content/50">
+                            {role.is_active ? t('common.active') : t('common.inactive')}
+                            {' · '}{knownCount} permissions
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={() => openEditForm(role)} className="w-7 h-7 rounded-lg text-base-content/40 hover:text-info hover:bg-info/10 flex items-center justify-center transition-all duration-200 active:scale-95">
+                          <span className="ri-pencil-line ri-14px" />
+                        </button>
+                        <button onClick={() => setToDelete(role)} className="w-7 h-7 rounded-lg text-base-content/40 hover:text-error hover:bg-error/10 flex items-center justify-center transition-all duration-200 active:scale-95">
+                          <span className="ri-delete-bin-line ri-14px" />
+                        </button>
+                      </div>
                     </div>
-                  ) : (
-                    <p className="text-xs text-base-content/30 italic">No permissions</p>
-                  )}
-                </Card>
+
+                    {/* Permission badges */}
+                    {perms.size > 0 ? (
+                      <div className="flex flex-wrap gap-1.5">
+                        {catalogToUse.filter(p => perms.has(p.key)).map(p => (
+                          <span key={p.key} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 text-primary">
+                            <span className={iconClass(p.icon, 'w-3 h-3')} />
+                            {p.label}
+                          </span>
+                        ))}
+                        {[...perms].filter(p => !catalogToUse.some(c => c.key === p)).map(p => (
+                          <span key={p} className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono bg-base-200 text-base-content/60">
+                            {p}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-[10px] text-base-content/30 italic">No permissions</p>
+                    )}
+                  </div>
+                </div>
               );
             })}
           </div>

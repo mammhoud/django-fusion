@@ -1,0 +1,93 @@
+# =============================================================================
+# PostgreSQL — shared database cluster (standalone service)
+# =============================================================================
+# Owns the structa.cloud monorepo's single shared PostgreSQL instance. Every
+# project and tool database is created by the init scripts on first start;
+# add new databases in postgres/init/00-create-databases.sql (SQL) or
+# postgres/init/00.initdb-multiple-databases.sh (shell, for role-specific
+# credentials like Coder).
+#
+# This file is included by application/databases/docker-compose.yml, which
+# also brings up Redis.  Start just PostgreSQL with:
+#
+#   docker compose -f application/databases/postgres/docker-compose.yml up -d
+#
+# Container name: postgres (resolved by every service on the `common` network)
+# Networks: common, warehouse-net, internal, traefik-net, site_network
+# =============================================================================
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  internal:
+    external: true
+  traefik-net:
+    external: true
+    name: traefik-net
+  site_network:
+    name: site_network
+
+volumes:
+  postgres_data:
+    name: postgres_data
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: postgres
+    restart: always
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    env_file:
+      # Repo-root .env fills gaps; the local application/databases/.env is
+      # listed LAST so it wins on conflicts — this keeps interpolation and
+      # runtime credentials identical.
+      - ../../../.env
+      - path: ../.env
+        required: false
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      # ── Multi-database bootstrap ──────────────────────────────────────────
+      # Format: db:owner:password,db:owner:password,...
+      # The init shell script parses this list and creates each database with
+      # its dedicated role. The fallback keeps local development working; for
+      # production, override with POSTGRES_DATABASES in application/databases/.env.
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_precis_dev:structa:${POSTGRES_PASSWORD},db_precis_ctc:structa:${POSTGRES_PASSWORD},coder:coder:${CODER_DB_PASSWORD:?CODER_DB_PASSWORD must be set in .env},db_loop_crm:structa:${POSTGRES_PASSWORD},blinko:blinko:${BLINKO_DB_PASSWORD:-Blinko2024SecurePlaceholder!}}"
+      # ── Blinko password injection ─────────────────────────────────────────
+      # The shell init script uses BLINKO_DB_PASSWORD to create the `blinko`
+      # role.  Defaults to a generated placeholder; the value in
+      # application/databases/.env always overrides it.
+      BLINKO_DB_PASSWORD: "${BLINKO_DB_PASSWORD:-Blinko2024SecurePlaceholder!}"
+      # ── Force re-initialization ───────────────────────────────────────────
+      # Set FORCE_REINIT=true to ignore the .init_done marker and re-run all
+      # init scripts on the next start.  Only use for local/dev resets.
+      FORCE_REINIT: "${FORCE_REINIT:-false}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+      - ./backups:/backups:Z
+    networks:
+      - common
+      - warehouse-net
+      - internal
+      - traefik-net
+      - site_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G

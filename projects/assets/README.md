@@ -59,7 +59,16 @@ product-named subdirectory there. The path is exported by
 `projects/webpack/paths.js` as `loadAssetsDir`; see
 `load-assets/README.md` for the layout and naming conventions.
 
+## Shared Theme Library
+
+`projects/assets/theme/` is the shared, product-agnostic theme system with
+tokenised design systems, BEM SCSS components, and HTML reference templates
+organised by product domain (`default`, `lms`, `crm`, `pos`). Each theme uses
+a `fu-<theme-name>-*` token prefix. See `theme/README.md` for the full
+structure, token convention, and import instructions.
+
 ## Related
 
+- [Shared Theme Library](theme/README.md)
 - [Previews naming convention](https://github.com/mammhoud/structa.cloud/blob/generic/docs/README.md)
 - [Precis Landing preview assets](../../projects/precis/precis-landing/backend/assets/static/previews/)

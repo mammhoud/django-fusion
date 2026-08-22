@@ -1,5 +1,5 @@
 # Shared-proxy Nginx — static/media server + reverse proxy for Docus and
-# AFFiNE at tools.structa.cloud/space/.
+# Blinko at tools.structa.cloud/notes/.
 #
 # The config is an envsubst template rendered by the official Nginx entrypoint.
 #

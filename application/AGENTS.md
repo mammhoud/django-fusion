@@ -18,7 +18,7 @@ application/
 ├── tools/                   # self-hosted auxiliary services
 │   ├── nginx/                # shared-proxy Nginx (tools + docs + media front door)
 │   ├── docker-compose.nginx.yml  # shared-proxy compose
-│   ├── affine/  docus/  ollama/  adminer/  mailpit/  monitoring/
+│   ├── blinko/  docus/  adminer/  mailpit/  monitoring/
 ├── docker-compose.yml       # Coder control-plane Compose stack
 ├── docker-compose.tasks.yml # shared-worker + shared-scheduler compose
 ├── scripts/                  # dev, staging, testing, production automation
@@ -51,7 +51,7 @@ probe, documentation, and CI path filters as applicable.
 - Database image/init/backup behavior belongs in `application/databases/`.
 - Host routing, TLS, certificates, static/media serving, and proxy middleware
   belong in `application/proxy/`.
-- Auxiliary self-hosted services (AFFiNE, Docus, Ollama, Adminer, Mailpit,
+- Auxiliary self-hosted services (Blinko, Docus, Adminer, Mailpit,
   Prometheus/Grafana) belong in `application/tools/<name>/`, each with its
   own `docker-compose.yml` + `Makefile`, and are path-routed at
   `tools.structa.cloud/<tool>/` through the shared-proxy Nginx.

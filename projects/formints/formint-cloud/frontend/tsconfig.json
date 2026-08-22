@@ -10,7 +10,8 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@formints-assets/*": ["../../assets/shared/*"]
     },
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,

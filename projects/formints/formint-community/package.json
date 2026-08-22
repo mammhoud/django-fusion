@@ -81,6 +81,7 @@
     "@base-ui/react": "^1.7.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@formints/client": "file:../packages/formints-client",
+    "@formints/design-system": "file:../packages/design-system",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "^2",
     "@tauri-apps/plugin-fs": "^2",

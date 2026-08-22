@@ -167,7 +167,8 @@ pip install 'django-fusion[bolt]'
 ```
 
 Set `FUSION_BOLT_JWT_SECRET` to a dedicated production secret. Login via
-allauth, then exchange the session for a user-bound token pair:
+allauth, then exchange the session for a user-bound token pair (note: /api/v1/
+below is deprecated; /apis/core/ is the forward road for non-auth endpoints):
 
 ```bash
 curl -c cookies.txt -X POST http://localhost:8000/accounts/login/ \
@@ -181,7 +182,7 @@ curl http://localhost:8000/api/v1/auth/me/ \
 
 The frontend `BoltApiClient` keeps the access/refresh pair in session
 storage, rotates before expiry, retries one 401, then clears auth state and
-falls back to `/api/v1`.
+falls back to `/api/v1` (deprecated; /apis/core/ is the forward road).
 
 ### Key endpoints
 
@@ -193,7 +194,7 @@ falls back to `/api/v1`.
 | `/finance/invoices/`, `/payments/`, `/revenue/` | Finance surface |
 | `/tasks/` | Task Center (authenticated, merged job history) |
 | `/fragments/navigation/` | HTMX navigator preload |
-| `/api/v1/*` · `/bolt/*` | JSON APIs |
+| `/api/v1/*` (deprecated) · `/bolt/*` · `/apis/core/*` | JSON APIs |
 
 ---
 
@@ -217,7 +218,7 @@ The Astro dev server proxies `/api`, `/admin`, `/fragment(s)` to `:8000`.
 Start the backend first, then check:
 
 ```bash
-curl -s http://localhost:8000/api/v1/ | head -20
+curl -s http://localhost:8000/apis/core/dashboard/ | head -20
 ```
 
 ### Dashboard redirects to login

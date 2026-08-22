@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import crest from '../../../assets/images/formint-crest.svg';
+import crest from '@formints-assets/images/formint-crest.svg';
 
 const RING_RADIUS = 52;
 const RING_CIRCUMFERENCE = 2 * Math.PI * RING_RADIUS;

@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════════════════════════
+   LMS Component: fu-lms-quiz-card — BEM quiz/question for LMS theme.
+   Uses fu-lms-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-lms-quiz {
+  &__question {
+    background: hsl(var(--fu-lms-card));
+    border-radius: var(--fu-lms-radius-lg);
+    box-shadow: var(--fu-lms-shadow-card);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid hsl(var(--fu-lms-line));
+    margin-bottom: 1rem;
+
+    span {
+      font-size: 0.8125rem;
+      color: hsl(var(--fu-lms-muted));
+
+      strong {
+        color: hsl(var(--fu-lms-ink));
+        font-weight: 700;
+      }
+    }
+  }
+
+  &__text {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: hsl(var(--fu-lms-ink));
+    margin-bottom: 1rem;
+  }
+
+  &__options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid hsl(var(--fu-lms-line));
+    border-radius: var(--fu-lms-radius-md);
+    cursor: pointer;
+    transition: var(--fu-lms-transition-standard);
+
+    &:hover {
+      border-color: hsl(var(--fu-lms-primary));
+      background: hsl(var(--fu-lms-primary-light));
+    }
+
+    input {
+      width: 1.125rem;
+      height: 1.125rem;
+      accent-color: hsl(var(--fu-lms-primary));
+    }
+
+    label {
+      font-size: 0.875rem;
+      color: hsl(var(--fu-lms-ink));
+      cursor: pointer;
+    }
+  }
+
+  /* ── Variations ── */
+  &__option--correct {
+    border-color: hsl(var(--fu-lms-success));
+    background: hsl(var(--fu-lms-success) / 0.08);
+  }
+
+  &__option--wrong {
+    border-color: hsl(var(--fu-lms-error));
+    background: hsl(var(--fu-lms-error) / 0.08);
+  }
+
+  &__progress {
+    margin-bottom: 1rem;
+    .fu-lms-quiz__progress-bar {
+      height: 0.5rem;
+      background: hsl(var(--fu-lms-line));
+      border-radius: var(--fu-lms-radius-full);
+      overflow: hidden;
+      .fill {
+        height: 100%;
+        background: hsl(var(--fu-lms-primary));
+        transition: width var(--fu-lms-transition-slow);
+      }
+    }
+  }
+}

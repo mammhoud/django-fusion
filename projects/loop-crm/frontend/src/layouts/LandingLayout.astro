@@ -3,6 +3,9 @@
 // /privacy/, /terms/. Content is driven by the Wagtail /apis/pages/ road; this
 // layout owns only the chrome (nav + footer) and the CRT visual system.
 import '../styles/globals.css';
+// Shared theme engine (projects/assets/theme): same activation as the app
+// shell so landing surfaces share the --fu-token-* semantic layer.
+import '../styles/theme.css';
 import '../styles/landing.css';
 import { iconSvg } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
@@ -31,7 +34,7 @@ const {
 } = Astro.props;
 ---
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" data-theme="crm" data-brand="loop" class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

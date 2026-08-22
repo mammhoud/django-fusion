@@ -1,0 +1,109 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-accordion — BEM accordion for the default theme.
+   Extracted and converted from .archives/theme/elements/_accordion.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-accordion {
+  &__item {
+    background: hsl(var(--fu-default-primary-light));
+    border: 0;
+    border-radius: var(--fu-default-radius-md);
+    transition: var(--fu-default-transition-standard);
+
+    & + & {
+      margin-top: 1.25rem;
+    }
+  }
+
+  &__header {
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+    padding: 1.25rem 1.875rem;
+    margin-bottom: 0;
+    padding-right: 2.375rem;
+    cursor: pointer;
+
+    button {
+      font-size: 1.125rem;
+      line-height: 1.6875rem;
+      outline: none;
+      text-decoration: none;
+      box-shadow: none;
+      width: 100%;
+      text-align: left;
+      padding: 0;
+      background-color: transparent;
+      position: relative;
+      font-weight: 600;
+      color: hsl(var(--fu-default-ink));
+      transition: var(--fu-default-transition-standard);
+
+      &[aria-expanded="true"] {
+        color: hsl(var(--fu-default-primary));
+      }
+    }
+  }
+
+  &__body {
+    border-top: 1px solid hsl(var(--fu-default-line));
+    padding: 1.25rem 1.875rem 1.5625rem;
+    color: hsl(var(--fu-default-muted));
+  }
+
+  /* ── Variations ── */
+  &--style-1 {
+    .fu-accordion__item {
+      background: hsl(var(--fu-default-card));
+      box-shadow: var(--fu-default-shadow-card);
+    }
+    .fu-accordion__body {
+      background: hsl(var(--fu-default-primary-light) / 0.5);
+    }
+  }
+
+  &--style-2 {
+    .fu-accordion__item {
+      background: transparent;
+      border-radius: 0;
+    }
+    .fu-accordion__header {
+      border-bottom: 1px solid hsl(var(--fu-default-line));
+      padding: 0 1.25rem 1.25rem 0;
+    }
+    .fu-accordion__body {
+      padding: 1.25rem 1.25rem 1.25rem 0;
+      border-top: 0;
+      background: transparent;
+    }
+  }
+
+  &--style-3 {
+    .fu-accordion__item {
+      background: transparent;
+      border-radius: 0;
+    }
+    .fu-accordion__header {
+      border: 1px solid hsl(var(--fu-default-line));
+      padding: 0.9375rem 1.25rem;
+      border-radius: var(--fu-default-radius-md);
+    }
+    .fu-accordion__body {
+      padding: 0.9375rem 1.25rem 0.625rem 0;
+      border: 0;
+      background: transparent;
+    }
+  }
+
+  &--style-4 {
+    .fu-accordion__item {
+      border: 2px solid hsl(var(--fu-default-line));
+      background: transparent;
+    }
+    .fu-accordion__body {
+      border-top: 2px solid hsl(var(--fu-default-line));
+      background: transparent;
+    }
+  }
+}

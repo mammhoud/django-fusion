@@ -1,0 +1,16 @@
+.fu-slider__area{
+    flex-wrap: nowrap;
+    .single-slider{
+        margin: 0 15px;
+    }
+    &.fu-card--slider-1{
+        .single-slider{
+            
+        }
+    }
+    &.fu-card--slider-2{
+        .single-slider{
+
+        }
+    }
+}

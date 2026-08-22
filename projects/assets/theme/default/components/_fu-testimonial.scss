@@ -1,0 +1,120 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-testimonial — BEM testimonial for the default theme.
+   Extracted and converted from .archives/theme/elements/_testimonial.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-testimonial {
+  &__box {
+    background: hsl(var(--fu-default-card));
+    border-radius: var(--fu-default-radius-lg);
+    box-shadow: var(--fu-default-shadow-card);
+    overflow: hidden;
+    transition: var(--fu-default-transition-slow);
+    height: 100%;
+
+    &:hover {
+      box-shadow: var(--fu-default-shadow-card-hover);
+    }
+  }
+
+  &__inner {
+    padding: 1.875rem;
+  }
+
+  &__client {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__thumb {
+    flex-shrink: 0;
+    img {
+      width: 3.5rem;
+      height: 3.5rem;
+      border-radius: var(--fu-default-radius-full);
+      object-fit: cover;
+      border: 2px solid hsl(var(--fu-default-line));
+    }
+  }
+
+  &__info {
+    h5 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: hsl(var(--fu-default-ink));
+      margin-bottom: 0.25rem;
+    }
+    span {
+      font-size: 0.875rem;
+      color: hsl(var(--fu-default-muted));
+      i {
+        font-style: italic;
+      }
+    }
+  }
+
+  &__description {
+    color: hsl(var(--fu-default-muted));
+    line-height: 1.7;
+    font-size: 0.9375rem;
+    margin-bottom: 1rem;
+  }
+
+  &__rating {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin-bottom: 0.75rem;
+    color: hsl(var(--fu-default-mark));
+
+    i {
+      font-size: 1rem;
+    }
+  }
+
+  /* ── Variations ── */
+  &--minimal {
+    .fu-testimonial__box {
+      background: transparent;
+      box-shadow: none;
+      border: 1px solid hsl(var(--fu-default-line));
+    }
+  }
+
+  &--gradient {
+    .fu-testimonial__box {
+      background: var(--fu-default-gradient-primary, hsl(var(--fu-default-ink)));
+      color: hsl(var(--fu-default-paper));
+    }
+    .fu-testimonial__info h5,
+    .fu-testimonial__description {
+      color: hsl(var(--fu-default-paper));
+    }
+    .fu-testimonial__info span {
+      color: hsl(var(--fu-default-paper) / 0.7);
+    }
+  }
+
+  &--quote {
+    .fu-testimonial__description {
+      font-size: 1.25rem;
+      font-style: italic;
+      position: relative;
+      padding-left: 2rem;
+
+      &::before {
+        content: '"';
+        position: absolute;
+        left: 0;
+        top: -0.5rem;
+        font-size: 3rem;
+        color: hsl(var(--fu-default-primary) / 0.3);
+        font-family: Georgia, serif;
+        line-height: 1;
+      }
+    }
+  }
+}

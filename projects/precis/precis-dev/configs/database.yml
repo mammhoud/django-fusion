@@ -1,0 +1,50 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# precis-main — database.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Database configuration for the unified Precis product, wired by *type*.
+#
+#   DATABASE.type: sqlite   → local/dev default — precis-main/db.sqlite3
+#   DATABASE.type: postgres → the shared ``postgres`` container
+#                             (application/databases) with this site's own
+#                             database (DB_NAME_LANDING → db_precis_landing)
+#
+# Secret rule: the password is NEVER inlined here — it resolves from the
+# environment (`@env POSTGRES_PASSWORD` / `@env DJANGO_DB_PASSWORD`), i.e. the
+# repo-root `.env`, the project `.env`, or Docker Compose `environment:`
+# (container truth). The database name defaults to `db_precis_landing` but the
+# deployed name comes from `DB_NAME_LANDING` in .env (see .env.example).
+#
+# Consumers:
+#   - backend/settings.py  → DATABASES["default"] (env vars still win)
+#   - docker-compose.yml   → DB_TYPE=postgres|sqlite drives the container engine
+#   - make config-show     → prints the resolved DATABASE section
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  DATABASE:
+    # Active type when no DB_TYPE env var is set. Local `manage.py runserver`
+    # stays on SQLite; Docker Compose sets DB_TYPE=postgres for containers.
+    type: sqlite
+    # Per-type connection maps — settings.py picks the map for the active
+    # type, so a forced type (e.g. DB_TYPE=postgres during local dev) always
+    # resolves the right name/user/host/port/password.
+    sqlite:
+      name: "@env DJANGO_DB_PATH db.sqlite3"
+    postgres:
+      name: "@env DB_NAME_LANDING db_precis_landing"
+      user: "@env POSTGRES_USER admin"
+      host: "@env DJANGO_DB_HOST postgres"
+      port: "@env DJANGO_DB_PORT 5432"
+      password: "@env POSTGRES_PASSWORD"
+
+development:
+  DATABASE:
+    type: sqlite
+
+staging:
+  DATABASE:
+    type: postgres
+
+production:
+  DATABASE:
+    type: postgres

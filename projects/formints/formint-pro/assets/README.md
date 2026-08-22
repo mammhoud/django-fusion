@@ -1,20 +1,12 @@
-# Formint Shared Assets
+# Pro asset boundary
 
-This directory is the single source for Formint images, icons, fonts, styles, scripts, static files, manifests, and representative fixtures.
+Shared Formint assets are owned by [`../../assets/shared/`](../assets/shared/)
+(the product-level registry). This directory is intentionally kept as the Pro
+edition boundary for future Pro-only source assets; it is not a duplicate
+asset store.
 
-## Rules
-
-- Keep one canonical source file per image, icon, and font.
-- Keep licenses and attribution beside third-party fonts or imagery.
-- Frontend imports source assets through stable aliases such as `@assets/images` and `@assets/styles`.
-- Backend may collect or expose `static/` and a generated manifest, but does not own page layout markup.
-- Do not store secrets, databases, dependency directories, or compiled build output here.
-- Do not remove an asset until usage search and visual tests pass.
-
-## Planned directories
-
-```text
-images/ icons/ fonts/ styles/ scripts/ static/ manifests/ fixtures/
-```
-
-Phase 1 starts with the contract only; assets are migrated in small, verified families from the preserved POS sources.
+- Import shared frontend assets through `@formints-assets`.
+- Django collects shared backend files through `FORMINT_SHARED_ASSETS` and
+  keeps generated output in the Pro server `STATIC_ROOT`.
+- Keep Pro-only assets here only when their content or runtime contract is not
+  shared by another edition.

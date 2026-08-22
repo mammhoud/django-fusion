@@ -33,7 +33,7 @@
     "shortDescription": "Formints Community — Point of Sale System",
     "longDescription": "Formints Community is a free, offline-first point-of-sale system for managing restaurant sales, inventory, analytics, and more. Built with Tauri, React, and Rust.",
     "homepage": "https://structa.cloud",
-    "icon": ["../assets/icons/icon.icns"],
+    "icon": ["../../assets/shared/icons/icon.icns"],
     "licenseFile": "../LICENSE",
     "createUpdaterArtifacts": false,
     "macOS": {
@@ -42,7 +42,7 @@
     "windows": {
       "digestAlgorithm": "sha256",
       "nsis": {
-        "installerIcon": "../assets/icons/icon.ico"
+        "installerIcon": "../../assets/shared/icons/icon.ico"
       }
     },
     "linux": {

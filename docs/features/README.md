@@ -59,6 +59,13 @@
 
 ---
 
+## Shared Feature Specifications
+
+| Feature | Path |
+|---------|------|
+| Dynamic Template Field System | [`template-fields/`](template-fields/README.md) |
+| DataToken Sync-Tagging | [`data-token-sync-tagging.md`](data-token-sync-tagging.md) |
+
 ## Related
 
 | Topic | Path |

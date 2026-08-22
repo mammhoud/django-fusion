@@ -4,8 +4,7 @@
  * Fetches the schema-aware table contract from the API
  * (``/bolt/tables/{resource}`` canonical, ``/api/v1/tables/{resource}/``
  * compatibility fallback) and renders it with the Loop-CRM tactical
- * telemetry design: mono uppercase headers with `+` ticks, hard corners,
- * red accent rows, and type-driven cells (money/date/pill/link).
+ * CRM-shared fu-crm-table BEM classes (from projects/assets/theme/crm/).
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -39,17 +38,17 @@ const num = new Intl.NumberFormat('en-US');
 
 function Cell({ value, type }: { value: string; type: TableHeader['type'] }) {
   if (type === 'pill') {
-    return <span className="loop-res-table__pill">{value || '—'}</span>;
+    return <span className="fu-crm-table__pill">{value || '—'}</span>;
   }
   if (type === 'link') {
     if (!value || value === '—') return <span>—</span>;
     return (
-      <a className="loop-res-table__link" href={value} target="_blank" rel="noreferrer">
+      <a className="fu-crm-table__link" href={value} target="_blank" rel="noreferrer">
         Open ↗
       </a>
     );
   }
-  return <span className={type === 'money' ? 'loop-res-table__money' : undefined}>{value}</span>;
+  return <span>{value}</span>;
 }
 
 function Table({ resource, title, kicker }: ResourceTableProps) {
@@ -98,24 +97,24 @@ function Table({ resource, title, kicker }: ResourceTableProps) {
 
   if (status === 'error') {
     return (
-      <section className="loop-res-table" aria-label={`${title ?? resource} table`}>
-        <div className="loop-res-table__head">
-          <span className="loop-res-table__kicker">{kicker ?? 'live table'}</span>
-          <span className="loop-res-table__count">&gt;&gt; offline</span>
+      <section className="fu-crm-table" aria-label={`${title ?? resource} table`}>
+        <div className="fu-crm-table__head">
+          <span className="fu-crm-table__kicker">{kicker ?? 'live table'}</span>
+          <span className="fu-crm-table__count">&gt;&gt; offline</span>
         </div>
-        <div className="loop-res-table__error">The {resource} table did not respond. Check that the backend is running.</div>
+        <div className="fu-crm-table__error">The {resource} table did not respond. Check that the backend is running.</div>
       </section>
     );
   }
 
   if (status === 'loading' || !payload) {
     return (
-      <section className="loop-res-table" aria-label={`${title ?? resource} table`} aria-busy="true">
-        <div className="loop-res-table__head">
-          <span className="loop-res-table__kicker">{kicker ?? 'live table'}</span>
-          <span className="loop-res-table__count htmx-indicator">loading</span>
+      <section className="fu-crm-table" aria-label={`${title ?? resource} table`} aria-busy="true">
+        <div className="fu-crm-table__head">
+          <span className="fu-crm-table__kicker">{kicker ?? 'live table'}</span>
+          <span className="fu-crm-table__count htmx-indicator">loading</span>
         </div>
-        <div className="loop-res-table__skeleton" aria-hidden="true">
+        <div className="fu-crm-table__skeleton" aria-hidden="true">
           <i />
           <i />
           <i />
@@ -126,16 +125,16 @@ function Table({ resource, title, kicker }: ResourceTableProps) {
   }
 
   return (
-    <section className="loop-res-table" aria-label={`${title ?? resource} table`} aria-live="polite">
-      <div className="loop-res-table__head">
-        <span className="loop-res-table__kicker">{kicker ?? 'live table'}</span>
-        <span className="loop-res-table__count">
+    <section className="fu-crm-table" aria-label={`${title ?? resource} table`} aria-live="polite">
+      <div className="fu-crm-table__head">
+        <span className="fu-crm-table__kicker">{kicker ?? 'live table'}</span>
+        <span className="fu-crm-table__count">
           &gt;&gt; {num.format(payload.count)} record{payload.count === 1 ? '' : 's'}
-          {synced && <em className="loop-res-table__flash">synced</em>}
+          {synced && <em className="fu-crm-table__flash">synced</em>}
         </span>
       </div>
-      <div className="loop-res-table__wrap">
-        <table className="loop-res-table__grid">
+      <div className="fu-crm-table__wrap">
+        <table className="fu-crm-table">
           <thead>
             <tr>
               {payload.headers.map((header) => (
@@ -157,7 +156,7 @@ function Table({ resource, title, kicker }: ResourceTableProps) {
             ))}
             {payload.rows.length === 0 && (
               <tr>
-                <td colSpan={payload.headers.length} className="loop-res-table__empty">
+                <td colSpan={payload.headers.length} className="fu-crm-table__empty">
                   <strong>No {resource} yet.</strong>
                   <span>Records created through the app or API appear here.</span>
                 </td>

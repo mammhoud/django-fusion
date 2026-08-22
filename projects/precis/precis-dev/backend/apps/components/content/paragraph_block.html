@@ -1,0 +1,12 @@
+{% load wagtailcore_tags components_field %}
+<div id="{{ block_id }}" class="paragraph-block {{ block_classes }}"
+     {% if self.data_attributes %}{{ self.data_attributes|safe }}{% endif %}>
+
+    {% render_unhandled_fields unhandled_fields %}
+
+    <div class="paragraph-content {% if self.drop_cap %}drop-cap{% endif %} text-{{ self.alignment|default:'left' }}"
+         style="{% if self.text_color %}color: {{ self.text_color }};{% endif %}
+                {% if self.background_color %}background-color: {{ self.background_color }};{% endif %}">
+        {{ self.content|richtext }}
+    </div>
+</div>

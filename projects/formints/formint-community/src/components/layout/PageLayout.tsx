@@ -9,7 +9,7 @@ import AnimatePresence from '../ui/AnimatePresence';
 import { dropdownMenu, toastSlideIn, iconSpring } from '../../utils/pageTransitions';
 // Built-in Formint crest logo — always shown in the app chrome.
 // Business logos from settings only appear on invoices/receipts.
-import defaultLogo from '../../../assets/images/formint-crest.svg';
+import defaultLogo from '@formints-assets/images/formint-crest.svg';
 
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────

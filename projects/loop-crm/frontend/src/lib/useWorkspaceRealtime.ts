@@ -4,8 +4,9 @@
 // backend; islands filter to the events they care about and re-fetch.
 //
 // Transport notes:
-//   * The workspace id is resolved from the session via ``/api/v1/workspace/current/``
-//     (never hardcoded), so the same bundle works for every tenant.
+//   * The workspace id is resolved from the session via
+//     ``/apis/core/workspace/current/`` (the canonical named road;
+//     the /api/v1/ copy is deprecated).
 //   * The socket URL reuses ``window.location``, which keeps the connection
 //     same-origin (and cookie-authenticated) behind the Astro dev proxy and in
 //     production alike.
@@ -27,7 +28,7 @@ interface Options {
   workspaceId?: number | string;
 }
 
-const WORKSPACE_ENDPOINT = '/api/v1/workspace/current/';
+const WORKSPACE_ENDPOINT = '/apis/core/workspace/current/';
 const MAX_BACKOFF_MS = 10_000;
 
 function socketUrl(workspaceId: number | string): string {

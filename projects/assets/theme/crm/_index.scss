@@ -1,0 +1,11 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CRM Theme Index — imports all tokens and BEM components.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ── */
+@import 'tokens/fu-crm-theme';
+
+/* ── BEM Components ── */
+@import 'components/tables/fu-crm-table';
+@import 'components/pipeline/fu-crm-pipeline';
+@import 'components/cards/fu-crm-contact-card';

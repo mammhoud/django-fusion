@@ -9,6 +9,7 @@ import { Badge, badgeVariants } from '../../../components/ui/badge';
 import type { VariantProps } from 'class-variance-authority';
 import StatusToast from '../../../components/ui/StatusToast';
 import { useStatusToast } from '../../../hooks/useStatusToast';
+import { useStaggeredReveal } from '../../../hooks/useStaggeredReveal';
 
 type BadgeTone = NonNullable<VariantProps<typeof badgeVariants>['variant']>;
 
@@ -83,6 +84,14 @@ export default function Badges() {
   const [toDelete, setToDelete] = useState<RewardBadge | null>(null);
 
   const { status, showSuccess, showError, dismiss } = useStatusToast();
+
+  // Staggered reveal hook for badge grid
+  const { containerRef, getItemProps } = useStaggeredReveal({
+    count: 20, // Max items to stagger
+    staggerDelay: 75,
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px',
+  });
 
   const loadBadges = async () => {
     try {
@@ -177,7 +186,15 @@ export default function Badges() {
   return (
     <PageLayout title={t('nav.badges', 'Rewards & Badges')}>
       <div className="space-y-4">
-        {/* ── Title + search + add ── */}
+        {/* ── Eyebrow tag — premium micro-label ── */}
+        <div className="flex items-center gap-2 mb-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">
+            <span className="ri-award-line ri-12px" />
+            {t('badges.badgesLabel', 'Loyalty Program')}
+          </span>
+        </div>
+
+        {/* ── Title + search + add — compact toolbar ── */}
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-lg font-bold text-base-content shrink-0">
             {t('nav.badges', 'Rewards & Badges')}
@@ -205,7 +222,7 @@ export default function Badges() {
           </button>
         </div>
 
-        {/* ── List ── */}
+        {/* ── List — Double-Bezel compact cards with staggered reveal ── */}
         {isLoading ? (
           <Card padding="2xl" center>
             <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full inline-block mb-2 animate-spin" />
@@ -223,47 +240,69 @@ export default function Badges() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filtered.map((badge) => (
-              <Card key={badge.id} padding="md" className="group">
+          <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {filtered.map((badge, idx) => (
+              <Card
+                key={badge.id}
+                padding="sm"
+                variant="bezel"
+                hover
+                {...getItemProps(idx)}
+              >
+                {/* ── Header zone — accent bar + icon + actions ── */}
                 <div className="flex items-start justify-between gap-2">
-                  <Badge variant={badge.tone} size="lg" className="gap-2">
-                    <span className={`ri-${badge.icon}`} />
-                    {badge.name}
-                  </Badge>
-                  <div className="flex gap-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {/* RTL-aware accent bar */}
+                    <div
+                      className="w-1 h-8 rounded-full shrink-0"
+                      style={{
+                        backgroundColor: `var(--color-${badge.tone === 'default' ? 'primary' : badge.tone.replace('soft-', '')})`,
+                      }}
+                    />
+                    <div className="min-w-0">
+                      <Badge variant={badge.tone} size="lg" className="gap-2">
+                        <span className={`ri-${badge.icon}`} />
+                        {badge.name}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <button
                       onClick={() => openEdit(badge)}
                       aria-label={t('common.edit')}
-                      className="p-2 text-slate-600 hover:text-primary transition-colors"
+                      className="w-7 h-7 rounded-lg text-base-content/40 hover:text-primary hover:bg-primary/10 flex items-center justify-center transition-all duration-200 active:scale-95"
                     >
-                      <span className="ri-pencil-line" />
+                      <span className="ri-pencil-line ri-14px" />
                     </button>
                     <button
                       onClick={() => setToDelete(badge)}
                       aria-label={t('common.delete')}
-                      className="p-2 text-slate-600 hover:text-error transition-colors"
+                      className="w-7 h-7 rounded-lg text-base-content/40 hover:text-error hover:bg-error/10 flex items-center justify-center transition-all duration-200 active:scale-95"
                     >
-                      <span className="ri-delete-bin-line" />
+                      <span className="ri-delete-bin-line ri-14px" />
                     </button>
                   </div>
                 </div>
 
+                {/* ── Content zone — description + metadata ── */}
                 {badge.description && (
-                  <p className="mt-2 text-sm text-base-content/60">{badge.description}</p>
+                  <p className="mt-2 text-[11px] text-base-content/50 line-clamp-2">
+                    {badge.description}
+                  </p>
                 )}
 
-                <div className="mt-3 flex items-center justify-between text-xs">
-                  <span className="inline-flex items-center gap-1 text-base-content/50">
-                    <span className="ri-star-line text-amber-500" />
-                    {t('badges.threshold', '{{points}} points', { points: badge.threshold })}
+                {/* ── Footer zone — threshold + status ── */}
+                <div className="mt-3 pt-2 border-t border-base-300/30 flex items-center justify-between text-[10px]">
+                  <span className="inline-flex items-center gap-1 text-base-content/40">
+                    <span className="ri-star-line text-amber-500 ri-12px" />
+                    {t('badges.threshold', '{{points}} pts', { points: badge.threshold })}
                   </span>
                   <span
                     className={`inline-flex items-center gap-1 ${
-                      badge.is_active ? 'text-success' : 'text-base-content/40'
+                      badge.is_active ? 'text-success' : 'text-base-content/30'
                     }`}
                   >
-                    <span className={`ri-${badge.is_active ? 'checkbox-circle-line' : 'indeterminate-circle-line'}`} />
+                    <span className={`ri-${badge.is_active ? 'checkbox-circle-line' : 'indeterminate-circle-line'} ri-12px`} />
                     {badge.is_active
                       ? t('badges.active', 'Active')
                       : t('badges.inactive', 'Inactive')}
@@ -275,64 +314,82 @@ export default function Badges() {
         )}
       </div>
 
-      {/* ── Add / Edit modal ── */}
+      {/* ── Add / Edit modal — compact form layout ── */}
       <FormModal
         isOpen={showForm}
         onClose={closeForm}
         title={editing ? t('badges.editTitle', 'Edit badge') : t('badges.addTitle', 'Add badge')}
+        size="sm"
         submitLabel={editing ? t('common.update') : t('common.add')}
         submitDisabled={!form.name.trim()}
         isSubmitting={isSubmitting}
         onSubmit={handleSubmit}
       >
         <div className="space-y-3">
-          <div className="field">
-            <label className="label text-xs">{t('badges.name', 'Name')}</label>
+          {/* Name field — compact */}
+          <div className="space-y-1">
+            <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+              {t('badges.name', 'Name')}
+              <span className="text-error ml-0.5">*</span>
+            </label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder={t('badges.namePlaceholder', 'Gold regular')}
-              className="input w-full"
+              className="input w-full h-8 text-xs"
             />
           </div>
-          <div className="field">
-            <label className="label text-xs">{t('badges.description', 'Description')}</label>
+
+          {/* Description field — compact */}
+          <div className="space-y-1">
+            <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+              {t('badges.description', 'Description')}
+            </label>
             <input
               type="text"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               placeholder={t('badges.descriptionPlaceholder', 'Earned after 10 visits')}
-              className="input w-full"
+              className="input w-full h-8 text-xs"
             />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="field">
-              <label className="label text-xs">{t('badges.icon', 'Icon')}</label>
-              <div className="flex flex-wrap gap-1.5">
+
+          {/* Icon + Tone — side by side compact */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Icon picker — compact grid */}
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+                {t('badges.icon', 'Icon')}
+              </label>
+              <div className="flex flex-wrap gap-1">
                 {ICON_OPTIONS.map((icon) => (
                   <button
                     key={icon}
                     type="button"
                     onClick={() => setForm({ ...form, icon })}
                     aria-label={icon}
-                    className={`w-8 h-8 rounded-lg border flex items-center justify-center transition-all active:scale-95 ${
+                    className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all duration-200 active:scale-95 ${
                       form.icon === icon
-                        ? 'border-primary bg-primary/10 text-primary'
-                        : 'border-base-300 text-base-content/60 hover:border-base-content/30'
+                        ? 'border-primary bg-primary/10 text-primary shadow-sm'
+                        : 'border-base-300/50 text-base-content/50 hover:border-base-content/30 hover:bg-base-200/50'
                     }`}
                   >
-                    <span className={`ri-${icon}`} />
+                    <span className={`ri-${icon} ri-14px`} />
                   </button>
                 ))}
               </div>
             </div>
-            <div className="field">
-              <label className="label text-xs">{t('badges.tone', 'Tone')}</label>
+
+            {/* Tone picker — compact select */}
+            <div className="space-y-1">
+              <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+                {t('badges.tone', 'Tone')}
+              </label>
               <select
                 value={form.tone}
                 onChange={(e) => setForm({ ...form, tone: e.target.value as BadgeTone })}
-                className="select w-full"
+                className="select w-full h-8 text-xs"
               >
                 {TONE_OPTIONS.map((opt) => (
                   <option key={opt.tone} value={opt.tone}>
@@ -340,29 +397,35 @@ export default function Badges() {
                   </option>
                 ))}
               </select>
-              <div className="mt-2">
-                <Badge variant={form.tone}>{form.name || 'Badge'}</Badge>
+              <div className="mt-1.5">
+                <Badge variant={form.tone} size="sm">{form.name || 'Badge'}</Badge>
               </div>
             </div>
           </div>
-          <div className="field">
-            <label className="label text-xs">{t('badges.thresholdLabel', 'Loyalty points to earn')}</label>
+
+          {/* Threshold — compact number input */}
+          <div className="space-y-1">
+            <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+              {t('badges.thresholdLabel', 'Loyalty points to earn')}
+            </label>
             <input
               type="number"
               min="0"
               value={form.threshold}
               onChange={(e) => setForm({ ...form, threshold: e.target.value })}
-              className="input w-full"
+              className="input w-full h-8 text-xs"
             />
           </div>
-          <label className="flex items-center gap-2 cursor-pointer select-none">
+
+          {/* Active toggle — compact checkbox */}
+          <label className="flex items-center gap-2 cursor-pointer select-none py-1">
             <input
               type="checkbox"
               checked={form.is_active}
               onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
               className="checkbox checkbox-primary checkbox-sm"
             />
-            <span className="text-sm">{t('badges.activeLabel', 'Active')}</span>
+            <span className="text-xs text-base-content/70">{t('badges.activeLabel', 'Active')}</span>
           </label>
         </div>
       </FormModal>

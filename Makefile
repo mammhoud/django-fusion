@@ -74,6 +74,7 @@ PREFLIGHT_COMPOSE_FILES := \
 	$(DATABASES_DIR)/docker-compose.yml \
 	$(PROXY_DIR)/docker-compose.yml \
 	$(TASKS_COMPOSE_FILE) \
+	$(SERVICES_DIR)/docker-compose.yml \
 	application/docker-compose.yml
 
 # -----------------------------------------------------------------
@@ -85,7 +86,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
 .PHONY: deploy-databases deploy-coder
-.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-affine deploy-monitoring deploy-tools
+.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-affine deploy-monitoring deploy-blinko deploy-tools
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
@@ -355,7 +356,8 @@ help:
 	@echo "  make nx-run T=<target> - Run any target across all nx projects"
 	@echo ""
 	@echo "Self-hosted tools (application/tools/):"
-	@echo "  make deploy-tools      - Deploy all self-hosted tools (monitoring, ollama, adminer, mailpit, affine)"
+	@echo "  make deploy-tools      - Deploy all self-hosted tools (Blinko, monitoring, ollama, adminer, mailpit, affine)"
+	@echo "  make deploy-blinko     - Deploy Blinko notes at tools.structa.cloud/notes/"
 	@echo "  make deploy-utilities  - Deploy monitoring stack (Prometheus + Grafana, needs application/tools/monitoring/)"
 	@echo "  make deploy-ollama     - Deploy Ollama + Open WebUI (needs application/tools/ollama/)"
 	@echo "  make deploy-adminer    - Deploy Adminer DB UI (needs application/tools/adminer/)"
@@ -612,11 +614,19 @@ deploy-coder:
 # wired so adding application/tools/<X>/Makefile "just works".
 # -----------------------------------------------------------------
 deploy-tools:
+	@$(MAKE) --no-print-directory deploy-blinko
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
 	@$(MAKE) --no-print-directory deploy-adminer
 	@$(MAKE) --no-print-directory deploy-mailpit
 	@$(MAKE) --no-print-directory deploy-affine
+
+deploy-blinko:
+	@if [ -d "$(SERVICES_DIR)/blinko" ]; then \
+		$(MAKE) -C $(SERVICES_DIR)/blinko up; \
+	else \
+		echo "  (skip) $(SERVICES_DIR)/blinko not present"; \
+	fi
 
 deploy-affine:
 	@if [ -d "$(SERVICES_DIR)/affine" ]; then \

@@ -9,28 +9,28 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url("../assets/fonts/outfit/Outfit-400.woff2") format("woff2");
+  src: url("@formints-assets/fonts/outfit/Outfit-400.woff2") format("woff2");
 }
 @font-face {
   font-family: "Outfit";
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url("../assets/fonts/outfit/Outfit-500.woff2") format("woff2");
+  src: url("@formints-assets/fonts/outfit/Outfit-500.woff2") format("woff2");
 }
 @font-face {
   font-family: "Outfit";
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url("../assets/fonts/outfit/Outfit-600.woff2") format("woff2");
+  src: url("@formints-assets/fonts/outfit/Outfit-600.woff2") format("woff2");
 }
 @font-face {
   font-family: "Outfit";
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url("../assets/fonts/outfit/Outfit-700.woff2") format("woff2");
+  src: url("@formints-assets/fonts/outfit/Outfit-700.woff2") format("woff2");
 }
 
 /* ── Content sources — the Django backend templates use the same Tailwind

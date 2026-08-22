@@ -1,12 +1,12 @@
 # =============================================================================
-# Shared-proxy Nginx — static/media server + reverse proxy for Docus and AFFiNE
+# Shared-proxy Nginx — static/media server + reverse proxy for Docus and Blinko
 # =============================================================================
-# Docus now lives at the root of docs/ (docs/docker-compose.yml); AFFiNE lives
-# under application/tools/affine. This file owns only the shared-proxy Nginx
+# Docus now lives at the root of docs/ (docs/docker-compose.yml); Blinko lives
+# under application/tools/blinko. This file owns only the shared-proxy Nginx
 # server, which:
 #   - serves per-site static/media volumes;
 #   - proxies /docs/ and docs.structa.cloud to `docus:3000`;
-#   - proxies tools.structa.cloud/space/ (and origin paths) to `proxy-affine:3010`.
+#   - proxies tools.structa.cloud/notes/ (and origin paths) to `blinko:1111`.
 # Both upstreams resolve by container_name on the external `common` network, so
 # they can be started/stopped independently of the proxy.
 #

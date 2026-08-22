@@ -93,6 +93,9 @@ INSTALLED_APPS = [
     # Wagtail landing pages + StreamField section blocks.
     "apps.pages",
     "apps.content",
+    # Landing builder — Wagtail page assembly from the fu-* component catalog
+    # with theme picking + dynamic template fields (abstract BuilderPage).
+    "django_fusion.builder",
     # Worker implementations live in plugins.workers; no legacy task app is
     # needed because TaskExecution belongs to core in Loop-CRM.
 ]
@@ -107,6 +110,9 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
+    # API v1 deprecation signalling: adds Deprecation/Sunset/Warning headers
+    # to every /api/v1/ response so consumers see the canonical road has moved.
+    "apps.core.middleware.APIV1DeprecationMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "allauth.account.middleware.AccountMiddleware",

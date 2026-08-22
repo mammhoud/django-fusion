@@ -5,8 +5,10 @@
 # tool keeps its own docker-compose.yml + Makefile so it can be started/stopped
 # independently; this file is the one-shot entry point for the whole toolbelt.
 #
-#   make deploy-tools            (root)   → runs each tool's Makefile `up`
+# Included by: application/docker-compose.yml (full-stack orchestrator)
+#
 #   docker compose -f application/tools/docker-compose.yml up -d
+#   make deploy-tools            (root)
 #
 # All tools join the external `common` and `traefik-net` networks (created by
 # `make create-networks`), and are routed path-based from tools.structa.cloud
@@ -17,10 +19,10 @@
 # =============================================================================
 
 include:
-  - affine/docker-compose.yml
+  - coder/docker-compose.yml
+  - blinko/docker-compose.yml
   - mailpit/docker-compose.yml
   # - adminer/docker-compose.yml
   # - monitoring/docker-compose.yml
-  # - ollama/docker-compose.yml
 
   - ./docker-compose.nginx.yml

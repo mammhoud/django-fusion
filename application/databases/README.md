@@ -1,255 +1,89 @@
-# Databases Infrastructure
+# Shared Databases
 
-**Location:** `application/databases/`
-**Purpose:** Data storage, caching, and database services (PostgreSQL + Redis)
-**Created:** Phase 11
+`application/databases/` owns the monorepo's shared PostgreSQL cluster and
+Redis instance. Both are started by `docker-compose.yml` (which includes both
+`postgres/docker-compose.yml` and `redis/docker-compose.yml`), or individually
+from their respective subdirectories.
 
----
-
-## Overview
-
-The `application/databases` directory contains the shared data infrastructure:
-
-- **PostgreSQL** — primary relational database (multi-database bootstrap)
-- **Redis** — caching and session store / Dramatiq broker
-
-Database administration UI (**Adminer**) now lives in
-`application/tools/adminer/` (path-routed at `tools.structa.cloud/adminer/`),
-not in this stack.
-
----
-
-## Directory Structure
-
-```
-application/databases/
-├── README.md                    (this file)
-├── docker-compose.yml           (PostgreSQL + Redis)
-├── .env.example                 (template with generated RANDOM default passwords → copy to .env)
-├── postgres/                    (PostgreSQL config)
-│   ├── Dockerfile               (custom entrypoint)
-│   ├── init/
-│   │   └── 00.initdb-multiple-databases.sh
-│   └── backups/
-└── redis/                       (Redis config)
-    └── redis.conf
-```
-
-## First-run setup
-
-The stack has **no hardcoded passwords** — every credential resolves from `.env`.
-`application/databases/.env.example` ships freshly generated **random default
-passwords** so a first run works out of the box:
-
-```bash
-cd application/databases
-make setup      # cp .env.example .env  (never overwrites an existing .env)
-make up
-```
-
-The local `.env` is the Compose interpolation source *and* is loaded into the
-containers via `env_file` (listed **after** the repo-root `.env`, so it wins on
-conflicts and credentials stay consistent between interpolation and runtime).
-`make up` / `make deploy-db` / `make deploy-db-force` run `setup`
-automatically when `.env` is missing.
-
----
-
-## Services
-
-### PostgreSQL
-
-**Purpose:** Primary relational database
-**Port:** `${POSTGRES_PORT:-5432}`
-**Container:** `postgres`
-
-**Environment (from `application/databases/.env` — the local file wins over
-repo-root `.env` conflicts):**
-- `POSTGRES_USER` (default `admin`)
-- `POSTGRES_PASSWORD` — **required** (`POSTGRES_PASSWORD=...` in `.env`)
-- `POSTGRES_DB` (default `app_db`)
-- `POSTGRES_PORT` (default `5432`)
-- `POSTGRES_DATABASES` — comma-separated `db:owner:password` list for the
-  multi-database bootstrap (defaults to all site + tool DBs)
-- `REDIS_PASSWORD` — **required**
-- `CODER_DB_PASSWORD` — **required** (Coder control plane role)
-- `AFFINE_DB_PASSWORD` — **required** (AFFiNE role)
-- `FORCE_REINIT` — `true` re-runs init scripts on every start (default `false`)
-
-No password is ever inlined in the Compose files — missing entries fail loudly
-(``${VAR:?...}``) so a mis-set `.env` can never silently fall back to a weak
-default.
-
-**Multiple databases:** The `00.initdb-multiple-databases.sh` entrypoint creates
-every database listed in `POSTGRES_DATABASES`. The default value covers the
-known sites and tools:
+## Layout
 
 ```text
-db_precis_lms, db_precis_ctc, db_vresume, coder, db_loop_crm,
-db_precis_landing, affine
+application/databases/
+├── docker-compose.yml          # include-based orchestrator (postgres + redis)
+├── .env.example                # ALL database credentials
+├── Makefile                    # up/down/deploy/build/logs/status
+├── postgres/
+│   ├── docker-compose.yml      # PostgreSQL standalone
+│   ├── Dockerfile              # Custom entrypoint + init scripts
+│   ├── entrypoint              # Custom postgres entrypoint
+│   ├── init/
+│   │   ├── 00-create-databases.sql         # Database + role bootstrap (SQL)
+│   │   └── 00.initdb-multiple-databases.sh # Role-scoped DB creation (shell)
+│   ├── maintenance/            # Backup/upgrade scripts
+│   └── backups/                # Volume mount for backups
+└── redis/
+    ├── docker-compose.yml      # Redis standalone
+    └── redis.conf              # Redis server configuration
 ```
 
-**Volumes:**
-- `postgres_data` — named volume for database files
-- `./postgres/init` — initialization scripts
-- `./postgres/backups` — backup destination
+## Databases created
 
-### Redis
+On first start, the init scripts create every database the monorepo needs:
 
-**Purpose:** Caching and session store / Dramatiq broker
-**Port:** `${REDIS_PORT:-6379}`
-**Container:** `default-redis` (name is a hard contract — every site + the
-shared task stack resolves `redis://default-redis:6379/<db>`)
+| Database | Owner | Application |
+|---|---|---|
+| `db_precis_lms` | `django` | Precis Main (unified product) |
+| `db_precis_dev` | `django` | Precis Dev (development copy) |
+| `db_precis_ctc` | `django` | CTC Research center |
+| `db_loop_crm` | `django` | Loop CRM |
+| `db_vresume` | `django` | VResume (legacy) |
+| `coder` | `coder` | Coder control plane (space.structa.cloud) |
+| `blinko` | `blinko` | Blinko AI notes (tools.structa.cloud/notes/) |
 
-**Configuration:**
-- `requirepass` — `REDIS_PASSWORD` (**required** in `.env`)
-- `--appendonly yes` — persistence enabled (AOF)
-- `redis_data` named volume
+**SQL (`00-create-databases.sql`):** Creates the `django` role, all project
+databases, the `blinko` database, schema grants, and extensions.
 
----
+**Shell (`00.initdb-multiple-databases.sh`):** Creates role-scoped databases
+from the `INITDB_MULTIPLE_DATABASES` env var (used for Coder and `blinko`).
 
-## Coder control plane
+## Environment
 
-The Coder service is owned by `application/docker-compose.yml`, separate from
-this database Compose file. PostgreSQL still creates the dedicated `coder`
-database and role through `INITDB_MULTIPLE_DATABASES`; the Coder container
-joins the external `common` network and connects to that database by service
-name.
+Copy `.env.example` to `.env` before starting:
 
 ```bash
-# Start PostgreSQL/Redis first, then Coder from the application boundary.
 cd application/databases
-make up
-cd ..
-docker compose -f application/docker-compose.yml up -d coder
+make setup     # creates .env from .env.example (safe to re-run)
 ```
 
-### AFFiNE shared-service database
+The `.env` file in this directory is the Compose interpolation source AND is
+loaded into containers — credentials for interpolation and runtime are identical.
 
-AFFiNE is a permanent service owned by `application/tools/affine/` (was
-`application/tools/docker-compose.nginx.yml`). The `proxy-affine` container
-connects to this PostgreSQL service through the external `common` and
-`warehouse-net` networks:
-
-| Setting | Value |
-|---|---|
-| Database | `affine` |
-| Role | `affine` |
-| Host | `postgres` |
-| Password source | repo-root `.env` (`AFFINE_DB_PASSWORD`) |
-
----
-
-## Docker Compose
-
-**File:** `application/databases/docker-compose.yml`
-
-**Services:**
-- `postgres` (main database)
-- `default-redis` (cache / broker)
-
-**Networks:** `common`, `warehouse-net`, `internal`, `traefik-net`,
-`site_network` (all external).
-
----
-
-## Deployment
+## Quick start
 
 ```bash
-# Start databases
-cd application/databases
-make up            # or: docker compose up -d
+# From this directory
+docker compose up -d
 
-# Stop
-make down
+# From repo root
+make deploy-databases
 
-# View logs
-make logs
+# Validate
+docker compose ps
+docker compose exec postgres pg_isready
 ```
 
-Root Makefile shortcut: `make deploy-databases`.
+## Force re-init
 
-### Backup Database
+Set `FORCE_REINIT=true` in `.env` to ignore the `.init_done` marker and re-run
+all init scripts on the next start. Only use for local/dev resets.
 
-```bash
-# Dump database
-docker exec postgres pg_dump -U admin app_db > backup.sql
+## Remarks & Notes
 
-# Restore database
-docker exec -i postgres psql -U admin app_db < backup.sql
-```
-
----
-
-## Adminer
-
-Adminer is no longer part of this stack. It lives at
-`application/tools/adminer/` and is served at
-`https://tools.structa.cloud/adminer/` (Traefik → shared-proxy Nginx path
-split). To connect it to this PostgreSQL instance, use:
-
-- System: **PostgreSQL**
-- Server: `postgres`
-- Username / Password / Database: from `.env`
-
-```bash
-cd application/tools/adminer && make up
-```
-
----
-
-## Connection Strings
-
-- **PostgreSQL:** `postgresql://admin:<password>@postgres:5432/<db>`
-- **Redis:** `redis://:<password>@default-redis:6379/0`
-
----
-
-## Environment Variables
-
-**Required (copy `application/databases/.env.example` → `.env` for random
-defaults, or set in repo-root `.env`):**
-```bash
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=...
-POSTGRES_DB=app_db
-POSTGRES_PORT=5432
-POSTGRES_DATABASES=db_precis_lms:structa:<pw>,db_precis_ctc:structa:<pw>,...
-REDIS_PASSWORD=...
-CODER_DB_PASSWORD=...
-AFFINE_DB_PASSWORD=...
-```
-
----
-
-## Maintenance
-
-### Regular Tasks
-
-- ✅ Monitor disk space for the database
-- ✅ Review slow query logs
-- ✅ Backup database daily
-- ✅ Verify Redis persistence
-- ✅ Check connection pool usage
-
-### Troubleshooting
-
-**PostgreSQL not starting:**
-1. Port 5432 free: `lsof -i :5432`
-2. Disk space: `df -h`
-3. Permissions on `postgres_data` volume
-4. `.env` has `POSTGRES_PASSWORD` set
-
-```bash
-docker compose logs postgres
-```
-
-**Redis connection issues:**
-1. Redis running: `docker ps | grep redis`
-2. Password matches `.env`: `docker exec default-redis redis-cli -a "$REDIS_PASSWORD" PING`
-
----
-
-**Status:** ✅ COMPLETE
-**Services:** PostgreSQL (primary database), Redis (cache & session store)
-**DB UI:** Adminer at `application/tools/adminer/`
+- Container names (`postgres`, `default-redis`) are the stable DNS names every
+  service resolves on the `common` network.
+- Blinko uses its own `blinko` role with a dedicated password — the init shell
+  script creates it from `INITDB_MULTIPLE_DATABASES`.
+- Add a new database by adding it to both `00-create-databases.sql` (for the
+  `django` role) or to `POSTGRES_DATABASES` in `.env` (for dedicated roles).
+- The databases Makefile reads `.env` from this directory; the postgres and
+  redis Compose files read `../../../.env` then `../.env` (local wins).

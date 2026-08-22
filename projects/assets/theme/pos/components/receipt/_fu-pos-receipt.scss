@@ -1,0 +1,119 @@
+/* ═══════════════════════════════════════════════════════════════════
+   POS Component: fu-pos-receipt — BEM receipt/ticket for POS theme.
+   Uses fu-pos-* tokens. Monospace paper-receipt aesthetic.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-pos-receipt {
+  background: hsl(var(--fu-pos-receipt-bg));
+  color: hsl(var(--fu-pos-receipt-ink));
+  font-family: var(--fu-pos-font-mono);
+  font-size: 0.75rem;
+  padding: 1rem;
+  border-radius: var(--fu-pos-radius-sm);
+  box-shadow: var(--fu-pos-shadow-card);
+  max-width: 20rem;
+  margin: 0 auto;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 0.5rem;
+    background: radial-gradient(circle, transparent 50%, hsl(var(--fu-pos-receipt-bg)) 50%);
+    background-size: 0.75rem 1rem;
+    background-position: 0 0;
+  }
+  &::before {
+    top: -0.25rem;
+    transform: rotate(180deg);
+  }
+  &::after {
+    bottom: -0.25rem;
+  }
+
+  &__header {
+    text-align: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px dashed hsl(var(--fu-pos-receipt-line));
+    margin-bottom: 0.75rem;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    .meta {
+      font-size: 0.625rem;
+      color: hsl(var(--fu-pos-muted));
+      line-height: 1.5;
+    }
+  }
+
+  &__items {
+    list-style: none;
+    margin: 0 0 0.75rem;
+    padding: 0;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      border-bottom: 1px dotted hsl(var(--fu-pos-receipt-line) / 0.5);
+
+      .name {
+        flex: 1;
+        .qty {
+          color: hsl(var(--fu-pos-muted));
+          &::before { content: "× "; }
+        }
+      }
+      .price {
+        font-weight: 700;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  &__totals {
+    padding-top: 0.5rem;
+    border-top: 1px dashed hsl(var(--fu-pos-receipt-line));
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.125rem 0;
+      color: hsl(var(--fu-pos-muted));
+    }
+    .grand {
+      font-size: 1rem;
+      font-weight: 800;
+      color: hsl(var(--fu-pos-ink));
+      padding-top: 0.5rem;
+      margin-top: 0.25rem;
+      border-top: 1px solid hsl(var(--fu-pos-receipt-ink));
+    }
+  }
+
+  &__footer {
+    text-align: center;
+    padding-top: 0.75rem;
+    border-top: 1px dashed hsl(var(--fu-pos-receipt-line));
+    margin-top: 0.75rem;
+    font-size: 0.625rem;
+    color: hsl(var(--fu-pos-muted));
+    line-height: 1.6;
+  }
+
+  &__barcode {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-size: 1.5rem;
+    letter-spacing: 0.1em;
+    color: hsl(var(--fu-pos-receipt-ink));
+  }
+}

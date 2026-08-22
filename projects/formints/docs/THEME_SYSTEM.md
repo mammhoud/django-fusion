@@ -112,7 +112,7 @@ Defined in formint-pro `global.css` (`@layer components`), mirrored in the other
 
 | Asset | Path (canonical) | Shared by |
 |---|---|---|
-| `Outfit-400/500/600/700.woff2` | `formint-pro/frontend/src/assets/fonts/outfit/` | All editions (byte-identical copies) |
+| `Outfit-400/500/600/700.woff2` | `projects/formints/assets/shared/fonts/outfit/` | All editions (byte-identical copies) |
 
 ---
 

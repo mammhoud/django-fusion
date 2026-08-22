@@ -1,5 +1,11 @@
 # 🎨 Design System
 
+> ⚠️ **Legacy page:** documents the older hex `--color-*` conventions. The
+> canonical design system now lives in [`docs/design/`](../../design/README.md)
+> and the shared theme library at `projects/assets/theme/` (`--fu-token-*`
+> HSL tokens). Use the [Migration Guide](../../design/migration-guide.md) to
+> swap legacy tokens.
+>
 > UI/UX design conventions, component styling, and visual guidelines across all Structa Cloud projects — Django sites and POS desktop apps.
 
 ---
@@ -206,6 +212,11 @@ The POS app uses Tailwind's `dark:` variant:
 
 | Resource | Path |
 |----------|------|
+| ⭐ **Canonical design suite** (theme engine, `--fu-*` tokens) | [`docs/design/`](../../design/README.md) |
+| Shared theme library | [`projects/assets/theme/`](../../../projects/assets/theme/README.md) |
+| Design system specification (`--fu-token-*`) | [`projects/assets/theme/DESIGN-SYSTEM.md`](../../../projects/assets/theme/DESIGN-SYSTEM.md) |
+| Theme engine architecture | [`projects/assets/theme/THEME-ENGINE.md`](../../../projects/assets/theme/THEME-ENGINE.md) |
+| Theme variations | [`projects/assets/theme/THEME-VARIATIONS.md`](../../../projects/assets/theme/THEME-VARIATIONS.md) |
 | SCSS architecture | `projects/assets/static/js/ARCHITECTURE.md` |
 | JS component design | `docs/dev/technical/components/design/js_structure.md` |
 | Customization methods | `docs/customization/customization-methods.md` |

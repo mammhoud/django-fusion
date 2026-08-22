@@ -2,19 +2,19 @@
 # workspace — Coder Template
 
 Provisions one Coder agent-host container that bind-mounts the local Structa
-Cloud checkout and starts its compose-based development container. The
-workspace includes the full monorepo toolchain, VS Code Web, and a web
-terminal. It does not provision AFFiNE, FileGator, or any application database.
+Cloud checkout and starts its compose-based development container. The workspace
+includes the full monorepo toolchain, VS Code Web, and a web
+terminal. It does not provision Blinko, FileGator, or any application database.
 
 ## Access model
 
 The shared proxy owns public routing:
 
 - `https://space.structa.cloud/` → Coder control plane (workspace origin)
-- `https://tools.structa.cloud/space/` → AFFiNE (path-based)
+- `https://tools.structa.cloud/notes/` → Blinko (path-based)
 
 `coder.structa.cloud`, `code.structa.cloud`, and `blinko.structa.cloud` are
-retired aliases. `affine.pro` and FileGator routes are intentionally absent.
+retired aliases. FileGator routes are intentionally absent.
 DNS records must point public hosts to the proxy outside this repository;
 Traefik requests the Let's Encrypt certificates.
 
@@ -53,35 +53,36 @@ same mounted workspace folder, ordered after VS Code Web in the dashboard apps.
 The following infrastructure must already be running:
 
 - Coder control plane
-- PostgreSQL and Redis for shared AFFiNE
+- PostgreSQL and Redis for the platform's shared services
+- Blinko's dedicated `blinko-db` PostgreSQL service
 - Traefik and shared-proxy Nginx
 - External Docker networks `common`, `traefik-net`, and `warehouse-net`
-- Proxy credentials `AFFINE_DB_PASSWORD` and `REDIS_PASSWORD` supplied through
+- Proxy credentials `BLINKO_DB_PASSWORD` supplied through
   `application/proxy/.env` or the deployment environment
 
-AFFiNE data is stored outside the workspace at
-`application/proxy/affine-data/`, which is ignored by Git.
+Blinko data is stored outside the workspace at
+`application/tools/blinko/blinko-data/`, which is ignored by Git.
 
 ## Push and create
 
 ```bash
 coder templates push \
-  -d application/workspaces/workspace \
-  -m "AFFiNE shared proxy with mounted monorepo devcontainer" \
+  -d application/workspaces/workspace \-m "Shared proxy with mounted monorepo devcontainer"
+ \
   -y workspace
 ```
 
 Create a workspace from the pushed `workspace` template, then open VS Code Web
 from the Coder workspace page. Enable the `devcontainer` parameter to
 auto-start the development container; otherwise start it manually from the
-dashboard. AFFiNE is independent of the workspace lifecycle.
+dashboard. Blinko is independent of the workspace lifecycle.
 
 ## Validation
 
 ```bash
 docker compose \
-  --env-file application/proxy/.env \
-  -f application/tools/docker-compose.nginx.yml config -q
+  --env-file application/tools/blinko/.env \
+  -f application/tools/docker-compose.yml config -q
 
 docker compose -f .devcontainer/docker-compose.yml config -q
 terraform fmt -check application/workspaces/workspace
@@ -94,13 +95,13 @@ the command environment; never commit them.
 Terraform templates for [Coder](https://coder.com) workspaces. There is a
 single active `workspace` template that provides a mounted monorepo development
 environment **and** installs the base toolchain on start (git + make + Node.js +
-Nx + the Freebuff client). AFFiNE runs independently in the shared proxy stack.
+Nx + the Freebuff client). Blinko runs independently in the shared tools stack.
 
 ## Templates
 
 | Template | Provisioned workspace | Shared application route |
 |---|---|---|
-| [workspace](./workspace/README.md) | Agent host + base toolchain (git/make/Node/Nx), optional devcontainer, VS Code Web, File Browser, web terminal | AFFiNE at `space.structa.cloud/` |
+| [workspace](./workspace/README.md) | Agent host + base toolchain (git/make/Node/Nx), optional devcontainer, VS Code Web, File Browser, web terminal | Blinko at `tools.structa.cloud/notes/` |
 
 ## workspace
 
@@ -117,9 +118,9 @@ without) the devcontainer. This absorbs the former `toolchain` template.
 The `devcontainers-cli` module always installs the devcontainer CLI, and
 `coder_devcontainer` auto-starts `.devcontainer/docker-compose.yml` only when
 the `devcontainer` parameter is enabled (off by default); it can otherwise be
-started manually from the dashboard. AFFiNE is not installed by or stopped with
+started manually from the dashboard. Blinko is not installed by or stopped with
 a workspace; it is a permanent service in
-`application/tools/docker-compose.nginx.yml` using shared PostgreSQL/Redis
+`application/tools/docker-compose.yml` using its dedicated PostgreSQL service
 and proxy-owned persistent data.
 
 The Coder template disables VS Code Desktop and provides VS Code Web plus a
@@ -133,8 +134,9 @@ specified.
 |---|---|
 | PostgreSQL + Redis | `application/databases/docker-compose.yml` |
 | Coder control plane | `application/docker-compose.yml` |
-| AFFiNE, shared-proxy, and Docus | `application/tools/docker-compose.nginx.yml` |
-| AFFiNE routing | `application/proxy/configs/traefik/dynamic/space.yml` |
+| Blinko + shared-proxy | `application/tools/docker-compose.yml` |
+| Docus | `docs/docker-compose.yml` |
+| Blinko routing | `application/proxy/configs/traefik/dynamic/tools.yml` |
 | Code/Coder routing | `application/proxy/configs/traefik/dynamic/code.yml` and `coder.yml` |
 | Docker networks | `common`, `traefik-net`, `warehouse-net` |
 
@@ -144,16 +146,17 @@ specified.
 cd application/databases
 docker compose up -d postgres default-redis
 
-cd ../proxy
-# Set AFFINE_DB_PASSWORD and REDIS_PASSWORD in .env first.
-docker compose --env-file .env -f docker-compose.nginx.yml up -d
+cd ../tools
+# Set BLINKO_DB_PASSWORD in blinko/.env first.
+docker compose --env-file blinko/.env -f docker-compose.yml up -d
 
+cd ../proxy
 docker compose -f docker-compose.traefik.yml up -d
 
 cd ../..
 coder templates push \
-  -d application/workspace/workspace \
-  -m "AFFiNE shared proxy with mounted monorepo devcontainer + toolchain" \
+  -d application/workspaces/workspace \
+  -m "Shared proxy with mounted monorepo devcontainer + toolchain" \
   -y workspace
 ```
 
@@ -172,8 +175,8 @@ application/workspace/
 ├── docker-compose.yml       # development container only
 └── devcontainer.json
 
-application/proxy/
-├── docker-compose.nginx.yml # shared-proxy + Docus + AFFiNE
-├── affine-data/             # ignored persistent AFFiNE files
+application/tools/
+├── docker-compose.yml       # shared-proxy + Docus + Blinko
+├── blinko/                  # Blinko service + data
 └── nginx/default.conf.template
 ```

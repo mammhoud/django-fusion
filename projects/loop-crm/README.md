@@ -72,13 +72,14 @@ npm run dev           # Astro on :4321, proxies /api|/admin|/fragment(s) to :800
 - **Redux (RTK) is the client data source of truth** on the data road;
   Alpine + HTMX handle lightweight interactions and server-side DOM swaps.
 - **django-bolt is the canonical API road when installed** at `/bolt/` with
-  JWT bearer tokens and optional `X-API-Key` authentication. `/api/v1/` stays
+  JWT bearer tokens and optional `X-API-Key` authentication. `/api/v1/` is the
+  deprecated Django compatibility road (see `/apis/core/` for the forward road).
   as a compatibility fallback for environments that do not install the
   optional `django-fusion[bolt]` extra.
 - **Tenancy + auth are enforced, not assumed** — `Workspace` is the multi-tenant
   root on every domain record, and `apps/core/tenancy.py`
   (`current_workspace_id`) scopes every read/write path (render-first screens,
-  `/api/v1/`, and `/bolt/`). Dashboard pages, read APIs, and mutations require
+  `/apis/core/` (named road), and `/bolt/` (Bolt runtime)). Dashboard pages, read APIs, and mutations require
   a session; anonymous callers are redirected to `/accounts/login/`. The kanban
   drag-to-move POST is CSRF-protected: the board echoes the `csrftoken` cookie
   as `X-CSRFToken`, and the board payload sets that cookie via
@@ -116,19 +117,19 @@ pip install 'django-fusion[bolt]'
 curl -c cookies.txt -X POST http://localhost:8000/accounts/login/ \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   --data 'login=member@example.com&password=your-password'
-curl -b cookies.txt -X POST http://localhost:8000/api/v1/auth/token/ \
+curl -b cookies.txt -X POST http://localhost:8000/apis/core/workspace/current/ \
   -H 'Content-Type: application/json' \
   -d '{}'
 
 # Verify the bearer token against the live Django user and role profile.
-curl http://localhost:8000/api/v1/auth/me/ \
+curl http://localhost:8000/apis/core/dashboard/ \
   -H 'Authorization: Bearer <access-token>'
 ```
 
 Set `FUSION_BOLT_JWT_SECRET` to a dedicated production secret. The local
 `SECRET_KEY` fallback exists only to keep development friction low.The frontend `BoltApiClient` keeps the access/refresh pair in session storage,
 rotates it before expiry, retries one 401 once, then clears auth state and
-tries `PUBLIC_API_FALLBACK_PREFIX` (`/api/v1` by default). The backend resolves
+tries `PUBLIC_API_FALLBACK_PREFIX` (`/api/v1` by default, deprecated; the canonical fallback is `/apis/core/`). The backend resolves
 JWT `sub` to an active Django user, checks live role/workspace claims, rejects
 refresh tokens on protected routes, and never renders raw token values.
 
@@ -141,8 +142,8 @@ polymorphic model dependency.
 
 The finance surface is available at `/finance/`, `/finance/invoices/`,
 `/finance/payments/`, and `/finance/revenue/`; the API exposes `invoices`,
-`payments`, and `revenue` on both Bolt and `/api/v1/`, plus the read-only
-revenue-trend aggregate (on `/bolt/revenue/trend` and `/api/v1/revenue/trend`)
+`payments`, and `revenue` on the canonical `/apis/core/` road, plus the read-only
+revenue-trend aggregate (on `/bolt/revenue/trend`)
 that feeds the RevOps dashboard's recognized-revenue card. The Task Center lives at
 `/tasks/` (authenticated) and shows the merged shared + website-record job
 history. Playwright covers the CRM navigation shell, workflow mutations, and

@@ -8,6 +8,7 @@ and consumes these pages through ``/apis/pages/<slug>/``. The Wagtail admin
 """
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_fusion.builder.models import BuilderPage as FusionBuilderPage
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
@@ -211,3 +212,22 @@ class TermsPage(LegalPage):
     class Meta:
         verbose_name = _("Terms page")
         verbose_name_plural = _("Terms pages")
+
+
+class BuilderPage(FusionBuilderPage):
+    """Loop-CRM landing-builder page — theme picker + dynamic sections.
+
+    The reference consumer of the shared landing builder: editors compose a
+    page from the generic fu-* section blocks, pick a theme/brand/dark mode,
+    and use ``{{ variable }}`` dynamic template fields backed by
+    ``template_context``. Rendered server-side for previews and exposed as
+    JSON at ``/apis/builder/<slug>/`` for the Astro frontend.
+    """
+
+    template = "builder/page.html"
+    parent_page_types = ["pages.HomePage"]
+    subpage_types = []
+
+    class Meta:
+        verbose_name = _("Builder page")
+        verbose_name_plural = _("Builder pages")

@@ -13,7 +13,7 @@ import { useDashboardDeltas } from '../../../hooks/useDashboardDeltas';
 import { useApiQueries } from '../../../hooks/useApi';
 import { useTranslation } from 'react-i18next';
 import { staggerContainer, iconSpring } from '../../../utils/pageTransitions';
-import defaultLogo from '../../../../assets/images/formint-crest.svg';
+import defaultLogo from '@formints-assets/images/formint-crest.svg';
 
 interface MenuCategory {
   id: string;

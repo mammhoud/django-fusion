@@ -4,13 +4,13 @@ import PageLayout from '../../../components/layout/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { Coupon } from '../../../types';
 import AnimatePresence from '../../../components/ui/AnimatePresence';
-import Button from '../../../components/ui/Button';
 import SearchInput from '../../../components/ui/SearchInput';
 import { useDebouncedSearch } from '../../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../../hooks/useStatusToast';
 import StatusToast from '../../../components/ui/StatusToast';
 import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import { useCurrency } from '../../../contexts/CurrencyContext';
+import Card from '../../../components/ui/Card';
 
 const COUPON_KINDS: { value: 'percent' | 'fixed'; label: string }[] = [
   { value: 'percent', label: 'Percent' },
@@ -159,11 +159,18 @@ export default function Coupons() {
   return (
     <PageLayout title={t('coupons.title') || 'Coupons'}>
       <div className="space-y-4">
+        {/* ── Eyebrow tag ── */}
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.2em] font-medium bg-primary/10 text-primary">
+            <span className="ri-ticket-2-line ri-12px" />
+            Promotions
+          </span>
+        </div>
+
         {/* ── Header ── */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h1 className="text-2xl font-bold text-base-content flex items-center gap-2">
-              <span className="ri-ticket-2-line ri-24px text-primary" />
               {t('coupons.title') || 'Coupons'}
             </h1>
             <p className="text-sm text-base-content/50 mt-0.5">
@@ -171,16 +178,17 @@ export default function Coupons() {
               {activeCount > 0 && ` · ${activeCount} ${t('coupons.active').toLowerCase()}`}
             </p>
           </div>
-          <Button
+          <button
             onClick={() => { setEditing(null); setForm(EMPTY_FORM); setShowForm(true); }}
-            iconStart={<span className="ri-add-line ri-16px" />}
+            className="btn btn-primary btn-sm gap-1 shrink-0 active:scale-[0.98] transition-transform"
           >
+            <span className="ri-add-line ri-14px" />
             {t('coupons.addCoupon') || 'New Coupon'}
-          </Button>
+          </button>
         </div>
 
-        {/* ── Filter Bar ── */}
-        <div className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-xl p-3 shadow-sm">
+        {/* ── Filter Bar — compact bezel ── */}
+        <Card padding="sm" variant="bezel">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <SearchInput
               value={search}
@@ -195,41 +203,41 @@ export default function Coupons() {
               type="button"
               onClick={() => setActiveOnly(f => !f)}
               aria-pressed={activeOnly}
-              className={`tag tag--sm cursor-pointer transition-all ${
-                activeOnly ? 'tag--success' : 'tag--ghost hover:tag--success'
+              className={`inline-flex items-center gap-1.5 px-3 h-8 rounded-full text-xs font-medium transition-all ${
+                activeOnly ? 'bg-success/10 text-success' : 'bg-base-200 text-base-content/50 hover:bg-success/10 hover:text-success'
               }`}
             >
               <span className="ri-toggle-line ri-12px" />
               {t('coupons.activeOnly') || 'Active only'}
             </button>
-            <span className="text-xs text-base-content/40 whitespace-nowrap px-2">
+            <span className="text-[10px] text-base-content/40 whitespace-nowrap px-2">
               {filteredCoupons.length} / {coupons.length}
             </span>
           </div>
-        </div>
+        </Card>
 
         {/* ── Add/Edit Form (slide-up) ── */}
         <AnimatePresence>
           {showForm && (
             <form
               onSubmit={handleSubmit}
-              className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-xl p-5 space-y-4 shadow-lg overflow-hidden"
+              className="bg-base-100/70 backdrop-blur-md border border-base-300/30 rounded-2xl p-5 space-y-4 shadow-lg overflow-hidden"
             >
               <div className="flex items-center justify-between mb-1">
                 <h3 className="font-semibold text-base-content flex items-center gap-2">
                   <span className="ri-pencil-line ri-16px text-primary" />
                   {editing ? (t('coupons.editCoupon') || 'Edit Coupon') : (t('coupons.addCoupon') || 'New Coupon')}
                 </h3>
-                <button type="button" onClick={resetForm} className="btn btn-ghost btn-sm btn-square">
-                  <span className="ri-close-line ri-16px" />
+                <button type="button" onClick={resetForm} className="w-7 h-7 rounded-full bg-base-200 flex items-center justify-center hover:bg-base-300 transition-colors">
+                  <span className="ri-close-line ri-14px" />
                 </button>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Code */}
-                <div>
-                  <label className="block text-sm font-medium text-base-content/70 mb-1">
-                    {t('coupons.code') || 'Code'}
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
+                    {t('coupons.code') || 'Code'} <span className="text-error">*</span>
                   </label>
                   <input
                     type="text"
@@ -237,20 +245,20 @@ export default function Coupons() {
                     onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })}
                     placeholder={t('coupons.codePlaceholder') || 'e.g. SAVE20'}
                     required
-                    className="input w-full uppercase"
+                    className="input input-compact w-full uppercase"
                     autoFocus
                   />
                 </div>
 
                 {/* Kind */}
-                <div>
-                  <label className="block text-sm font-medium text-base-content/70 mb-1">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
                     {t('coupons.kind') || 'Type'}
                   </label>
                   <select
                     value={form.kind}
                     onChange={e => setForm({ ...form, kind: e.target.value as 'percent' | 'fixed' })}
-                    className="select w-full"
+                    className="select w-full h-8 text-xs"
                   >
                     {COUPON_KINDS.map(k => (
                       <option key={k.value} value={k.value}>{k.label}</option>
@@ -259,8 +267,8 @@ export default function Coupons() {
                 </div>
 
                 {/* Value */}
-                <div>
-                  <label className="block text-sm font-medium text-base-content/70 mb-1">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
                     {form.kind === 'percent'
                       ? (t('coupons.valuePercent') || 'Percent off')
                       : (t('coupons.valueFixed') || 'Amount off')}
@@ -274,17 +282,17 @@ export default function Coupons() {
                       min="0"
                       step={form.kind === 'percent' ? '1' : '0.5'}
                       required
-                      className="input w-full"
+                      className="input input-compact w-full"
                     />
-                    <span className="text-sm text-base-content/50 shrink-0 w-6">
+                    <span className="text-xs text-base-content/50 shrink-0 w-6">
                       {form.kind === 'percent' ? '%' : ''}
                     </span>
                   </div>
                 </div>
 
                 {/* Min subtotal */}
-                <div>
-                  <label className="block text-sm font-medium text-base-content/70 mb-1">
+                <div className="space-y-1">
+                  <label className="block text-[11px] font-medium text-base-content/70 uppercase tracking-wide">
                     {t('coupons.minSubtotal') || 'Minimum subtotal'}
                     <span className="text-base-content/40 font-normal"> ({t('coupons.optional') || 'optional'})</span>
                   </label>
@@ -295,26 +303,25 @@ export default function Coupons() {
                     placeholder={t('coupons.minSubtotalPlaceholder') || 'No minimum'}
                     min="0"
                     step="0.5"
-                    className="input w-full"
+                    className="input input-compact w-full"
                   />
                 </div>
               </div>
 
               {/* Active toggle */}
-              <label className="flex items-center gap-2 cursor-pointer group w-fit">
+              <label className="flex items-center gap-2 cursor-pointer group w-fit py-1">
                 <input
                   type="checkbox"
                   checked={form.is_active}
                   onChange={e => setForm({ ...form, is_active: e.target.checked })}
-                  className="toggle toggle-success toggle-sm"
+                  className="checkbox checkbox-primary checkbox-sm"
                 />
-                <span className="text-sm text-base-content/70 group-hover:text-base-content transition-colors flex items-center gap-1.5">
-                  <span className="ri-toggle-line ri-14px" />
+                <span className="text-xs text-base-content/70 group-hover:text-base-content transition-colors">
                   {t('coupons.active') || 'Active'}
                 </span>
               </label>
 
-              <div className="flex gap-2 justify-end">
+              <div className="flex gap-2 justify-end pt-2 border-t border-base-300/30">
                 <button type="button" onClick={resetForm} className="btn btn-ghost btn-sm">
                   {t('common.cancel')}
                 </button>
@@ -327,7 +334,7 @@ export default function Coupons() {
           )}
         </AnimatePresence>
 
-        {/* ── List ── */}
+        {/* ── List — Double-Bezel cards ── */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="flex flex-col items-center gap-3">
@@ -353,65 +360,87 @@ export default function Coupons() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {filteredCoupons.map(coupon => (
+            {filteredCoupons.map((coupon, idx) => (
               <div
                 key={coupon.id}
-                className={`bg-base-100/70 backdrop-blur-sm border border-base-300/30 rounded-xl p-4
-                  transition-all duration-200 hover:shadow-lg hover:shadow-base-300/20 hover:border-primary/30
-                  ${coupon.is_active ? '' : 'opacity-60'}`}
+                className={`
+                  relative overflow-hidden
+                  bg-base-200/40 dark:bg-white/5
+                  border border-base-300/25 dark:border-white/10
+                  rounded-[1.5rem]
+                  p-1.5
+                  shadow-[var(--shadow-bezel-outer)]
+                  transition-all duration-500 ease-[var(--ease-fluid)]
+                  hover:-translate-y-0.5 hover:shadow-[var(--shadow-bezel-hover)]
+                  ${coupon.is_active ? '' : 'opacity-60'}
+                  animate-fade-up delay-${Math.min(idx * 75, 450)}
+                `}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 text-sm font-bold tracking-wider">
-                        {coupon.code}
-                      </span>
-                      <span className={`tag tag--sm ${coupon.kind === 'percent' ? 'tag--info' : 'tag--secondary'}`}>
-                        <span className={coupon.kind === 'percent' ? 'ri-percent-line ri-12px' : 'ri-money-cny-circle-line ri-12px'} />
-                        {kindLabel(coupon.kind)}
-                      </span>
-                      <span className={`tag tag--sm ${coupon.is_active ? 'tag--success' : 'tag--ghost'}`}>
-                        {coupon.is_active ? (t('coupons.active') || 'Active') : (t('coupons.inactive') || 'Inactive')}
-                      </span>
+                {/* Accent bar */}
+                <div
+                  className="absolute top-0 bottom-0 inset-inline-start-0 w-1 rounded-l-[inherit]"
+                  style={{ backgroundColor: coupon.is_active ? 'var(--color-success)' : 'var(--color-base-300)' }}
+                />
+
+                {/* Inner core */}
+                <div className="bg-base-100 dark:bg-base-900 rounded-[1.125rem] p-4 shadow-[var(--shadow-bezel-inner)]">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="px-2.5 py-0.5 rounded-lg bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 text-sm font-bold tracking-wider">
+                          {coupon.code}
+                        </span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                          coupon.kind === 'percent' ? 'bg-info/10 text-info' : 'bg-secondary/10 text-secondary'
+                        }`}>
+                          <span className={coupon.kind === 'percent' ? 'ri-percent-line ri-12px' : 'ri-money-cny-circle-line ri-12px'} />
+                          {kindLabel(coupon.kind)}
+                        </span>
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                          coupon.is_active ? 'bg-success/10 text-success' : 'bg-base-200 text-base-content/50'
+                        }`}>
+                          {coupon.is_active ? (t('coupons.active') || 'Active') : (t('coupons.inactive') || 'Inactive')}
+                        </span>
+                      </div>
+                      <p className="text-2xl font-extrabold text-base-content mt-2 tabular-nums">
+                        {coupon.kind === 'percent' ? `${coupon.value}%` : formatPrice(coupon.value)}
+                      </p>
+                      <p className="text-[10px] text-base-content/50 mt-1">
+                        {coupon.kind === 'percent'
+                          ? `${t('coupons.offSubtotal', 'off subtotal')}`
+                          : `${t('coupons.offSubtotal', 'off subtotal')}`}
+                        {coupon.min_subtotal != null && (
+                          <span> · {t('coupons.minSubtotalNote', 'min subtotal')} {formatPrice(coupon.min_subtotal)}</span>
+                        )}
+                      </p>
                     </div>
-                    <p className="text-2xl font-extrabold text-base-content mt-2 tabular-nums">
-                      {coupon.kind === 'percent' ? `${coupon.value}%` : formatPrice(coupon.value)}
-                    </p>
-                    <p className="text-xs text-base-content/50 mt-1">
-                      {coupon.kind === 'percent'
-                        ? `${t('coupons.offSubtotal', 'off subtotal')}`
-                        : `${t('coupons.offSubtotal', 'off subtotal')}`}
-                      {coupon.min_subtotal != null && (
-                        <span> · {t('coupons.minSubtotalNote', 'min subtotal')} {formatPrice(coupon.min_subtotal)}</span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end gap-1.5 shrink-0">
-                    <label className="flex items-center gap-1.5 cursor-pointer" title={t('coupons.toggleActive')}>
-                      <input
-                        type="checkbox"
-                        checked={coupon.is_active}
-                        onChange={() => handleToggle(coupon)}
-                        disabled={togglingId === coupon.id}
-                        className="toggle toggle-success toggle-sm"
-                        aria-label={t('coupons.toggleActive') || 'Toggle active'}
-                      />
-                    </label>
-                    <div className="flex gap-0.5">
-                      <button
-                        onClick={() => handleEdit(coupon)}
-                        className="p-1.5 rounded-lg text-base-content/40 hover:text-primary hover:bg-primary/10 transition-colors"
-                        title={t('common.edit')}
-                      >
-                        <span className="ri-pencil-line ri-14px" />
-                      </button>
-                      <button
-                        onClick={() => setToDelete(coupon)}
-                        className="p-1.5 rounded-lg text-base-content/40 hover:text-error hover:bg-error/10 transition-colors"
-                        title={t('common.delete')}
-                      >
-                        <span className="ri-delete-bin-line ri-14px" />
-                      </button>
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <label className="flex items-center gap-1.5 cursor-pointer" title={t('coupons.toggleActive')}>
+                        <input
+                          type="checkbox"
+                          checked={coupon.is_active}
+                          onChange={() => handleToggle(coupon)}
+                          disabled={togglingId === coupon.id}
+                          className="toggle toggle-success toggle-sm"
+                          aria-label={t('coupons.toggleActive') || 'Toggle active'}
+                        />
+                      </label>
+                      <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          onClick={() => handleEdit(coupon)}
+                          className="w-7 h-7 rounded-lg text-base-content/40 hover:text-primary hover:bg-primary/10 flex items-center justify-center transition-all duration-200 active:scale-95"
+                          title={t('common.edit')}
+                        >
+                          <span className="ri-pencil-line ri-14px" />
+                        </button>
+                        <button
+                          onClick={() => setToDelete(coupon)}
+                          className="w-7 h-7 rounded-lg text-base-content/40 hover:text-error hover:bg-error/10 flex items-center justify-center transition-all duration-200 active:scale-95"
+                          title={t('common.delete')}
+                        >
+                          <span className="ri-delete-bin-line ri-14px" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

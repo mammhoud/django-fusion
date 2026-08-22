@@ -1,0 +1,91 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Minimal Theme Tokens — fu-minimal-*
+   ─────────────────────────────────────────────────────────────────────
+   Monochrome palette with a single restrained accent. Hairline borders,
+   near-zero shadows, generous whitespace, editorial typography.
+   Optimised for portfolios, documentation, and premium minimal UIs.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink (monochrome) ── */
+  --fu-minimal-paper:        0 0% 99%;
+  --fu-minimal-ink:          0 0% 9%;
+  --fu-minimal-muted:        0 0% 42%;
+  --fu-minimal-line:         0 0% 88%;
+  --fu-minimal-card:         0 0% 100%;
+  --fu-minimal-link:         210 90% 38%;
+  --fu-minimal-link-dark:    210 85% 30%;
+  --fu-minimal-mark:         210 90% 38%;
+  --fu-minimal-live:         150 60% 32%;
+
+  /* ── Brand accent palette (single restrained accent) ── */
+  --fu-minimal-primary:       0 0% 9%;
+  --fu-minimal-primary-dark:  0 0% 0%;
+  --fu-minimal-primary-light: 0 0% 95%;
+  --fu-minimal-secondary:     0 0% 35%;
+  --fu-minimal-secondary-light: 0 0% 93%;
+  --fu-minimal-accent:        210 90% 38%;
+  --fu-minimal-success:       150 60% 32%;
+  --fu-minimal-warning:       38 92% 46%;
+  --fu-minimal-error:         0 70% 46%;
+  --fu-minimal-info:          199 89% 42%;
+
+  /* ── Spacing (generous whitespace) ── */
+  --fu-minimal-space-xs:  0.375rem;
+  --fu-minimal-space-sm:  0.75rem;
+  --fu-minimal-space-md:  1.25rem;
+  --fu-minimal-space-lg:  2rem;
+  --fu-minimal-space-xl:  3rem;
+  --fu-minimal-space-2xl: 4rem;
+  --fu-minimal-space-3xl: 6rem;
+
+  --fu-minimal-section-lg: 6rem;
+  --fu-minimal-section-xl: 8rem;
+
+  /* ── Radius (small, crisp) ── */
+  --fu-minimal-radius-sm:   0;
+  --fu-minimal-radius-md:   0.125rem;
+  --fu-minimal-radius-lg:   0.25rem;
+  --fu-minimal-radius-xl:   0.375rem;
+  --fu-minimal-radius-full: 9999px;
+
+  /* ── Shadows (near-zero, hairline) ── */
+  --fu-minimal-shadow-card:        none;
+  --fu-minimal-shadow-card-hover:  0 1px 2px 0 hsl(0 0% 9% / 0.04);
+  --fu-minimal-shadow-modal:       0 8px 32px 0 hsl(0 0% 9% / 0.10);
+  --fu-minimal-shadow-toast:       0 2px 8px 0 hsl(0 0% 9% / 0.06);
+
+  /* ── Transitions (quiet, elegant) ── */
+  --fu-minimal-transition-fast:     150ms ease;
+  --fu-minimal-transition-standard: 250ms ease;
+  --fu-minimal-transition-slow:     400ms ease;
+  --fu-minimal-transition-reveal:   550ms ease-out;
+
+  /* ── Z-index scale ── */
+  --fu-minimal-z-dropdown:       100;
+  --fu-minimal-z-sticky:         200;
+  --fu-minimal-z-modal-backdrop: 300;
+  --fu-minimal-z-modal:          400;
+  --fu-minimal-z-toast:          500;
+  --fu-minimal-z-tooltip:        600;
+
+  /* ── Typography (clean, wide tracking) ── */
+  --fu-minimal-font-sans:    'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --fu-minimal-font-serif:   'Source Serif Pro', Georgia, serif;
+  --fu-minimal-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --fu-minimal-font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Dark mode override ── */
+.dark[data-theme="minimal"],
+[data-theme="minimal"].dark {
+  --fu-minimal-paper:      0 0% 6%;
+  --fu-minimal-ink:        0 0% 94%;
+  --fu-minimal-muted:      0 0% 58%;
+  --fu-minimal-line:       0 0% 16%;
+  --fu-minimal-card:       0 0% 9%;
+  --fu-minimal-link:       210 90% 70%;
+  --fu-minimal-link-dark:  210 85% 60%;
+  --fu-minimal-mark:       210 90% 70%;
+  --fu-minimal-live:       150 60% 50%;
+}

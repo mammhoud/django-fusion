@@ -37,7 +37,7 @@ formint-pro/
 │   ├── src/styles/          # Tokens and global CSS
 │   └── src/tests/           # Frontend contract tests
 ├── src-tauri/               # Tauri 2 desktop shell
-├── assets/                  # Source/static product assets
+├── assets/                  # Pro-only boundary; shared assets live at ../../assets/shared
 ├── migration/               # Compatibility manifest and migration notes
 ├── README.md
 └── Makefile                 # Root orchestrator (frontend + server + desktop)
@@ -100,6 +100,8 @@ make status           # Tmux sessions + endpoint health
 - Do not add a separate Robyn/server process; the API is Django-native.
 - Do not import `formint-cloud` or `formint-community` internals.
 - Do not hard-code ports outside the existing `BACKEND_PORT`/`FRONTEND_PORT` convention.
+- Use `@formints-assets` for shared frontend assets and `FORMINT_SHARED_ASSETS`
+  for Django static inputs; keep collected files in the Pro `STATIC_ROOT`.
 - Do not commit `restaurant.db`, generated installers, secrets, or signing keys.
 
 ## Related

@@ -1,0 +1,141 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Design System: Industrial Brutalist — rigid grids, zero radius,
+   mechanical type, hazard accent. Extends fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --fu-default-br-radius: 0;
+  --fu-default-br-line: 1px;
+  --fu-default-br-line-strong: 2px;
+  --fu-default-br-font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --fu-default-br-font-grotesk: "Archivo Black", "Arial Black", sans-serif;
+  --fu-default-br-tracking: 0.08em;
+  --fu-default-br-tracking-wide: 0.14em;
+}
+
+.fu-default-brutalist {
+  --fu-default-radius-sm: 0;
+  --fu-default-radius-md: 0;
+  --fu-default-radius-lg: 0;
+  --fu-default-radius-xl: 0;
+  --fu-default-radius-full: 0;
+
+  font-family: var(--fu-default-br-font-mono);
+  letter-spacing: var(--fu-default-br-tracking);
+
+  &__panel {
+    border: var(--fu-default-br-line) solid hsl(var(--fu-default-line));
+    background: hsl(var(--fu-default-card));
+    padding: 1.5rem;
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      height: 3px;
+      background: hsl(var(--fu-default-error));
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.75rem;
+    border-bottom: var(--fu-default-br-line-strong) solid hsl(var(--fu-default-ink));
+    margin-bottom: 1rem;
+
+    .label {
+      font-family: var(--fu-default-br-font-grotesk);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: var(--fu-default-br-tracking-wide);
+      color: hsl(var(--fu-default-ink));
+    }
+    .id {
+      font-size: 0.6875rem;
+      color: hsl(var(--fu-default-muted));
+    }
+  }
+
+  &__stat {
+    font-family: var(--fu-default-br-font-grotesk);
+    font-size: 2.5rem;
+    font-weight: 900;
+    line-height: 1;
+    color: hsl(var(--fu-default-ink));
+  }
+
+  &__label {
+    font-size: 0.625rem;
+    text-transform: uppercase;
+    letter-spacing: var(--fu-default-br-tracking-wide);
+    color: hsl(var(--fu-default-muted));
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: var(--fu-default-br-line) solid hsl(var(--fu-default-muted));
+    background: transparent;
+    color: hsl(var(--fu-default-ink));
+    font-family: var(--fu-default-br-font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: var(--fu-default-br-tracking-wide);
+    cursor: pointer;
+    transition: background 120ms step-end;
+    border-radius: 0;
+
+    &:hover {
+      background: hsl(var(--fu-default-ink));
+      color: hsl(var(--fu-default-card));
+    }
+
+    &--primary {
+      border-color: hsl(var(--fu-default-error));
+      background: hsl(var(--fu-default-error));
+      color: hsl(var(--fu-default-card));
+      &:hover {
+        background: hsl(var(--fu-default-error) / 0.8);
+      }
+    }
+  }
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+
+    th {
+      text-align: left;
+      padding: 0.5rem;
+      border-bottom: var(--fu-default-br-line-strong) solid hsl(var(--fu-default-ink));
+      text-transform: uppercase;
+      letter-spacing: var(--fu-default-br-tracking-wide);
+      font-weight: 700;
+    }
+    td {
+      padding: 0.5rem;
+      border-bottom: var(--fu-default-br-line) solid hsl(var(--fu-default-line));
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1px;
+    background: hsl(var(--fu-default-line));
+
+    > * {
+      background: hsl(var(--fu-default-card));
+      padding: 1rem;
+    }
+  }
+}

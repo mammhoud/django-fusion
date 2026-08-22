@@ -128,6 +128,8 @@ structa.cloud/
 - [🛠️ Commands & delegation](COMMANDS.md) — unified verb naming, delegation chain, and the deploy cascade
 - [🗺️ Canonical plans](plans/README.md) — all active plans and historical evidence
 - [🔄 Recent Changes](recent-changes.md)
+- [🎨 Design & Frontend](design/) — theme engine, SCSS architecture, components, design system, django-fusion, dynamic template fields
+- [📋 Product Audit](audit/) — CRM · POS · LMS · Landing Builder: features, gaps, risks, recommendations
 - [🎯 Features Index](features/) — capabilities by project
 - [🏗️ Infrastructure & Deployment](dev/infrastructure/)
 - [🗄️ Databases](dev/databases/)

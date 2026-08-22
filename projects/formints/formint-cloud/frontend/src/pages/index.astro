@@ -17,11 +17,13 @@
 // prefers-reduced-motion. One accent (copper) locked across the whole page.
 // Zero em-dashes in copy.
 
-import '../../assets/styles/fonts/outfit.css';
-import '../../assets/styles/fonts/roboto.css';
+import '@formints-assets/styles/fonts/outfit.css';
+import '@formints-assets/styles/fonts/roboto.css';
 // Vite types SVG imports as an Astro component union; we only need the URL.
-import crest from '../../assets/images/formint-crest.svg';
+import crest from '@formints-assets/images/formint-crest.svg';
+import crestMark from '@formints-assets/static/pos-crest-enhanced.svg';
 const crestUrl: string = (crest as unknown as { src: string }).src ?? String(crest);
+const crestMarkUrl: string = (crestMark as unknown as { src: string }).src ?? String(crestMark);
 
 const year = new Date().getFullYear();
 
@@ -71,28 +73,45 @@ const features = [
   },
 ];
 
-// Picsum seed keeps the photo stable across builds; the copper scrim keeps it
-// inside the page palette. Replace with real brand photography before launch.
-const floorPhoto = 'https://picsum.photos/seed/formint-floor/1200/900';
+// Local brand media only: the enhanced copper crest ships from the shared
+// Formint asset registry (projects/formints/assets/shared/static).
 
-// ── Editions ── The three real product editions.
+// ── Editions ── The five product editions, with finish-board status.
+// Statuses are evidence-backed in docs/plans/editions/README.md (finish board).
 const editions = [
   {
     name: 'Community',
+    status: '✅ done in code',
     tagline: 'Single terminal essentials',
     points: ['Core POS sale flow', 'Local products and inventory', 'Receipt and ticket printing'],
     featured: false,
   },
   {
+    name: 'Standard',
+    status: '✅ done in code',
+    tagline: 'Money, tax, roles, export',
+    points: ['Multi-currency and tax profiles', 'Custom roles and permissions', 'CSV/JSON export and offline sync queue'],
+    featured: false,
+  },
+  {
     name: 'Pro',
+    status: '✅ done in code',
     tagline: 'Multi-terminal operations',
     points: ['Real-time terminal sync', 'Offline queue with retry', 'Barcode scanning and gift cards', 'Gaming center sessions'],
     featured: true,
   },
   {
     name: 'Cloud',
+    status: '🟡 staging',
     tagline: 'Master data across branches',
     points: ['Cloud master data and sync', 'Multi-branch dashboard', 'Conflict and queue management', 'Device token provisioning'],
+    featured: false,
+  },
+  {
+    name: 'pos-client',
+    status: '🔵 in development',
+    tagline: 'Shop register + storefront',
+    points: ['Vue 3 desktop register', 'Django shop backend', 'Astro storefront'],
     featured: false,
   },
 ];
@@ -216,7 +235,7 @@ const editions = [
               href="/dashboard"
               class="inline-flex h-12 items-center justify-center rounded-full bg-[#c2410c] px-7 text-base font-semibold text-white transition-all hover:bg-[#ea580c] active:scale-[0.98]"
             >
-              Launch the app
+              Open the dashboard
             </a>
             <a
               href="#features"
@@ -244,12 +263,11 @@ const editions = [
         <div class="reveal max-w-2xl">
           <h2 class="display text-4xl font-bold md:text-5xl">Everything a busy floor needs</h2>
           <p class="mt-5 text-lg leading-relaxed text-zinc-400">
-            The features below are shipped today across the Pro and Cloud editions, not roadmap promises.
+            The features below are implemented and locally tested in the Cloud master. Cloud is in staging: deployment verification is the next operator step.
           </p>
         </div>
 
-        <div class="mt-14 grid grid-cols-1 gap-4 md:grid-cols-6">
-          {features.map((f, i) => {
+        <div class="mt-14 grid grid-cols-1 gap-4 md:grid-cols-6">            {features.map((f, i) => {
             // Bento rhythm fills every row of the 6-col grid: wide+tall pair
             // (4+2), then two equal pairs (3+3, 3+3). No empty cells.
             const span = i === 0 ? 'md:col-span-4' : i === 1 ? 'md:col-span-2' : 'md:col-span-3';
@@ -257,8 +275,9 @@ const editions = [
             if (f.photo) {
               return (
                 <article class:list={[span, base, 'relative min-h-[300px] overflow-hidden border-zinc-800']} style={`transition-delay:${i * 45}ms`}>
-                  <img src={floorPhoto} alt="" class="absolute inset-0 h-full w-full object-cover" loading="lazy" />
-                  <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(9,9,11,0.15),rgba(9,9,11,0.85))]" aria-hidden="true"></div>
+                  <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(234,88,12,0.28),rgba(9,9,11,0.08)_58%)]" aria-hidden="true"></div>
+                  <img src={crestMarkUrl} alt="Formint crest" class="absolute inset-x-0 top-6 mx-auto h-44 w-44 object-contain drop-shadow-[0_24px_48px_rgba(234,88,12,0.35)] md:h-56 md:w-56" width="224" height="224" loading="lazy" />
+                  <div class="absolute inset-0 bg-[linear-gradient(180deg,transparent_42%,rgba(9,9,11,0.9))]" aria-hidden="true"></div>
                   <div class="relative z-10 flex h-full flex-col justify-end p-7 md:p-8">
                     <span class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-900/80 text-lg text-zinc-200" aria-hidden="true">
                       <i class={f.icon}></i>
@@ -289,9 +308,9 @@ const editions = [
       <section id="editions" class="border-y hairline bg-[#0c0c0f]">
         <div class="mx-auto max-w-[1400px] px-5 py-24 md:px-8 md:py-32">
           <div class="reveal max-w-2xl">
-            <h2 class="display text-4xl font-bold md:text-5xl">Three editions. One data model.</h2>
+            <h2 class="display text-4xl font-bold md:text-5xl">Five editions. One extension chain.</h2>
             <p class="mt-5 text-lg leading-relaxed text-zinc-400">
-              Start on a single register and grow to a cloud-managed multi-branch operation without re-entering data.
+              Start on a single register and grow to a cloud-managed multi-branch operation without re-entering data. Status follows the edition finish board: done in code, staging, or in development.
             </p>
           </div>
 
@@ -313,6 +332,7 @@ const editions = [
                   )}
                 </div>
                 <p class="mt-1.5 text-sm font-medium text-zinc-500">{ed.tagline}</p>
+                <p class="mt-2 inline-flex w-fit rounded-full border border-zinc-700 px-2.5 py-0.5 text-xs font-medium text-zinc-400">{ed.status}</p>
                 <ul class="mt-6 space-y-3">
                   {ed.points.map((p) => (
                     <li class="text-[15px] leading-relaxed text-zinc-300">{p}</li>
@@ -338,19 +358,18 @@ const editions = [
       </section>
 
       <!-- ── CTA band: copper, one message, one CTA ── -->
-      <section class="mx-auto max-w-[1400px] px-5 pb-24 md:px-8 md:pb-32">
-        <div class="reveal relative overflow-hidden rounded-3xl border border-[#ea580c]/30 bg-[linear-gradient(120deg,rgba(234,88,12,0.22),rgba(154,34,18,0.08),rgba(9,9,11,0.6))] px-6 py-20 text-center md:px-12 md:py-24">
+      <section class="mx-auto max-w-[1400px] px-5 pb-24 md:px-8 md:pb-32">          <div class="reveal relative overflow-hidden rounded-3xl border border-[#ea580c]/30 bg-[linear-gradient(120deg,rgba(234,88,12,0.22),rgba(154,34,18,0.08),rgba(9,9,11,0.6))] px-6 py-20 text-center md:px-12 md:py-24">
           <div class="pointer-events-none absolute -top-24 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(245,158,11,0.2),transparent_70%)]" aria-hidden="true"></div>
           <div class="relative z-10 mx-auto max-w-2xl">
             <h2 class="display text-4xl font-bold md:text-5xl">Ready to run your floor on Formint</h2>
             <p class="mt-5 text-lg leading-relaxed text-zinc-300">
-              The app is live. Open the dashboard and start a sale in under a minute.
+              The Cloud dashboard is built and locally tested. Staging deployment and the Postgres schema flip-on are the next operator steps.
             </p>
             <a
               href="/dashboard"
               class="mt-9 inline-flex h-12 items-center justify-center rounded-full bg-zinc-100 px-8 text-base font-semibold text-zinc-900 transition-all hover:bg-white active:scale-[0.98]"
             >
-              Launch the app
+              Open the dashboard
             </a>
           </div>
         </div>

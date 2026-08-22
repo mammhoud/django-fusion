@@ -18,6 +18,8 @@ export interface ConfigState {
 const initialState: ConfigState = {
   renderMode: 'html',
   backendUrl: import.meta.env.PUBLIC_BACKEND_URL ?? 'http://127.0.0.1:8000',
+  // Canonical API road: /bolt when the django-bolt runtime is installed,
+  // /apis/core/ (named road) when it is not. /api/v1 is the deprecated fallback.
   apiPrefix: import.meta.env.PUBLIC_API_PREFIX ?? '/bolt',
   fallbackApiPrefix: import.meta.env.PUBLIC_API_FALLBACK_PREFIX ?? '/api/v1',
 };

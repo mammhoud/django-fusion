@@ -122,10 +122,9 @@ src/
 │       ├── _animations.css  # Animation delay utilities
 │       └── _scrollbar.css   # Thin scrollbar styling
 │
-├── assets/                   # Static assets
-│   ├── pos-crest.svg        # POS logo (used in PageLayout)
-│   ├── CompanyLogo.png      # Company logo
-│   └── logo-img.png         # Logo image
+├── assets/                   # Edition-owned styles
+│
+│   # Shared brand/fonts/icons are delegated to ../../assets/shared/
 │
 └── test/                     # Tests
     ├── setup.ts             # Vitest setup + Tauri mock

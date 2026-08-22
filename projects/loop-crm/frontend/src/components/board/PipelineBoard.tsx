@@ -15,8 +15,11 @@ import type { AppDispatch } from '@/store';
 const useAppDispatch = useDispatch.withTypes<AppDispatch>();
 const useAppSelector = useSelector.withTypes<RootState>();
 
-const BOARD_URL = '/api/v1/board/';
-const MOVE_URL = (dealId: number) => `/api/v1/deals/${dealId}/stage/`;
+// Canonical named road (/apis/core/) — the deprecated /api/v1/ copies still
+// serve but carry Deprecation/Sunset headers. BoltApiClient prefers /bolt
+// when the runtime is available; these paths are the session-cookie fallback.
+const BOARD_URL = '/apis/core/board/';
+const MOVE_URL = (dealId: number) => `/apis/core/deals/${dealId}/stage/`;
 
 // Django's csrftoken cookie is readable from JS (CSRF_COOKIE_HTTPONLY=False),
 // so the kanban can echo it back on the move mutation. Mirrors the

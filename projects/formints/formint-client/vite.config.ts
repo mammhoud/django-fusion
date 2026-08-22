@@ -28,6 +28,7 @@ const host = process.env.TAURI_DEV_HOST;
 const PORT = Number(envVal("PORT", "1420"));
 /** HMR WebSocket port (Tauri uses 1421 when exposed on a network host). */
 const HMR_PORT = Number(envVal("HMR_PORT", "1421"));
+const SHARED_ASSETS = fileURLToPath(new URL("../assets/shared", import.meta.url));
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
@@ -37,6 +38,7 @@ export default defineConfig(async () => ({
     resolve: {
         alias: {
             "@": fileURLToPath(new URL("./src", import.meta.url)),
+            "@formints-assets": SHARED_ASSETS,
         },
     },
 
@@ -46,6 +48,7 @@ export default defineConfig(async () => ({
     clearScreen: false,
     // 2. tauri expects a fixed port, fail if that port is not available
     server: {
+        fs: { allow: [SHARED_ASSETS] },
         port: PORT,
         strictPort: true,
         host: host || false,

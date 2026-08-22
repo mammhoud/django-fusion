@@ -20,6 +20,7 @@ const envVal = (key, fallback) => process.env[key] ?? __env[key] ?? fallback;
 const PORT = Number(envVal('PORT', 4321));
 /** Django ASGI backend origin for the dev proxy (default :8766). */
 const BACKEND = envVal('BACKEND_URL', 'http://localhost:8766');
+const SHARED_ASSETS = fileURLToPath(new URL('../../assets/shared', import.meta.url));
 
 export default defineConfig({
   integrations: [alpine()],
@@ -27,6 +28,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
+      fs: { allow: [SHARED_ASSETS] },
       proxy: {
         // ── ASGI backend (Daphne/uvicorn on 8766, was Robyn on 8767) ──
         '/htmx': BACKEND,
@@ -97,6 +99,7 @@ export default defineConfig({
     resolve: {
       alias: {
         '@assets': fileURLToPath(new URL('../assets', import.meta.url)),
+        '@formints-assets': SHARED_ASSETS,
         '@styles': fileURLToPath(new URL('./src/styles', import.meta.url)),
       },
     },

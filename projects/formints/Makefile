@@ -27,7 +27,8 @@
 #
 # Direct edition access is always possible: make -C formint-community <target>
 
-.PHONY: help clean
+.PHONY: help clean assets-check assets-test
+PYTHON ?= python3
 .PHONY: install-all check-all test-all clean-all stop-all
 # ── Community (formint-community) ──
 .PHONY: community-install community-dev community-desktop community-build \
@@ -74,6 +75,8 @@ help:                 ## Show this help menu
 	@echo '  Cloud (formint-cloud)   — make cloud-{install,check,test,dev-backend,stop,clean}'
 	@echo '  pos-client (formint-client)  — make client-{install,dev,build,lint,test,clean}'
 	@echo '  SDK (@formints/client) — make sdk-{install,build,typecheck,test}'
+	@echo '  make assets-check      Validate shared asset ownership and edition overlays'
+	@echo '  make assets-test       Run shared asset registry/path contract tests'
 	@echo ''
 	@echo '── Aggregates ──────────────────────────────────────────────'
 	@echo '  make install-all       Install every edition (run first on a fresh clone)'
@@ -147,6 +150,26 @@ clean-all:            ## Clean every edition
 	$(MAKE) -C $(CLIENT) clean
 	rm -rf $(COMMUNITY_BUNDLE)
 	@echo '✓ All editions cleaned'
+
+assets-test: ## Run dependency-free shared asset registry/path contract tests
+	$(PYTHON) -m unittest discover -s tests -p 'test_asset_contracts.py' -v
+
+assets-check: assets-test ## Validate the parent asset registry and reject old duplicate roots
+	@test -f assets/README.md
+	@test -f configs/assets.yml
+	@test -f assets/shared/public/Logo.svg
+	@test -f assets/shared/images/formint-crest.svg
+	@test -f assets/shared/fonts/outfit/Outfit-400.woff2
+	@test -f assets/shared/styles/fonts/remixicon.css
+	@test -f assets/shared/static/pos-crest.svg
+	@test ! -d formint-community/assets/images
+	@test ! -d formint-community/assets/fonts
+	@test ! -d formint-standard/assets/images
+	@test ! -d formint-standard/assets/fonts
+	@test ! -d formint-cloud/frontend/assets/images
+	@test ! -d formint-cloud/frontend/assets/fonts
+	@test ! -d formint-pro/frontend/src/assets/fonts
+	@echo '✓ Shared Formint asset registry is wired'
 
 test: test-all         ## Alias — run every edition test suite
 

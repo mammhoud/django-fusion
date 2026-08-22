@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="saas">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Structa Cloud — Theme Variations Preview</title>
+  <style>
+    /* ── Minimal preview chrome (not part of the theme system) ── */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--fu-token-font-sans, 'Inter', sans-serif);
+      background: var(--fu-token-paper, #f8f8fb);
+      color: var(--fu-token-ink, #1a1a24);
+      transition: background-color 200ms ease, color 200ms ease;
+    }
+    .chrome {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      padding: 0.75rem 1.5rem;
+      background: var(--fu-token-card);
+      border-bottom: 1px solid var(--fu-token-line);
+      box-shadow: var(--fu-token-shadow-card);
+    }
+    .chrome h1 { font-size: 1rem; margin: 0; font-weight: 700; }
+    .chrome select {
+      padding: 0.375rem 0.75rem;
+      border: 1px solid var(--fu-token-line);
+      border-radius: var(--fu-token-radius-md);
+      background: var(--fu-token-card);
+      color: var(--fu-token-ink);
+      font: inherit;
+      font-size: 0.875rem;
+    }
+    .chrome label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .switcher { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    main { max-width: 64rem; margin: 0 auto; padding: 3rem 1.5rem; display: grid; gap: 1.5rem; }
+    section { display: grid; gap: 1rem; }
+    section h2 {
+      font-size: 1.25rem;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 1rem; }
+
+    /* ── Components used in the preview (consume --fu-token-*) ── */
+    .card {
+      background: var(--fu-token-card);
+      border: 1px solid var(--fu-token-line);
+      border-radius: var(--fu-token-radius-lg);
+      box-shadow: var(--fu-token-shadow-card);
+      padding: 1.5rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .card h3 { margin: 0; font-size: 1.125rem; font-weight: 700; }
+    .card p { margin: 0; color: var(--fu-token-muted); font-size: 0.9375rem; line-height: 1.6; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--fu-token-radius-md);
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all var(--fu-token-transition-standard);
+      text-decoration: none;
+    }
+    .btn--primary { background: var(--fu-token-primary); color: var(--fu-token-card); }
+    .btn--primary:hover { background: var(--fu-token-primary-dark); }
+    .btn--outline { background: transparent; color: var(--fu-token-ink); border-color: var(--fu-token-line); }
+    .btn--outline:hover { border-color: var(--fu-token-primary); color: var(--fu-token-primary); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.125rem 0.625rem;
+      border-radius: var(--fu-token-radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      width: max-content;
+    }
+    .badge--primary { background: var(--fu-token-primary); color: var(--fu-token-card); }
+    .badge--success { background: color-mix(in srgb, var(--fu-token-success) 15%, transparent); color: var(--fu-token-success); }
+    .badge--error { background: color-mix(in srgb, var(--fu-token-error) 12%, transparent); color: var(--fu-token-error); }
+    .alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--fu-token-radius-lg);
+      border: 1px solid var(--fu-token-line);
+      background: var(--fu-token-card);
+      font-size: 0.875rem;
+    }
+    .alert--success { border-color: color-mix(in srgb, var(--fu-token-success) 40%, transparent); background: color-mix(in srgb, var(--fu-token-success) 8%, transparent); }
+    .alert--error { border-color: color-mix(in srgb, var(--fu-token-error) 40%, transparent); background: color-mix(in srgb, var(--fu-token-error) 8%, transparent); }
+    .table-wrap { overflow-x: auto; border-radius: var(--fu-token-radius-lg); box-shadow: var(--fu-token-shadow-card); }
+    table { width: 100%; border-collapse: collapse; background: var(--fu-token-card); font-size: 0.875rem; }
+    th { text-align: left; padding: 0.625rem 1rem; background: var(--fu-token-neutral-1); color: var(--fu-token-ink); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--fu-token-line); }
+    td { padding: 0.625rem 1rem; color: var(--fu-token-muted); border-bottom: 1px solid var(--fu-token-line); }
+    tr:hover td { background: color-mix(in srgb, var(--fu-token-primary) 5%, transparent); }
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1.25rem;
+      background: var(--fu-token-card);
+      border: 1px solid var(--fu-token-line);
+      border-radius: var(--fu-token-radius-lg);
+    }
+    .nav a { color: var(--fu-token-muted); text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+    .nav a.active { color: var(--fu-token-primary); font-weight: 600; }
+    .nav .brand { font-weight: 700; color: var(--fu-token-ink); margin-right: auto; }
+    .swatch-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .swatch { width: 3rem; height: 3rem; border-radius: var(--fu-token-radius-md); border: 1px solid var(--fu-token-line); }
+    .meta { font-size: 0.8125rem; color: var(--fu-token-muted); }
+    .meta code { font-family: var(--fu-token-font-mono); background: var(--fu-token-neutral-1); padding: 0.125rem 0.375rem; border-radius: var(--fu-token-radius-sm); }
+  </style>
+</head>
+<body>
+  <div class="chrome">
+    <h1>Theme Variations Preview</h1>
+    <div class="switcher">
+      <label>
+        Theme
+        <select id="theme-select">
+          <option value="saas">Modern SaaS</option>
+          <option value="enterprise">Enterprise</option>
+          <option value="corporate">Corporate</option>
+          <option value="educational">Educational</option>
+          <option value="retail">Retail</option>
+          <option value="minimal">Minimal</option>
+          <option value="dark">Dark</option>
+          <option value="contrast">High Contrast</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="dark-toggle"> Dark mode</label>
+    </div>
+  </div>
+
+  <main>
+    <section>
+      <h2>Navigation</h2>
+      <nav class="nav">
+        <span class="brand">Acme</span>
+        <a href="#" class="active">Home</a>
+        <a href="#">Products</a>
+        <a href="#">Pricing</a>
+        <a href="#">Docs</a>
+        <button class="btn btn--primary">Get started</button>
+      </nav>
+    </section>
+
+    <section>
+      <h2>Cards &amp; Buttons</h2>
+      <div class="row">
+        <div class="card">
+          <span class="badge badge--primary">New</span>
+          <h3>Revenue overview</h3>
+          <p>Track monthly recurring revenue, churn, and expansion in one place.</p>
+          <div>
+            <button class="btn btn--primary">View report</button>
+            <button class="btn btn--outline">Export</button>
+          </div>
+        </div>
+        <div class="card">
+          <span class="badge badge--success">Live</span>
+          <h3>System status</h3>
+          <p>All systems operational. 99.99% uptime over the last 90 days.</p>
+          <div>
+            <button class="btn btn--outline">Open console</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Alerts</h2>
+      <div class="alert alert--success" role="status">
+        <span>✓</span>
+        <div><strong>Payment received</strong> — Invoice #2024-0042 was paid.</div>
+      </div>
+      <div class="alert alert--error" role="alert">
+        <span>⚠</span>
+        <div><strong>Connection failed</strong> — Check your network and retry.</div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Data Table</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Customer</th><th>Plan</th><th>Status</th><th style="text-align:right">Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Acme Corp</strong></td><td>Enterprise</td><td><span class="badge badge--success">Active</span></td><td style="text-align:right">$48,200</td></tr>
+            <tr><td><strong>Globex</strong></td><td>Pro</td><td><span class="badge badge--success">Active</span></td><td style="text-align:right">$12,400</td></tr>
+            <tr><td><strong>Initech</strong></td><td>Starter</td><td><span class="badge badge--error">Past due</span></td><td style="text-align:right">$99</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Color palette</h2>
+      <div class="swatch-row">
+        <div class="swatch" style="background: var(--fu-token-primary)" title="Primary"></div>
+        <div class="swatch" style="background: var(--fu-token-secondary)" title="Secondary"></div>
+        <div class="swatch" style="background: var(--fu-token-accent)" title="Accent"></div>
+        <div class="swatch" style="background: var(--fu-token-success)" title="Success"></div>
+        <div class="swatch" style="background: var(--fu-token-warning)" title="Warning"></div>
+        <div class="swatch" style="background: var(--fu-token-error)" title="Error"></div>
+        <div class="swatch" style="background: var(--fu-token-ink)" title="Ink"></div>
+        <div class="swatch" style="background: var(--fu-token-muted)" title="Muted"></div>
+        <div class="swatch" style="background: var(--fu-token-card); border-width: 2px" title="Card"></div>
+      </div>
+      <p class="meta">Active: <code id="theme-meta">saas</code> · fonts: <code id="font-meta">Inter</code></p>
+    </section>
+  </main>
+
+  <script>
+    const themes = {
+      saas:        { label: 'Modern SaaS',    font: 'Inter' },
+      enterprise:  { label: 'Enterprise',     font: 'Segoe UI / Inter' },
+      corporate:   { label: 'Corporate',      font: 'Source Serif + Source Sans' },
+      educational: { label: 'Educational',    font: 'Nunito' },
+      retail:      { label: 'Retail',         font: 'Poppins' },
+      minimal:     { label: 'Minimal',        font: 'Inter' },
+      dark:        { label: 'Dark',           font: 'Inter' },
+      contrast:    { label: 'High Contrast',  font: 'Arial' },
+    };
+
+    const root = document.documentElement;
+    const select = document.getElementById('theme-select');
+    const darkToggle = document.getElementById('dark-toggle');
+    const themeMeta = document.getElementById('theme-meta');
+    const fontMeta = document.getElementById('font-meta');
+
+    function apply() {
+      const theme = select.value;
+      root.setAttribute('data-theme', theme);
+      root.classList.toggle('dark', darkToggle.checked && theme !== 'dark');
+      themeMeta.textContent = theme;
+      fontMeta.textContent = themes[theme].font;
+      // Smooth transition (opt-in)
+      root.classList.add('fu-theme-transition');
+      setTimeout(() => root.classList.remove('fu-theme-transition'), 400);
+    }
+
+    select.addEventListener('change', apply);
+    darkToggle.addEventListener('change', apply);
+    apply();
+  </script>
+</body>
+</html>

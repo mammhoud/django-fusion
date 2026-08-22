@@ -1,0 +1,109 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CRM Component: fu-crm-contact-card — BEM contact card for CRM theme.
+   Uses fu-crm-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-crm-contact-card {
+  background: hsl(var(--fu-crm-card));
+  border-radius: var(--fu-crm-radius-md);
+  box-shadow: var(--fu-crm-shadow-card);
+  padding: 1rem;
+  transition: var(--fu-crm-transition-standard);
+  height: 100%;
+
+  &:hover {
+    box-shadow: var(--fu-crm-shadow-card-hover);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  &__avatar {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--fu-crm-radius-full);
+    background: hsl(var(--fu-crm-primary-light));
+    color: hsl(var(--fu-crm-primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: var(--fu-crm-radius-full);
+      object-fit: cover;
+    }
+  }
+
+  &__name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: hsl(var(--fu-crm-ink));
+    margin-bottom: 0.125rem;
+  }
+
+  &__company {
+    font-size: 0.75rem;
+    color: hsl(var(--fu-crm-muted));
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    .detail {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      color: hsl(var(--fu-crm-muted));
+
+      i {
+        width: 1rem;
+        color: hsl(var(--fu-crm-primary));
+      }
+      a {
+        color: hsl(var(--fu-crm-muted));
+        &:hover { color: hsl(var(--fu-crm-primary)); }
+      }
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid hsl(var(--fu-crm-line));
+  }
+
+  &__value {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: hsl(var(--fu-crm-ink));
+  }
+
+  &__stage {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--fu-crm-radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+
+    &--lead { background: hsl(var(--fu-crm-stage-lead) / 0.3); color: hsl(var(--fu-crm-ink)); }
+    &--qualified { background: hsl(var(--fu-crm-stage-qualified) / 0.3); }
+    &--won { background: hsl(var(--fu-crm-stage-won) / 0.3); color: hsl(var(--fu-crm-success)); }
+    &--lost { background: hsl(var(--fu-crm-stage-lost) / 0.3); color: hsl(var(--fu-crm-error)); }
+  }
+}
