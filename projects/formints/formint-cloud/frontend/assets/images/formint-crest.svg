@@ -14,7 +14,7 @@
         animation: formintFadeInGlow 2s ease forwards 0.5s;
       }
       @keyframes formintFadeInGlow {
-        to { opacity: 0.4; }
+        to { opacity: 0.35; }
       }
       #formint-crest-outer-ring {
         transform-origin: center;
@@ -24,37 +24,67 @@
         from { transform: rotate(0deg); }
         to   { transform: rotate(360deg); }
       }
-      #formint-crest-center-spark {
-        animation: formintPulseSpark 1.8s ease-in-out infinite 2.5s;
+      #formint-f-mark {
+        opacity: 0;
+        animation: formintFadeInGlow 1.2s ease forwards 1.8s;
+      }
+      #formint-spark {
+        animation: formintSparkPulse 2s ease-in-out infinite 2.5s;
         transform-origin: center;
       }
-      @keyframes formintPulseSpark {
-        0%,100% { transform: scale(1); fill: #F59E0B; }
-        50%     { transform: scale(1.2); fill: #F97316; }
+      @keyframes formintSparkPulse {
+        0%,100% { transform: scale(1); }
+        50%     { transform: scale(1.12); }
       }
     </style>
-    <linearGradient id="formint-crestCopper" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="formint-copper" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#EA580C"/>
       <stop offset="100%" stop-color="#9A3412"/>
     </linearGradient>
-    <linearGradient id="formint-crestOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="formint-orange" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FB923C"/>
       <stop offset="100%" stop-color="#EA580C"/>
     </linearGradient>
-    <filter id="formint-crestGlow" x="-20%" y="-20%" width="140%" height="140%">
+    <linearGradient id="formint-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="formint-teal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#14B8A6"/>
+      <stop offset="100%" stop-color="#0D9488"/>
+    </linearGradient>
+    <filter id="formint-glow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#EA580C" flood-opacity="0.3"/>
     </filter>
     <filter id="formint-sparkGlow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#F59E0B" flood-opacity="0.6"/>
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#F59E0B" flood-opacity="0.5"/>
     </filter>
   </defs>
-  <g id="formint-crest-container" filter="url(#formint-crestGlow)">
-    <circle id="formint-crest-outer-ring" class="formint-ring" cx="250" cy="250" r="150" fill="none" stroke="url(#formint-crestCopper)" stroke-width="14"/>
-    <circle id="formint-crest-inner-ring" cx="250" cy="250" r="110" fill="none" stroke="url(#formint-crestOrange)" stroke-width="6" opacity="0"/>
-    <path class="formint-shield" fill="none" stroke="url(#formint-crestCopper)" stroke-width="12" stroke-linejoin="round"
-          d="M 250 120 L 310 180 L 290 260 L 250 380 L 210 260 L 190 180 Z"/>
-    <path fill="url(#formint-crestOrange)" opacity="0.15"
-          d="M 250 120 L 310 180 L 290 260 L 250 380 L 210 260 L 190 180 Z" style="animation: formintFadeInGlow 1.5s ease forwards 1.5s;"/>
-    <polygon id="formint-crest-center-spark" points="250,230 270,250 250,270 230,250" fill="url(#formint-crestCopper)" filter="url(#formint-sparkGlow)"/>
+  <g id="formint-crest-container" filter="url(#formint-glow)">
+    <!-- Outer octagonal ring (distinct from POS circular ring) -->
+    <polygon class="formint-ring" id="formint-crest-outer-ring"
+             points="250,95 310,135 345,195 345,305 310,365 250,405 190,365 155,305 155,195 190,135"
+             fill="none" stroke="url(#formint-copper)" stroke-width="14" stroke-linejoin="round"/>
+    <!-- Inner ring -->
+    <circle id="formint-crest-inner-ring" cx="250" cy="250" r="100" fill="none" stroke="url(#formint-orange)" stroke-width="5" opacity="0"/>
+    <!-- F-monogram: geometric letterform representing Formint -->
+    <g id="formint-f-mark" opacity="0">
+      <!-- Vertical stem -->
+      <rect x="218" y="155" width="14" height="145" rx="3" fill="url(#formint-orange)"/>
+      <!-- Top bar -->
+      <rect x="218" y="155" width="80" height="14" rx="3" fill="url(#formint-orange)"/>
+      <!-- Middle bar -->
+      <rect x="218" y="210" width="60" height="12" rx="3" fill="url(#formint-orange)"/>
+      <!-- Form shape: the right edge suggests a form/document -->
+      <line x1="310" y1="155" x2="310" y2="222" stroke="url(#formint-teal)" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+      <circle cx="310" cy="172" r="4" fill="url(#formint-teal)" opacity="0.5"/>
+      <circle cx="310" cy="192" r="4" fill="url(#formint-teal)" opacity="0.5"/>
+      <circle cx="310" cy="212" r="4" fill="url(#formint-teal)" opacity="0.5"/>
+    </g>
+    <!-- Bottom diamond spark (distinct from POS shield spark) -->
+    <g id="formint-spark" filter="url(#formint-sparkGlow)">
+      <polygon points="250,310 265,335 250,360 235,335" fill="url(#formint-gold)"/>
+      <line x1="250" y1="300" x2="250" y2="310" stroke="url(#formint-gold)" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    </g>
   </g>
 </svg>

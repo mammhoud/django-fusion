@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="errT" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2FB392"/><stop offset="100%" stop-color="#1F8A70"/>
+    </linearGradient>
+    <linearGradient id="errA" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#C9962E"/><stop offset="100%" stop-color="#A67B1E"/>
+    </linearGradient>
+    <linearGradient id="errP" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5F2EB"/><stop offset="100%" stop-color="#E8E3D8"/>
+    </linearGradient>
+  </defs>
+  <g opacity="0.25">
+    <!-- P stem -->
+    <rect x="60" y="40" width="16" height="128" fill="url(#errP)"/>
+    <!-- P bowl top -->
+    <rect x="76" y="40" width="56" height="16" fill="url(#errP)"/>
+    <!-- P bowl bottom (open) -->
+    <rect x="76" y="84" width="44" height="16" fill="url(#errP)"/>
+    <!-- Crosshair ring -->
+    <circle cx="98" cy="92" r="9" fill="none" stroke="url(#errT)" stroke-width="3"/>
+    <line x1="98" y1="44" x2="98" y2="120" stroke="url(#errT)" stroke-width="1.5" opacity="0.55"/>
+    <line x1="62" y1="92" x2="120" y2="92" stroke="url(#errT)" stroke-width="1.5" opacity="0.55"/>
+    <!-- Evidence line -->
+    <line x1="36" y1="178" x2="152" y2="178" stroke="url(#errA)" stroke-width="3"/>
+    <path d="M150 170 L164 178 L150 186 Z" fill="url(#errA)"/>
+  </g>
+</svg>

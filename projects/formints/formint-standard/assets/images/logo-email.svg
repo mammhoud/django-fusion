@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" width="360" height="100">
+  <defs>
+    <linearGradient id="emC" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/><stop offset="100%" stop-color="#9A3412"/>
+    </linearGradient>
+    <linearGradient id="emO" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/><stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+    <linearGradient id="emG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+  <!-- Mark -->
+  <g transform="translate(10 5) scale(0.38)">
+    <polygon points="256,95 316,135 351,195 351,305 316,365 256,405 196,365 161,305 161,195 196,135"
+             fill="none" stroke="url(#emC)" stroke-width="14" stroke-linejoin="round"/>
+    <rect x="224" y="155" width="14" height="145" rx="3" fill="url(#emO)"/>
+    <rect x="224" y="155" width="80" height="14" rx="3" fill="url(#emO)"/>
+    <rect x="224" y="210" width="60" height="12" rx="3" fill="url(#emO)"/>
+    <polygon points="256,310 271,335 256,360 241,335" fill="url(#emG)"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="115" y="56" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="38" letter-spacing="5" fill="#1A1917">FORMINT</text>
+  <text x="117" y="76" font-family="Arial, Helvetica, monospace" font-weight="500" font-size="10" letter-spacing="2" fill="#78716C">POINT OF SALE</text>
+</svg>

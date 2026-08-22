@@ -1,10 +1,10 @@
 {% extends "wagtailadmin/base.html" %}
-{% load static i18n %}
+{% load static wagtailimages_tags i18n %}
 
 {% block branding_logo %}
     {% if settings.WAGTAIL_ADMIN_LOGO %}
         <img src="{{ settings.WAGTAIL_ADMIN_LOGO }}" alt="CTC Research" width="80" />
     {% else %}
-    <img src="{% static 'images/logo.png' %}" alt="CTC Research" width="120" />
+    <img src="{% static 'images/brand/precis-protocol-mark.svg' %}" alt="CTC Research" width="100" />
     {% endif %}
 {% endblock %}
