@@ -40,9 +40,10 @@ describe('StatCard component', () => {
   });
 
   it('renders skeleton blocks while loading', () => {
-    render(<StatCard loading title="T" value="1" animated={false} />);
-    const skeleton = document.querySelector('.animate-pulse');
-    expect(skeleton).toBeInTheDocument();
+    const { container } = render(<StatCard loading title="T" value="1" animated={false} />);
+    // The skeleton uses the `fu-shimmer` utility (one block per stat section).
+    const skeletons = container.querySelectorAll('.fu-shimmer');
+    expect(skeletons.length).toBeGreaterThan(0);
   });
 
   it('applies compact padding', () => {

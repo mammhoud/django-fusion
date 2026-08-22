@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../../components/shared/KeyboardShortcutsModal';
 import Card from '../../../components/ui/Card';
 import StatCard from '../../../components/ui/StatCard';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../../components/ui/tooltip';
 
 type TabId = 'timeTotal' | 'productStats' | 'relatedProducts' | 'invoices';
@@ -216,12 +217,15 @@ export default function Transactions() {
     };
   }, [transactions]);
 
-  const handleDeleteTransaction = async (id: number) => {
-    if (!confirm(t('transactions.deleteConfirm'))) return;
+  const [toDelete, setToDelete] = useState<Transaction | null>(null);
+
+  const handleDeleteTransaction = async () => {
+    if (!toDelete) return;
 
     try {
-      await invoke('delete_transaction', { id });
-      setTransactions(prev => prev.filter(t => t.id !== id));
+      await invoke('delete_transaction', { id: toDelete.id });
+      setTransactions(prev => prev.filter(t => t.id !== toDelete.id));
+      setToDelete(null);
       showSuccess(t('common.deleted'));
       // Quiet reload reconciles list + analytics dependencies without
       // re-pulsing the skeleton.
@@ -930,7 +934,7 @@ export default function Transactions() {
                               <span className="ri-printer-line ri-16px" />
                             </button>
                             <button
-                              onClick={() => handleDeleteTransaction(tx.id)}
+                              onClick={() => setToDelete(tx)}
                               className="text-error hover:text-error p-1.5 transition-all active:scale-[0.9]"
                             >
                               <span className="ri-delete-bin-line ri-16px" />
@@ -1535,7 +1539,7 @@ export default function Transactions() {
                         <span className="ri-printer-line ri-20px" />
                       </button>
                       <button
-                        onClick={() => handleDeleteTransaction(transaction.id)}
+                        onClick={() => setToDelete(transaction)}
                         className="text-error hover:text-error p-2"
                       >
                         <span className="ri-delete-bin-line ri-20px" />
@@ -1705,6 +1709,15 @@ export default function Transactions() {
       <KeyboardShortcutsModal
         isOpen={showShortcutHelp}
         onClose={() => setShowShortcutHelp(false)}
+      />
+      <ConfirmDialog
+        isOpen={!!toDelete}
+        onClose={() => setToDelete(null)}
+        onConfirm={handleDeleteTransaction}
+        title={t('transactions.deleteTitle', 'Delete transaction')}
+        message={t('transactions.deleteMessage', 'This will permanently remove the transaction')}
+        itemName={toDelete ? `#${toDelete.id}` : ''}
+        confirmLabel={t('common.delete')}
       />
       <StatusToast
         type={status?.type ?? 'success'}

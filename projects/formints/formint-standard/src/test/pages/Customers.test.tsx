@@ -117,6 +117,8 @@ describe('Customers page', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Cancel/i }));
 
-    expect(screen.queryByPlaceholderText('Name')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText('Name')).not.toBeInTheDocument();
+    });
   });
 });

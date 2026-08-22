@@ -490,6 +490,8 @@ export default function ProductManager() {
     setTimeout(() => setSubmitStatus('idle'), 3000);
   };
 
+  const [bulkDeleteRows, setBulkDeleteRows] = useState<Product[]>([]);
+
   const handleBulkDelete = async (rows: Product[]) => {
     if (rows.length === 0 || isBulkSubmitting) return;
     const ids = rows.map(p => p.id);
@@ -1093,10 +1095,7 @@ export default function ProductManager() {
               icon: <span className="ri-delete-bin-line ri-12px" />,
               className: 'btn-soft btn-error',
               testId: 'pm-bulk-delete',
-              onClick: (rows: Product[]) => {
-                if (!window.confirm(t('productManager.bulkDeleteConfirm', { count: rows.length }))) return;
-                void handleBulkDelete(rows);
-              },
+              onClick: (rows: Product[]) => setBulkDeleteRows(rows),
             },
             {
               key: 'bulk-category',
@@ -1710,6 +1709,18 @@ export default function ProductManager() {
         itemName={productToDelete?.name ?? ''}
         description={t('productManager.deleteWarning')}
         confirmLabel={t('productManager.confirmDelete')}
+        variant="danger"
+      />
+
+      {/* Bulk Delete Confirmation Modal — shared ConfirmDialog */}
+      <ConfirmDialog
+        isOpen={bulkDeleteRows.length > 0}
+        onClose={() => setBulkDeleteRows([])}
+        onConfirm={() => { void handleBulkDelete(bulkDeleteRows); setBulkDeleteRows([]); }}
+        title={t('productManager.bulkDeleteTitle', 'Delete products')}
+        message={t('productManager.bulkDeleteMessage', 'This will permanently remove')}
+        itemName={t('productManager.bulkDeleteCount', '{{count}} product(s)', { count: bulkDeleteRows.length })}
+        confirmLabel={t('common.delete')}
         variant="danger"
       />
 

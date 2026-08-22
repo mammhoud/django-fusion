@@ -46,6 +46,7 @@ const Notes = lazy(() => import('../app/pages/admin/Notes'));
 const Coupons = lazy(() => import('../app/pages/admin/Coupons'));
 const Roles = lazy(() => import('../app/pages/admin/Roles'));
 const SupportChat = lazy(() => import('../app/pages/admin/SupportChat'));
+const Badges = lazy(() => import('../app/pages/admin/Badges'));
 const StaffPage = lazy(() => import('../app/pages/admin/StaffPage'));
 const ProductsPage = lazy(() => import('../app/pages/pos/ProductsPage'));
 const BranchOverview = lazy(() => import('../app/pages/analytics/BranchOverview'));
@@ -73,6 +74,7 @@ const ROUTE_PAGES: Record<string, LazyExoticComponent<ComponentType>> = {
   '/coupons': Coupons,
   '/roles': Roles,
   '/support-chat': SupportChat,
+  '/badges': Badges,
   '/staff': StaffPage,
   '/products': ProductsPage,
   '/telemetry': BranchOverview,

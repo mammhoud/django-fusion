@@ -9,6 +9,7 @@ import SearchInput from '../../../components/ui/SearchInput';
 import { useDebouncedSearch } from '../../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../../hooks/useStatusToast';
 import StatusToast from '../../../components/ui/StatusToast';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import { useCurrency } from '../../../contexts/CurrencyContext';
 
 const COUPON_KINDS: { value: 'percent' | 'fixed'; label: string }[] = [
@@ -103,10 +104,13 @@ export default function Coupons() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('coupons.confirmDelete'))) return;
+  const [toDelete, setToDelete] = useState<Coupon | null>(null);
+
+  const handleDelete = async () => {
+    if (!toDelete) return;
     try {
-      await invoke('delete_coupon', { id });
+      await invoke('delete_coupon', { id: toDelete.id });
+      setToDelete(null);
       showSuccess(t('coupons.deleted'));
       loadCoupons({ quiet: true });
     } catch (error) {
@@ -402,7 +406,7 @@ export default function Coupons() {
                         <span className="ri-pencil-line ri-14px" />
                       </button>
                       <button
-                        onClick={() => handleDelete(coupon.id)}
+                        onClick={() => setToDelete(coupon)}
                         className="p-1.5 rounded-lg text-base-content/40 hover:text-error hover:bg-error/10 transition-colors"
                         title={t('common.delete')}
                       >
@@ -416,6 +420,16 @@ export default function Coupons() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={!!toDelete}
+        onClose={() => setToDelete(null)}
+        onConfirm={handleDelete}
+        title={t('coupons.deleteTitle', 'Delete coupon')}
+        message={t('coupons.deleteMessage', 'This will permanently remove the coupon')}
+        itemName={toDelete?.code ?? ''}
+        confirmLabel={t('common.delete')}
+      />
 
       <StatusToast
         type={status?.type ?? 'success'}

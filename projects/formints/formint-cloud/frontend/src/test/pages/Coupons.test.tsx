@@ -77,7 +77,6 @@ describe('Coupons page', () => {
   });
 
   it('deletes a coupon after confirm', async () => {
-    vi.spyOn(window, 'confirm').mockReturnValue(true);
     mockInvokeSuccess('delete_coupon', null);
     renderWithRouter(<Coupons />);
 
@@ -87,6 +86,10 @@ describe('Coupons page', () => {
 
     const deleteButtons = screen.getAllByTitle(/Delete/i);
     await userEvent.click(deleteButtons[0]);
+
+    // Confirmation dialog appears — confirm the delete
+    const confirmButtons = screen.getAllByRole('button', { name: /Delete/ });
+    await userEvent.click(confirmButtons[confirmButtons.length - 1]);
 
     await waitFor(() => {
       expect(screen.getByText('Coupon deleted')).toBeInTheDocument();

@@ -356,12 +356,18 @@ describe('ProductManager bulk actions (table view)', () => {
 
   it('bulk deletes selected products after confirmation', async () => {
     mockInvokeSuccess('delete_product', null);
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
     await openTableView();
 
     await selectRows(2); // table sorts by newest (id desc) → rows 3 + 2
 
     await userEvent.click(screen.getByTestId('pm-bulk-delete'));
+
+    // Confirmation modal appears — confirm the delete
+    await waitFor(() => {
+      expect(screen.getByText(/productManager\.bulkDeleteTitle|Delete products/)).toBeInTheDocument();
+    });
+    const confirmButtons = screen.getAllByRole('button', { name: /Delete/ });
+    await userEvent.click(confirmButtons[confirmButtons.length - 1]);
 
     await waitFor(() => {
       const history = getInvokeHistory();
@@ -369,21 +375,24 @@ describe('ProductManager bulk actions (table view)', () => {
       expect(deleteCalls.length).toBe(2);
       expect(deleteCalls.map(c => c.args)).toEqual([{ id: 3 }, { id: 2 }]);
     });
-    confirmSpy.mockRestore();
   });
 
   it('bulk delete asks for confirmation first and skips when cancelled', async () => {
     mockInvokeSuccess('delete_product', null);
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
     await openTableView();
 
     await selectRows(1);
     await userEvent.click(screen.getByTestId('pm-bulk-delete'));
 
-    expect(confirmSpy).toHaveBeenCalled();
+    // Confirmation modal appears — cancel it
+    await waitFor(() => {
+      expect(screen.getByText(/productManager\.bulkDeleteTitle|Delete products/)).toBeInTheDocument();
+    });
+    const cancelButtons = screen.getAllByRole('button', { name: /Cancel/i });
+    await userEvent.click(cancelButtons[cancelButtons.length - 1]);
+
     const history = getInvokeHistory();
     expect(history.some(h => h.cmd === 'delete_product')).toBe(false);
-    confirmSpy.mockRestore();
   });
 
   it('bulk change category updates all selected products', async () => {

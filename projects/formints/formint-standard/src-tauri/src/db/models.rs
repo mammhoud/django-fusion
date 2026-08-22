@@ -1047,6 +1047,14 @@ fn default_pay_frequency() -> String {
     "monthly".to_string()
 }
 
+fn default_badge_icon() -> String {
+    "award-line".to_string()
+}
+
+fn default_badge_tone() -> String {
+    "default".to_string()
+}
+
 #[derive(Debug, Insertable, Deserialize)]
 #[diesel(table_name = crate::db::schema::coupons)]
 pub struct NewCoupon {
@@ -1302,6 +1310,48 @@ pub struct UpdateBudget {
     pub period_start: Option<String>,
     pub period_end: Option<String>,
     pub amount: Option<f64>,
+}
+
+// ---- Reward Badge (DB table: badges) ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::badges)]
+pub struct Badge {
+    pub id: i32,
+    pub name: String,
+    pub description: String,
+    pub icon: String,
+    pub tone: String,
+    pub threshold: f64,
+    pub is_active: bool,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::badges)]
+pub struct NewBadge {
+    pub name: String,
+    #[serde(default)]
+    pub description: String,
+    #[serde(default = "default_badge_icon")]
+    pub icon: String,
+    #[serde(default = "default_badge_tone")]
+    pub tone: String,
+    #[serde(default)]
+    pub threshold: f64,
+    #[serde(default = "default_true")]
+    pub is_active: bool,
+}
+
+#[derive(Debug, AsChangeset, Deserialize)]
+#[diesel(table_name = crate::db::schema::badges)]
+pub struct UpdateBadge {
+    pub name: Option<String>,
+    pub description: Option<String>,
+    pub icon: Option<String>,
+    pub tone: Option<String>,
+    pub threshold: Option<f64>,
+    pub is_active: Option<bool>,
 }
 
 /// Row for the finance summary — income/expense totals per category (or global).

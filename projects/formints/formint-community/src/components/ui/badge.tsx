@@ -19,10 +19,29 @@ const badgeVariants = cva(
         ghost:
           "hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50",
         link: "text-primary underline-offset-4 hover:underline",
+        // ── Semantic states (Formint design language — verdigris/amber) ──
+        success: "bg-success text-success-content [a]:hover:bg-success/80",
+        warning: "bg-warning text-warning-content [a]:hover:bg-warning/80",
+        info: "bg-info text-info-content [a]:hover:bg-info/80",
+        neutral: "bg-neutral text-neutral-content [a]:hover:bg-neutral/80",
+        // ── Soft variants — translucent tint so they read in both modes ──
+        "soft": "bg-primary/10 text-primary [a]:hover:bg-primary/15",
+        "soft-secondary": "bg-secondary/10 text-secondary [a]:hover:bg-secondary/15",
+        "soft-success": "bg-success/10 text-success [a]:hover:bg-success/15",
+        "soft-warning": "bg-warning/15 text-warning [a]:hover:bg-warning/20",
+        "soft-info": "bg-info/10 text-info [a]:hover:bg-info/15",
+        "soft-neutral": "bg-neutral/10 text-neutral [a]:hover:bg-neutral/15",
+        "soft-destructive": "bg-destructive/10 text-destructive [a]:hover:bg-destructive/15",
+      },
+      size: {
+        default: "h-5 px-2 py-0.5 text-xs",
+        sm: "h-4 px-1.5 text-[10px]",
+        lg: "h-6 px-2.5 py-1 text-sm",
       },
     },
     defaultVariants: {
       variant: "default",
+      size: "default",
     },
   }
 )
@@ -30,6 +49,7 @@ const badgeVariants = cva(
 function Badge({
   className,
   variant = "default",
+  size = "default",
   render,
   ...props
 }: useRender.ComponentProps<"span"> & VariantProps<typeof badgeVariants>) {
@@ -37,7 +57,7 @@ function Badge({
     defaultTagName: "span",
     props: mergeProps<"span">(
       {
-        className: cn(badgeVariants({ variant }), className),
+        className: cn(badgeVariants({ variant, size }), className),
       },
       props
     ),
@@ -45,6 +65,7 @@ function Badge({
     state: {
       slot: "badge",
       variant,
+      size,
     },
   })
 }

@@ -24,7 +24,7 @@ export const ROLE_ROUTES: Record<string, Set<string>> = {
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
     '/employees', '/schedule', '/payroll', '/customers', '/roles', '/currencies', '/tax-profiles', '/register',
     '/analytics', '/reports', '/export', '/reports?tab=taxReports',
-    '/settings', '/notes', '/coupons', '/support-chat', '/about',
+    '/settings', '/notes', '/coupons', '/badges', '/support-chat', '/about',
   ]),
   employee: new Set([
     '/dashboard', '/sale', '/kitchen', '/transactions', '/inventory',
@@ -121,6 +121,7 @@ const navCategories: NavCategory[] = [
       { label: 'nav.settings', desc: 'nav.settingsDesc', route: '/settings', icon: Ic('hi:cog-6-tooth'), colorClass: 'bg-neutral' },
       { label: 'nav.notes', desc: 'nav.notesDesc', route: '/notes', icon: Ic('hi:document-text'), colorClass: 'bg-neutral' },
       { label: 'nav.coupons', desc: 'nav.couponsDesc', route: '/coupons', icon: Ic('hi:tag'), colorClass: 'bg-neutral' },
+      { label: 'nav.badges', desc: 'nav.badgesDesc', route: '/badges', icon: Ic('hi:award'), colorClass: 'bg-neutral' },
       { label: 'nav.supportChat', desc: 'nav.supportChatDesc', route: '/support-chat', icon: Ic('hi:chat-bubble-left-right'), colorClass: 'bg-neutral' },
       { label: 'nav.about', desc: 'nav.aboutDesc', route: '/about', icon: Ic('hi:heart'), colorClass: 'bg-neutral' },
     ],

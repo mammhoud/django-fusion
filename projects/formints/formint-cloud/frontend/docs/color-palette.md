@@ -1,6 +1,8 @@
 # Formint — Color Palette & Theme Reference
 
 > **Applies to:** formintA (site slug formint-pos) · **Source:** `assets/styles/index.css` + `src/contexts/ThemeContext.tsx`
+>
+> **Canonical design language:** [`../../../docs/THEME_SYSTEM.md`](../../../docs/THEME_SYSTEM.md) — shared palette/tokens/motion sourced from formint-pro.
 
 ---
 

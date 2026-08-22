@@ -48,6 +48,7 @@ const Currencies = lazy(() => import('../app/pages/admin/Currencies'));
 const TaxProfiles = lazy(() => import('../app/pages/admin/TaxProfiles'));
 const Export = lazy(() => import('../app/pages/analytics/Export'));
 const SupportChat = lazy(() => import('../app/pages/admin/SupportChat'));
+const Badges = lazy(() => import('../app/pages/admin/Badges'));
 const StaffPage = lazy(() => import('../app/pages/admin/StaffPage'));
 const CashRegister = lazy(() => import('../app/pages/admin/CashRegister'));
 const ProductsPage = lazy(() => import('../app/pages/pos/ProductsPage'));
@@ -77,6 +78,7 @@ const ROUTE_PAGES: Record<string, LazyExoticComponent<ComponentType>> = {
   '/tax-profiles': TaxProfiles,
   '/export': Export,
   '/support-chat': SupportChat,
+  '/badges': Badges,
   '/staff': StaffPage,
   '/register': CashRegister,
   '/products': ProductsPage,

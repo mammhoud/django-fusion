@@ -83,7 +83,7 @@ describe('EmployeeSchedule Page', () => {
     await userEvent.click(screen.getByText(/schedule\.addShift|Add Shift/));
 
     await waitFor(() => {
-      expect(screen.getByText(/schedule\.selectEmployee|Select employee/)).toBeInTheDocument();
+      expect(screen.getAllByText(/schedule\.selectEmployee|Select employee/).length).toBeGreaterThan(0);
     });
   });
 

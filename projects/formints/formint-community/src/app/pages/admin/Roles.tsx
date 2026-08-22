@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Role } from '../../../types';
 import { useDebouncedSearch } from '../../../hooks/useDebouncedSearch';
 import SearchInput from '../../../components/ui/SearchInput';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 
 // ── Permission definition (returned from Rust backend) ──
 interface PermissionDef {
@@ -145,10 +146,13 @@ export default function Roles() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('common.confirmDelete'))) return;
+  const [toDelete, setToDelete] = useState<Role | null>(null);
+
+  const handleDelete = async () => {
+    if (!toDelete) return;
     try {
-      await invoke('soft_delete_role', { id });
+      await invoke('soft_delete_role', { id: toDelete.id });
+      setToDelete(null);
       loadRoles({ quiet: true });
     } catch (error) {
       console.error('Error deleting role:', error);
@@ -372,7 +376,7 @@ export default function Roles() {
                       <button onClick={() => openEditForm(role)} className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-info">
                         <span className="ri-pencil-line ri-16px" />
                       </button>
-                      <button onClick={() => handleDelete(role.id)} className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error">
+                      <button onClick={() => setToDelete(role)} className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error">
                         <span className="ri-delete-bin-line ri-16px" />
                       </button>
                     </div>
@@ -402,6 +406,16 @@ export default function Roles() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={!!toDelete}
+        onClose={() => setToDelete(null)}
+        onConfirm={handleDelete}
+        title={t('roles.deleteTitle', 'Delete role')}
+        message={t('roles.deleteMessage', 'This will remove the role and its permissions')}
+        itemName={toDelete?.name ?? ''}
+        confirmLabel={t('common.delete')}
+      />
     </PageLayout>
   );
 }

@@ -111,6 +111,8 @@ describe('Suppliers page', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Cancel/i }));
 
-    expect(screen.queryByPlaceholderText('Company Name')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByPlaceholderText('Company Name')).not.toBeInTheDocument();
+    });
   });
 });

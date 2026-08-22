@@ -516,6 +516,20 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    badges (id) {
+        id -> Integer,
+        name -> Text,
+        description -> Text,
+        icon -> Text,
+        tone -> Text,
+        threshold -> Double,
+        is_active -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
 diesel::allow_tables_to_appear_in_same_query!(
     users,
     roles,
@@ -552,4 +566,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     user_actions,
     finance_transactions,
     budgets,
+    badges,
 );

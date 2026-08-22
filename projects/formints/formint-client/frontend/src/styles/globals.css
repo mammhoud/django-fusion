@@ -3,6 +3,36 @@
 /* Dark mode driven by the `.dark` class on <html>. */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Brand type — Outfit (shared across formint-pro / community / standard / cloud) ── */
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../assets/fonts/outfit/Outfit-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../assets/fonts/outfit/Outfit-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("../assets/fonts/outfit/Outfit-600.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../assets/fonts/outfit/Outfit-700.woff2") format("woff2");
+}
+
 /* ── Content sources — the Django backend templates use the same Tailwind
    utilities (product cards, cart drawer, order rows) and must be scanned so
    those classes are emitted in this one build. Mirrors precis-landing. */
@@ -82,10 +112,142 @@
   --color-fu-fill-hover: hsl(var(--fu-fill-hover));
   --color-fu-mark: hsl(var(--fu-mark));
   --color-fu-live: hsl(var(--fu-live));
-  --font-display: "Bricolage Grotesque Variable", "Bricolage Grotesque", system-ui, sans-serif;
-  --font-sans: "Public Sans Variable", "Public Sans", system-ui, sans-serif;
+  --font-display: "Outfit", system-ui, sans-serif;
+  --font-sans: "Outfit", system-ui, sans-serif;
   --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
 }
+
+/* ── Formint semantic tokens (source: formint-pro tokens.css) ──────────────
+   Shared vocabulary across every edition. Core values alias the local fu-*
+   paper/ink/verdigris/amber tokens so light/dark flips automatically; the
+   semantic states and data-viz scale are literal oklch from formint-pro. */
+:root {
+  /* Surface & text */
+  --color-surface-page: hsl(var(--fu-paper));
+  --color-surface-card: hsl(var(--fu-card));
+  --color-surface-raised: hsl(var(--fu-line) / 0.5);
+  --color-surface-hover: hsl(var(--fu-line));
+  --color-text-primary: hsl(var(--fu-ink));
+  --color-text-secondary: hsl(var(--fu-muted));
+  --color-text-disabled: hsl(var(--fu-muted) / 0.55);
+  --color-text-inverse: hsl(var(--fu-paper));
+
+  /* Brand & semantic (verdigris + amber, same as formint-pro) */
+  --color-primary: hsl(var(--fu-link));
+  --color-primary-content: hsl(var(--fu-paper));
+  --color-primary-hover: hsl(var(--fu-link-dark));
+  --color-primary-light: hsl(var(--fu-link) / 0.14);
+  --color-primary-strong: hsl(var(--fu-link-dark));
+  --color-accent: hsl(var(--fu-mark));
+  --color-accent-content: hsl(var(--fu-ink));
+  --color-accent-strong: hsl(42 100% 32%);
+  --color-secondary: hsl(var(--fu-link));
+  --color-secondary-content: hsl(var(--fu-paper));
+  --color-success: oklch(62% 0.19 145);
+  --color-success-content: oklch(98% 0 0);
+  --color-success-strong: oklch(48% 0.17 145);
+  --color-warning: oklch(75% 0.15 85);
+  --color-warning-content: oklch(25% 0 0);
+  --color-warning-strong: oklch(45% 0.11 85);
+  --color-error: oklch(58% 0.22 25);
+  --color-error-content: oklch(98% 0 0);
+  --color-error-strong: oklch(47% 0.2 25);
+  --color-info: oklch(70% 0.15 220);
+  --color-info-content: oklch(98% 0 0);
+  --color-info-strong: oklch(45% 0.14 220);
+  --color-neutral: oklch(50% 0 0);
+  --color-neutral-content: oklch(98% 0 0);
+  --color-neutral-strong: oklch(45% 0.015 60);
+  --color-focus-ring: hsl(var(--fu-link) / 0.38);
+
+  /* Borders, radius, shadow, motion, spacing */
+  --color-border-subtle: hsl(var(--fu-line));
+  --color-border-default: hsl(var(--fu-line));
+  --color-border-emphasis: hsl(var(--fu-muted));
+  --radius-box: 1.25rem;
+  --radius-field: 0.75rem;
+  --radius-selector: 9999px;
+  --border-width: 1px;
+  --shadow-sm: 0 1px 2px hsl(var(--fu-shadow) / 0.06);
+  --shadow-md: 0 4px 12px hsl(var(--fu-shadow) / 0.08);
+  --shadow-lg: 0 8px 24px hsl(var(--fu-shadow) / 0.12);
+  --shadow-colored: 0 4px 14px hsl(var(--fu-link) / 0.25);
+  --transition-fast: 150ms ease;
+  --transition-normal: 200ms ease;
+  --transition-slow: 300ms ease;
+  --space-pos-xs: 0.25rem;
+  --space-pos-sm: 0.5rem;
+  --space-pos-md: 0.75rem;
+  --space-pos-lg: 1rem;
+  --space-pos-xl: 1.5rem;
+
+  /* Data-viz (categorical) */
+  --color-chart-1: oklch(58% 0.19 285);
+  --color-chart-2: oklch(55% 0.2 262);
+  --color-chart-3: oklch(62% 0.19 145);
+  --color-chart-4: oklch(75% 0.15 85);
+  --color-chart-5: oklch(58% 0.22 25);
+  --color-chart-6: oklch(62% 0.19 210);
+  --color-chart-7: oklch(60% 0.2 350);
+}
+
+/* ── Formint BEM components + animations (source: formint-pro global.css) ── */
+@layer components {
+  .badge { display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.15em 0.55em; font-size: 0.7rem; font-weight: 650; border-radius: var(--radius-selector); line-height: 1.4; white-space: nowrap; }
+  .badge-primary { background: var(--color-primary); color: var(--color-primary-content); }
+  .badge-success { background: var(--color-success); color: var(--color-success-content); }
+  .badge-warning { background: var(--color-warning); color: var(--color-warning-content); }
+  .badge-error   { background: var(--color-error); color: var(--color-error-content); }
+  .badge-info    { background: var(--color-info); color: var(--color-info-content); }
+  .badge-neutral { background: var(--color-neutral); color: var(--color-neutral-content); }
+  .badge-soft-primary { background: color-mix(in oklab, var(--color-primary) 13%, transparent); color: var(--color-primary-strong); }
+  .badge-soft-success { background: color-mix(in oklab, var(--color-success) 13%, transparent); color: var(--color-success-strong); }
+  .badge-soft-warning { background: color-mix(in oklab, var(--color-warning) 18%, transparent); color: var(--color-warning-strong); }
+  .badge-soft-error   { background: color-mix(in oklab, var(--color-error) 13%, transparent); color: var(--color-error-strong); }
+  .badge-soft-info    { background: color-mix(in oklab, var(--color-info) 13%, transparent); color: var(--color-info-strong); }
+  .badge-soft-neutral { background: color-mix(in oklab, var(--color-neutral) 13%, transparent); color: var(--color-neutral-strong); }
+  .badge-xs { font-size: 0.6rem; padding: 0.1em 0.4em; }
+  .badge-sm { font-size: 0.7rem; }
+  .badge-lg { font-size: 0.85rem; padding: 0.25em 0.75em; }
+
+  .tag { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.2em 0.6em; font-size: 0.7rem; font-weight: 600; border: 0; border-radius: 9999px; white-space: nowrap; transition: all var(--transition-fast); cursor: default; }
+  .tag--primary { background: color-mix(in oklab, var(--color-primary) 14%, transparent); color: var(--color-primary-strong); }
+  .tag--warning { background: color-mix(in oklab, var(--color-warning) 20%, transparent); color: var(--color-warning-strong); }
+  .tag--info    { background: color-mix(in oklab, var(--color-info) 15%, transparent); color: var(--color-info-strong); }
+  .tag--success { background: color-mix(in oklab, var(--color-success) 15%, transparent); color: var(--color-success-strong); }
+  .tag--error   { background: color-mix(in oklab, var(--color-error) 15%, transparent); color: var(--color-error-strong); }
+  .tag--neutral { background: color-mix(in oklab, var(--color-text-secondary) 14%, transparent); color: var(--color-neutral-strong); }
+  .tag--sm { font-size: 0.65rem; padding: 0.15em 0.45em; }
+
+  .switch { position: relative; display: inline-flex; flex: none; width: 2.75rem; height: 1.5rem; border-radius: var(--radius-selector); background: var(--color-border-emphasis); border: 0; cursor: pointer; padding: 0; transition: background var(--transition-fast); }
+  .switch--on { background: var(--color-success); }
+  .switch__knob { position: absolute; top: 50%; left: 0.2rem; width: 1rem; height: 1rem; border-radius: 50%; background: var(--color-surface-card); box-shadow: 0 1px 2px oklch(0 0 0 / 0.3); transform: translateY(-50%); transition: transform var(--transition-fast); }
+  .switch--on .switch__knob { transform: translateY(-50%) translateX(1.35rem); }
+
+  .stat-card { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.9rem 1rem; background: var(--color-surface-card); border: var(--border-width) solid var(--color-border-subtle); border-radius: var(--radius-box); }
+  .stat-card__title { font-size: 0.7rem; font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-card__value { font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary); line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat-card__desc  { font-size: 0.7rem; color: var(--color-text-secondary); }
+
+  .data-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+  .data-table th { padding: 0.5rem 0.75rem; text-align: start; font-weight: 650; color: var(--color-text-secondary); text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.04em; border-bottom: 2px solid var(--color-border-default); background: var(--color-surface-card); }
+  .data-table td { padding: 0.45rem 0.75rem; border-bottom: var(--border-width) solid var(--color-border-subtle); color: var(--color-text-primary); }
+  .data-table tr:hover td { background: var(--color-surface-hover); }
+
+  .kds-ticket { border: 2px solid var(--color-border-subtle); border-radius: var(--radius-box); padding: 0.65rem; background: var(--color-surface-card); transition: all var(--transition-fast); cursor: pointer; }
+  .kds-ticket:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .kds-ticket:active { transform: scale(0.98); }
+  .kds-ticket--overdue { border-color: var(--color-error); box-shadow: 0 0 12px color-mix(in oklab, var(--color-error) 25%, transparent); background: color-mix(in oklab, var(--color-error) 10%, transparent); }
+
+  .toast { position: fixed; bottom: 1rem; right: 1rem; z-index: 100; display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: var(--radius-box); font-size: 0.8rem; font-weight: 600; box-shadow: var(--shadow-lg); animation: toast-in 0.25s ease; }
+  .toast-success { background: var(--color-success); color: var(--color-success-content); }
+  .toast-error   { background: var(--color-error); color: var(--color-error-content); }
+
+  [dir="rtl"] .data-table th,
+  [dir="rtl"] .data-table td { text-align: end; }
+}
+
+@keyframes toast-in { from { opacity: 0; transform: translateY(0.5rem); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── Base layer ─────────────────────────────────────────────────────────── */
 @layer base {

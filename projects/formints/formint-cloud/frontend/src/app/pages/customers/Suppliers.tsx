@@ -7,6 +7,8 @@ import { useDebouncedSearch } from '../../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../../hooks/useStatusToast';
 import { useApiMutation } from '../../../hooks/useApiMutation';
 import StatusToast from '../../../components/ui/StatusToast';
+import FormModal from '../../../components/ui/FormModal';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import { downloadCSV } from '../../../utils/export';
 
 type SortKey = 'name-asc' | 'name-desc' | 'newest';
@@ -17,6 +19,7 @@ export default function Suppliers() {
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Supplier | null>(null);
+  const [toDelete, setToDelete] = useState<Supplier | null>(null);
   const [form, setForm] = useState({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' });
 
   // Status toast — shared hook ensures load + mutation errors are visible to
@@ -83,8 +86,7 @@ export default function Suppliers() {
     loadSuppliers({ quiet: true });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (editing) {
       await supplierApi.update(editing.id, form, {
         onSuccess: () => {
@@ -124,10 +126,11 @@ export default function Suppliers() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('common.confirmDelete'))) return;
-    await supplierApi.remove(id, {
+  const handleDelete = async () => {
+    if (!toDelete) return;
+    await supplierApi.remove(toDelete.id, {
       onSuccess: () => {
+        setToDelete(null);
         showSuccess(t('common.deleted'));
         loadSuppliers({ quiet: true });
       },
@@ -225,27 +228,6 @@ export default function Suppliers() {
           </div>
         </div>
 
-        {showForm && (
-          <form
-            onSubmit={handleSubmit}
-            className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="field"><input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} required className="input w-full" /></div>
-              <div className="field"><input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="input w-full" /></div>
-              <div className="field"><input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="input w-full" /></div>
-              <div className="field"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="input w-full" /></div>
-              <div className="field"><input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="input w-full" /></div>
-              <div className="field"><input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="input w-full" /></div>
-              <div className="field sm:col-span-2"><input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="input w-full" /></div>
-            </div>
-            <div className="flex gap-2">
-              <button type="submit" className="btn btn-primary">{editing ? t('common.update') : t('common.save')}</button>
-              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
-            </div>
-          </form>
-        )}
-
         {isLoading ? (
           <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center">
             <div className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2 animate-spin" />
@@ -273,7 +255,7 @@ export default function Suppliers() {
                   </div>
                   <div className="flex gap-1">
                     <button onClick={() => handleEdit(supplier)} className="p-2 text-slate-600 hover:text-primary"><span className="ri-pencil-line" /></button>
-                    <button onClick={() => handleDelete(supplier.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="ri-delete-bin-line" /></button>
+                    <button onClick={() => setToDelete(supplier)} className="p-2 text-slate-600 hover:text-red-600 transition-colors"><span className="ri-delete-bin-line" /></button>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1 text-sm text-base-content/60">
@@ -286,6 +268,36 @@ export default function Suppliers() {
           </div>
         )}
       </div>
+
+      <FormModal
+        isOpen={showForm}
+        onClose={() => { setShowForm(false); setEditing(null); }}
+        title={editing ? t('suppliers.editSupplier', 'Edit supplier') : t('suppliers.addSupplier')}
+        submitLabel={editing ? t('common.update') : t('common.save')}
+        submitDisabled={!form.name.trim()}
+        isSubmitting={supplierApi.isCreating || supplierApi.isUpdating}
+        onSubmit={handleSubmit}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="field"><input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} className="input w-full" /></div>
+          <div className="field"><input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="input w-full" /></div>
+          <div className="field"><input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="input w-full" /></div>
+          <div className="field"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="input w-full" /></div>
+          <div className="field"><input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="input w-full" /></div>
+          <div className="field"><input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="input w-full" /></div>
+          <div className="field sm:col-span-2"><input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="input w-full" /></div>
+        </div>
+      </FormModal>
+
+      <ConfirmDialog
+        isOpen={!!toDelete}
+        onClose={() => setToDelete(null)}
+        onConfirm={handleDelete}
+        title={t('suppliers.deleteTitle', 'Delete supplier')}
+        message={t('suppliers.deleteMessage', 'This will deactivate the supplier')}
+        itemName={toDelete?.name ?? ''}
+        confirmLabel={t('common.delete')}
+      />
 
       <StatusToast
         type={status?.type ?? 'success'}

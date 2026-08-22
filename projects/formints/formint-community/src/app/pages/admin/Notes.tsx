@@ -6,6 +6,7 @@ import { Note, NoteStep } from '../../../types';
 import { useDebouncedSearch } from '../../../hooks/useDebouncedSearch';
 import AnimatePresence from '../../../components/ui/AnimatePresence';
 import SearchInput from '../../../components/ui/SearchInput';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import PrepStepsEditor from '../../../components/notes/PrepStepsEditor';
 import { parseNoteSteps, serializeNoteSteps } from '../../../utils/noteSteps';
 
@@ -249,11 +250,15 @@ export default function Notes() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('common.confirmDelete'))) return;
+  const [toDelete, setToDelete] = useState<Note | null>(null);
+  const [showBulkDelete, setShowBulkDelete] = useState(false);
+
+  const handleDelete = async () => {
+    if (!toDelete) return;
     try {
-      await invoke('delete_note', { id });
-      setSelectedNotes(prev => { const next = new Set(prev); next.delete(id); return next; });
+      await invoke('delete_note', { id: toDelete.id });
+      setSelectedNotes(prev => { const next = new Set(prev); next.delete(toDelete.id); return next; });
+      setToDelete(null);
       loadNotes({ quiet: true });
     } catch (error) {
       console.error('Error deleting note:', error);
@@ -313,11 +318,11 @@ export default function Notes() {
 
   const bulkDelete = async () => {
     if (selectedNotes.size === 0) return;
-    if (!confirm(`Delete ${selectedNotes.size} note(s)?`)) return;
     try {
       for (const id of selectedNotes) {
         await invoke('delete_note', { id });
       }
+      setShowBulkDelete(false);
       setSelectedNotes(new Set());
       loadNotes({ quiet: true });
     } catch (error) {
@@ -698,7 +703,7 @@ export default function Notes() {
               <button onClick={() => bulkPin(false)} className="btn btn-ghost btn-xs gap-1">
                 <span className="ri-pushpin-2-line ri-14px rotate-45" /> Unpin all
               </button>
-              <button onClick={bulkDelete} className="btn btn-ghost btn-xs gap-1 text-error">
+              <button onClick={() => setShowBulkDelete(true)} className="btn btn-ghost btn-xs gap-1 text-error">
                 <span className="ri-delete-bin-line ri-14px" /> Delete
               </button>
               <button onClick={() => setSelectedNotes(new Set())} className="btn btn-ghost btn-xs">
@@ -836,7 +841,7 @@ export default function Notes() {
                       <span className="ri-pushpin-2-line ri-14px" />
                     </button>
                     <button
-                      onClick={(e) => { e.stopPropagation(); handleDelete(note.id); }}
+                      onClick={(e) => { e.stopPropagation(); setToDelete(note); }}
                       className="p-1.5 rounded-lg text-base-content/30 hover:text-error hover:bg-error/10 transition-colors"
                       title={t('common.delete')}
                     >
@@ -849,6 +854,26 @@ export default function Notes() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={!!toDelete}
+        onClose={() => setToDelete(null)}
+        onConfirm={handleDelete}
+        title={t('notes.deleteTitle', 'Delete note')}
+        message={t('notes.deleteMessage', 'This will permanently remove the note')}
+        itemName={toDelete?.name ?? ''}
+        confirmLabel={t('common.delete')}
+      />
+
+      <ConfirmDialog
+        isOpen={showBulkDelete}
+        onClose={() => setShowBulkDelete(false)}
+        onConfirm={bulkDelete}
+        title={t('notes.bulkDeleteTitle', 'Delete notes')}
+        message={t('notes.bulkDeleteMessage', 'This will permanently remove')}
+        itemName={t('notes.bulkCount', '{{count}} note(s)', { count: selectedNotes.size })}
+        confirmLabel={t('common.delete')}
+      />
     </PageLayout>
   );
 }

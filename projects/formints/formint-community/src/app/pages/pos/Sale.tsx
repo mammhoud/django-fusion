@@ -12,6 +12,7 @@ import ProductCard, { ProductThumb, PRODUCT_CARD_COLORS, ProductCardSkeleton, PR
 import ProductFilterBar from '../../../components/shared/ProductFilterBar';
 import Card from '../../../components/ui/Card';
 import Modal from '../../../components/ui/Modal';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import Button from '../../../components/ui/Button';
 import jsPDF from 'jspdf';
 import PageLayout from '../../../components/layout/PageLayout';
@@ -52,6 +53,7 @@ export default function Sale() {
   const { t } = useTranslation();
   const { formatPrice } = useCurrency();
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [showClearCart, setShowClearCart] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [receiptData, setReceiptData] = useState<{
@@ -149,8 +151,8 @@ export default function Sale() {
 
       // Clear cart
       if (key === 'Escape') {
-        if (cart.length > 0 && confirm('Clear cart?')) {
-          setCart([]);
+        if (cart.length > 0) {
+          setShowClearCart(true);
         }
         return;
       }
@@ -2649,6 +2651,17 @@ export default function Sale() {
       </Modal>
 
       <KeyboardShortcutsModal isOpen={showShortcutHelp} onClose={() => setShowShortcutHelp(false)} />
+
+      <ConfirmDialog
+        isOpen={showClearCart}
+        onClose={() => setShowClearCart(false)}
+        onConfirm={() => { setCart([]); setShowClearCart(false); }}
+        title={t('sale.clearCartTitle', 'Clear cart')}
+        message={t('sale.clearCartMessage', 'This will remove every item from the current cart')}
+        itemName={t('sale.clearCartItem', '{{count}} item(s)', { count: cart.length })}
+        confirmLabel={t('sale.clearCartConfirm', 'Clear')}
+        variant="warning"
+      />
 
       <StatusToast
         type={status?.type ?? 'success'}

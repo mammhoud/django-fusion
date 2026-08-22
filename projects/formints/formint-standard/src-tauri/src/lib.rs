@@ -961,6 +961,31 @@ fn delete_coupon(app: AppHandle, id: i32) -> Result<(), String> {
     coupons::delete_coupon(&db_path, id)
 }
 
+// ---- Badge (loyalty rewards) commands ----
+#[tauri::command]
+fn get_badges(app: AppHandle) -> Result<Vec<db::models::Badge>, String> {
+    let db_path = get_db_path(&app)?;
+    badges::get_badges(&db_path)
+}
+
+#[tauri::command]
+fn add_badge(app: AppHandle, badge: db::models::NewBadge) -> Result<db::models::Badge, String> {
+    let db_path = get_db_path(&app)?;
+    badges::add_badge(&db_path, badge)
+}
+
+#[tauri::command]
+fn update_badge(app: AppHandle, id: i32, update: db::models::UpdateBadge) -> Result<db::models::Badge, String> {
+    let db_path = get_db_path(&app)?;
+    badges::update_badge(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_badge(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    badges::delete_badge(&db_path, id)
+}
+
 // ---- User Action audit log commands ----
 #[tauri::command]
 fn add_user_action(app: AppHandle, action: db::models::NewUserAction) -> Result<db::models::UserAction, String> {
@@ -1361,6 +1386,7 @@ const IMPORT_APPEND_TABLES: &[&str] = &[
     "customers",
     "delivery_zones",
     "coupons",
+    "badges",
     "sales",
     "sale_items",
     "ingredients",
@@ -1890,6 +1916,11 @@ pub fn run() {
             add_coupon,
             update_coupon,
             delete_coupon,
+            // Badges (loyalty rewards)
+            get_badges,
+            add_badge,
+            update_badge,
+            delete_badge,
             // User Action audit log
             add_user_action,
             get_user_actions,

@@ -8,6 +8,8 @@ import { useDebouncedSearch } from '../../../hooks/useDebouncedSearch';
 import { useStatusToast } from '../../../hooks/useStatusToast';
 import { useApiMutation } from '../../../hooks/useApiMutation';
 import Card from '../../../components/ui/Card';
+import FormModal from '../../../components/ui/FormModal';
+import ConfirmDialog from '../../../components/ui/ConfirmDialog';
 import StatusToast from '../../../components/ui/StatusToast';
 import { accentColorFromSeed } from '../../../components/pos/ProductCard';
 import { downloadCSV } from '../../../utils/export';
@@ -33,6 +35,7 @@ export default function Customers() {
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Customer | null>(null);
+  const [toDelete, setToDelete] = useState<Customer | null>(null);
   const [form, setForm] = useState({ name: '', phone: '', email: '', notes: '' });
 
   // Status toast — quick pipe through the shared hook so load / mutation
@@ -103,8 +106,7 @@ export default function Customers() {
     loadCustomers({ quiet: true });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     if (editing) {
       await customerApi.update(editing.id, form, {
         onSuccess: () => {
@@ -144,10 +146,11 @@ export default function Customers() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm(t('common.confirmDelete'))) return;
-    await customerApi.remove(id, {
+  const handleDelete = async () => {
+    if (!toDelete) return;
+    await customerApi.remove(toDelete.id, {
       onSuccess: () => {
+        setToDelete(null);
         showSuccess(t('common.deleted'));
         loadCustomers({ quiet: true });
       },
@@ -215,29 +218,6 @@ export default function Customers() {
           </button>
         </div>
 
-        {showForm && (
-          <form
-            onSubmit={handleSubmit}
-          >
-            <Card padding="md" className="space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="field"><input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('customers.name')} required className="input w-full" /></div>
-              <div className="field"><input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('customers.phone')} className="input w-full" /></div>
-              <div className="field"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('customers.email')} className="input w-full" /></div>
-              <div className="field"><input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={t('customers.notes')} className="input w-full" /></div>
-            </div>
-            <div className="flex gap-2">
-              <button type="submit" className="btn btn-primary">
-                {editing ? t('common.update') : t('common.save')}
-              </button>
-              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">
-                {t('common.cancel')}
-              </button>
-            </div>
-            </Card>
-          </form>
-        )}
-
         {isLoading ? (
           <Card padding="2xl" center>
             <div className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2 animate-spin" />
@@ -271,7 +251,7 @@ export default function Customers() {
                     <button onClick={() => handleEdit(customer)} className="p-2 text-slate-600 hover:text-primary">
                       <span className="ri-pencil-line" />
                     </button>
-                    <button onClick={() => handleDelete(customer.id)} className="p-2 text-slate-600 hover:text-red-600">
+                    <button onClick={() => setToDelete(customer)} className="p-2 text-slate-600 hover:text-red-600 transition-colors">
                       <span className="ri-delete-bin-line" />
                     </button>
                   </div>
@@ -286,6 +266,33 @@ export default function Customers() {
           </div>
         )}
       </div>
+
+      <FormModal
+        isOpen={showForm}
+        onClose={() => { setShowForm(false); setEditing(null); }}
+        title={editing ? t('customers.editCustomer', 'Edit customer') : t('customers.addCustomer')}
+        submitLabel={editing ? t('common.update') : t('common.save')}
+        submitDisabled={!form.name.trim()}
+        isSubmitting={customerApi.isCreating || customerApi.isUpdating}
+        onSubmit={handleSubmit}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="field"><input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('customers.name')} className="input w-full" /></div>
+          <div className="field"><input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('customers.phone')} className="input w-full" /></div>
+          <div className="field"><input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('customers.email')} className="input w-full" /></div>
+          <div className="field"><input type="text" value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })} placeholder={t('customers.notes')} className="input w-full" /></div>
+        </div>
+      </FormModal>
+
+      <ConfirmDialog
+        isOpen={!!toDelete}
+        onClose={() => setToDelete(null)}
+        onConfirm={handleDelete}
+        title={t('customers.deleteTitle', 'Delete customer')}
+        message={t('customers.deleteMessage', 'This will permanently remove the customer')}
+        itemName={toDelete?.name ?? ''}
+        confirmLabel={t('common.delete')}
+      />
 
       <StatusToast
         type={status?.type ?? 'success'}
