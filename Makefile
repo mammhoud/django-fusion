@@ -21,7 +21,12 @@
 
 SHELL := /bin/bash
 
-.PHONY: build watch dev clean install
+.PHONY: help build watch dev clean install reinstall info
+
+# ── Help alias ─────────────────────────────────────────────────────────────────
+help: info
+
+# ── Default target ────────────────────────────────────────────────────────────
 
 # ── Default target ────────────────────────────────────────────────────────────
 build: install

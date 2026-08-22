@@ -7,6 +7,9 @@ config.conf_utils            Utility functions for reading conf values safely.
 config.constants             Package-wide constants (cache key prefixes, timeouts).
 config.logging               Structured logging configuration helpers.
 config.loader       Enhanced Dynaconf integration for Django.
+config.project      Layered project config (YAML + dotenv + env) with
+                    base-URL priority resolution (front/back roads).
+config.project      staticfiles_plan() static-files read/output/deploy reference.
 config.assets       Unified component/webpack/static asset pipeline options.
 config.manifest     Component and merged webpack asset manifests.
 

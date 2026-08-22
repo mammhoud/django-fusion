@@ -130,6 +130,49 @@ from django_fusion.config.conf_utils import (
 )
 ```
 
+## Layered project config (`config.project`)
+
+`django_fusion.config.project.ProjectConfig` (loaded via `load_config`)
+implements the layered cascade used by Structa Cloud products: shared product
+Env YAML → project `configs/*.yml` → `Env/_site.yml` → dotenv → environment
+variables (highest). It is Django-free and never raises, so it is safe to call
+at `settings.py` import time; environment variables always win and the YAML
+layers only supply defaults.
+
+```python
+from django_fusion.config.project import load_config, staticfiles_plan
+
+config = load_config(project_dir="projects/precis/precis-main")
+domain = config.get("SITE.primary_domain", "structa.cloud")   # dotted keys
+admin = config.section("ADMIN")                                # section dict
+
+# Base-URL priority: resolve identity for a specific origin (front/back road).
+backend_view = config.resolve("https://lms.structa.cloud", side="back")
+
+plan = staticfiles_plan(project_dir="projects/precis/precis-main")
+print(plan.render())   # static read → output → deploy reference table
+```
+
+Conventional project `configs/` files load in order `defaults.yml` →
+`site.yml` → `admin.yml` → `theme.yml` (any extra `*.yml` after); each may use
+Dynaconf-style environment sections (`default:`, `development:`,
+`production:`). Dotenv keys are normalized (`DJANGO_DEBUG=0` drives `DEBUG`)
+and every `DJANGO_*` env var maps to its base key at the top layer.
+
+`resolve(base_url, side)` matches the origin host against `SITE`
+(`primary_domain` / `domains` / `allowed_hosts`, plus well-known localhost
+front/back ports) and overlays the matched site identity — still below
+environment variables.
+
+`staticfiles_plan()` resolves the conventional static layout — read dirs
+(`STATICFILES_DIRS`), output (`STATIC_ROOT`), media (`MEDIA_ROOT`), webpack
+bundle stats, the compiled design-system stylesheet, and deploy destinations
+(named volumes, shared-proxy) — and honors `STATIC:` overrides from the
+project cascade. See the monorepo guide `docs/guides/config-cascade.md` and
+the tests in `tests/test_config_project.py` for the full contract.
+
+## Middleware ordering
+
 ## Middleware ordering
 
 `django_fusion.core.middlewares` ships module-level helpers; sites opt

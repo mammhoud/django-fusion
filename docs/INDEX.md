@@ -28,11 +28,13 @@
 | DF-017 | [`docs/17-integration-modes.md`](./17-integration-modes.md) | Webpack/template/API modes, health/media boundaries, project organization, enhancement plan | ✅ Exists |
 | DF-018 | [`docs/18-render-contract.md`](./18-render-contract.md) | Slot & prop render contract (0.5.0 breaking changes): single-render slots, bare-context-var props, kwarg-style defaults, migration examples | ✅ Exists |
 | DF-019 | [`docs/19-openapi-and-filtering.md`](./19-openapi-and-filtering.md) | OpenAPI docs (`OpenAPISpec`, `/docs`, `/docs/openapi.json`) + viewset filtering/search/ordering/pagination, mapped from django-bolt | ✅ Exists |
+| DF-020 | [`docs/20-language-contract.md`](./20-language-contract.md) | Shared language/locale contract — resolution, persistence, middleware, API, Wagtail content selection, Mermaid diagrams | ✅ Exists |
 
 ## Auxiliary files (unchanged or supporting)
 
 | File | Topic | Status |
 |------|-------|--------|
+| [`docs/00-package-guide.md`](./00-package-guide.md) | Complete package guide — layout, consumers, dev workflow, docs map | ✅ Exists |
 | [`docs/COMPONENT_CASE_STUDIES.md`](./COMPONENT_CASE_STUDIES.md) | Per-component case studies (kept as long-form reference) | ✅ Exists |
 | [`docs/legacy/django-grep-legacy/django-grep-overview.md`](./legacy/django-grep-legacy/django-grep-overview.md) | Deprecated django-grep overview | ✅ Exists — historical only |
 

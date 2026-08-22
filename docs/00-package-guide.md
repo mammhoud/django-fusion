@@ -2,7 +2,8 @@
 
 > The complete package guide: what this library is, how it is structured, how it
 > is used across the Structa Cloud monorepo, and how to work with it.
-> ID: **DF-000** (the entry point for this docs set).
+> Companion to **DF-000** ([INDEX.md](INDEX.md)) — the docs index remains the
+> numbered source of truth; this guide is the human-facing entry point.
 
 ---
 
@@ -118,7 +119,8 @@ Render your first component:
 
 | ID | Topic | File |
 |----|-------|------|
-| DF-000 | **This package guide** | `00-package-guide.md` |
+| DF-000 | Docs index (source of truth) | `INDEX.md` |
+| — | **Package guide (this file)** | `00-package-guide.md` |
 | DF-001 | Getting started | `01-getting-started.md` |
 | DF-002 | Architecture overview | `02-architecture.md` |
 | DF-003 | Component system (Python) | `03-component-system.md` |

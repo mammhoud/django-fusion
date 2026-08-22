@@ -98,7 +98,7 @@ when a bare component alias is ambiguous.
 - **Precis LMS:** keep course, enrollment, progress, and profile fields in the
   Precis backend models. Have the designer produce suggestions only; preserve
   editorial permissions and Wagtail localization rules.
-- **Landing-Fusion:** use the designer for catalog/marketing components and
+- **Precis Landing:** use the designer for catalog/marketing components and
   newsletter forms, while keeping content and assets project-owned.
 - **Formint:** keep business rules, pricing, inventory, and role permissions in
   the relevant Formint edition. Treat generated tables as presentation drafts,

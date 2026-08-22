@@ -49,7 +49,7 @@ The MCP tool never applies or deploys the plan.
 
 ## Project boundaries
 
-- **Landing-Fusion:** prioritize content clarity, SEO, catalog discovery,
+- **Precis Landing:** prioritize content clarity, SEO, catalog discovery,
   newsletter conversion, and social preview assets.
 - **Precis:** verify course discovery, course detail, syllabus, enrollment,
   wishlist, progress, lesson navigation, and editorial permissions.
