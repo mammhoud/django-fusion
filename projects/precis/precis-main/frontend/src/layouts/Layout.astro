@@ -9,6 +9,9 @@ import { LANG_META, T } from '@/lib/translations';
 import { cachedAssets } from '@/lib/api';
 import AssetPreload from '@/components/ui/AssetPreload.astro';
 import SkeletonBridge from '@/components/ui/SkeletonBridge.astro';
+// Project config wire — canonical origin comes from configs/site.yml via
+// make config-front (frontend/src/config/project.json), not a hardcoded domain.
+import { absoluteUrl, siteUrl } from '@/config/project';
 import '../styles/globals.css';
 
 // Self-hosted fonts (no Google Fonts <link> in production). The family names
@@ -65,7 +68,7 @@ try {
 
 const siteName = siteSettings?.site_name || fallbackSiteName;
 const pageTitle = title && title !== siteName ? `${title} \u00b7 ${siteName}` : siteName;
-const canonical = new URL(Astro.url.pathname, 'https://structa.cloud').href;
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
 
 // Single source of truth for the two content-delivery roads: the effective
 // render mode (server-rendered components vs data APIs) comes from the assets
@@ -116,12 +119,12 @@ void THEME_STORAGE_KEY;
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, 'https://structa.cloud').href} />
+    <meta property="og:image" content={absoluteUrl(ogImage)} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(ogImage, 'https://structa.cloud').href} />
+    <meta name="twitter:image" content={absoluteUrl(ogImage)} />
 
     <meta name="theme-color" content="#FCFCFA" />
 

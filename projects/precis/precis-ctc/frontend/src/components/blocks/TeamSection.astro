@@ -27,7 +27,7 @@ const { eyebrow, title = 'The team', description, members } = Astro.props;
   <div data-hydrate-content>
     <div class="container-fusion">
       <div class="team__header">
-        {eyebrow && <p class="tag-marker mb-4 reveal" x-data x-intersect="$el.classList.add('reveal-visible')" x-cloak>{eyebrow}</p>}
+        {eyebrow && <p class="tag-marker mb-4 reveal" x-data x-intersect="$el.classList.add('reveal-visible')">{eyebrow}</p>}
         <h2 class="page-section__title reveal" x-data x-intersect="$el.classList.add('reveal-visible')">{title}</h2>
         {description && <p class="mt-3 sm:mt-4 text-fu-muted reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="transition-delay: 50ms">{description}</p>}
       </div>

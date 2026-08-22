@@ -2,14 +2,15 @@
 /**
  * LanguageSwitcher — displays available content languages and lets the user
  * switch. Uses /i18n/setlang/ (Django) to persist the choice server-side and
- * also stores it in localStorage so the Astro static shell can read it.
+ * also stores it in sessionStorage/localStorage so the Astro shell keeps the
+ * same preference across page transitions and browser restarts.
  *
  * How it works:
  *  1. At SSG build time the available languages come from the API response
  *     passed down via `availableLanguages` prop (from /apis/content/languages/).
  *  2. At runtime Alpine.js reads the stored language and highlights it.
- *  3. On selection: POST to /i18n/setlang/ then reload the page so Django
- *     serves translated navigation/content on the next request.
+ *  3. On selection: establish CSRF, POST to /i18n/setlang/, then reload with
+ *     ``?lang=`` so backend API requests and Wagtail resolve the same locale.
  */
 
 export interface LanguageOption {
@@ -52,29 +53,58 @@ const langs = availableLanguages.length > 0 ? availableLanguages : DEFAULT_LANGU
     class="lang-switcher"
     x-data={`{
       open: false,
-      current: localStorage.getItem('ctc_lang') || '${currentLanguage}',
+      current: (() => {
+        try {
+          return new URLSearchParams(window.location.search).get('lang') || sessionStorage.getItem('ctc_lang') || localStorage.getItem('ctc_lang') || document.cookie.match(/(?:^|; )django_language=([^;]+)/)?.[1] || '${currentLanguage}';
+        } catch (e) { return '${currentLanguage}'; }
+      })(),
       langs: ${JSON.stringify(langs)},
       get currentLang() {
         return this.langs.find(l => l.code === this.current) || this.langs[0];
       },
       async select(code) {
+        const previous = this.current;
         this.current = code;
         this.open = false;
-        localStorage.setItem('ctc_lang', code);
-        // Persist on the Django side so translated navigation loads correctly
         try {
-          const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
-          await fetch('/i18n/setlang/', {
+          sessionStorage.setItem('ctc_lang', code);
+          localStorage.setItem('ctc_lang', code);
+          // Establish the CSRF cookie before the state-changing request.
+          await fetch('/apis/content/languages/', { credentials: 'include', headers: { Accept: 'application/json' } });
+          const csrfToken = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1] || '';
+          const response = await fetch('/i18n/setlang/', {
             method: 'POST',
             credentials: 'include',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
               'X-CSRFToken': csrfToken,
+              Accept: 'application/json',
             },
-            body: new URLSearchParams({ language: code, next: window.location.pathname }),
+            body: new URLSearchParams({ language: code }),
           });
-        } catch (e) { /* best effort */ }
-        window.location.reload();
+          if (!response.ok) throw new Error('Language request failed (' + response.status + ')');
+          const selected = await response.json();
+          const next = new URL(window.location.href);
+          next.searchParams.set('lang', selected.language || code);
+          window.location.assign(next.toString());
+        } catch (error) {
+          this.current = previous;
+          try { sessionStorage.setItem('ctc_lang', previous); localStorage.setItem('ctc_lang', previous); } catch (e) {}
+          window.__showToast?.('Language could not be saved. Please try again.', 'error');
+          console.error('Language selection failed', error);
+        }
+      },
+      async init() {
+        try {
+          const response = await fetch('/apis/content/languages/', { credentials: 'include', headers: { Accept: 'application/json' } });
+          if (!response.ok) throw new Error('Language catalogue request failed (' + response.status + ')');
+          const data = await response.json();
+          if (Array.isArray(data.languages) && data.languages.length) this.langs = data.languages;
+          const hasStored = sessionStorage.getItem('ctc_lang') || localStorage.getItem('ctc_lang') || document.cookie.match(/(?:^|; )django_language=/);
+          if (!hasStored && data.language) this.current = data.language;
+        } catch (error) {
+          console.error('Language catalogue failed', error);
+        }
       },
     }`}
     @keydown.escape.window="open = false"
@@ -117,24 +147,53 @@ const langs = availableLanguages.length > 0 ? availableLanguages : DEFAULT_LANGU
   <div
     class="lang-inline"
     x-data={`{
-      current: localStorage.getItem('ctc_lang') || '${currentLanguage}',
+      current: (() => {
+        try {
+          return new URLSearchParams(window.location.search).get('lang') || sessionStorage.getItem('ctc_lang') || localStorage.getItem('ctc_lang') || document.cookie.match(/(?:^|; )django_language=([^;]+)/)?.[1] || '${currentLanguage}';
+        } catch (e) { return '${currentLanguage}'; }
+      })(),
       langs: ${JSON.stringify(langs)},
       async select(code) {
+        const previous = this.current;
         this.current = code;
-        localStorage.setItem('ctc_lang', code);
         try {
-          const csrfToken = document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '';
-          await fetch('/i18n/setlang/', {
+          sessionStorage.setItem('ctc_lang', code);
+          localStorage.setItem('ctc_lang', code);
+          await fetch('/apis/content/languages/', { credentials: 'include', headers: { Accept: 'application/json' } });
+          const csrfToken = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1] || '';
+          const response = await fetch('/i18n/setlang/', {
             method: 'POST',
             credentials: 'include',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
               'X-CSRFToken': csrfToken,
+              Accept: 'application/json',
             },
-            body: new URLSearchParams({ language: code, next: window.location.pathname }),
+            body: new URLSearchParams({ language: code }),
           });
-        } catch (e) { /* best effort */ }
-        window.location.reload();
+          if (!response.ok) throw new Error('Language request failed (' + response.status + ')');
+          const selected = await response.json();
+          const next = new URL(window.location.href);
+          next.searchParams.set('lang', selected.language || code);
+          window.location.assign(next.toString());
+        } catch (error) {
+          this.current = previous;
+          try { sessionStorage.setItem('ctc_lang', previous); localStorage.setItem('ctc_lang', previous); } catch (e) {}
+          window.__showToast?.('Language could not be saved. Please try again.', 'error');
+          console.error('Language selection failed', error);
+        }
+      },
+      async init() {
+        try {
+          const response = await fetch('/apis/content/languages/', { credentials: 'include', headers: { Accept: 'application/json' } });
+          if (!response.ok) throw new Error('Language catalogue request failed (' + response.status + ')');
+          const data = await response.json();
+          if (Array.isArray(data.languages) && data.languages.length) this.langs = data.languages;
+          const hasStored = sessionStorage.getItem('ctc_lang') || localStorage.getItem('ctc_lang') || document.cookie.match(/(?:^|; )django_language=/);
+          if (!hasStored && data.language) this.current = data.language;
+        } catch (error) {
+          console.error('Language catalogue failed', error);
+        }
       },
     }`}
   >

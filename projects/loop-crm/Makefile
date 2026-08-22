@@ -6,10 +6,14 @@
 NODE_BIN := $(shell ls -d $(HOME)/.nvm/versions/node/v22.* 2>/dev/null | sort -V | tail -1)/bin
 export PATH := $(NODE_BIN):$(PATH)
 
+UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo $(HOME)/.local/bin/uv) || echo /root/.local/bin/uv)
+UV := $(UV_BIN) --project ../..
+UV_RUN := $(UV) run
+
 .PHONY: help install dev build preview check clean \
         backend-help backend-dev backend-check backend-migrate backend-test \
         backend-seed backend-seed-pages backend-lint backend-format backend-shell \
-        configs validate-env env-example \
+        configs validate-env env-example config-show config-check \
         nx-help nx-dev nx-build nx-preview nx-check nx-test \
         nx-backend-dev nx-backend-check nx-backend-test nx-backend-migrate nx-graph
 
@@ -21,6 +25,7 @@ help:
 	@echo "  Backend:  make backend-help | backend-dev | backend-check | backend-migrate | backend-test"
 	@echo "            make backend-seed | backend-lint | backend-format | backend-shell"
 	@echo "  Configs:  make configs | validate-env | env-example (env contract, see configs/)"
+	@echo "            make config-show | config-check (YAML cascade + static-files plan)"
 	@echo "  Nx:       make nx-check | nx-test | nx-build | nx-dev | nx-graph (runs through Nx at repo root)"
 
 install:
@@ -54,6 +59,16 @@ validate-env:
 env-example:
 	@python3 -c "import sys; sys.path.insert(0, 'configs'); from configs.validate import render_env_example; print(render_env_example())" > .env.example.generated
 	@echo "wrote .env.example.generated (compare with .env.example)"
+
+# ── YAML config cascade (django-fusion config.project) ──────────────
+# Merges configs/*.yml → Env/_site.yml → .env → env vars (highest). The
+# backend seeds its env defaults from the SITE/ADMIN sections; these targets
+# show and validate the merged result.
+config-show: ## Print the merged config + resolved front/back views + static plan
+	@$(UV_RUN) python -c "from pathlib import Path; from django_fusion.config.project import load_config, staticfiles_plan; root = Path('.').resolve(); c = load_config(root); print('PROJECT CONFIG —', c.get('SITE.name', 'loop-crm'), '| env:', c.env); [print(f'  {k}: {v}') for k in ('DEBUG', 'ALLOWED_HOSTS', 'PORT', 'FRONTEND_PORT', 'FUSION_RENDER_FIRST', 'SITE_DOMAIN', 'DOMAIN_NAME') if (v := c.get(k)) is not None]; print('  SITE:', c.section('SITE') or {}); print('  ADMIN:', c.section('ADMIN') or {}); print('  CSS_PANEL:', c.section('CSS_PANEL') or {}); print('  resolved back (https://crm.structa.cloud):'); [print(f'    {k}: {v}') for k, v in c.resolve('https://crm.structa.cloud', 'back').get('SITE', {}).items()]; print(); print(staticfiles_plan(root, overrides=c.section('STATIC')).render())"
+
+config-check: ## Validate required identity keys resolve from the config
+	@$(UV_RUN) python -c "from django_fusion.config.project import load_config; c = load_config('.'); req = {'SITE.name': 'loop-crm', 'SITE.primary_domain': 'crm.structa.cloud', 'SITE.domains': 'crm.structa.cloud', 'ADMIN.panel_path': '/admin/'}; missing = [k for k, _ in req.items() if not c.get(k)]; print('CONFIG CHECK — OK ✅' if not missing else f'CONFIG CHECK — MISSING: {missing}'); raise SystemExit(1 if missing else 0)"
 
 # ── Backend (Django + django-fusion) ──────────────────────────────
 backend-help backend-dev backend-check backend-migrate backend-test \

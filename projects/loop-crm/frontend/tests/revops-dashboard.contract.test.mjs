@@ -41,7 +41,7 @@ test('RevOpsDashboard trend card fetches the finance revenue-trend endpoint', as
 
 test('Dashboard counts are workspace-scoped on both API roads', async () => {
   const compatApi = await read('../backend/apps/core/api.py');
-  assert.match(compatApi, /filter\(workspace_id=workspace_id\) if workspace_id is not None/);
+  assert.match(compatApi, /if workspace_id is not None\s*:\s*queryset = queryset\.filter\(workspace_id=workspace_id\)/);
   const boltApi = await read('../backend/apps/core/bolt_api.py');
   assert.match(boltApi, /_workspace_id\(await _request_user\(request\)\)/);
 });

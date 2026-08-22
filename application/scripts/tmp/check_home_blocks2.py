@@ -38,7 +38,7 @@ def dump(db_path, label):
 
 for db, label in [
     ("projects/precis/precis-lms/backend/db.sqlite3", "PRECIS"),
-    ("projects/precis/landi/db.sqlite3", "LANDING-FUSION"),
+    ("projects/precis/precis-landing/db.sqlite3", "PRECIS-LANDING"),
 ]:
     if os.path.exists(db):
         dump(db, label)

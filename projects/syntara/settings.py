@@ -27,6 +27,35 @@ for _path in (
 # Basic Django Settings
 # ============================================================
 
+# ── Layered config cascade (defaults) ───────────────────────────────────────
+# Sources env-read *defaults* from configs/*.yml (defaults/site/admin) via
+# django-fusion's config.project loader. Environment variables (CYPERCLOUD_* /
+# DJANGO_*) always win; the cascade only supplies fallbacks.
+_cascade = None
+try:
+    from django_fusion.config.project import load_config
+
+    _cascade = load_config(_SITE_DIR)
+except Exception:  # pragma: no cover — cascade is optional; never break boot
+    _cascade = None
+
+
+def _cfg(key: str, default=None):
+    if _cascade is None:
+        return default
+    value = _cascade.get(key, default)
+    return default if value is None else value
+
+
+def _cfg_list(key: str, default: str) -> str:
+    value = _cfg(key, None)
+    if isinstance(value, (list, tuple)):
+        return ",".join(str(item) for item in value)
+    if value:
+        return str(value)
+    return default
+
+
 # SECRET_KEY
 SECRET_KEY = os.environ.get(
     "CYPERCLOUD_SECRET_KEY",
@@ -37,12 +66,16 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get("CYPERCLOUD_DEBUG", "true").lower() in ("true", "1", "yes", "on")
 
 # ALLOWED_HOSTS
-_hosts_env = os.environ.get("CYPERCLOUD_ALLOWED_HOSTS", "localhost,127.0.0.1,cypercloud.localhost")
+_hosts_env = os.environ.get(
+    "CYPERCLOUD_ALLOWED_HOSTS",
+    _cfg_list("SITE.allowed_hosts", "localhost,127.0.0.1,cypercloud.localhost"),
+)
 ALLOWED_HOSTS = [h.strip() for h in _hosts_env.split(",")]
 
-# Site Configuration
-WEBSITE_NAME = "cypercloud"
-WEBSITE_IDENTIFIER = "cypercloud"
+# Site Configuration — runtime name "cypercloud" is the external contract;
+# the cascade supplies the default (configs/site.yml SITE.runtime_name).
+WEBSITE_NAME = os.environ.get("CYPERCLOUD_WEBSITE_NAME", _cfg("SITE.runtime_name", "cypercloud"))
+WEBSITE_IDENTIFIER = os.environ.get("CYPERCLOUD_WEBSITE_IDENTIFIER", WEBSITE_NAME)
 SITE_ID = 4
 
 TIME_ZONE = "UTC"
@@ -209,7 +242,10 @@ EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS", "true").lower() in ("true", "1")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@cypercloud.local")
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    _cfg("SITE.default_email", "noreply@cypercloud.local"),
+)
 
 # ============================================================
 # REST Framework

@@ -1,5 +1,5 @@
 """
-Landing-fusion API endpoints — all data served from Wagtail/django-fusion.
+Precis Landing API endpoints — all data served from Wagtail/django-fusion.
 
 Endpoints:
     GET /apis/site/settings/   — branding, social links, footer
@@ -248,6 +248,7 @@ def navigation_api(request):
     })
 
 
+@ensure_csrf_cookie
 def content_languages_api(request):
     """GET /apis/content/languages/ — editorial languages and coverage.
 
@@ -266,17 +267,19 @@ def content_languages_api(request):
         languages = []
 
     if not languages:
-        # Fallback — mirrors the seeded DEFAULT_SITE_LANGUAGES so a fresh DB
-        # (before the seed command runs) still reports the full offered catalog
-        # (Django LANGUAGES + the Astro LANG_META table all list these seven).
+        # The settings catalog is only a bootstrap contract. Once Wagtail
+        # SiteLanguage rows are seeded, those editor-managed rows are returned.
+        from django_fusion.core.middlewares.language import language_context
+
         languages = [
-            {"code": "en", "name": "English", "native": "English", "dir": "ltr", "flag": "🇬🇧"},
-            {"code": "ar", "name": "Arabic", "native": "العربية", "dir": "rtl", "flag": "🇸🇦"},
-            {"code": "sv", "name": "Swedish", "native": "Svenska", "dir": "ltr", "flag": "🇸🇪"},
-            {"code": "fr", "name": "French", "native": "Français", "dir": "ltr", "flag": "🇫🇷"},
-            {"code": "de", "name": "German", "native": "Deutsch", "dir": "ltr", "flag": "🇩🇪"},
-            {"code": "es", "name": "Spanish", "native": "Español", "dir": "ltr", "flag": "🇪🇸"},
-            {"code": "pt", "name": "Portuguese", "native": "Português", "dir": "ltr", "flag": "🇧🇷"},
+            {
+                "code": item["code"],
+                "name": item["name"],
+                "native": item["name_local"],
+                "dir": item["dir"],
+                "flag": "",
+            }
+            for item in language_context(request).get("languages", [])
         ]
 
     # Coverage is reported for every advertised language. Only seeded Arabic
@@ -291,10 +294,17 @@ def content_languages_api(request):
         ).count()
         for language in languages
     }
+    from django_fusion.core.middlewares.language import language_context
+
+    context = language_context(request)
     return JsonResponse({
         "languages": languages,
         "coverage": coverage,
         "ui_languages": [lang["code"] for lang in languages],
+        "language": context["language"],
+        "default_language": context["default_language"],
+        "session_key": context["session_key"],
+        "cookie_name": context["cookie_name"],
     })
 
 
@@ -823,35 +833,25 @@ def _deep_merge(base: dict, overlay: dict) -> dict:
 
 
 def _supported_language_codes() -> list[str]:
-    """Return the shared language catalog codes in stable switcher order."""
+    """Return active Wagtail catalog codes, backed by shared Django settings."""
     try:
-        from apps.content.models.languages import SUPPORTED_LANGUAGE_CODES
+        from apps.content.models.languages import SiteLanguage
 
-        return list(SUPPORTED_LANGUAGE_CODES)
+        rows = list(SiteLanguage.active().values_list("code", flat=True))
+        if rows:
+            return rows
     except Exception:
-        return ["en", "ar", "sv", "fr", "de", "es", "pt"]
+        logger.debug("SiteLanguage is not seeded yet", exc_info=True)
+    from django_fusion.core.middlewares.language import configured_language_codes
+
+    return list(configured_language_codes())
 
 
 def _requested_content_language(request) -> str:
-    """Return a supported request language, with English as the safe fallback.
+    """Resolve the same query/session/cookie/header/default language as Fusion."""
+    from django_fusion.core.middlewares.language import resolve_language
 
-    Editorial overlays cover every supported language; untranslated fields
-    resolve to canonical English content rather than failing or silently
-    advertising an unsupported code.
-    """
-    supported = set(_supported_language_codes())
-    requested = (request.GET.get("lang") or "").lower().split("-")[0]
-    if requested in supported:
-        return requested
-    cookie = (request.COOKIES.get("django_language") or "").lower().split("-")[0]
-    if cookie in supported:
-        return cookie
-    header = (request.headers.get("Accept-Language") or "").lower()
-    for language in header.replace(";", ",").split(","):
-        code = language.strip().split("-")[0]
-        if code in supported:
-            return code
-    return "en"
+    return resolve_language(request)
 
 
 def _apply_page_translation(page, data: dict, language: str) -> dict:

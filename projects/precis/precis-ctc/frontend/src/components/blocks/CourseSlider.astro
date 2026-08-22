@@ -1,0 +1,433 @@
+---
+import type { CourseCard } from '@/lib/api';
+
+interface Props {
+  courses: CourseCard[];
+  heading?: string;
+  intro?: string;
+}
+
+/**
+ * Course-card carousel — archive-theme "banner swiper" adapted to the CTC
+ * Swiss-industrial grid and elevated with haptic micro-aesthetics:
+ * double-bezel card frames (outer shell + inner core), button-in-button
+ * trailing icons, magnetic hover physics, and staggered scroll reveals —
+ * every transition on the shared ease-premium cubic-bezier.
+ *
+ * Renders every card server-side (no-JS shows the full strip); Alpine moves
+ * the visible window when JS is available, with dots and prev/next arrows.
+ * Slides dedupe by base slug and prefer the English edition so the strip
+ * never shows the same course seven times for seven locales.
+ */
+const {
+  courses = [],
+  heading = 'Featured courses',
+  intro = 'Short, applied learning paths — protocols, evidence synthesis, and responsible medical AI, each reduced to method.',
+} = Astro.props;
+
+// Deterministic strip: dedupe by base slug (drop -en/-sv/-fr/-de/-es/-ar/-ptbr
+// locale suffix), prefer English, cap at 6 slides.
+const LOCALE_SUFFIX = /-(en|sv|fr|de|es|ar|ptbr|pt-br)$/;
+const seen = new Map<string, CourseCard>();
+for (const course of courses) {
+  const base = String(course.slug).replace(LOCALE_SUFFIX, '');
+  const existing = seen.get(base);
+  if (!existing || String(course.language).toLowerCase() === 'en') {
+    seen.set(base, course);
+  }
+}
+const slides = Array.from(seen.values()).slice(0, 6);
+
+const formatPrice = (price: number) =>
+  price === 0 ? 'Free' : `$${Number(price).toFixed(price % 1 ? 2 : 0)}`;
+
+// Card art: courses carry no image_url in the seed, so map the archive media
+// pack visuals (img-00 … img-16) deterministically by slide index.
+const ART = [
+  '/media/media/img-00.png',
+  '/media/media/img-04.webp',
+  '/media/media/img-08.png',
+  '/media/media/img-10.jpeg',
+  '/media/media/img-14.jpeg',
+  '/media/media/img-16.jpeg',
+];
+---
+
+{slides.length ? (
+  <section class="course-slider" aria-labelledby="course-slider-title" data-testid="course-slider"  x-data={`{
+    active: 0,
+    perView: 3,
+    timer: null,
+    playing: true,
+    touchX: 0,
+    touchStartX: 0,
+    touchStartY: 0,
+    isSwiping: false,
+    init() {
+      this.perView = window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+      window.addEventListener('resize', () => {
+        this.perView = window.innerWidth < 640 ? 1 : window.innerWidth < 1024 ? 2 : 3;
+      });
+      this.start();
+    },
+    start() {
+      this.stop();
+      this.playing = true;
+      this.timer = setInterval(() => this.next(), 7000);
+      this.$nextTick(() => { this.restartProgress(); });
+    },
+    stop() {
+      if (this.timer) { clearInterval(this.timer); this.timer = null; }
+      this.playing = false;
+      this.pauseProgress();
+    },
+    togglePlay() {
+      this.playing ? this.stop() : this.start();
+    },
+    restartProgress() {
+      const bar = this.$refs.progress;
+      if (!bar) return;
+      bar.classList.remove('is-running');
+      void bar.offsetWidth;
+      bar.classList.add('is-running');
+    },
+    pauseProgress() {
+      const bar = this.$refs.progress;
+      if (bar) bar.classList.remove('is-running');
+    },
+    maxIndex() { return Math.max(0, ${slides.length} - this.perView); },
+    next() { this.active = this.active >= this.maxIndex() ? 0 : this.active + 1; if (this.playing) this.restartProgress(); },
+    previous() { this.active = this.active <= 0 ? this.maxIndex() : this.active - 1; if (this.playing) this.restartProgress(); },
+    goTo(index) { this.active = Math.min(index, this.maxIndex()); if (this.playing) this.restartProgress(); },
+    onTouchStart(e) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+      this.isSwiping = false;
+    },
+    onTouchMove(e) {
+      const dx = e.touches[0].clientX - this.touchStartX;
+      const dy = e.touches[0].clientY - this.touchStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+        this.isSwiping = true;
+        this.touchX = dx;
+        e.preventDefault();
+      }
+    },
+    onTouchEnd() {
+      if (this.isSwiping) {
+        if (this.touchX < -40) this.next();
+        else if (this.touchX > 40) this.previous();
+      }
+      this.touchX = 0;
+      this.isSwiping = false;
+    }
+  }`}>
+    <div class="container-fusion">
+      <div class="course-slider__head">
+        <div class="course-slider__title-group reveal-up">
+          <p class="tag-marker mb-3">the catalog</p>
+          <h2 id="course-slider-title" class="page-section__title mb-0">{heading}</h2>
+          <p class="mt-3 max-w-xl text-sm leading-relaxed text-fu-muted">{intro}</p>
+        </div>
+        <div class="course-slider__nav reveal-up" style="--reveal-delay: 0.08s">
+          <span class="course-slider__counter" aria-hidden="true">
+            <span x-text="`${String(active + 1).padStart(2, '0')}`">01</span>
+            <span class="course-slider__counter-total">/ {String(slides.length).padStart(2, '0')}</span>
+          </span>
+          <button type="button" class="course-slider__play" @click="togglePlay()" :aria-label="playing ? 'Pause slideshow' : 'Play slideshow'" :aria-pressed="playing ? 'true' : 'false'">
+            <svg x-show="playing" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="0.5"/><rect x="14" y="5" width="4" height="14" rx="0.5"/></svg>
+            <svg x-show="!playing" class="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button type="button" class="btn-secondary !px-3 !py-2" @click="previous()" aria-label="Previous courses">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button type="button" class="btn-primary !px-3 !py-2" @click="next()" aria-label="Next courses">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="course-slider__frame" @mouseenter="stop()" @mouseleave="playing ? start() : null" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd()">
+        <div class="course-slider__progress" x-ref="progress" aria-hidden="true"></div>
+        <div class="course-slider__track" :style="`transform: translateX(-${active * (100 / perView)}%)`">
+          {slides.map((course, index) => (
+            <a
+              href={`/courses/${course.slug}/`}
+              class="course-slider__shell"
+              :aria-hidden={`active > ${index} || active + perView <= ${index}`}
+              style={`--reveal-delay: ${index * 0.07}s`}
+              x-data x-intersect="$el.classList.add('reveal-visible')"
+            >
+              <span class="course-slider__card">
+                <span class="course-slider__art">
+                  <img src={ART[index % ART.length]} alt="" loading={index === 0 ? 'eager' : 'lazy'} />
+                  <span class="course-slider__index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                  <span class="course-slider__shine" aria-hidden="true"></span>
+                </span>
+                <span class="course-slider__body">
+                  <span class="course-slider__meta">
+                    <span class="badge-primary">{course.difficulty}</span>
+                    <span class="course-slider__lang">{String(course.language).toUpperCase()}</span>
+                  </span>
+                  <span class="course-slider__title">{course.title}</span>
+                  <span class="course-slider__desc">{course.short_description}</span>
+                  <span class="course-slider__foot">
+                    <span class="course-slider__rating">
+                      {Number(course.rating || 0) > 0
+                        ? <>{'★'.repeat(Math.min(5, Math.round(Number(course.rating))))} {Number(course.rating).toFixed(1)}</>
+                        : <span class="course-slider__new">new</span>}
+                    </span>
+                    <span class="course-slider__price">{formatPrice(Number(course.price || 0))}</span>
+                    <span class="course-slider__cta">
+                      <span class="course-slider__cta-label">View</span>
+                      <span class="course-slider__cta-icon" aria-hidden="true">
+                        <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </a>
+          ))}
+        </div>
+        <div class="course-slider__dots" role="tablist" aria-label="Featured courses">
+          {Array.from({ length: Math.max(1, slides.length - 2) }, (_, i) => (
+            <button type="button" class="course-slider__dot" role="tab" :aria-selected={`active === ${i}`} aria-current={i === 0 ? 'true' : 'false'} :aria-current={`active === ${i} ? 'true' : 'false'`} @click={`goTo(${i})`} aria-label={`Show slide ${i + 1}`}>
+              <span class="course-slider__dot-fill"></span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+) : null}
+
+<style is:global>
+  /* ── Course slider — Swiss-industrial cards with double-bezel frames ── */
+  .course-slider {
+    position: relative;
+    border-top: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
+    padding: 4.5rem 0;
+  }
+  .course-slider__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2.25rem;
+  }
+  .course-slider__nav { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+  /* Telemetry counter + play/pause alongside the arrows */
+  .course-slider__counter {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.2rem;
+    padding: 0 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: hsl(var(--fu-ink));
+  }
+  .course-slider__counter-total { color: hsl(var(--fu-muted)); font-size: 0.68rem; }
+  .course-slider__play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1.5px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
+    color: hsl(var(--fu-ink));
+    cursor: pointer;
+    transition: background 0.3s var(--ease-premium), color 0.3s var(--ease-premium);
+  }
+  .course-slider__play:hover { background: hsl(var(--fu-ink)); color: hsl(var(--fu-paper)); }
+
+  /* Double-bezel: outer shell (hairline inset highlight) + inner core */
+  .course-slider__frame {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-card));
+    box-shadow: inset 0 1px 0 hsl(var(--fu-paper) / 0.6);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+  }
+  .course-slider__progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 5;
+    background: hsl(var(--fu-link));
+    transform-origin: left;
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  .course-slider__progress.is-running {
+    opacity: 1;
+    animation: course-slider-progress 7000ms linear forwards;
+  }
+  @keyframes course-slider-progress {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .course-slider__progress.is-running { animation: none; opacity: 0.35; }
+  }
+  .course-slider__track { display: flex; transition: transform 0.7s var(--ease-premium); }
+
+  .course-slider__shell {
+    flex: 0 0 calc(100% / 3);
+    display: flex;
+    padding: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
+    transition-delay: var(--reveal-delay, 0s);
+  }
+  .course-slider__shell.reveal-visible { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .course-slider__shell,
+    .course-slider__shell.reveal-visible {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  .course-slider__card {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    border: 1px solid hsl(var(--fu-ink) / 0.9);
+    background: hsl(var(--fu-paper));
+    box-shadow: 0 0 0 0 hsl(var(--fu-ink));
+    transition: box-shadow 0.5s var(--ease-premium), transform 0.5s var(--ease-premium);
+  }
+  .course-slider__shell:hover .course-slider__card {
+    box-shadow: 5px 5px 0 0 hsl(var(--fu-ink));
+    transform: translate(-2px, -2px);
+  }
+  .course-slider__shell:active .course-slider__card { transform: scale(0.985); }
+
+  .course-slider__art {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    border-bottom: 1px solid hsl(var(--fu-ink) / 0.9);
+    background: hsl(var(--fu-ink));
+  }
+  .course-slider__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.9;
+    transform: scale(1.01);
+    transition: transform 0.9s var(--ease-premium), opacity 0.5s var(--ease-premium);
+    will-change: transform;
+  }
+  .course-slider__shell:hover .course-slider__art img { transform: scale(1.06); opacity: 1; }
+
+  /* Sweeping shine — transform-only, GPU-safe */
+  .course-slider__shine {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 40%, hsl(var(--fu-paper) / 0.14) 50%, transparent 60%);
+    transform: translateX(-120%);
+    transition: transform 0.9s var(--ease-premium);
+  }
+  .course-slider__shell:hover .course-slider__shine { transform: translateX(120%); }
+
+  .course-slider__index {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.3rem 0.55rem;
+    background: hsl(var(--fu-paper) / 0.94);
+    border: 1px solid hsl(var(--fu-ink));
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    color: hsl(var(--fu-ink));
+    transition: background 0.4s var(--ease-premium), color 0.4s var(--ease-premium);
+  }
+  .course-slider__shell:hover .course-slider__index { background: hsl(var(--fu-ink)); color: hsl(var(--fu-paper)); }
+
+  .course-slider__body { display: flex; flex: 1; flex-direction: column; gap: 0.6rem; padding: 1.35rem; }
+  .course-slider__meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .course-slider__lang { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; color: hsl(var(--fu-muted)); }
+  .course-slider__title { font-family: var(--font-display); font-size: 1.15rem; line-height: 1.15; color: hsl(var(--fu-ink)); transition: color 0.4s var(--ease-premium); }
+  .course-slider__shell:hover .course-slider__title { color: hsl(var(--fu-link)); }
+  .course-slider__desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: hsl(var(--fu-muted));
+  }
+
+  .course-slider__foot { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-top: auto; padding-top: 0.85rem; border-top: 1px solid hsl(var(--fu-line)); }
+  .course-slider__rating { font-size: 0.75rem; color: hsl(var(--fu-ink)); }
+  .course-slider__new { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; color: hsl(var(--fu-muted)); }
+  .course-slider__price { font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; color: hsl(var(--fu-teal)); }
+
+  /* Button-in-button trailing icon — nested circular wrapper */
+  .course-slider__cta { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; font-weight: 500; color: hsl(var(--fu-ink)); }
+  .course-slider__cta-icon {
+    display: inline-flex;
+    height: 1.4rem;
+    width: 1.4rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-card));
+    transition: transform 0.5s var(--ease-premium), background 0.4s var(--ease-premium), color 0.4s var(--ease-premium);
+  }
+  .course-slider__shell:hover .course-slider__cta-icon {
+    transform: translateX(3px);
+    background: hsl(var(--fu-ink));
+    color: hsl(var(--fu-paper));
+  }
+
+  .course-slider__dots { display: flex; justify-content: center; gap: 0.4rem; border-top: 2px solid hsl(var(--fu-ink)); padding: 0.9rem; }
+  .course-slider__dot {
+    width: 1.8rem;
+    height: 0.35rem;
+    padding: 0;
+    border: 1px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-card));
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.4s var(--ease-premium), transform 0.4s var(--ease-premium);
+  }
+  .course-slider__dot-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: hsl(var(--fu-link));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-premium);
+  }
+  .course-slider__dot:hover { transform: translateY(-2px); border-color: hsl(var(--fu-link)); }
+  .course-slider__dot[aria-current='true'] .course-slider__dot-fill { transform: scaleX(1); }
+
+  @media (max-width: 1023px) {
+    .course-slider__shell { flex-basis: calc(100% / 2); }
+  }
+  @media (max-width: 639px) {
+    .course-slider__shell { flex-basis: 100%; }
+    .course-slider__head { align-items: flex-start; flex-direction: column; }
+  }
+</style>

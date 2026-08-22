@@ -1,4 +1,4 @@
-"""Landing-Fusion task models.
+"""Precis Landing task models.
 
 ``TaskExecution`` is the website-local mirror of django-fusion's shared
 ``BackgroundTaskLog`` audit record. The shared worker writes the shared record;

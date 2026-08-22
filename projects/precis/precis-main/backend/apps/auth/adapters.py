@@ -1,5 +1,5 @@
 """
-Landing-fusion auth adapters — thin wrappers over allauth defaults.
+Precis Landing auth adapters — thin wrappers over allauth defaults.
 
 The headless API (/api/auth/browser/v1/auth/login) is the primary auth path
 consumed by the LoginModal (Alpine.js). Server-rendered /accounts/* pages
@@ -13,14 +13,14 @@ from django.http import HttpRequest
 
 
 class LandingAuthAdapter(DefaultAccountAdapter):
-    """Landing-fusion account adapter — uses allauth defaults."""
+    """Precis Landing account adapter — uses allauth defaults."""
 
     def get_logout_redirect_url(self, request: HttpRequest) -> str:
         return "/"
 
 
 class LandingSocialAccountAdapter(DefaultSocialAccountAdapter):
-    """Landing-fusion social account adapter — uses allauth defaults."""
+    """Precis Landing social account adapter — uses allauth defaults."""
 
     def is_open_for_signup(self, request: HttpRequest, sociallogin) -> bool:
         return LandingAuthAdapter(request).is_open_for_signup(request)

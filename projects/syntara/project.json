@@ -14,7 +14,7 @@
       "executor": "nx:run-commands",
       "inputs": ["backend", "^production"],
       "cache": true,
-      "options": { "command": "python manage.py check", "cwd": "projects/syntara" }
+      "options": { "command": "make check", "cwd": "projects/syntara" }
     },
     "test": {
       "executor": "nx:run-commands",

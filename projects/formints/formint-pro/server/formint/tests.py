@@ -260,7 +260,7 @@ class FormintHtmxFragmentsTests(TestCase):
 
 
 class FormintFusionRenderModeTests(TestCase):
-    """Landing-fusion parity — dual-mode render contract (render-first vs data APIs)."""
+    """Precis Landing parity — dual-mode render contract (render-first vs data APIs)."""
 
     def test_render_mode_reports_fusion_render_first_default(self):
         response = self.client.get('/fusion/render-mode/')

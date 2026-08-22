@@ -1,7 +1,7 @@
 """
 Formint — HTMX fragment handlers (class-based, mirroring precis-landing).
 
-Landing-fusion organizes its render pipeline as ``PageHandler`` subclasses in
+Precis Landing organizes its render pipeline as ``PageHandler`` subclasses in
 ``apps/handlers/views.py`` — one class per view, each pinning its
 ``template_name`` / ``fragment_name`` and implementing a small context method.
 Formint mirrors that shape for its HTMX fragments:

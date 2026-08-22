@@ -70,5 +70,6 @@ application/proxy/affine-data/
 .hypothesis
 .pnpm-store
 .nx
+.astro-doctor
 *.sqlite3
 db.sqlite3

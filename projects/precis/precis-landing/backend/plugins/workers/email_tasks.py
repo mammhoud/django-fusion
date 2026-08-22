@@ -1,4 +1,4 @@
-"""Landing-Fusion email background tasks.
+"""Precis Landing email background tasks.
 
 Uses ``@task`` from ``django_fusion.tasks`` for broker-agnostic enqueue.
 Configure in settings.py::

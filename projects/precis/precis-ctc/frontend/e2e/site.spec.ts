@@ -16,7 +16,9 @@ test('home renders the hero, header nav and footer', async ({ page }) => {
   const navLinkCount = await page.locator('header nav a').count();
   expect(navLinkCount).toBeGreaterThan(3);
   await expect(page.locator('[data-testid="home-slider"]')).toBeVisible();
-  await expect(page.locator('[data-testid="home-slide"]')).toHaveCount(4);
+  // Wagtail-driven slider: at least 2 seeded slides — editors may add or
+  // remove slides in the CMS, so assert a minimum rather than a fixed count.
+  expect(await page.locator('[data-testid="home-slide"]').count()).toBeGreaterThanOrEqual(2);
 });
 
 test('home slider advances through content and keeps controls accessible', async ({ page }) => {
@@ -60,5 +62,22 @@ test('header navigation links resolve', async ({ page }) => {
   for (const href of hrefs.slice(0, 6)) {
     const res = await page.request.get(href);
     expect(res.status(), `nav link ${href} should resolve`).toBeLessThan(500);
+  }
+});
+
+test('backend-driven marketing routes render Wagtail content', async ({ page }) => {
+  // Each static route is powered by a seeded Wagtail MarketingPage — the
+  // baked page must render real backend copy, not an empty section.
+  const routes = [
+    { path: '/faq/', expect: 'Do I need a medical background to join a course?' },
+    { path: '/pricing/', expect: 'Explorer' },
+    { path: '/features/', expect: 'Medical AI assistance' },
+    { path: '/projects/', expect: 'Systematic Review Studio' },
+    { path: '/products/', expect: 'Research Methods Library' },
+  ];
+  for (const route of routes) {
+    const response = await page.goto(route.path, { waitUntil: 'domcontentloaded' });
+    expect(response?.status(), `${route.path} should be 200`).toBe(200);
+    await expect(page.locator('body')).toContainText(route.expect);
   }
 });

@@ -3,7 +3,7 @@ import type { LangCode } from './translations';
 export const SUPPORTED_LANGUAGE_CODES: LangCode[] = ['en', 'ar', 'sv', 'fr', 'de', 'es', 'pt'];
 
 /**
- * Landing-fusion API client — fetches all data from the Wagtail/django-fusion backend.
+ * Precis Landing API client — fetches all data from the Wagtail/django-fusion backend.
  *
  * Every piece of content (branding, navigation, page data, contact info,
  * footer links) comes from the backend via these endpoints. No content is
@@ -25,6 +25,21 @@ export const CONTENT_LANGUAGE: LangCode = (() => {
     : 'en';
 })();
 
+const LANGUAGE_STORAGE_KEY = 'fusion-lang';
+
+/** Read the server-aligned browser preference without making content a fallback. */
+export function getStoredContentLanguage(fallback: LangCode = CONTENT_LANGUAGE): LangCode {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const stored = window.sessionStorage.getItem(LANGUAGE_STORAGE_KEY)
+      || window.localStorage.getItem(LANGUAGE_STORAGE_KEY)
+      || document.cookie.match(/(?:^|; )django_language=([^;]+)/)?.[1];
+    return SUPPORTED_LANGUAGE_CODES.includes(stored as LangCode) ? stored as LangCode : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 /** Base URL for the Django backend. Set PUBLIC_FUSION_API_URL env var to override. */
 export const API_BASE: string =
   (import.meta.env.PUBLIC_FUSION_API_URL as string | undefined) ||
@@ -33,10 +48,13 @@ export const API_BASE: string =
   // 127.0.0.1, which makes Astro's static build fail with ECONNREFUSED.
   'http://127.0.0.1:8074';
 
-async function fetchJSON<T>(path: string): Promise<T> {
-  const url = `${API_BASE}${path}`;
+async function fetchJSON<T>(path: string, language: LangCode = getStoredContentLanguage()): Promise<T> {
+  const hasLanguage = /[?&](?:lang|language)=/.test(path);
+  const separator = path.includes('?') ? '&' : '?';
+  const url = `${API_BASE}${path}${hasLanguage ? '' : `${separator}lang=${encodeURIComponent(language)}`}`;
   const res = await fetch(url, {
-    headers: { Accept: 'application/json' },
+    credentials: 'include',
+    headers: { Accept: 'application/json', 'Accept-Language': language },
   });
   if (!res.ok) {
     throw new Error(`API ${path} returned ${res.status}`);
@@ -609,10 +627,13 @@ export function fetchPageList(): Promise<PageListData> {
  * Returns plain HTML; request ``Accept: text/event-stream`` for the SSE road
  * (the same fragment streamed as a single ``fragment`` event).
  */
-export async function fetchFragment(slug: string, language: LangCode = CONTENT_LANGUAGE): Promise<string> {
-  const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
+export async function fetchFragment(slug: string, language: LangCode = getStoredContentLanguage()): Promise<string> {
+  const query = `?lang=${encodeURIComponent(language)}`;
   const url = `${API_BASE}/fragment/pages/${slug}/${query}`;
-  const res = await fetch(url, { headers: { Accept: 'text/html' } });
+  const res = await fetch(url, {
+    credentials: 'include',
+    headers: { Accept: 'text/html', 'Accept-Language': language },
+  });
   if (!res.ok) {
     throw new Error(`Fragment ${slug} returned ${res.status}`);
   }

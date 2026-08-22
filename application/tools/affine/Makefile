@@ -1,12 +1,15 @@
 SHELL := /bin/bash
 
 COMPOSE_FILE := docker-compose.yml
-ENV_FILE     ?= ../../../.env
+# Tools env (application/tools/.env) wins when present; repo-root .env is the
+# fallback so existing deployments keep working untouched.
+ENV_FILE     ?= $(if $(wildcard ../.env),../.env,../../../.env)
 
-.PHONY: help up down deploy build restart logs status ps
+.PHONY: help up down deploy build restart logs status ps setup
 
 help: ## Show this help menu
-	@echo 'AFFiNE commands: make up | down | deploy | restart | logs | status'
+	@echo 'AFFiNE commands: make up | down | deploy | restart | logs | status | setup'
+	@echo '  setup     - Create ../.env from ../.env.example (random defaults) if missing'
 	@echo '  up        - Start AFFiNE workspace (tools.structa.cloud/space/)'
 	@echo '  deploy    - Build + start AFFiNE'
 	@echo '  build     - Build the AFFiNE image'
@@ -14,6 +17,14 @@ help: ## Show this help menu
 	@echo '  restart   - Restart AFFiNE'
 	@echo '  logs      - Tail AFFiNE logs'
 	@echo '  status    - Show AFFiNE status (alias: ps)'
+
+setup: ## Create ../.env from ../.env.example if missing
+	@if [ ! -f ../.env ]; then \
+		echo "📝 Creating ../.env from ../.env.example (generated random defaults — rotate before shared use)"; \
+		cp ../.env.example ../.env; \
+	else \
+		echo "✅ ../.env already exists — leaving it untouched"; \
+	fi
 
 up:
 	@docker compose --env-file $(ENV_FILE) -f $(COMPOSE_FILE) up -d

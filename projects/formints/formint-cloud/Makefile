@@ -36,11 +36,14 @@ API_PORT      := 8767
 FRONTEND_PORT := 4323
 
 .PHONY: help install migrate seed check test verify-stack dev-backend dev-api \
-        dev-frontend stop clean styles backend-help backend-check backend-migrate \
+        dev-frontend stop clean styles config-show config-check \
+        backend-help backend-check backend-migrate \
         backend-test frontend-install frontend-dev frontend-build frontend-check
 
 help: ## Show all commands
 	@echo 'Formint Cloud — Hosted SaaS Master edition'
+	@echo '  make config-show      merged cascade + static-files plan (configs/*.yml)'
+	@echo '  make config-check     validate required identity keys resolve'
 	@echo '  make install          backend venv + frontend deps'
 	@echo '  make migrate          apply Django migrations'
 	@echo '  make dev-backend      Django :$(BACKEND_PORT) (Unfold admin + bolt)'
@@ -80,6 +83,15 @@ styles: ## Compile the tactical SCSS token layer → committed static CSS
 		apps/core/static/tactical/scss/tactical.scss \
 		apps/core/static/tactical/css/tactical.css \
 		--style=compressed --no-source-map
+
+# ── Config cascade (YAML defaults, django-fusion config.project) ──────────
+# Merges configs/*.yml → Env/_site.yml → .env → env vars (highest). Backend
+# settings stay env-driven; these targets show/validate the documented defaults.
+config-show: ## Print the merged config cascade + static-files plan
+	cd $(BACKEND_DIR) && ./.venv/bin/python -c "from pathlib import Path; from django_fusion.config.project import load_config, staticfiles_plan; root = Path('..').resolve(); c = load_config(root); print('PROJECT CONFIG —', c.get('SITE.name', 'formint-cloud'), '| env:', c.env); [print(f'  {k}: {v}') for k in ('DEBUG', 'ALLOWED_HOSTS', 'PORT', 'API_PORT', 'FRONTEND_PORT') if (v := c.get(k)) is not None]; print('  SITE:', c.section('SITE') or {}); print('  ADMIN:', c.section('ADMIN') or {}); print('  CSS_PANEL:', c.section('CSS_PANEL') or {}); print(); print(staticfiles_plan(root, overrides=c.section('STATIC')).render())"
+
+config-check: ## Validate required identity keys resolve from the config
+	cd $(BACKEND_DIR) && ./.venv/bin/python -c "from django_fusion.config.project import load_config; c = load_config('..'); req = {'SITE.name': 'formint-cloud', 'SITE.primary_domain': 'cloud.formint.app', 'ADMIN.panel_path': '/admin/'}; missing = [k for k, _ in req.items() if not c.get(k)]; print('CONFIG CHECK — OK ✅' if not missing else f'CONFIG CHECK — MISSING: {missing}'); raise SystemExit(1 if missing else 0)"
 
 check: ## Django system checks + Astro typecheck
 	cd $(BACKEND_DIR) && ./.venv/bin/python manage.py check

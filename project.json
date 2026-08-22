@@ -57,6 +57,10 @@
       "executor": "nx:run-commands",
       "options": { "command": "make status", "cwd": "." }
     },
+    "cleanup": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make cleanup", "cwd": "." }
+    },
     "push": {
       "executor": "nx:run-commands",
       "options": { "command": "make push", "cwd": "." }

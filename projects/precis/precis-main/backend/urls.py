@@ -1,10 +1,11 @@
-"""Landing-fusion URL configuration — Wagtail admin + document URLs + page routes."""
+"""Precis Landing URL configuration — Wagtail admin + document URLs + page routes."""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
+from django_fusion.core.middlewares.language import set_language_api
 from django_fusion.designer import urls as fusion_designer_urls
 from django_fusion.tasks.views import TaskCenterView
 from wagtail import urls as wagtail_urls
@@ -26,6 +27,10 @@ except ImportError:  # pragma: no cover - older django-fusion
     fusion_introspection_urls = None
 
 urlpatterns = [
+    # Keep the public no-slash admin probes live without enabling global
+    # APPEND_SLASH (headless auth POSTs must not be redirected).
+    path("django-admin", RedirectView.as_view(url="/django-admin/", permanent=False)),
+    path("admin", RedirectView.as_view(url="/admin/", permanent=False)),
     path("django-admin/", admin.site.urls),
     path("fusion/mcp/designer/", include(fusion_designer_urls)),
     # Newsletter broadcast — staff-only, registered BEFORE the wagtail admin
@@ -67,6 +72,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
 
     # ── APIs — backend-driven content for the Astro frontend ──────────
+    path("i18n/setlang/", set_language_api, name="set_language"),
+    path("i18n/", include("django.conf.urls.i18n")),
     path("apis/render-mode/", pages_api.render_mode_api, name="render_mode_api"),
     path("apis/site/settings/", pages_api.site_settings_api, name="site_settings_api"),
     path("apis/navigation/", pages_api.navigation_api, name="navigation_api"),

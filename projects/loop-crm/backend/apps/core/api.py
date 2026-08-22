@@ -12,6 +12,7 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
 from django.http import HttpResponse, JsonResponse
+from django.views.decorators.http import require_GET
 from django_fusion.plugins.apis.auth import (
     FusionTokenError,
     TokenUserError,
@@ -20,6 +21,13 @@ from django_fusion.plugins.apis.auth import (
     verify_request_user,
 )
 
+from apps.core.permissions import (
+    can_manage_deals,
+    can_manage_posts,
+    is_marketing,
+    is_revops,
+    is_sales,
+)
 from apps.crm.custom_fields import custom_object_catalog
 from apps.marketing.connectors import platform_catalog
 
@@ -248,6 +256,41 @@ def current_user_api(request):
                 "workspace_id": getattr(profile, "workspace_id", None),
                 "is_staff": user.is_staff,
             }
+        }
+    )
+
+
+@login_required
+@require_GET
+def me_api(request: HttpRequest) -> JsonResponse:
+    """Session-based current-user identity for the Astro profile road (``/apis/me/``).
+
+    Returns the same identity + role + effective-capability shape the Django
+    road renders in ``account/profile.html``, so both roads stay in sync
+    without exposing tokens or secrets.
+    """
+    profile = getattr(request.user, "profile", None)
+    workspace = getattr(profile, "workspace", None) if profile else None
+    return JsonResponse(
+        {
+            "user": {
+                "id": request.user.pk,
+                "email": request.user.email,
+                "username": request.user.username,
+                "name": request.user.get_full_name() or request.user.username,
+                "role": getattr(profile, "role", "viewer"),
+                "title": getattr(profile, "title", "") or "",
+                "workspace_id": getattr(workspace, "pk", None),
+                "workspace_name": getattr(workspace, "name", None),
+                "is_staff": request.user.is_staff,
+            },
+            "capabilities": {
+                "sales": is_sales(request.user),
+                "marketing": is_marketing(request.user),
+                "revops": is_revops(request.user),
+                "manage_deals": can_manage_deals(request.user),
+                "manage_posts": can_manage_posts(request.user),
+            },
         }
     )
 

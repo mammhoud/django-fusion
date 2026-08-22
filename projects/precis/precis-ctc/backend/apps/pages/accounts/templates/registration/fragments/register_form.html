@@ -76,7 +76,7 @@
       {% trans "By creating an account, you agree to our" %}
       <a href="#"
          class="auth__link"
-         hx-get="{% url 'privacy:policy_modal' %}"
+         hx-get="{% url 'handlers:policy_modal' %}"
          hx-target="body"
          hx-swap="beforeend"
          onclick="return false;">{% trans "privacy policy & terms" %}</a>

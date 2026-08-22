@@ -84,7 +84,7 @@ function swatchVar(token: string): string {
 
       <div class='grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'>
         {boardsWithOverrides.map((board, i) => (
-          <article class='brand-board reveal' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
+          <article class='brand-board reveal' x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
             <div class='brand-board__lockup'>
               <div class='brand-board__mark'>
                 <ProductLogo style={board.mark} />

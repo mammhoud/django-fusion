@@ -4,6 +4,46 @@ import Footer from '@/components/layout/Footer.astro';
 import CookieConsent from '@/components/ui/CookieConsent.astro';
 import LoginModal from '@/components/ui/LoginModal.astro';
 import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage, siteUrl } from '@/lib/site';
+
+/**
+ * Resolve the SEO metadata for the current page from backend data.
+ *
+ * Per-page Wagtail fields (seo_title / search_description) win; the site
+ * defaults (SiteSettings — meta description/keywords/author, og:type, og
+ * image, twitter handle, robots, canonical origin) fill the gaps. The only
+ * hardcoded value is the config-level origin (siteUrl) and the brand
+ * fallback used when the backend is entirely unreachable at build time.
+ */
+interface SeoMeta {
+  title: string;
+  description: string;
+  keywords: string;
+  author: string;
+  ogType: string;
+  ogImage: string;
+  twitterHandle: string;
+  robots: string;
+  canonical: string;
+}
+
+function resolveSeo(pageData: Props['pageData'], siteSettings: Props['siteSettings'], fallbackTitle: string, fallbackDescription: string, fallbackImage: string): SeoMeta {
+  const pageSeo = pageData?.seo as Record<string, string> | undefined;
+  const title = pageSeo?.title || pageData?.title || fallbackTitle;
+  const description = pageSeo?.description || fallbackDescription;
+  const ogImage = pageSeo?.og_image_url || siteSettings?.og_image_url || fallbackImage;
+  const canonicalOrigin = siteSettings?.canonical_url || siteUrl;
+  return {
+    title,
+    description,
+    keywords: pageSeo?.keywords || siteSettings?.meta_keywords || '',
+    author: pageSeo?.author || siteSettings?.meta_author || '',
+    ogType: pageSeo?.og_type || siteSettings?.og_type || 'website',
+    ogImage,
+    twitterHandle: pageSeo?.twitter_handle || siteSettings?.twitter_handle || '',
+    robots: pageSeo?.robots || siteSettings?.robots || 'index, follow',
+    canonical: `${canonicalOrigin.replace(/\/+$/, '')}${Astro.url.pathname}`,
+  };
+}
 import { cachedAssets } from '@/lib/api';
 import AssetPreload from '@/components/ui/AssetPreload.astro';
 import SkeletonBridge from '@/components/ui/SkeletonBridge.astro';
@@ -21,6 +61,13 @@ interface Props {
     site_name?: string;
     site_tagline?: string;
     logo_url?: string | null;
+    meta_keywords?: string;
+    meta_author?: string;
+    og_type?: string;
+    og_image_url?: string | null;
+    twitter_handle?: string;
+    robots?: string;
+    canonical_url?: string;
     footer_description?: string;
     footer_copyright?: string;
     footer_link_groups?: { title: string; links: { label: string; url: string }[] }[];
@@ -64,8 +111,9 @@ try {
 }
 
 const siteName = siteSettings?.site_name || fallbackSiteName;
-const pageTitle = title && title !== siteName ? `${title} \u00b7 ${siteName}` : siteName;
-const canonical = new URL(Astro.url.pathname, siteUrl).href;
+const seo = resolveSeo(pageData, siteSettings, title || siteName, description, ogImage);
+const pageTitle = seo.title && seo.title !== siteName ? `${seo.title} \u00b7 ${siteName}` : siteName;
+const canonical = seo.canonical;
 
 // Single source of truth for the two content-delivery roads: the effective
 // render mode (server-rendered components vs data APIs) comes from the assets
@@ -98,8 +146,7 @@ const bridgeJson = JSON.stringify({
 void THEME_STORAGE_KEY;
 ---
 
-<!doctype html>
-<html lang="en" id="ctc-root">
+<!doctype html>    <html lang={pageData?.language || 'en'} id="ctc-root" data-language={pageData?.language || 'en'} data-page-slug={contentSlug}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -107,26 +154,40 @@ void THEME_STORAGE_KEY;
 
     <title>{pageTitle}</title>
     <meta name="title" content={pageTitle} />
-    <meta name="description" content={description} />
+    <meta name="description" content={seo.description} />
+    {seo.keywords ? <meta name="keywords" content={seo.keywords} /> : null}
+    {seo.author ? <meta name="author" content={seo.author} /> : null}
+    <meta name="robots" content={seo.robots} />
     <link rel="canonical" href={canonical} />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={seo.ogType} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={siteName} />
     <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, siteUrl).href} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:image" content={new URL(seo.ogImage, siteUrl).href} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={new URL(seo.ogImage, siteUrl).href} />
+    {seo.twitterHandle ? <meta name="twitter:site" content={`@${seo.twitterHandle}`} /> : null}
 
-    <meta name="theme-color" content="#F5F7FA" />
+    <meta name="theme-color" content="#F8FAFB" />
 
     <script is:inline define:vars={{ THEME_STORAGE_KEY }}>
       (function () {
         var root = document.documentElement;
+        // Reveal motion is progressive enhancement: content stays visible
+        // unless JavaScript explicitly opts the document into motion.
         root.classList.add('js');
+        // Scroll reveals are enabled only after Alpine confirms its
+        // directives are available. Until then the server-rendered document
+        // remains fully readable — including when Alpine fails to load, so
+        // x-intersect reveals can never strand content at opacity 0.
+        document.addEventListener('alpine:init', function () {
+          root.classList.add('fusion-motion-ready');
+        }, { once: true });
         var stored = null;
         try { stored = localStorage.getItem(THEME_STORAGE_KEY); } catch (e) {}
         var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -134,8 +195,35 @@ void THEME_STORAGE_KEY;
         root.classList.remove('light', 'dark');
         root.classList.add(dark ? 'dark' : 'light');
         var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', dark ? '#0F172A' : '#F5F7FA');
+        if (meta) meta.setAttribute('content', dark ? '#0F172A' : '#F8FAFB');
       })();
+    </script>
+
+    <!-- Keep document metadata and RTL direction aligned with the persisted
+         Django/Wagtail language before the static shell paints. -->
+    <script is:inline>
+      (function () {
+        var supported = ['en', 'sv', 'fr', 'de', 'es', 'ar', 'pt-br'];
+        var code = null;
+        try {
+          code = new URLSearchParams(window.location.search).get('lang') || sessionStorage.getItem('ctc_lang') || localStorage.getItem('ctc_lang') || document.cookie.match(/(?:^|; )django_language=([^;]+)/)?.[1];
+        } catch (e) {}
+        if (!supported.includes(code)) code = document.documentElement.getAttribute('lang') || 'en';
+        document.documentElement.setAttribute('lang', code);
+        document.documentElement.setAttribute('dir', code === 'ar' ? 'rtl' : 'ltr');
+        document.documentElement.dataset.language = code;
+      })();
+    </script>
+
+    <!-- Site-wide runtime localization: the static shell is baked in the
+         build language; when the visitor requests another locale via ?lang=,
+         storage, or cookie, hydrate visible copy from the authoritative
+         localized Wagtail API (see lib/runtime-locale.ts). Every page opts
+         in through data-l10n attributes; chrome (header/footer/catalog)
+         translates via the bundled UI_COPY dictionary. -->
+    <script>
+      import { syncRuntimeLocale } from '../lib/runtime-locale';
+      syncRuntimeLocale(document.documentElement.dataset.pageSlug || 'home');
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -206,7 +294,7 @@ void THEME_STORAGE_KEY;
     </div>
 
     <div class="flex min-h-screen flex-col">
-      <Header siteName={siteName} navItems={navItems} logoUrl="/static/images/favicon-enhanced.svg" pageVariant={resolvedPageVariant} />
+      <Header siteName={siteName} navItems={navItems} logoUrl={siteSettings?.logo_url || "/static/images/favicon-enhanced.svg"} pageVariant={resolvedPageVariant} />
       <main class="flex-1 pt-24 md:pt-28">
         <slot />
       </main>

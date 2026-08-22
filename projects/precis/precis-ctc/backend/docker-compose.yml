@@ -23,7 +23,9 @@ services:
     env_file:
       - path: ../.env
         required: false
-      - path: ../../../.env
+      # Repo-root .env carries DJANGO_SECRET_KEY + DB/REDIS secrets.
+      # Path is relative to this compose file (backend/): ../../../../.env → repo root.
+      - path: ../../../../.env
         required: false
     environment:
       RUNNING_ENV: docker
@@ -88,7 +90,11 @@ services:
       # → /var/www/media/ctc-research and assets/staticfiles →
       # /var/www/sites/ctc-research/static).
       - ./assets/staticfiles:/app/precis-ctc/assets/staticfiles:rw
-      - ../../assets/media/ctc-research:/app/media:rw
+      # Mount the monorepo-shared media tree (projects/assets/media/ctc-research
+      # — source files under media/, Wagtail renditions under images/) so the
+      # media manifest resolves the archive pack and the shared Nginx proxy
+      # serves the same files at /media/ctc-research/.
+      - ../../../assets/media/ctc-research:/app/media:rw
     networks:
       - common
       - warehouse-net

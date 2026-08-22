@@ -25,6 +25,7 @@ not in this stack.
 application/databases/
 ├── README.md                    (this file)
 ├── docker-compose.yml           (PostgreSQL + Redis)
+├── .env.example                 (template with generated RANDOM default passwords → copy to .env)
 ├── postgres/                    (PostgreSQL config)
 │   ├── Dockerfile               (custom entrypoint)
 │   ├── init/
@@ -33,6 +34,24 @@ application/databases/
 └── redis/                       (Redis config)
     └── redis.conf
 ```
+
+## First-run setup
+
+The stack has **no hardcoded passwords** — every credential resolves from `.env`.
+`application/databases/.env.example` ships freshly generated **random default
+passwords** so a first run works out of the box:
+
+```bash
+cd application/databases
+make setup      # cp .env.example .env  (never overwrites an existing .env)
+make up
+```
+
+The local `.env` is the Compose interpolation source *and* is loaded into the
+containers via `env_file` (listed **after** the repo-root `.env`, so it wins on
+conflicts and credentials stay consistent between interpolation and runtime).
+`make up` / `make deploy-db` / `make deploy-db-force` run `setup`
+automatically when `.env` is missing.
 
 ---
 
@@ -44,14 +63,22 @@ application/databases/
 **Port:** `${POSTGRES_PORT:-5432}`
 **Container:** `postgres`
 
-**Environment (from repo-root `.env`):**
+**Environment (from `application/databases/.env` — the local file wins over
+repo-root `.env` conflicts):**
 - `POSTGRES_USER` (default `admin`)
 - `POSTGRES_PASSWORD` — **required** (`POSTGRES_PASSWORD=...` in `.env`)
 - `POSTGRES_DB` (default `app_db`)
 - `POSTGRES_PORT` (default `5432`)
 - `POSTGRES_DATABASES` — comma-separated `db:owner:password` list for the
   multi-database bootstrap (defaults to all site + tool DBs)
+- `REDIS_PASSWORD` — **required**
+- `CODER_DB_PASSWORD` — **required** (Coder control plane role)
+- `AFFINE_DB_PASSWORD` — **required** (AFFiNE role)
 - `FORCE_REINIT` — `true` re-runs init scripts on every start (default `false`)
+
+No password is ever inlined in the Compose files — missing entries fail loudly
+(``${VAR:?...}``) so a mis-set `.env` can never silently fall back to a weak
+default.
 
 **Multiple databases:** The `00.initdb-multiple-databases.sh` entrypoint creates
 every database listed in `POSTGRES_DATABASES`. The default value covers the
@@ -100,7 +127,7 @@ docker compose -f application/docker-compose.yml up -d coder
 ### AFFiNE shared-service database
 
 AFFiNE is a permanent service owned by `application/tools/affine/` (was
-`application/proxy/docker-compose.nginx.yml`). The `proxy-affine` container
+`application/tools/docker-compose.nginx.yml`). The `proxy-affine` container
 connects to this PostgreSQL service through the external `common` and
 `warehouse-net` networks:
 
@@ -180,7 +207,8 @@ cd application/tools/adminer && make up
 
 ## Environment Variables
 
-**Required in repo-root `.env`:**
+**Required (copy `application/databases/.env.example` → `.env` for random
+defaults, or set in repo-root `.env`):**
 ```bash
 POSTGRES_USER=admin
 POSTGRES_PASSWORD=...

@@ -67,14 +67,14 @@ const excerpt = String(pageData?.excerpt || '');
   pageSlug={slug}
 >
   <Hero
-    eyebrow={category || 'insights · server-first rendering'}
+    eyebrow={category || 'insights · medical research learning'}
     heading={pageHero?.title || pageData?.title || 'Blog post'}
     accent=''
     intro={pageHero?.subtitle || excerpt}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: '← All posts', href: '/blog' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
-    status={`200 OK · ${readTime || 'text/html'}${postDate ? ` · ${postDate}` : ''} · one document`}
     variant="archive"
+    breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Blog', href: '/blog/' }, { label: pageHero?.title || pageData?.title || 'Blog post' }]}
   />
 
   {body ? (

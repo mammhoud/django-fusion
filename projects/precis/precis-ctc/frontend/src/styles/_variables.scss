@@ -6,20 +6,21 @@
 //   or:  @use "variables" as v;  // then v.$fu-paper etc.
 
 // ── Brand / theme tokens (CSS custom properties are canonical at runtime) ──
-// CTC Research Blue/Teal: teal primary + violet accent on cool navy/slate.
-$fu-paper: hsl(216, 33%, 97%);   // cool slate #F5F7FA
-$fu-ink: hsl(220, 15%, 12%);     // deep navy #1A1D23
-$fu-muted: hsl(222, 11%, 47%);   // #6B7385
-$fu-line: hsl(210, 18%, 84%);    // #D0D7DE
+// CTC Research Calm Blue/Teal: desaturated teal primary + soft periwinkle
+// accent on cool navy/slate. Values mirror globals.css :root tokens.
+$fu-paper: hsl(210, 30%, 98%);   // cool slate #F8FAFB
+$fu-ink: hsl(222, 16%, 15%);     // deep navy #20242C
+$fu-muted: hsl(222, 10%, 45%);   // #676E7E
+$fu-line: hsl(213, 16%, 87%);    // #D9DDE3
 $fu-card: hsl(0, 0%, 100%);      // #FFFFFF
-$fu-link: hsl(186, 100%, 35%);   // teal #00A1B3
-$fu-link-dark: hsl(186, 100%, 27%); // #007A88
-$fu-mark: hsl(243, 100%, 69%);   // violet accent #6C63FF
-$fu-live: hsl(180, 100%, 25%);   // #008080
-$fu-teal: hsl(186, 100%, 35%);
-$fu-teal-bright: hsl(186, 85%, 42%);
-$fu-amber: hsl(243, 100%, 69%);  // violet accent (no second hue)
-$fu-fog: hsl(215, 12%, 45%);
+$fu-link: hsl(187, 55%, 32%);    // calm teal #25747E
+$fu-link-dark: hsl(187, 48%, 25%); // #21575E
+$fu-mark: hsl(244, 48%, 57%);    // soft periwinkle #645DC6
+$fu-live: hsl(180, 42%, 26%);    // #265E5E
+$fu-teal: hsl(187, 55%, 32%);
+$fu-teal-bright: hsl(187, 48%, 38%);
+$fu-amber: hsl(244, 48%, 57%);   // violet accent (no second hue)
+$fu-fog: hsl(222, 10%, 45%);
 
 // Dark mode
 $fu-paper-dark: hsl(222, 47%, 11%);  // #0F172A
@@ -27,7 +28,7 @@ $fu-ink-dark: hsl(210, 40%, 96%);    // #F1F5F9
 $fu-muted-dark: hsl(215, 20%, 65%);  // #94A3B8
 $fu-line-dark: hsl(217, 19%, 27%);   // #374151
 $fu-card-dark: hsl(217, 33%, 17%);   // #1E293B
-$fu-link-dark-mode: hsl(203, 58%, 60%); // #5FA8D4
+$fu-link-dark-mode: hsl(201, 42%, 62%); // #75AAC7
 
 // ── Typography ─────────────────────────────────────────────────────
 $font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;

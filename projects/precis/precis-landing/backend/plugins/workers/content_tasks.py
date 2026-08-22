@@ -1,4 +1,4 @@
-"""Landing-Fusion content background tasks.
+"""Precis Landing content background tasks.
 
 Uses ``@task`` from ``django_fusion.tasks`` for broker-agnostic enqueue.
 """

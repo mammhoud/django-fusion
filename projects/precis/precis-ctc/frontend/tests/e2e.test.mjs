@@ -1,16 +1,24 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-const BACKEND_URL = (process.env.E2E_BACKEND_URL || 'http://127.0.0.1:5070').replace(/\/$/, '');
-const FRONTEND_URL = (process.env.E2E_FRONTEND_URL || 'http://127.0.0.1:3003').replace(/\/$/, '');
 const PUBLIC_CTC_URL = (process.env.E2E_PUBLIC_URL || 'https://ctc-research.com').replace(/\/$/, '');
+// Use the public deployment by default. Local :5070/:3003 endpoints are only
+// available when the developer explicitly supplies E2E_*_URL overrides.
+const BACKEND_URL = (process.env.E2E_BACKEND_URL || PUBLIC_CTC_URL).replace(/\/$/, '');
+const FRONTEND_URL = (process.env.E2E_FRONTEND_URL || PUBLIC_CTC_URL).replace(/\/$/, '');
 const REQUEST_TIMEOUT_MS = Number(process.env.E2E_REQUEST_TIMEOUT_MS || 10_000);
 
 async function get(url) {
   try {
     return await fetch(url, {
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      headers: { Accept: 'text/html,application/json' },
+      // Traefik terminates TLS and forwards the original scheme to Django;
+      // the local backend trusts X-Forwarded-Proto and skips its HTTPS
+      // redirect only when this header is present (SECURE_PROXY_SSL_HEADER).
+      headers: {
+        Accept: 'text/html,application/json',
+        'X-Forwarded-Proto': 'https',
+      },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -109,6 +117,7 @@ test('LMS-Fusion Compose E2E: frontend serves the document shell', async (t) => 
 const PUBLIC_PAGES = [
   '/',
   '/about/',
+  '/about/founder/',
   '/about/research/',
   '/about/education/',
   '/blog/',
@@ -137,7 +146,14 @@ test('CTC Research public deployment E2E: all public pages return complete HTML'
       continue;
     }
     if (!/<h1\b/i.test(body)) failures.push(`${path}: missing h1`);
-    if (/(?:>503<|content is unavailable|catalog is not available|has not published)/i.test(body)) {
+    // Assert against *rendered* content only — `<template>` blocks, inline
+    // scripts and styles are part of the progressive-enhancement contract
+    // (e.g. ProductGrid's client-side empty state) and are never displayed.
+    const rendered = body
+      .replace(/<template\b[\s\S]*?<\/template>/gi, '')
+      .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+      .replace(/<style\b[\s\S]*?<\/style>/gi, '');
+    if (/(?:>503<|content is unavailable|catalog is not available|has not published)/i.test(rendered)) {
       failures.push(`${path}: backend content fallback visible`);
     }
   }

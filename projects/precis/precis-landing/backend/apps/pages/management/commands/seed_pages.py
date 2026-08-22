@@ -2974,7 +2974,7 @@ class Command(BaseCommand):
     def _seed_wagtail_locales(self):
         """Ensure every configured content language has a Wagtail Locale row.
 
-        Landing Fusion keeps one canonical page tree plus partial editorial
+        Precis Landing keeps one canonical page tree plus partial editorial
         overlays, but Wagtail still needs native Locale records for the admin
         language picker, translation workflows, and future page translations.
         This is additive and idempotent: it never changes existing locale rows.

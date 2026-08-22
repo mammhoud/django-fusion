@@ -104,7 +104,58 @@ def _lines(value) -> list[str]:
     return [line.strip() for line in str(value or "").splitlines() if line.strip()]
 
 
-def _course_base_dict(course) -> dict:
+def _course_translation_for(course, language: str):
+    """Resolve the requested CourseTranslation overlay, if any."""
+    if not language or language == "en":
+        return None
+    from apps.learning.models import CourseTranslation
+
+    return CourseTranslation.for_course(course, language)
+
+
+def _apply_course_translation(course, data: dict, language: str) -> dict:
+    """Merge a CourseTranslation overlay over the serialized course payload."""
+    translation = _course_translation_for(course, language)
+    if translation is None:
+        return data
+    if translation.title:
+        data["title"] = translation.title
+    if translation.short_description:
+        data["short_description"] = translation.short_description
+    if translation.description:
+        data["description"] = translation.description
+        data["overview"] = translation.description
+    if translation.objectives:
+        data["objectives"] = _lines(translation.objectives)
+    if translation.requirements:
+        data["requirements"] = _lines(translation.requirements)
+    if translation.target_audience:
+        data["target_audience"] = _lines(translation.target_audience)
+    # Module/lesson title overrides keyed by order.
+    modules = translation.content.get("modules") if isinstance(translation.content, dict) else {}
+    if modules and isinstance(data.get("modules"), list):
+        by_order = {str(mod.get("order", "")): mod for mod in data["modules"]}
+        for order, override in modules.items():
+            mod = by_order.get(str(order))
+            if not mod or not isinstance(override, dict):
+                continue
+            if override.get("title"):
+                mod["title"] = override["title"]
+            if override.get("description"):
+                mod["description"] = override["description"]
+            lessons = override.get("lessons", {})
+            if lessons and isinstance(mod.get("lessons"), list):
+                for lesson in mod["lessons"]:
+                    lesson_override = lessons.get(str(lesson.get("id", ""))) or lessons.get(str(lesson.get("order", "")))
+                    if lesson_override and isinstance(lesson_override, dict) and lesson_override.get("title"):
+                        lesson["title"] = lesson_override["title"]
+    # ``language`` is the course's instructional language (shown in the hero
+    # and used by the catalog filter) — the overlay locale must not replace it.
+    data["translation_source"] = "model"
+    return data
+
+
+def _course_base_dict(course, language: str = "") -> dict:
     """Shared card fields for the LMS catalog contract (landing model)."""
     from django.conf import settings
 
@@ -130,9 +181,9 @@ def _course_base_dict(course) -> dict:
     }
 
 
-def _course_detail_dict(course) -> dict:
+def _course_detail_dict(course, language: str = "") -> dict:
     """Full detail payload for the LMS course page (landing model)."""
-    data = _course_base_dict(course)
+    data = _course_base_dict(course, language=language)
 
     modules_data = []
     try:
@@ -140,6 +191,7 @@ def _course_detail_dict(course) -> dict:
             lessons = [
                 {
                     "id": ln.pk,
+                    "order": ln.order,
                     "title": ln.title,
                     "is_preview": getattr(ln, "is_preview", False),
                     "duration": getattr(ln, "duration_minutes", 0) or 0,
@@ -148,6 +200,7 @@ def _course_detail_dict(course) -> dict:
             ]
             modules_data.append({
                 "id": mod.pk,
+                "order": mod.order,
                 "title": mod.title,
                 "description": getattr(mod, "description", ""),
                 "lessons": lessons,
@@ -193,7 +246,7 @@ def _course_detail_dict(course) -> dict:
         "enrolled_count": getattr(course, "enrolled_count", 0) or 0,
         "modules": modules_data,
     })
-    return data
+    return _apply_course_translation(course, data, language)
 
 
 def list_courses(request):
@@ -215,6 +268,10 @@ def list_courses(request):
         lang = _qp(request, "language")
         if lang:
             qs = qs.filter(language=lang)
+        # The frontend appends ?lang= to every request; when present it selects
+        # the CourseTranslation overlay for each card (falling back to the
+        # canonical English fields when a field is empty).
+        overlay_lang = _qp(request, "lang", "")
         diff = _qp(request, "difficulty")
         if diff:
             qs = qs.filter(difficulty=diff)
@@ -227,8 +284,12 @@ def list_courses(request):
         total = qs.count()
         courses = qs[(page - 1) * per_page : page * per_page]
 
+        cards = [
+            _apply_course_translation(course, _course_base_dict(course, language=overlay_lang), overlay_lang)
+            for course in courses
+        ]
         return JsonResponse({
-            "data": [_course_base_dict(course) for course in courses],
+            "data": cards,
             "pagination": {
                 "page": page,
                 "per_page": per_page,
@@ -252,7 +313,8 @@ def course_detail(request, slug):
         course = Course.objects.filter(slug=slug, is_published=True).first()
         if course is None:
             return JsonResponse({"status": "error", "message": "Course not found"}, status=404)
-        return JsonResponse(_course_detail_dict(course))
+        language = _qp(request, "lang", "")
+        return JsonResponse(_course_detail_dict(course, language=language))
     except Exception:
         logger.exception("Error loading course detail")
         return JsonResponse({"status": "error", "message": "Internal server error"}, status=500)

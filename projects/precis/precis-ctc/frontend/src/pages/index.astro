@@ -4,9 +4,10 @@ import Hero from '@/components/blocks/Hero.astro';
 import Stats from '@/components/blocks/Stats.astro';
 import OutcomeFramework from '@/components/blocks/OutcomeFramework.astro';
 import HomeSlider from '@/components/blocks/HomeSlider.astro';
+import CourseSlider from '@/components/blocks/CourseSlider.astro';
 import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedMediaManifest, CONTENT_LANGUAGE } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedMediaManifest, cachedCourseList, CONTENT_LANGUAGE } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 import { teaserCopy } from '@/lib/teaser-translations';
 
@@ -15,13 +16,15 @@ let siteSettings: SiteSettings | undefined;
 let navData: NavigationData | undefined;
 let pageData: PageData | undefined;
 let mediaManifest: Awaited<ReturnType<typeof cachedMediaManifest>> | undefined;
+let courseList: Awaited<ReturnType<typeof cachedCourseList>> | undefined;
 
 try {
-  [siteSettings, navData, pageData, mediaManifest] = await Promise.all([
+  [siteSettings, navData, pageData, mediaManifest, courseList] = await Promise.all([
     cachedSiteSettings(),
     cachedNavigation(),
     cachedPageData('home'),
     cachedMediaManifest(),
+    cachedCourseList(),
   ]);
 } catch {
   // Backend unreachable — use hardcoded fallbacks below
@@ -92,6 +95,22 @@ const agendaSlides = [
   },
 ];
 
+// Wagtail-driven home slider — when the editor seeds head.slider slides
+// (image, subtitle, title, description, CTA), they win over the agenda
+// fallback so the home page reflects CMS content on both render roads.
+const heroSlides = (pageHero?.slides || [])
+  .map((slide, i) => ({
+    eyebrow: slide.subtitle || ['clinical evidence', 'responsible medical AI', 'evidence synthesis', 'education and training'][i % 4],
+    title: slide.title || '',
+    text: slide.description || '',
+    href: slide.button_link || '/courses/',
+    cta: slide.button_text || 'Learn more',
+    image: slide.image || sliderImages[i % Math.max(1, sliderImages.length)]?.src,
+    alt: slide.alt || slide.title || '',
+  }))
+  .filter((s) => Boolean(s.title));
+const homeSlides = heroSlides.length ? heroSlides : agendaSlides;
+
 // ── Fallbacks (used when backend is unreachable at build time) ──
 const techStats = pageStats?.map((s: any) => ({
   label: String(s.label || ''),
@@ -131,12 +150,18 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
     intro={hasEditorialHero && pageHero?.subtitle ? pageHero.subtitle : 'A research center for clinicians, biostatisticians, and medical writers — protocols, evidence synthesis, and responsible AI, reduced to method.'}
     primaryCta={hasEditorialHero && pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Start your learning path', href: '/courses/' }}
     secondaryCta={hasEditorialHero && pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
-    status='200 OK · text/html · the center, in one response'
     gallery={heroGallery}
     variant="home"
   />
 
-  <HomeSlider slides={agendaSlides} />
+  <HomeSlider
+    slides={homeSlides}
+    eyebrow='the research agenda'
+    heading='A center in motion'
+    intro='Move through the connected work: a clinical question, a defensible method, and the next useful learning step — from protocol to published evidence.'
+  />
+
+  <CourseSlider courses={courseList?.data || []} />
 
   <!-- Why-choose methods — seeded on HomePage.CTA (why_choose_section) and
        rendered from the localized page data, never hardcoded. -->
@@ -149,7 +174,7 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
         {methods.map((method: string, i: number) => (
-          <div class='card reveal p-7' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+          <div class='card reveal p-7' x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 80}ms`}>
             <span class='mb-4 block font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-teal'>{String(i + 1).padStart(2, '0')}</span>
             <p class='font-display text-lg font-normal text-fu-ink'>{method}</p>
           </div>
@@ -183,7 +208,7 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
         {serviceItems.map((item: any, i: number) => (
           <div
             class={`card reveal group relative p-8 pt-10 ${i === 1 ? 'md:translate-y-8' : ''}`}
-            x-data x-intersect='`$el.classList.add("reveal-visible")`'
+            x-data x-intersect="$el.classList.add('reveal-visible')"
             style={`--reveal-delay: ${i * 90}ms`}
           >
             <span class='absolute right-6 top-4 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted/70' aria-hidden='true'>

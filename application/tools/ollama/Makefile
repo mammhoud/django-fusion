@@ -1,12 +1,14 @@
 SHELL := /bin/bash
 
 COMPOSE_FILE := docker-compose.yml
-ENV_FILE     ?= ../../../.env
+# Tools env (application/tools/.env) wins when present; repo-root .env is the
+# fallback so existing deployments keep working untouched.
+ENV_FILE     ?= $(if $(wildcard ../.env),../.env,../../../.env)
 
-.PHONY: help up down deploy build restart logs status ps pull pull-model
+.PHONY: help up down deploy build restart logs status ps setup pull pull-model
 
 help: ## Show this help menu
-	@echo 'Ollama commands: make up | down | deploy | restart | logs | status | pull'
+	@echo 'Ollama commands: make up | down | deploy | restart | logs | status | setup | pull'
 	@echo '  up        - Start Ollama + Open WebUI (tools.structa.cloud/ai/)'
 	@echo '  deploy    - Build + start Ollama + Open WebUI'
 	@echo '  build     - Build Ollama images'
@@ -15,6 +17,14 @@ help: ## Show this help menu
 	@echo '  logs      - Tail Ollama logs'
 	@echo '  status    - Show Ollama status (alias: ps)'
 	@echo '  pull      - Pull a model: make pull MODEL=llama3.2:3b'
+
+setup: ## Create ../.env from ../.env.example if missing
+	@if [ ! -f ../.env ]; then \
+		echo "📝 Creating ../.env from ../.env.example (generated random defaults — rotate before shared use)"; \
+		cp ../.env.example ../.env; \
+	else \
+		echo "✅ ../.env already exists — leaving it untouched"; \
+	fi
 
 # ollama-net is external; create it if missing so a standalone `make up` works.
 up:

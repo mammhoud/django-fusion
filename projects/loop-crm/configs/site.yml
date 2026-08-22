@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# loop-crm — site.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Site identity + public domains for Loop-CRM. Backend/configs/site.py seeds
+# these as env defaults (os.environ.setdefault — explicit env always wins);
+# Env/_site.yml overlays per-environment flags.
+#
+# Public host: crm.structa.cloud / www.crm.structa.cloud
+# Traefik routes them in application/proxy/configs/traefik/dynamic/crm.yml →
+# loop-crm backend + frontend.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  SITE:
+    name: loop-crm
+    aliases:
+      - crm
+      - crm.structa.cloud
+      - loop
+    primary_domain: crm.structa.cloud
+    domains:
+      - crm.structa.cloud
+      - www.crm.structa.cloud
+    allowed_hosts:
+      - crm.structa.cloud
+      - www.crm.structa.cloud
+      - loop-crm-backend
+      - localhost
+      - 127.0.0.1
+    default_email: "Loop CRM <noreply@structa.cloud>"
+    module: CRM
+    wagtail_site_name: "Loop CRM"

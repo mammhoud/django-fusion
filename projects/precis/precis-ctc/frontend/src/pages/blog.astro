@@ -6,8 +6,8 @@ import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
-import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchBlogPosts } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData, BlogPostData } from '@/lib/api';
 
 let siteSettings: SiteSettings | undefined;
 let navData: NavigationData | undefined;
@@ -22,14 +22,24 @@ const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const pageBlog = (pageData?.blog as any[] | undefined);
 
-const posts = pageBlog?.map((p: any) => ({
+// The editorial index is served from the live blog API (seeded BlogPost
+// rows) when the Wagtail page does not carry a `blog` block — the API is the
+// authoritative source for the /blog/<slug>/ detail routes, so the two views
+// can never disagree about what is published.
+let livePosts: BlogPostData[] = [];
+try {
+  const list = await fetchBlogPosts();
+  livePosts = list.data ?? [];
+} catch { /* blog API unavailable — fall back to the page block only */ }
+
+const posts = (pageBlog ?? livePosts).map((p: any) => ({
   title: String(p.title || ''),
   slug: String(p.slug || ''),
   excerpt: String(p.excerpt || ''),
-  date: String(p.date || ''),
-  category: String(p.category || ''),
-  readTime: String(p.read_time || ''),
-})) || [];
+  date: String(p.published_date || p.date || '').split('T')[0],
+  category: String((p.categories && p.categories[0]?.name) || p.category || ''),
+  readTime: String(p.reading_time ? `${p.reading_time} min read` : p.read_time || ''),
+}));
 ---
 
 
@@ -42,14 +52,14 @@ const posts = pageBlog?.map((p: any) => ({
   pageSlug="blog"
 >
   <Hero
-    eyebrow={pageHero?.badge || 'insights · server-first rendering'}
+    eyebrow={pageHero?.badge || 'insights · medical research learning'}
     heading={pageHero?.title || 'The Blog'}
-    accent='server-first'
+    accent='for evidence'
     intro={pageHero?.subtitle || 'Notes on medical AI, clinical evidence, and health innovation from the CTC Research team.'}
-    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore projects', href: '/projects' }}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
-    status='200 OK · text/html · every post in one response'
     variant="archive"
+    breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Blog' }]}
   />
 
   {posts.length ? (

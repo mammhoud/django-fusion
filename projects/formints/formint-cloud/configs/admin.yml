@@ -1,0 +1,25 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# formint-cloud — admin.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Admin panel + CSS panel. Formint Cloud uses the Unfold admin theme; the
+# tactical SCSS token layer compiles to committed static CSS (make styles).
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  ADMIN:
+    panel_path: /admin/
+    django_admin_path: /django-admin/
+    theme: unfold
+    wagtail_site_name: "Formint Cloud"
+    wagtailadmin_base_url: "http://localhost:8082"
+
+  CSS_PANEL:
+    source: backend/apps/core/static/tactical/scss/tactical.scss
+    compiled: backend/apps/core/static/tactical/css/tactical.css
+    build_command: "make styles"
+    served_at: /static/tactical/css/tactical.css
+    tailwind: false
+
+development:
+  ADMIN:
+    wagtailadmin_base_url: "http://localhost:8082"

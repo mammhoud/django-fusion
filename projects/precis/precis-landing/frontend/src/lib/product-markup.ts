@@ -62,7 +62,7 @@ export function productLogoMarkup(product: ProductCard): string {
 }
 
 /** Reveal directive shared by every card (scroll-into-view via x-intersect). */
-const REVEAL = 'x-data x-intersect=\'`$el.classList.add("reveal-visible")`\'';
+const REVEAL = 'x-data x-intersect="$el.classList.add(\'reveal-visible\')"';
 
 /** One catalog card — the exact markup the products page and home grid share. */
 export function productCardMarkup(product: ProductCard, index: number): string {

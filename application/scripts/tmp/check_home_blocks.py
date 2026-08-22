@@ -68,11 +68,11 @@ else:
     print("no precis db found")
 
 for p in [
-    "projects/precis/landi/db.sqlite3",
-    "projects/precis/landi/backend/db.sqlite3",
+    "projects/precis/precis-landing/db.sqlite3",
+    "projects/precis/precis-landing/backend/db.sqlite3",
 ]:
     if os.path.exists(p):
-        dump(p, "LANDING-FUSION")
+        dump(p, "PRECIS-LANDING")
         break
 else:
     print("no precis-landing db found")

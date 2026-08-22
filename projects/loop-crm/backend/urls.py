@@ -13,6 +13,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images import urls as wagtailimages_urls
 
 from apps.core import views as core_views
+from apps.core.api import me_api as core_views_me
 from apps.core.api import reports_api as core_views_reports
 from apps.core.api import resource_api
 from apps.core.bolt_api import bolt
@@ -50,6 +51,8 @@ urlpatterns = [
     path("fragments/marketing/channels/<int:pk>/refresh/", marketing_views.channel_refresh, name="channel_refresh"),
     # Report catalog for the webapp /reports/ surface.
     path("apis/reports/", core_views_reports, name="reports_api"),
+    # Session-based current-user identity for the Astro profile road (/account/profile/).
+    path("apis/me/", core_views_me, name="me_api"),
     # ── Public landing road — Wagtail-managed pages for the Astro frontend.
     # Astro fetches /apis/pages/<slug>/ and renders; the backend never serves
     # public HTML (the trailing Wagtail catch-all below is preview-only).

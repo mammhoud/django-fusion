@@ -17,25 +17,79 @@ from pathlib import Path
 from urllib.parse import quote
 
 from django.conf import settings
-from django.utils.text import slugify
-
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.html import strip_tags
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.utils.text import slugify
+from django.utils.translation import activate, check_for_language
+from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
+from django.views.decorators.http import require_POST
 from wagtail.blocks.list_block import ListValue
-from wagtail.blocks.struct_block import StructValue
 from wagtail.blocks.stream_block import StreamValue
+from wagtail.blocks.struct_block import StructValue
 from wagtail.models import Page
 from wagtail.rich_text import RichText
 
 logger = logging.getLogger(__name__)
 
+def _supported_language_codes() -> list[str]:
+    """Return the active Wagtail catalog, with shared settings as validation."""
+    try:
+        from apps.content.models.languages import SiteLanguage
+
+        rows = list(SiteLanguage.active().values_list("code", flat=True))
+        if rows:
+            return rows
+    except Exception:
+        logger.debug("Wagtail language snippets are not available during bootstrap", exc_info=True)
+    from django_fusion.core.middlewares.language import configured_language_codes
+
+    return list(configured_language_codes())
+
+
+def _normalize_language(value: object) -> str | None:
+    from django_fusion.core.middlewares.language import normalize_language
+
+    return normalize_language(value, _supported_language_codes())
+
+
+def _language_session_key() -> str:
+    from django_fusion.core.middlewares.language import language_session_key
+
+    return language_session_key()
+
 
 def _requested_language(request: HttpRequest) -> str:
-    """Return a supported language code from the query or Django locale."""
-    requested = (request.GET.get("lang") or getattr(request, "LANGUAGE_CODE", "en")).lower()
-    return requested if requested in {"en", "sv", "fr", "de", "es", "ar", "pt-br"} else "en"
+    """Resolve query → session → cookie → middleware/header → default."""
+    from django_fusion.core.middlewares.language import resolve_language
+
+    return resolve_language(request)
+
+
+@require_POST
+@csrf_protect
+def set_language_api(request: HttpRequest) -> JsonResponse:
+    """Persist a language in the Django session and configured cookie.
+
+    Django's stock ``set_language`` view only writes the cookie in current
+    releases. The Astro header needs the preference in both stores so API,
+    HTMX, Wagtail, and later authenticated requests resolve one language.
+    """
+    language = _normalize_language(request.POST.get("language"))
+    if not language or not check_for_language(language):
+        return JsonResponse({"error": "Unsupported language", "language": _requested_language(request)}, status=400)
+
+    from django_fusion.core.middlewares.language import persist_language
+
+    activate(language)
+    response = JsonResponse({
+        "language": language,
+        "default_language": getattr(settings, "LANGUAGE_CODE", "en"),
+        "session_key": _language_session_key(),
+        "cookie_name": getattr(settings, "LANGUAGE_COOKIE_NAME", "django_language"),
+        "available_languages": _supported_language_codes(),
+    })
+    return persist_language(request, response, language)
 
 
 def get_effective_render_first(request: HttpRequest | None = None) -> bool:
@@ -58,9 +112,25 @@ def _live_page(slug: str, language: str = "en"):
     try:
         pages = Page.objects.live().filter(slug=normalized)
         if language:
+            # Localized editions may carry localized slugs (e.g. the Arabic
+            # "about" page uses a translated slug), so prefer the direct slug
+            # match and fall back to the translation chain (translation_key)
+            # when the requested locale renames the page.
             localized = pages.filter(locale__language_code=language).first()
             if localized is not None:
                 return localized
+            base = pages.filter(locale__language_code="en").first() or pages.first()
+            if base is not None:
+                try:
+                    from wagtail.models import Locale as WagtailLocale
+
+                    locale_obj = WagtailLocale.objects.filter(language_code=language).first()
+                    translation = base.get_translation_or_none(locale=locale_obj) if locale_obj else None
+                except Exception:
+                    translation = None
+                if translation is not None:
+                    return translation
+                return base
         return pages.filter(locale__language_code="en").first() or pages.first()
     except Exception:
         logger.exception("Unable to load Wagtail page %s", normalized)
@@ -141,7 +211,7 @@ def _stream_items(page, field_name: str) -> list[dict]:
     return items
 
 
-def _page_data(page) -> dict:
+def _page_data(page, request=None, language: str | None = None) -> dict:
     """Return a frontend-shaped page payload from any live LMS page."""
     specific = page.specific
     data = {
@@ -153,6 +223,47 @@ def _page_data(page) -> dict:
         "seo_title": getattr(page, "seo_title", "") or page.title,
         "search_description": getattr(page, "search_description", "") or "",
     }
+
+    # ── Per-page SEO block ────────────────────────────────────────────
+    # Page-level seo_title/search_description win; the site-level defaults
+    # (SiteSettings.get_seo_context) fill the gaps so the frontend never
+    # hardcodes meta copy. Canonical resolves to the configured origin or
+    # the request host, and is localized through the same _live_page chain.
+    seo = {
+        "title": (getattr(specific, "seo_title", "") or page.title),
+        "description": (getattr(specific, "search_description", "") or ""),
+        "keywords": "",
+        "author": "",
+        "og_type": "website",
+        "og_image_url": None,
+        "twitter_handle": "",
+        "robots": "index, follow",
+        "canonical_url": "",
+    }
+    try:
+        from apps.content.models.settings import SiteSettings as SeoSettings
+
+        settings_obj = SeoSettings.for_request(request) if request is not None else None
+        if settings_obj is None:
+            try:
+                settings_obj = SeoSettings.load()
+            except Exception:
+                settings_obj = None
+        if settings_obj:
+            ctx = settings_obj.get_seo_context()
+            seo["description"] = seo["description"] or ctx.get("meta_description", "")
+            seo["keywords"] = ctx.get("meta_keywords", "")
+            seo["author"] = ctx.get("meta_author", "")
+            seo["og_type"] = ctx.get("og_type", "website")
+            seo["og_image_url"] = ctx.get("og_image_url")
+            seo["twitter_handle"] = ctx.get("twitter_handle", "")
+            seo["robots"] = ctx.get("robots", "index, follow") or "index, follow"
+            seo["canonical_url"] = ctx.get("canonical_url", "") or seo["canonical_url"]
+    except Exception:
+        logger.exception("Unable to resolve site SEO defaults")
+    if request is not None and not seo["canonical_url"]:
+        seo["canonical_url"] = request.build_absolute_uri(request.path)
+    data["seo"] = seo
 
     hero_heading = getattr(specific, "hero_heading", "")
     hero_subheading = getattr(specific, "hero_subheading", "")
@@ -168,7 +279,38 @@ def _page_data(page) -> dict:
     if body:
         data["body"] = str(body)
 
-    for field_name in ("stats", "features", "testimonials", "pricing", "faq", "projects", "services", "process", "blog"):
+    # HomePage head.slider — the Wagtail-edited hero carousel. The Astro road
+    # renders these slides (image, subtitle, title, description, CTA, alignment)
+    # with the Swiper-style slider component; falls back to the seeded agenda
+    # strip when the block is empty.
+    # NOTE: _stream_items drops list-shaped blocks (a slider's StreamValue of
+    # slides), so read the StreamField directly here.
+    head_stream = getattr(specific, "head", None)
+    if head_stream is not None:
+        slides: list[dict] = []
+        for block in head_stream:
+            if block.block_type != "slider":
+                continue
+            for slide in block.value:
+                value = _plain(slide.value)
+                if not isinstance(value, dict):
+                    continue
+                image = value.get("background_image") or value.get("image")
+                slides.append({
+                    "image": image.get("url") if isinstance(image, dict) else "",
+                    "alt": value.get("alt_text") or value.get("title") or "",
+                    "subtitle": value.get("subtitle") or "",
+                    "title": value.get("title") or "",
+                    "description": value.get("description") or "",
+                    "alignment": value.get("text_alignment") or "left",
+                    "button_text": value.get("button_text") or "",
+                    "button_link": value.get("button_link") or "",
+                    "video_url": value.get("video_url") or "",
+                })
+        if slides:
+            data["hero"]["slides"] = slides
+
+    for field_name in ("stats", "features", "testimonials", "pricing", "faq", "projects", "products", "services", "process", "blog"):
         items = _stream_items(specific, field_name)
         if items:
             data[field_name] = items
@@ -184,7 +326,7 @@ def _page_data(page) -> dict:
     # team members, gallery media, counters, the about experience/video
     # fields, and the home "methods" list — so the frontend never needs a
     # hardcoded fallback. Values are localized via _live_page().
-    _extract_seeded_blocks(specific, data)
+    _extract_seeded_blocks(specific, data, language)
 
     data.setdefault("cta", {
         "title": "Start learning with CTC Research",
@@ -194,7 +336,7 @@ def _page_data(page) -> dict:
     return data
 
 
-def _extract_seeded_blocks(specific, data: dict) -> None:
+def _extract_seeded_blocks(specific, data: dict, language: str | None = None) -> None:
     """Populate structured seed blocks the frontend renders directly.
 
     Keeps the Astro data contract explicit for team members, gallery media,
@@ -212,7 +354,9 @@ def _extract_seeded_blocks(specific, data: dict) -> None:
                     data.setdefault("team_subtitle", _plain(block.value.get("subtitle") or ""))
                 break
 
-    # About page: gallery, counters, experience + video (facts → about).
+    # About page: gallery, counters, experience + video (facts → about),
+    # plus the mission/skills/faq blocks. Each block type is processed
+    # independently (no early break) so every seeded block is exposed.
     facts = getattr(specific, "facts", None)
     if facts is not None:
         for block in facts:
@@ -230,7 +374,29 @@ def _extract_seeded_blocks(specific, data: dict) -> None:
                     data["experience_description"] = _plain(about["experience_description"])
                 if about.get("video_link"):
                     data["video_link"] = _plain(about["video_link"])
-                break
+            elif block.block_type == "mission":
+                mission = block.value
+                values = mission.get("values") or []
+                if values:
+                    data["mission_values"] = _plain(values)
+                    data.setdefault("mission_title", _plain(mission.get("title") or ""))
+                    data.setdefault("mission_subtitle", _plain(mission.get("subtitle") or ""))
+                    data.setdefault("mission_intro", _plain(mission.get("intro") or ""))
+            elif block.block_type == "skills":
+                skills = block.value
+                items = skills.get("items") or []
+                if items:
+                    data["skills"] = _plain(items)
+                    data.setdefault("skills_title", _plain(skills.get("title") or ""))
+                    data.setdefault("skills_subtitle", _plain(skills.get("subtitle") or ""))
+                    data.setdefault("skills_intro", _plain(skills.get("intro") or ""))
+            elif block.block_type == "faq":
+                faq = block.value
+                items = faq.get("items") or []
+                if items:
+                    data["faq"] = _plain(items)
+                    data.setdefault("faq_title", _plain(faq.get("title") or ""))
+                    data.setdefault("faq_subtitle", _plain(faq.get("subtitle") or ""))
 
     # Home page: why-choose "methods" list (CTA → why_choose_section).
     cta = getattr(specific, "CTA", None)
@@ -265,23 +431,34 @@ def _extract_seeded_blocks(specific, data: dict) -> None:
             logger.exception("Service listing unavailable")
 
     # Events page: active/visible Event rows so the Astro /events/ route
-    # renders the seeded calendar instead of a 404/fallback.
+    # renders the seeded calendar instead of a 404/fallback. When ``lang`` is
+    # requested, an EventTranslation overlay (if present) overrides the
+    # canonical English title/description/location — empty overlay fields fall
+    # back to the canonical row.
     if specific.__class__.__name__ == "EventPage":
         try:
             from apps.pages.accounts.models import Event
 
-            data["events"] = [
-                {
-                    "title": event.title,
-                    "description": event.description,
-                    "event_type": event.event_type,
-                    "event_type_label": event.get_event_type_display(),
-                    "location": event.location,
-                    "start_date": event.start_date.isoformat() if event.start_date else None,
-                    "end_date": event.end_date.isoformat() if event.end_date else None,
-                }
-                for event in Event.objects.filter(is_active=True, is_visible=True).order_by("start_date", "title")
-            ]
+            data["events"] = []
+            for event in Event.objects.filter(is_active=True, is_visible=True).order_by("start_date", "title"):
+                translation = None
+                if language:
+                    translation = event.translations.filter(language=language).first()
+                data["events"].append(
+                    {
+                        "title": (translation.title if translation and translation.title else event.title),
+                        "description": (
+                            translation.description if translation and translation.description else event.description
+                        ),
+                        "event_type": event.event_type,
+                        "event_type_label": event.get_event_type_display(),
+                        "location": (
+                            translation.location if translation and translation.location else event.location
+                        ),
+                        "start_date": event.start_date.isoformat() if event.start_date else None,
+                        "end_date": event.end_date.isoformat() if event.end_date else None,
+                    }
+                )
         except Exception:
             logger.exception("Event listing unavailable")
 
@@ -372,8 +549,11 @@ def site_settings_api(request: HttpRequest) -> JsonResponse:
         "meta_description": seo.get("meta_description", "") or getattr(settings_obj, "footer_description", ""),
         "meta_keywords": seo.get("meta_keywords", ""),
         "meta_author": seo.get("meta_author", ""),
+        "og_type": seo.get("og_type", "website"),
         "og_image_url": seo.get("og_image_url"),
         "twitter_handle": seo.get("twitter_handle", ""),
+        "robots": seo.get("robots", "index, follow"),
+        "canonical_url": seo.get("canonical_url", ""),
         "analytics_provider": analytics.get("provider", ""),
         "google_tag_manager_id": analytics.get("gtm_id", ""),
         "google_analytics_id": analytics.get("ga4_id", ""),
@@ -404,32 +584,46 @@ def site_settings_api(request: HttpRequest) -> JsonResponse:
 
 
 def _language_catalog() -> list[dict]:
-    """Return the seeded Precis language catalog, with a safe bootstrap fallback."""
-    fallback = [
-        {"code": "en", "name": "English", "native": "English", "dir": "ltr", "flag": "🇬🇧"},
-        {"code": "sv", "name": "Swedish", "native": "Svenska", "dir": "ltr", "flag": "🇸🇪"},
-        {"code": "fr", "name": "French", "native": "Français", "dir": "ltr", "flag": "🇫🇷"},
-        {"code": "de", "name": "German", "native": "Deutsch", "dir": "ltr", "flag": "🇩🇪"},
-        {"code": "es", "name": "Spanish", "native": "Español", "dir": "ltr", "flag": "🇪🇸"},
-        {"code": "ar", "name": "Arabic", "native": "العربية", "dir": "rtl", "flag": "🇸🇦"},
-        {"code": "pt-br", "name": "Portuguese (Brazil)", "native": "Português (Brasil)", "dir": "ltr", "flag": "🇧🇷"},
-    ]
+    """Return the Wagtail language catalog, with Django settings as bootstrap."""
     try:
         from apps.content.models.languages import SiteLanguage
+
         rows = [language.as_dict() for language in SiteLanguage.active()]
-        return rows or fallback
+        if rows:
+            return rows
     except Exception:
-        logger.exception("Precis language catalog unavailable")
-        return fallback
+        logger.debug("Precis language snippets are unavailable during bootstrap", exc_info=True)
+
+    from django_fusion.core.middlewares.language import language_context
+
+    return [
+        {
+            "code": item["code"],
+            "name": item["name"],
+            "native": item["name_local"],
+            "dir": item["dir"],
+            "flag": "",
+        }
+        for item in language_context().get("languages", [])
+    ]
 
 
+@ensure_csrf_cookie
 def content_languages_api(request: HttpRequest) -> JsonResponse:
-    """GET /apis/content/languages/ — seeded language choices for the frontend."""
+    """GET /apis/content/languages/ — seeded language choices for the frontend.
+
+    This endpoint also establishes the CSRF cookie used by the language
+    selector before it POSTs the durable session/cookie preference.
+    """
     languages = _language_catalog()
     return JsonResponse({
         "languages": languages,
         "coverage": {language["code"]: 0 for language in languages},
         "ui_languages": [language["code"] for language in languages],
+        "language": _requested_language(request),
+        "default_language": getattr(settings, "LANGUAGE_CODE", "en"),
+        "session_key": _language_session_key(),
+        "cookie_name": getattr(settings, "LANGUAGE_COOKIE_NAME", "django_language"),
     })
 
 
@@ -568,17 +762,45 @@ _FRAGMENT_TEMPLATES = {
     "services": "services/fragment.html",
 }
 
+# Dropdown children for nav items whose subpages are Astro-owned routes (not
+# Wagtail children) — mirrors the Precis Landing ``NAV_CHILDREN_CURATED``
+# contract so the About item carries its founder/research/education/services
+# organization without needing every subpage to exist in the Wagtail tree.
+# ``Team`` is deliberately NOT listed: it is already a first-class top-level
+# nav item (``team`` → ``/team/``), so listing it in the About dropdown would
+# render the label twice in the header.
+_NAV_CHILDREN_CURATED = {
+    "about": [
+        {"label": "Founder", "href": "/about/founder/"},
+        {"label": "Research", "href": "/about/research/"},
+        {"label": "Education", "href": "/about/education/"},
+        {"label": "Services", "href": "/services/"},
+    ],
+}
+
+
+def _nav_children_for(href: str, path: str) -> list[dict]:
+    """Return the curated dropdown children for a nav item (empty for leaves)."""
+    children = _NAV_CHILDREN_CURATED.get(href.strip("/")) or []
+    return [
+        {
+            "label": child["label"],
+            "href": child["href"],
+            "active": path.rstrip("/") == child["href"].rstrip("/")
+            or path.startswith(child["href"]),
+        }
+        for child in children
+    ]
+
 
 def navigation_api(request: HttpRequest) -> JsonResponse:
     language = _requested_language(request)
-    items = [{"label": "Home", "href": "/", "active": request.path == "/"}]
-    try:
-        from apps.content.models.publication import Publication
-
-        if Publication.objects.filter(is_published=True, language=language).exists():
-            items.append({"label": "Documents", "href": "/documents/", "active": request.path.startswith("/documents")})
-    except Exception:
-        logger.exception("Research document navigation unavailable")
+    items = [{
+        "label": "Home",
+        "href": "/",
+        "active": request.path == "/",
+        "children": [],
+    }]
     try:
         from wagtail.models import Locale
 
@@ -591,9 +813,6 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
         if home is None:
             home = Page.objects.live().filter(slug="home").first()
         children = home.get_children().live() if home else Page.objects.none()
-        locale = Locale.objects.filter(language_code=language).first()
-        if locale is not None:
-            children = children.filter(locale=locale)
         for child in children.order_by("title"):
             route = _FRONTEND_ROUTES.get(child.slug)
             if route is None:
@@ -601,17 +820,28 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
             specific = child.specific
             if not (getattr(specific, "show_in_nav", True) or getattr(specific, "show_in_menus", True)):
                 continue
+            label = _SHORT_PAGE_LABELS.get(child.slug, child.title)
+            if language != "en":
+                try:
+                    from apps.content.models.translations import PageTranslation
+                    translation = PageTranslation.for_page(child, language)
+                    if translation and translation.title:
+                        label = translation.title
+                except Exception:
+                    pass
             items.append({
-                "label": _SHORT_PAGE_LABELS.get(child.slug, child.title),
+                "label": label,
                 "href": route,
                 "active": request.path == route.rstrip("/") or request.path.startswith(route),
+                "children": _nav_children_for(route, request.path),
             })
     except Exception:
         # The API remains useful before the optional Wagtail seed command runs.
         items.extend([
-            {"label": "Courses", "href": "/courses/", "active": False},
-            {"label": "About", "href": "/about/", "active": False},
-            {"label": "Contact", "href": "/contact/", "active": False},
+            {"label": "Courses", "href": "/courses/", "active": False, "children": []},
+            {"label": "About", "href": "/about/", "active": False,
+             "children": _nav_children_for("/about/", request.path)},
+            {"label": "Contact", "href": "/contact/", "active": False, "children": []},
         ])
     return JsonResponse({
         "nav_items": items,
@@ -625,7 +855,7 @@ def page_data_api(request: HttpRequest, slug: str) -> JsonResponse:
     page = _live_page(slug, language)
     if page is None:
         return JsonResponse({"error": "Page not found"}, status=404)
-    data = _page_data(page)
+    data = _page_data(page, request, language=language)
     data["language"] = language
     data["available_languages"] = [item["code"] for item in _language_catalog()]
     return JsonResponse(data)
@@ -673,10 +903,18 @@ def page_fragment_api(request: HttpRequest, slug: str = "home") -> HttpResponse:
 
 
 def page_list_api(request: HttpRequest) -> JsonResponse:
+    """GET /apis/pages/ — published Wagtail pages for the active locale."""
+    language = _requested_language(request)
     pages = []
-    for page in Page.objects.live().filter(depth__gt=1).order_by("title"):
+    queryset = Page.objects.live().filter(depth__gt=1, locale__language_code=language).order_by("title")
+    for page in queryset:
         pages.append({"id": page.pk, "slug": page.slug, "title": page.title, "type": page.specific_class.__name__})
-    return JsonResponse({"pages": pages, "total": len(pages)})
+    return JsonResponse({
+        "pages": pages,
+        "total": len(pages),
+        "language": language,
+        "available_languages": [item["code"] for item in _language_catalog()],
+    })
 
 
 def contact_api(request: HttpRequest) -> JsonResponse:

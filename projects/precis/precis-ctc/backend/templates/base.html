@@ -7,7 +7,18 @@
     {% fusion_render_first_flag %}
     <title>{% block title %}{{ fusion_branding.site_name|default:"CTC Research" }}{% endblock title %}</title>
     {% block meta %}
-        <meta name="description" content="CTC Research — a medical research center for clinical evidence, biostatistics, and responsible medical AI.">
+        {% firstof page.search_description seo_context.meta_description as meta_description %}
+        <meta name="description" content="{{ meta_description }}">
+        {% if seo_context.meta_keywords %}<meta name="keywords" content="{{ seo_context.meta_keywords }}">{% endif %}
+        {% if seo_context.meta_author %}<meta name="author" content="{{ seo_context.meta_author }}">{% endif %}
+        <meta name="robots" content="{{ seo_context.robots|default:'index, follow' }}">
+        <meta property="og:type" content="{{ seo_context.og_type|default:'website' }}">
+        <meta property="og:title" content="{% firstof page.seo_title page.title %}">
+        <meta property="og:description" content="{{ meta_description }}">
+        {% if seo_context.og_image_url %}<meta property="og:image" content="{{ seo_context.og_image_url }}">{% endif %}
+        {% if seo_context.twitter_handle %}<meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@{{ seo_context.twitter_handle }}">{% endif %}
+        {% if seo_context.canonical_url %}<link rel="canonical" href="{{ seo_context.canonical_url }}{% if page %}{{ page.url }}{% endif %}">{% endif %}
     {% endblock meta %}
     {% fusion_branding %}
     {% block css %}

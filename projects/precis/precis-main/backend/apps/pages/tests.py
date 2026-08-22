@@ -366,7 +366,7 @@ class LandingPagesTestCase(TestCase):
 
     def test_edition_preview_uses_shared_slug_normalization(self):
         """Backend preview links resolve the same normalized edition slugs as Astro."""
-        for edition in ("community", "standard", "pro", "custom"):
+        for edition in ("community", "standard", "pro", "cloud"):
             with self.subTest(edition=edition):
                 response = self.client.get(f"/products/formint-pos/preview/{edition}/")
                 self.assertEqual(response.status_code, 200)
@@ -381,7 +381,7 @@ class LandingPagesTestCase(TestCase):
         """Edition cards on the product page link to /products/<slug>/preview/<edition>/."""
         response = self.client.get("/products/formint-pos/")
         self.assertEqual(response.status_code, 200)
-        for edition in ("community", "standard", "pro", "custom"):
+        for edition in ("community", "standard", "pro", "cloud"):
             self.assertIn(
                 f"/products/formint-pos/preview/{edition}/".encode(),
                 response.content,
@@ -393,14 +393,14 @@ class LandingPagesTestCase(TestCase):
         response = self.client.get("/pricing/")
         self.assertEqual(response.status_code, 200)
         # One preview link per edition card across the tabbed products —
-        # Formints 4 + Precis LMS 3 + Loop CRM 1 + vResume 2 = 10. Cypercloud
-        # is hidden and stays out of the pricing tabs.
-        self.assertGreaterEqual(response.content.count(b"Preview this edition"), 10)
+        # Formints 4 + Precis LMS 2 (Solo, Business) + Loop CRM 2 + Syntara 2
+        # + vResume 2 + CTC 2 = 14. ceptor-ai is hidden and stays out.
+        self.assertGreaterEqual(response.content.count(b"Preview this edition"), 14)
         for url in (
             b"/products/formint-pos/preview/community/",
             b"/products/formint-pos/preview/standard/",
             b"/products/lms/preview/solo/",
-            b"/products/lms/preview/standard/",
+            b"/products/lms/preview/business/",
             b"/products/cms/preview/community/",
             b"/products/vresume/preview/community/",
         ):
@@ -1075,39 +1075,37 @@ class LandingPagesTestCase(TestCase):
 
         product = ProductPage.objects.get(slug="lms")
         editions = product.get_editions()
-        self.assertEqual([edition["name"] for edition in editions], ["Solo", "Standard", "Custom"])
+        self.assertEqual([edition["name"] for edition in editions], ["Solo", "Business"])
 
         solo = editions[0]
-        standard = editions[1]
-        custom = editions[2]
+        business = editions[1]
         self.assertIn("SSO & role management", solo["features"])
         self.assertIn("Dedicated success manager", solo["features"])
         self.assertIn("High-end learning experience design", solo["features"])
         self.assertEqual(
-            standard["features"],
-            ["Everything in Solo", "Custom branding", "Full CMS (custom StreamField blocks)", "Full GSAP animations", "API access", "Bulk enrollments + cohorts", "HTMX forms", "SEO + analytics", "SSO & role management"],
+            business["features"],
+            ["Everything in Solo", "Custom branding", "API access"],
         )
-        self.assertEqual(custom["price"], "Custom")
+        self.assertEqual(business["price"], "$99")
 
         response = self.client.get("/products/lms/")
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"High-end learning experience design", response.content)
         self.assertNotIn(b"For solo creators publishing their first course", response.content)
         self.assertNotIn(b"Up to 3 courses", response.content)
-        self.assertIn(b"lg:grid-cols-3", response.content)
+        self.assertIn(b"lg:grid-cols-2", response.content)
 
         pricing_page = self.client.get("/pricing/")
         self.assertEqual(pricing_page.status_code, 200)
         self.assertIn(b"Precis LMS", pricing_page.content)
         self.assertIn(b"Solo", pricing_page.content)
-        self.assertIn(b"Standard", pricing_page.content)
-        self.assertIn(b"Custom", pricing_page.content)
+        self.assertIn(b"Business", pricing_page.content)
         self.assertNotIn(b"For solo creators publishing their first course", pricing_page.content)
-        self.assertIn(b"lg:grid-cols-3", pricing_page.content)
+        self.assertIn(b"lg:grid-cols-2", pricing_page.content)
 
         pricing = self.client.get("/apis/pricing/").json()
         lms = next(product for product in pricing["products"] if product["slug"] == "lms")
-        self.assertEqual([edition["name"] for edition in lms["editions"]], ["Solo", "Standard", "Custom"])
+        self.assertEqual([edition["name"] for edition in lms["editions"]], ["Solo", "Business"])
         self.assertEqual(ProductPage.objects.get(slug="cms").version, "coming soon")
         self.assertIn("SSO & role management", lms["editions"][0]["features"])
 
@@ -1224,13 +1222,12 @@ class LandingPagesTestCase(TestCase):
         SeedCommand().handle()
         self.assertFalse(ProductPage.objects.get(slug="lms").snippets)
 
-        # The generic FAQ lives on /faq/ only — the Products document no
-        # longer carries it, so stale names (django-bolt) never leak into the
-        # data road payload.
+        # The Products document carries the catalog FAQ (DEFAULT_FAQ_SECTIONS)
+        # — stale names (django-bolt) never leak into the data road payload.
         catalog = self.client.get("/apis/pages/products/")
         self.assertEqual(catalog.status_code, 200)
         self.assertNotIn(b"django-bolt", catalog.content)
-        self.assertFalse(ProductsPage.objects.first().faq)
+        self.assertTrue(ProductsPage.objects.first().faq)
 
         # Directly exercise the stale-FAQ upgrade path: an upgraded DB holds
         # the old answer naming the removed django-bolt; a --force re-seed
@@ -1272,8 +1269,13 @@ class LandingPagesTestCase(TestCase):
         refreshed = self.client.get("/apis/pages/products/")
         self.assertEqual(refreshed.status_code, 200)
         self.assertNotIn(b"django-bolt", refreshed.content)
-        # The stale FAQ is cleared (Products no longer carries the generic FAQ).
-        self.assertFalse(ProductsPage.objects.first().faq)
+        # The stale FAQ is refreshed from DEFAULT_FAQ_SECTIONS — still present,
+        # now without the removed library name.
+        self.assertTrue(ProductsPage.objects.first().faq)
+        self.assertNotIn(
+            b"django-bolt",
+            self.client.get("/apis/pages/products/").content,
+        )
 
     def test_static_preview_asset_is_registered_by_django(self):
         """Django's staticfiles finder registers organized preview captures.
@@ -1355,7 +1357,7 @@ class LandingPagesTestCase(TestCase):
         """The POS reference page lists Community · Standard · Pro · Cloud with per-edition pricing."""
         response = self.client.get("/products/formint-pos/")
         self.assertEqual(response.status_code, 200)
-        for marker in (b"Community", b"Standard", b"Pro", b"Custom", b"$0", b"$119", b"$129", b"SQLite", b"Rust", b"See it in motion"):
+        for marker in (b"Community", b"Standard", b"Pro", b"Cloud", b"$0", b"$119", b"$79", b"SQLite", b"Rust", b"See it in motion"):
             self.assertIn(marker, response.content)
         self.assertNotIn(b"No sidecar, no server needed", response.content)
         api = self.client.get("/apis/pages/formint-pos/").json()
@@ -1417,8 +1419,8 @@ class LandingPagesTestCase(TestCase):
         self.assertIn(b"/per year", response.content)
         self.assertIn(b"badge-offer", response.content)
         self.assertIn(b"50% off", response.content)
-        self.assertIn(b"$129", response.content)
-        self.assertIn(b"$258", response.content)
+        self.assertIn(b"$79", response.content)
+        self.assertIn(b"$158", response.content)
         # The tiered card system renders: outline Community, featured Pro (most
         # shipped), managed Custom (corner ribbon).
         self.assertIn(b"edition__card--outline", response.content)
@@ -1475,7 +1477,7 @@ class LandingPagesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         for marker in (
             b"Compare editions",
-            b"Community vs Standard vs Pro vs Custom",
+            b"Community vs Standard vs Pro vs Cloud",
             b"React 19 + TypeScript frontend",
             b"High-end interface design",
             b"Food &amp; beverage (F&amp;B) menu support",
@@ -1504,7 +1506,7 @@ class LandingPagesTestCase(TestCase):
         comparison = data.get("comparison", [])
         self.assertTrue(comparison, "products API should carry the comparison block")
         block = comparison[0]
-        self.assertEqual(block["columns"], ["Community", "Standard", "Pro", "Custom"])
+        self.assertEqual(block["columns"], ["Community", "Standard", "Pro", "Cloud"])
         self.assertGreaterEqual(len(block["rows"]), 32)
 
         # New capability rows are present with the right per-edition cells.
@@ -1583,12 +1585,13 @@ class LandingPagesTestCase(TestCase):
         self.assertFalse(ceptor.show_on_home)
         self.assertTrue(ceptor.hidden)
 
-        # Syntara is under development — hidden from every catalog surface.
-        self.assertNotIn("cypercloud", catalog_slugs)
-        self.assertNotIn("cypercloud", pricing_slugs)
-        self.assertNotIn("cypercloud", home_slugs)
-        self.assertNotIn("cypercloud", dropdown_slugs)
-        self.assertTrue(ProductPage.objects.get(slug="cypercloud").hidden)
+        # Syntara is a live product — visible on every catalog surface.
+        self.assertIn("cypercloud", catalog_slugs)
+        self.assertIn("cypercloud", pricing_slugs)
+        self.assertIn("cypercloud", home_slugs)
+        self.assertIn("cypercloud", dropdown_slugs)
+        self.assertFalse(ProductPage.objects.get(slug="cypercloud").hidden)
+        self.assertTrue(ProductPage.objects.get(slug="cypercloud").show_on_home)
 
         # Flagships remain visible on the homepage and in the product dropdown.
         for slug in ("formint-pos", "lms", "cms"):
@@ -1649,8 +1652,11 @@ class LandingPagesTestCase(TestCase):
             b"Browse the monorepo on GitHub",
         ):
             self.assertIn(marker, response.content)
-        for marker in (b"django-bolt", b"/products/ceptor-ai/", b"/products/cypercloud/", b"Syntara", b"The product line"):
+        for marker in (b"django-bolt", b"/products/ceptor-ai/", b"The product line"):
             self.assertNotIn(marker, response.content)
+        # Syntara and CTC are now live product cards in the merged catalog.
+        self.assertIn(b"/products/cypercloud/", response.content)
+        self.assertIn(b"Syntara", response.content)
 
     def test_brand_page_renders_identity_boards(self):
         """The /brand/ page renders one identity board per live product with
@@ -1667,10 +1673,8 @@ class LandingPagesTestCase(TestCase):
         ):
             self.assertIn(marker, response.content)
         # Every live brand mark renders with its own data-brand chip.
-        for data_brand in (b"data-brand=\"formints\"", b"data-brand=\"precis\"", b"data-brand=\"loop\"", b"data-brand=\"vresume\""):
+        for data_brand in (b"data-brand=\"formints\"", b"data-brand=\"precis\"", b"data-brand=\"loop\"", b"data-brand=\"vresume\"", b"data-brand=\"syntara\"", b"data-brand=\"precis-ctc\""):
             self.assertIn(data_brand, response.content)
-        # Syntara is hidden from the catalog — no board, no chip.
-        self.assertNotIn(b"data-brand=\"syntara\"", response.content)
 
     def test_product_logo_styles_assigned(self):
         """Each seeded product carries its own constructed logo style — the
@@ -1832,7 +1836,7 @@ class LandingPagesTestCase(TestCase):
         data = self.client.get("/apis/brand/").json()
         boards = data.get("boards", [])
         slugs = [b["slug"] for b in boards]
-        self.assertEqual(slugs, ["formint-pos", "lms", "cms", "vresume"])
+        self.assertEqual(slugs, ["formint-pos", "lms", "cms", "cypercloud", "vresume", "precis-ctc"])
         board = boards[0]
         self.assertEqual(board["name"], "Formints")
         self.assertEqual(board["mark"], "crest")
@@ -1853,11 +1857,10 @@ class LandingPagesTestCase(TestCase):
         # The products listing carries a trigger per card.
         listing = self.client.get("/products/")
         self.assertEqual(listing.status_code, 200)
-        for slug in ("formint-pos", "lms", "cms", "vresume"):
+        for slug in ("formint-pos", "lms", "cms", "cypercloud", "vresume", "precis-ctc"):
             self.assertIn(f'data-open-brand="{slug}"'.encode(), listing.content)
         # Hidden products get no trigger.
         self.assertNotIn(b'data-open-brand="ceptor-ai"', listing.content)
-        self.assertNotIn(b'data-open-brand="cypercloud"', listing.content)
 
     def test_display_mode_mixin_applied_to_product_and_team_pages(self):
         """DisplayModeMixin (page / modal / both) covers ProductPage + TeamPage
@@ -2151,11 +2154,11 @@ class LandingPagesTestCase(TestCase):
             b"Formints",
             b"Precis LMS",
             b"Loop",
+            b"Syntara",
             b"vResume",
             b"Read the FAQ",
         ):
             self.assertIn(marker, response.content)
-        self.assertNotIn(b"Syntara", response.content)
         # The generic FAQ moved to /faq/ — pricing just links to it.
         self.assertNotIn(b"Frequently asked questions", response.content)
         # No legacy generic tiers; hidden products get no tab and no link.
@@ -2165,7 +2168,7 @@ class LandingPagesTestCase(TestCase):
         data = self.client.get("/apis/pricing/").json()
         slugs = [p["slug"] for p in data["products"]]
         self.assertEqual(
-            slugs, ["formint-pos", "lms", "cms", "vresume"], slugs
+            slugs, ["formint-pos", "lms", "cms", "cypercloud", "vresume", "precis-ctc"], slugs
         )
 
     def test_faq_and_privacy_not_in_nav(self):

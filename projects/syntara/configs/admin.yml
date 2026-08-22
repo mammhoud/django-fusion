@@ -1,0 +1,25 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# syntara (Cypercloud) — admin.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Admin panel + design-system (CSS panel) configuration. Syntara is a
+# Django-rendered AI chat/customizer (no Astro road), so the CSS panel is the
+# webpack-bundled design system served after collectstatic.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  ADMIN:
+    panel_path: /admin/
+    django_admin_path: /django-admin/
+    wagtail_site_name: "Syntara"
+    wagtailadmin_base_url: "http://localhost:5073"
+
+  CSS_PANEL:
+    source: assets/styles
+    compiled: assets/static/css/fusion.css
+    build_command: "make build (webpack)"
+    served_at: /static/css/fusion.css
+    tailwind: false
+
+development:
+  ADMIN:
+    wagtailadmin_base_url: "http://localhost:5073"

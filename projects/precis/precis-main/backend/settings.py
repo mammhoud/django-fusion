@@ -1,5 +1,5 @@
 """
-Landing-fusion backend settings.
+Precis Landing backend settings.
 
 A self-contained Django + Wagtail configuration for the landing-only slice of
 the ASTRO migration. Unlike the shared ``configs.default`` layer used by the
@@ -13,12 +13,51 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ── Layered config cascade ───────────────────────────────────────────────────
+# Sources env-read *defaults* from the project configs dir (configs/README.md):
+# shared Env YAML → configs/*.yml → Env/_site.yml → .env, with environment
+# variables always winning. The cascade is optional sugar — a container or
+# checkout without configs/ behaves exactly as before (env-only).
+# See libs/django-fusion/src/django_fusion/config/project.py.
+try:
+    from django_fusion.config.project import load_config
+
+    _cascade = load_config(BASE_DIR)
+except Exception:  # pragma: no cover — cascade is optional; never break boot
+    _cascade = None
+
+
+def _cfg(key: str, default=None):
+    """Return a cascade value (env already wins inside the cascade) or default."""
+    if _cascade is None:
+        return default
+    value = _cascade.get(key, default)
+    return default if value is None else value
+
+
+def _cfg_list(key: str, default: str) -> str:
+    """Return a cascade list/string as a comma-joined string or default."""
+    value = _cfg(key, None)
+    if isinstance(value, (list, tuple)):
+        return ",".join(str(item) for item in value)
+    if value:
+        return str(value)
+    return default
+
+
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "precis-main-dev-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 # Default to backend + localhost only (secure fallback). Production
 # docker-compose.yml sets DJANGO_ALLOWED_HOSTS explicitly with the public
 # domains appended, so this default never tightens a deployed site.
-ALLOWED_HOSTS = [host.strip() for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,precis-main-backend,precis-main-frontend").split(",") if host.strip()]
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get(
+        "DJANGO_ALLOWED_HOSTS",
+        _cfg_list("SITE.allowed_hosts", "localhost,127.0.0.1,precis-main-backend,precis-main-frontend"),
+    ).split(",")
+    if host.strip()
+]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -66,6 +105,9 @@ INSTALLED_APPS = [
     "taggit",
     # django-fusion — unified fragment/layout rendering pipeline
     "django_fusion",
+    # django-dramatiq — background workers (rundramatiq) consuming the Redis
+    # task broker; powers queued email delivery via plugins.workers.*
+    "django_dramatiq",
     # django-webpack-loader — serves versioned bundles (webpack/precis-landing.config.js)
     "webpack_loader",
     # Landing apps (precis-lms-style organization)
@@ -83,6 +125,34 @@ INSTALLED_APPS = [
     "apps.domain",
 ]
 
+# ── Dramatiq worker broker ───────────────────────────────────────────────────
+# django-dramatiq must be told to use the Redis broker explicitly; without
+# this it imports every dramatiq broker module (incl. RabbitMQ, which needs
+# the optional `pika` dependency) at AppConfig.ready() and crashes. Mirror of
+# projects/precis/configs/base/cache.py for the standalone landing settings.
+_REDIS_BROKER_URL = os.environ.get(
+    "DRAMATIQ_BROKER_URL",
+    os.environ.get("REDIS_URL", "redis://localhost:6379/1"),
+)
+DRAMATIQ_BROKER = {
+    "BROKER": "dramatiq.brokers.redis.RedisBroker",
+    "OPTIONS": {
+        "url": _REDIS_BROKER_URL,
+    },
+    "MIDDLEWARE": [
+        "dramatiq.middleware.AgeLimit",
+        "dramatiq.middleware.TimeLimit",
+        "dramatiq.middleware.Callbacks",
+        "dramatiq.middleware.Retries",
+        "django_dramatiq.middleware.AdminMiddleware",
+        "django_dramatiq.middleware.DbConnectionsMiddleware",
+    ],
+}
+FUSION_TASKS = {
+    "BACKEND": "django_fusion.tasks.backends.dramatiq.DramatiqBackend",
+    "BROKER_URL": _REDIS_BROKER_URL,
+}
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     # Serve /static/ from STATIC_ROOT in production (traefik routes /static
@@ -91,6 +161,7 @@ MIDDLEWARE = [
     # compiled fusion.css after `make css` + collectstatic.
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -98,6 +169,9 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    # Shared django-fusion language contract: query → session → cookie →
+    # negotiated/default language, with the configured Django cookie settings.
+    "django_fusion.core.middlewares.language.DefaultLanguageMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "apps.handlers.middleware.LandingCorsMiddleware",
 ]
@@ -105,7 +179,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "urls"
 
 _PROJECT_DIR = BASE_DIR.parent  # projects/
-# Landing-fusion owns a colocated assets directory at
+# Precis Landing owns a colocated assets directory at
 # projects/precis/precis-landing/assets (not the monorepo-level projects/assets).
 _ASSETS_DIR = BASE_DIR.parent / "assets"
 
@@ -160,26 +234,56 @@ WSGI_APPLICATION = "wsgi.application"
 APPEND_SLASH = False
 
 # ── Database ───────────────────────────────────────────────────────
-# Local dev defaults to SQLite. Set DJANGO_DB_ENGINE=django.db.backends.postgresql
-# (or USE_POSTGRES=1) to connect to the shared ``postgres`` container
-# (application/databases) with this site's own database (DB_NAME_LANDING →
-# db_precis_landing), matching the other Precis/Fusion sites on the shared cluster.
-if os.environ.get("DJANGO_DB_ENGINE", "") == "django.db.backends.postgresql" or os.environ.get("USE_POSTGRES", "0") == "1":
+# Database selection is wired by *type* through the project config cascade
+# (configs/database.yml — DATABASE.type: sqlite | postgres), with environment
+# variables always winning:
+#
+#   DB_TYPE=sqlite|postgres   → authoritative shortcut (used by Compose/CI)
+#   DJANGO_DB_ENGINE          → django.db.backends.postgresql forces postgres
+#   USE_POSTGRES=1            → legacy flag, forces postgres
+#   DATABASE.type (cascade)   → fallback when no env var is set
+#
+# The active type picks its connection map from the cascade
+# (DATABASE.sqlite / DATABASE.postgres), so forcing a type via env always
+# resolves the right name/user/host/port. Postgres connects to the shared
+# ``postgres`` container (application/databases) with this site's own database
+# (DB_NAME_LANDING → db_precis_landing); the password comes from .env
+# (POSTGRES_PASSWORD / DJANGO_DB_PASSWORD) — never from YAML.
+_db_type = os.environ.get("DB_TYPE", "").strip().lower()
+if _db_type == "sqlite":
+    _use_postgres = False
+elif _db_type in ("postgres", "postgresql"):
+    _use_postgres = True
+else:
+    _use_postgres = (
+        os.environ.get("DJANGO_DB_ENGINE", "") == "django.db.backends.postgresql"
+        or os.environ.get("USE_POSTGRES", "0") == "1"
+        or str(_cfg("DATABASE.type", "sqlite")).lower() in {"postgres", "postgresql"}
+    )
+
+if _use_postgres:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DJANGO_DB_NAME", "db_precis_landing"),
-            "USER": os.environ.get("DJANGO_DB_USER", "admin"),
-            "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD", ""),
-            "HOST": os.environ.get("DJANGO_DB_HOST", "postgres"),
-            "PORT": os.environ.get("DJANGO_DB_PORT", "5432"),
+            "NAME": os.environ.get("DJANGO_DB_NAME") or _cfg("DATABASE.postgres.name", "db_precis_landing"),
+            "USER": os.environ.get("DJANGO_DB_USER") or _cfg("DATABASE.postgres.user", "admin"),
+            "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD") or _cfg("DATABASE.postgres.password", ""),
+            "HOST": os.environ.get("DJANGO_DB_HOST") or _cfg("DATABASE.postgres.host", "postgres"),
+            "PORT": os.environ.get("DJANGO_DB_PORT") or str(_cfg("DATABASE.postgres.port", "5432")),
         }
     }
 else:
+    _db_sqlite_name = os.environ.get("DJANGO_DB_PATH")
+    if _db_sqlite_name:
+        _db_sqlite_path = Path(_db_sqlite_name)
+    else:
+        _db_sqlite_path = Path(_cfg("DATABASE.sqlite.name", "")) if _cfg("DATABASE.sqlite.name", "") else BASE_DIR / "db.sqlite3"
+        if not _db_sqlite_path.is_absolute():
+            _db_sqlite_path = BASE_DIR / _db_sqlite_path
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": Path(os.environ.get("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))),
+            "NAME": _db_sqlite_path,
         }
     }
 
@@ -234,7 +338,10 @@ ACCOUNT_PASSWORD_RESET_URL = "/accounts/password/reset/"
 # the server log (visible in the preview run); swap to SMTP in production via
 # EMAIL_BACKEND/EMAIL_HOST/… env vars (see .env.example — Gmail SMTP for
 # structa.cloud@gmail.com).
-DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Structa Cloud <structa.cloud@gmail.com>")
+DEFAULT_FROM_EMAIL = os.environ.get(
+    "DEFAULT_FROM_EMAIL",
+    _cfg("SITE.default_email", "Structa Cloud <structa.cloud@gmail.com>"),
+)
 EMAIL_BACKEND = os.environ.get(
     "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
 )
@@ -337,10 +444,34 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ── i18n ───────────────────────────────────────────────────────────
-LANGUAGE_CODE = "en"
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "en")
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+# Shared Django/Wagtail language catalog. The Wagtail SiteLanguage snippet
+# controls editorial visibility; these settings validate requests and provide
+# the default catalog before snippets are seeded.
+FUSION_LANGUAGES = [
+    ("en", _("English")),
+    ("ar", _("Arabic")),
+    ("sv", _("Swedish")),
+    ("fr", _("French")),
+    ("de", _("German")),
+    ("es", _("Spanish")),
+    ("pt", _("Portuguese")),
+]
+LANGUAGES = FUSION_LANGUAGES
+LANGUAGE_SESSION_KEY = os.environ.get("LANGUAGE_SESSION_KEY", "_language")
+LANGUAGE_COOKIE_NAME = os.environ.get("LANGUAGE_COOKIE_NAME", "django_language")
+LANGUAGE_COOKIE_AGE = int(os.environ.get("LANGUAGE_COOKIE_AGE", str(60 * 60 * 24 * 365)))
+LANGUAGE_COOKIE_DOMAIN = os.environ.get("LANGUAGE_COOKIE_DOMAIN") or None
+LANGUAGE_COOKIE_PATH = os.environ.get("LANGUAGE_COOKIE_PATH", "/")
+LANGUAGE_COOKIE_SECURE = os.environ.get("LANGUAGE_COOKIE_SECURE", "0").lower() in {"1", "true", "yes", "on"}
+LANGUAGE_COOKIE_HTTPONLY = os.environ.get("LANGUAGE_COOKIE_HTTPONLY", "0").lower() in {"1", "true", "yes", "on"}
+LANGUAGE_COOKIE_SAMESITE = os.environ.get("LANGUAGE_COOKIE_SAMESITE", "Lax")
 
 # Supported languages — mirrors the Astro frontend translations module.
 # Swedish (sv) added per request; Arabic (ar) has full RTL support.
@@ -371,20 +502,9 @@ LOCALE_PATHS = [
     BASE_DIR / "backend" / "locale",
 ]
 
-# Locale middleware — detects the user's language preference from the
-# ``django_language`` cookie (set by the Astro language switcher) or the
-# Accept-Language header, and activates it for the request.
-MIDDLEWARE.insert(
-    MIDDLEWARE.index("django.contrib.sessions.middleware.SessionMiddleware") + 1,
-    "django.middleware.locale.LocaleMiddleware",
-)
-# After LocaleMiddleware: activate the locale from the landing ?lang= / cookie
-# resolver so {% translate %} tags on server-rendered pages and fragments
-# follow the same language the content-overlay API uses.
-MIDDLEWARE.insert(
-    MIDDLEWARE.index("django.middleware.locale.LocaleMiddleware") + 1,
-    "apps.handlers.middleware.LandingLocaleMiddleware",
-)
+# The shared django-fusion middleware above owns query/session/cookie/header
+# negotiation for both full documents and HTMX fragments. Keep this settings
+# module free of a second locale resolver.
 
 # i18n URL pattern — when True, Django prefixes URLs with the language code
 # (e.g. /en/about/, /ar/about/). The landing site uses cookie-based switching
@@ -396,6 +516,9 @@ STATIC_URL = "/static/"
 # Static files are owned by this standalone landing backend. Keep source and
 # collected paths beside settings.py so local Django, the Docker image, and
 # the proxy all resolve the same product screenshots and compiled CSS.
+# The full read → output → deploy reference (STATICFILES_DIRS / STATIC_ROOT /
+# MEDIA_ROOT / bundles / fusion.css / Docker volumes) lives in
+# configs/defaults.yml under ``STATIC:`` and is printed by `make config-show`.
 _BACKEND_DIR = Path(__file__).resolve().parent
 STATIC_ROOT = _BACKEND_DIR / "assets" / "staticfiles"
 MEDIA_URL = "/media/"
@@ -412,8 +535,18 @@ STATICFILES_DIRS = [
 ]
 
 # ── Wagtail ────────────────────────────────────────────────────────
-WAGTAIL_SITE_NAME = "StructAI Softwares"
-WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "http://localhost:8074")
+# Identity defaults come from the project config cascade (configs/admin.yml +
+# configs/site.yml) so the admin panel and domains stay in one place; env vars
+# still win. Proxy contract: /admin → Wagtail login, /django-admin → Django
+# admin login (see application/proxy/README.md).
+WAGTAIL_SITE_NAME = os.environ.get(
+    "WAGTAIL_SITE_NAME",
+    _cfg("SITE.wagtail_site_name", _cfg("ADMIN.wagtail_site_name", "StructAI Softwares")),
+)
+WAGTAILADMIN_BASE_URL = os.environ.get(
+    "WAGTAILADMIN_BASE_URL",
+    _cfg("ADMIN.wagtailadmin_base_url", "http://localhost:8074"),
+)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -492,5 +625,6 @@ FUSION_TASK_SITE_NAME = os.environ.get("FUSION_TASK_SITE_NAME", "precis-main")
 FUSION_TASK_EXECUTION_MODEL = os.environ.get("FUSION_TASK_EXECUTION_MODEL", "tasks.TaskExecution")
 FUSION_TASK_MODULES = [
     "plugins.workers.email_tasks",
+    "plugins.workers.legacy_email_tasks",
     "plugins.workers.content_tasks",
 ]

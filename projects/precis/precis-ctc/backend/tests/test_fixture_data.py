@@ -430,6 +430,33 @@ class TestFixtureData(TestCase):
         assert labels["/contact/"] == "Contact"
         assert labels["/courses/"] == "Courses"
 
+    def test_about_navigation_children_feed_dropdown(self):
+        """The About nav item carries its curated dropdown (founder/research/
+        education/services), matching the Precis Landing organization contract.
+
+        ``Team`` is deliberately absent from the dropdown: it is already a
+        first-class top-level nav item (``/team/``), so including it here would
+        render the label twice in the header.
+        """
+        response = self.client.get("/apis/navigation/")
+        assert response.status_code == 200
+        by_href = {item["href"]: item for item in response.json()["nav_items"]}
+        about = by_href["/about/"]
+        assert [child["href"] for child in about["children"]] == [
+            "/about/founder/",
+            "/about/research/",
+            "/about/education/",
+            "/services/",
+        ]
+        assert about["children"][0]["label"] == "Founder"
+        # Team remains a top-level nav item exactly once in the header.
+        team_slugs = [
+            item["href"] for item in response.json()["nav_items"] if item["href"] == "/team/"
+        ]
+        assert team_slugs == ["/team/"]
+        # Leaf items carry an empty children list for the shared header contract.
+        assert by_href["/courses/"]["children"] == []
+
     def test_home_page_data(self):
         response = self.client.get("/api/pages/home/data/")
         assert response.status_code == 200
@@ -660,6 +687,13 @@ class TestFixtureData(TestCase):
         assert "Medical AI & Digital Health" in data["specializations"]
         assert "Clinical Data" in data["tags"]
         assert isinstance(data["overview"], (str, list))
+        # The learning path must surface the seeded modules and their lessons
+        # (regression: the API used to filter a nonexistent `is_published`
+        # field, silently returning an empty syllabus).
+        assert data["modules"], "course detail API must expose modules"
+        assert all(
+            isinstance(m.get("lessons"), list) and m["lessons"] for m in data["modules"]
+        ), "every module must expose at least one lesson"
 
     def test_courses_filters_api(self):
         response = self.client.get("/api/courses/filters/")
@@ -728,6 +762,229 @@ class TestFixtureData(TestCase):
             "/api/events/00000000-0000-0000-0000-000000000000/"
         )
         assert response.status_code == 404
+
+    # ── Event translations (EventTranslation overlay) ─────────────
+
+    def test_events_api_serves_localized_titles(self):
+        """?lang= resolves the EventTranslation overlay for list rows."""
+        response = self.client.get("/api/events/?lang=fr")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        titles = {e.get("title") for e in data.get("results", [])}
+        assert "Atelier : l'IA dans la rédaction médicale" in titles
+        assert "AI in Medical Writing Workshop" not in titles
+
+    def test_events_api_serves_localized_location(self):
+        """The overlay location replaces the canonical venue."""
+        response = self.client.get("/api/events/?lang=de")
+        data = json.loads(response.content)
+        rows = {e.get("title"): e.get("location") for e in data.get("results", [])}
+        assert any("Online" in loc for loc in rows.values())
+
+    def test_events_page_api_serves_localized_events(self):
+        """The /apis/pages/events/ road also merges the overlay."""
+        response = self.client.get("/apis/pages/events/?lang=es")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        titles = {e.get("title") for e in data.get("events", [])}
+        assert "Conferencia anual de IA médica 2026" in titles
+
+    def test_events_page_hero_subtitle_is_localized(self):
+        """EventPage intro_text feeds the localized hero subtitle."""
+        response = self.client.get("/apis/pages/events/?lang=sv")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        subtitle = data.get("hero", {}).get("subtitle", "")
+        assert "Workshops, symposier och akademiska skrivsessioner" in subtitle
+
+    # ── Arabic RTL overlay coverage (EventTranslation) ─────────────
+
+    # The four seeded events that are visible + active; the fifth
+    # (Medical Writers Meetup) is seeded inactive and must stay off the
+    # public roads (see test_arabic_overlay_covers_inactive_event_below).
+    AR_EVENT_TITLES = {
+        "ورشة عمل الذكاء الاصطناعي في الكتابة الطبية",
+        "ندوة البحث السريري المدفوع بالبيانات",
+        "المؤتمر السنوي للذكاء الاصطناعي الطبي 2026",
+        "ندوة عبر الإنترنت حول أفضل ممارسات مراجعة الأقران",
+    }
+    AR_EVENT_LOCATIONS = {
+        "افتراضي - عبر زوم",
+        "قاعة المؤتمرات A، المبنى 3",
+        "مركز المؤتمرات الكبير",
+        "عبر الإنترنت",
+    }
+
+    def test_events_api_serves_arabic_overlay_titles(self):
+        """?lang=ar resolves the Arabic EventTranslation overlay (no English fallback)."""
+        response = self.client.get("/api/events/?lang=ar")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        titles = {e.get("title") for e in data.get("results", [])}
+        assert titles == self.AR_EVENT_TITLES, titles
+        # Every Arabic title is RTL content — none of the canonical English
+        # titles may leak through the overlay merge.
+        assert "AI in Medical Writing Workshop" not in titles
+
+    def test_events_api_serves_arabic_overlay_locations(self):
+        """The Arabic overlay replaces the canonical venue with RTL text."""
+        response = self.client.get("/api/events/?lang=ar")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        locations = {e.get("location") for e in data.get("results", [])}
+        assert locations == self.AR_EVENT_LOCATIONS, locations
+        assert "Virtual - Zoom" not in locations
+
+    def test_events_page_api_serves_arabic_overlay(self):
+        """The /apis/pages/events/ road also merges the Arabic overlay."""
+        response = self.client.get("/apis/pages/events/?lang=ar")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        assert data.get("language") == "ar"
+        titles = {e.get("title") for e in data.get("events", [])}
+        assert titles == self.AR_EVENT_TITLES, titles
+        locations = {e.get("location") for e in data.get("events", [])}
+        assert locations == self.AR_EVENT_LOCATIONS, locations
+
+    def test_events_arabic_hero_subtitle_is_localized(self):
+        """The Arabic EventPage intro_text feeds the localized hero subtitle."""
+        response = self.client.get("/apis/pages/events/?lang=ar")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        subtitle = data.get("hero", {}).get("subtitle", "")
+        assert "ورش عمل وندوات وجلسات كتابة أكاديمية" in subtitle
+
+    def test_arabic_overlay_covers_inactive_event(self):
+        """The seeded inactive event still carries its Arabic overlay.
+
+        The fifth event (Medical Writers Meetup) is seeded with
+        ``is_active=False`` so it is filtered from both public roads, but its
+        Arabic overlay must still exist in the DB — the full seed translated
+        all five events, and toggling the event live later must surface RTL
+        content immediately.
+        """
+        from apps.handlers.models import Event, EventTranslation
+
+        event = Event.objects.get(title="Medical Writers Meetup")
+        translation = EventTranslation.objects.filter(
+            event=event, language="ar"
+        ).first()
+        assert translation is not None
+        assert translation.title == "لقاء الكتاب الطبيين"
+        assert translation.location == "صالة الكتاب، وسط المدينة"
+
+        # Inactive → excluded from the list and page roads.
+        for url in ("/api/events/?lang=ar", "/apis/pages/events/?lang=ar"):
+            data = json.loads(self.client.get(url).content)
+            rows = data.get("results", data.get("events", []))
+            assert "لقاء الكتاب الطبيين" not in {e.get("title") for e in rows}
+
+    def test_language_catalog_exposes_arabic_as_rtl(self):
+        """The language catalog marks ar as RTL for the frontend layout switch."""
+        response = self.client.get("/apis/content/languages/")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        languages = {item["code"]: item for item in data.get("languages", [])}
+        assert "ar" in languages
+        assert languages["ar"]["dir"] == "rtl"
+        assert all(
+            item["dir"] == "ltr" for code, item in languages.items() if code != "ar"
+        )
+
+    # ── LMS fixture reload idempotency ────────────────────────────
+
+    def test_load_course_fixtures_replace_is_idempotent(self):
+        """A second ``load_course_fixtures --replace`` run must not raise.
+
+        Regression: the LMS tables carry unique constraints (Course.title /
+        slug), so re-running the loader on an already-populated database
+        aborted with ``duplicate key value violates unique constraint
+        "lms_course_title_key"``.  ``--replace`` wipes fixture-owned rows
+        first, making the load re-runnable inside the ``load_data`` flow.
+        """
+        from apps.handlers.models import Event, EventTranslation
+        from apps.learning.models import Course, CourseTag, Module, Specialization
+
+        # First run already happened in setUpTestData — assert populated.
+        assert Course.objects.filter(title="Clinical Trial Design & Protocol Development").exists()
+        assert Event.objects.count() == 5
+        assert EventTranslation.objects.count() == 30
+        assert Specialization.objects.count() >= 5
+        assert CourseTag.objects.count() >= 12
+        assert Module.objects.exists()
+
+        # Second run with --replace must complete without IntegrityError.
+        call_command("load_course_fixtures", verbosity=0, replace=True)
+
+        # Data is reloaded, not accumulated.
+        assert Course.objects.filter(title="Clinical Trial Design & Protocol Development").exists()
+        assert Course.objects.count() == 14
+        assert Event.objects.count() == 5
+        assert EventTranslation.objects.count() == 30
+
+    def test_load_course_fixtures_without_replace_is_non_destructive(self):
+        """Plain ``load_course_fixtures`` (no --replace) only adds missing rows."""
+        from apps.handlers.models import Event
+
+        before = Event.objects.count()
+        call_command("load_course_fixtures", verbosity=0)
+        # Events already exist, so a non-destructive load leaves them alone.
+        assert Event.objects.count() == before
+
+    # ── Team page completeness (full 10-member roster, no fallbacks) ─
+
+    def test_team_pages_carry_full_roster_per_locale(self):
+        """Every locale team page exposes the full translated roster."""
+        from apps.content.models.pages.team import TeamPage
+
+        team_pages = TeamPage.objects.all()
+        assert team_pages.count() == 7  # en, ar, de, es, fr, pt-br, sv
+        for page in team_pages:
+            block = page.body[0].value if page.body else {}
+            members = block.get("team_members", []) if isinstance(block, dict) else []
+            assert len(members) == 10, (
+                f"{page.locale.language_code} team page has {len(members)} members"
+            )
+            assert all(m.get("bio") for m in members), (
+                f"{page.locale.language_code} team page has empty bios"
+            )
+
+    def test_team_api_serves_localized_roster(self):
+        """The Astro team road returns localized member bios."""
+        response = self.client.get("/apis/pages/team/?lang=de")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        assert data.get("team_title") == "Lernen Sie die Innovatoren kennen"
+        members = data.get("team_members", [])
+        assert len(members) == 10
+        assert all(m.get("bio") for m in members)
+
+    def test_sv_team_page_served_without_fallback(self):
+        """sv resolves its own team page (no English fallback)."""
+        response = self.client.get("/apis/pages/team/?lang=sv")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        assert data.get("team_title") == "Möt innovatörerna"
+        assert len(data.get("team_members", [])) == 10
+
+    # ── About mission/skills/faq translations ─────────────────────
+
+    def test_about_mission_blocks_localized(self):
+        """Non-English about pages expose translated mission/skills/faq."""
+        for lang, expected in (("de", "Warum CTC Research"), ("es", "Por qué CTC Research")):
+            response = self.client.get(f"/apis/pages/about/?lang={lang}")
+            assert response.status_code == 200
+            data = json.loads(response.content)
+            assert data.get("mission_title") == expected, lang
+            assert data.get("skills_title"), lang
+            assert data.get("faq"), lang
+
+    def test_sv_about_page_localized(self):
+        """sv about page exposes the Swedish mission copy."""
+        response = self.client.get("/apis/pages/about/?lang=sv")
+        assert response.status_code == 200
+        data = json.loads(response.content)
+        assert data.get("mission_title") == "Varför CTC Research"
 
     # ── API — research documents ──────────────────────────────────
 

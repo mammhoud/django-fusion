@@ -1,5 +1,5 @@
 """
-LandingFusion navigation — configured django-fusion Landing module.
+Precis Landing navigation — configured django-fusion Landing module.
 
 Provides navigation context consumed by:
 - ``apps.pages.api.navigation_api`` → GET /apis/navigation/
@@ -70,7 +70,7 @@ NAV_CHILDREN_CURATED: dict[str, list[dict[str, str]]] = {
 
 
 class LandingModule(Landing):
-    """Landing-fusion marketing navigation module (django-fusion Landing)."""
+    """Precis Landing marketing navigation module (django-fusion Landing)."""
 
     title = "StructAI Softwares"
     app_name = "landing_module"

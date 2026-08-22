@@ -1,1 +1,1 @@
-"""Landing-fusion auth — allauth adapters + templates."""
+"""Precis Landing auth — allauth adapters + templates."""

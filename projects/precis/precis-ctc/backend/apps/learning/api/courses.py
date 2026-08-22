@@ -165,14 +165,17 @@ def course_detail(request, slug):
 
         modules_data = []
         try:
-            for mod in course.modules.filter(is_published=True).order_by("order"):
+            # Module/Lesson carry no `is_published` flag — active lessons and
+            # the module order define the learning path (see
+            # apps/learning/models/courses/{detail,specification}.py).
+            for mod in course.modules.order_by("order"):
                 lessons = [
                     {
                         "id": ln.pk, "title": ln.title,
                         "is_preview": getattr(ln, "is_preview", False),
                         "duration": getattr(ln, "duration", 0),
                     }
-                    for ln in mod.lessons.filter(is_published=True).order_by("order")
+                    for ln in mod.lessons.filter(is_active=True).order_by("order")
                 ]
                 modules_data.append({
                     "id": mod.pk, "title": mod.title,
@@ -180,7 +183,8 @@ def course_detail(request, slug):
                     "lessons": lessons,
                 })
         except Exception:
-            pass
+            logger.exception("Error loading course modules")
+
 
         instructor = getattr(course, "instructor", None)
         instructor_profile = getattr(instructor, "profile", None) if instructor else None

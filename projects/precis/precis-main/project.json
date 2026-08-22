@@ -18,6 +18,17 @@
     "clean": {
       "executor": "nx:run-commands",
       "options": { "command": "npm run clean", "cwd": "projects/precis/precis-main" }
+    },
+    "redeploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "if [ -f docker-compose.override.yml ]; then docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --build; else docker compose -f docker-compose.yml up -d --build; fi",
+        "cwd": "projects/precis/precis-main"
+      }
+    },
+    "cleanup": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make -C ../../.. cleanup", "cwd": "projects/precis/precis-main" }
     }
   }
 }

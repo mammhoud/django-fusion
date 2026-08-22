@@ -1,5 +1,5 @@
 /**
- * Landing-fusion API client — fetches all data from the Wagtail/django-fusion backend.
+ * Precis Landing API client — fetches all data from the Wagtail/django-fusion backend.
  *
  * Every piece of content (branding, navigation, page data, contact info,
  * footer links) comes from the backend via these endpoints. No content is
@@ -29,16 +29,41 @@ export const CONTENT_LANGUAGE: LanguageCode = (() => {
     : 'en';
 })();
 
+export const LANGUAGE_STORAGE_KEY = 'ctc_lang';
+
+/** Read the same language preference written by LanguageSwitcher. */
+export function getStoredContentLanguage(fallback: LanguageCode = CONTENT_LANGUAGE): LanguageCode {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const stored = window.sessionStorage.getItem(LANGUAGE_STORAGE_KEY)
+      || window.localStorage.getItem(LANGUAGE_STORAGE_KEY)
+      || document.cookie.match(/(?:^|; )django_language=([^;]+)/)?.[1];
+    return SUPPORTED_LANGUAGE_CODES.includes(stored as LanguageCode)
+      ? (stored as LanguageCode)
+      : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function languageQuery(language: LanguageCode): string {
+  return `?lang=${encodeURIComponent(language)}`;
+}
+
 // Astro runs these fetches at build time for SSG pages. Keep browser requests
 // same-origin for dual-host deployment, but give Node an absolute URL so the
 // built HTML can include the reloaded Wagtail content instead of silently
 // falling back when fetch() receives a relative path.
 export const API_BASE: string = import.meta.env.SSR ? buildApiBase : browserApiBase;
 
-async function fetchJSON<T>(path: string): Promise<T> {
+async function fetchJSON<T>(path: string, language: LanguageCode = getStoredContentLanguage()): Promise<T> {
   const url = `${API_BASE}${path}`;
   const res = await fetch(url, {
-    headers: { Accept: 'application/json' },
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Accept-Language': language,
+    },
   });
   if (!res.ok) {
     throw new Error(`API ${path} returned ${res.status}`);
@@ -75,8 +100,11 @@ export interface SiteSettings {
   meta_description: string;
   meta_keywords: string;
   meta_author: string;
+  og_type: string;
   og_image_url: string | null;
   twitter_handle: string;
+  robots: string;
+  canonical_url: string;
   analytics_provider: string;
   google_tag_manager_id: string;
   google_analytics_id: string;
@@ -105,12 +133,15 @@ export interface NavItem {
   label: string;
   href: string;
   active?: boolean;
+  /** Dropdown subpages (curated about/team/services organization) — empty for leaf items. */
+  children?: { label: string; href: string; active?: boolean }[];
 }
 
 export interface NavigationData {
   nav_items: NavItem[];
   language?: LanguageCode;
   available_languages?: LanguageCode[];
+  default_language?: LanguageCode;
 }
 
 export interface ContentLanguage {
@@ -125,6 +156,10 @@ export interface ContentLanguagesData {
   languages: ContentLanguage[];
   coverage: Record<string, number>;
   ui_languages?: string[];
+  language?: LanguageCode;
+  default_language?: LanguageCode;
+  session_key?: string;
+  cookie_name?: string;
 }
 
 export interface MediaManifestItem {
@@ -224,6 +259,29 @@ export interface PageData {
   show_in_nav: boolean;
   seo_title: string;
   search_description: string;
+  language?: LanguageCode;
+  available_languages?: LanguageCode[];
+  seo?: {
+    title: string;
+    description: string;
+    keywords: string;
+    author: string;
+    og_type: string;
+    og_image_url: string | null;
+    twitter_handle: string;
+    robots: string;
+    canonical_url: string;
+  };
+  /** About page: mission & values (Wagtail facts → mission block). */
+  mission_values?: { title: string; text: string }[];
+  mission_title?: string;
+  mission_subtitle?: string;
+  mission_intro?: string;
+  /** About page: capabilities (Wagtail facts → skills block). */
+  skills?: { icon_class?: string; icon?: string; title: string; description?: string }[];
+  skills_title?: string;
+  skills_subtitle?: string;
+  skills_intro?: string;
   hero?: {
     badge?: string;
     title?: string;
@@ -232,6 +290,18 @@ export interface PageData {
     primary_cta?: { label: string; href: string; style?: string } | null;
     secondary_cta?: { label: string; href: string; style?: string } | null;
     trusted_by?: string;
+    /** Wagtail home head.slider slides (image, subtitle, title, description, CTA). */
+    slides?: {
+      image?: string;
+      alt?: string;
+      subtitle?: string;
+      title?: string;
+      description?: string;
+      alignment?: 'left' | 'center' | 'right';
+      button_text?: string;
+      button_link?: string;
+      video_url?: string;
+    }[];
   };
   cta?: {
     title?: string;
@@ -281,6 +351,8 @@ export interface PageListItem {
 export interface PageListData {
   pages: PageListItem[];
   total: number;
+  language?: LanguageCode;
+  available_languages?: LanguageCode[];
 }
 
 export interface PublicationItem {
@@ -332,9 +404,8 @@ export function fetchSiteSettings(): Promise<SiteSettings> {
 }
 
 /** Fetch main navigation from published Wagtail pages. */
-export function fetchNavigation(language: LanguageCode = CONTENT_LANGUAGE): Promise<NavigationData> {
-  const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
-  return fetchJSON<NavigationData>(`/apis/navigation/${query}`);
+export function fetchNavigation(language: LanguageCode = getStoredContentLanguage()): Promise<NavigationData> {
+  return fetchJSON<NavigationData>(`/apis/navigation/${languageQuery(language)}`, language);
 }
 
 export function fetchContentLanguages(): Promise<ContentLanguagesData> {
@@ -346,9 +417,9 @@ export function fetchMediaManifest(): Promise<MediaManifestData> {
   return fetchJSON<MediaManifestData>('/apis/content/media/');
 }
 
-/** Fetch contact methods + form info from Wagtail ContactPage. */
-export function fetchContact(): Promise<ContactData> {
-  return fetchJSON<ContactData>('/apis/contact/');
+/** Fetch contact methods + form info from the localized Wagtail ContactPage. */
+export function fetchContact(language: LanguageCode = getStoredContentLanguage()): Promise<ContactData> {
+  return fetchJSON<ContactData>(`/apis/contact/${languageQuery(language)}`, language);
 }
 
 /**
@@ -358,19 +429,22 @@ export function fetchContact(): Promise<ContactData> {
  * first avoids turning an intentionally static Astro page (for example FAQ or
  * pricing) into a stream of expected 404s in the backend access log.
  */
-let pageIndexPromise: Promise<PageListData> | undefined;
-function fetchPublishedPageIndex(): Promise<PageListData> {
-  pageIndexPromise ??= fetchPageList();
-  return pageIndexPromise;
+const pageIndexPromises = new Map<LanguageCode, Promise<PageListData>>();
+function fetchPublishedPageIndex(language: LanguageCode): Promise<PageListData> {
+  const existing = pageIndexPromises.get(language);
+  if (existing) return existing;
+  const promise = fetchPageList(language);
+  pageIndexPromises.set(language, promise);
+  return promise;
 }
 
 export async function fetchPageData(
   slug: string,
-  language: LanguageCode = CONTENT_LANGUAGE,
+  language: LanguageCode = getStoredContentLanguage(),
 ): Promise<PageData | undefined> {
   let pageIndex: PageListData;
   try {
-    pageIndex = await fetchPublishedPageIndex();
+    pageIndex = await fetchPublishedPageIndex(language);
   } catch {
     // A backend outage should leave the static page shell available without
     // issuing a second request that can only fail noisily.
@@ -379,18 +453,17 @@ export async function fetchPageData(
 
   if (!pageIndex.pages.some((page) => page.slug === slug)) return undefined;
 
-  const query = language === 'en' ? '' : `?lang=${encodeURIComponent(language)}`;
-  return fetchJSON<PageData>(`/apis/pages/${slug}/${query}`);
+  return fetchJSON<PageData>(`/apis/pages/${slug}/${languageQuery(language)}`, language);
 }
 
-/** Fetch list of all published pages. */
-export function fetchPageList(): Promise<PageListData> {
-  return fetchJSON<PageListData>('/apis/pages/');
+/** Fetch list of all published pages for one Wagtail locale. */
+export function fetchPageList(language: LanguageCode = getStoredContentLanguage()): Promise<PageListData> {
+  return fetchJSON<PageListData>(`/apis/pages/${languageQuery(language)}`, language);
 }
 
 /** Fetch Wagtail-managed research documents for the active language. */
-export function fetchPublications(language: LanguageCode = CONTENT_LANGUAGE): Promise<PublicationListData> {
-  return fetchJSON<PublicationListData>(`/apis/research/publications/?lang=${encodeURIComponent(language)}`);
+export function fetchPublications(language: LanguageCode = getStoredContentLanguage()): Promise<PublicationListData> {
+  return fetchJSON<PublicationListData>(`/apis/research/publications/${languageQuery(language)}`, language);
 }
 
 /**
@@ -550,6 +623,7 @@ async function fetchCached<T>(key: string, fetcher: () => Promise<T>): Promise<T
 export const cachedAssets = () => fetchCached('assets', fetchAssets);
 export const cachedMediaManifest = () => fetchCached('media-manifest', fetchMediaManifest);
 export const cachedSiteSettings = () => fetchCached('settings', fetchSiteSettings);
-export const cachedNavigation = () => fetchCached('navigation', fetchNavigation);
-export const cachedContact = () => fetchCached('contact', fetchContact);
-export const cachedPageData = (slug: string, language: LanguageCode = CONTENT_LANGUAGE) => fetchCached(`page:${slug}:${language}`, () => fetchPageData(slug, language));
+export const cachedNavigation = (language: LanguageCode = getStoredContentLanguage()) => fetchCached(`navigation:${language}`, () => fetchNavigation(language));
+export const cachedContact = (language: LanguageCode = getStoredContentLanguage()) => fetchCached(`contact:${language}`, () => fetchContact(language));
+export const cachedCourseList = () => fetchCached('course-list', fetchCourseList);
+export const cachedPageData = (slug: string, language: LanguageCode = getStoredContentLanguage()) => fetchCached(`page:${slug}:${language}`, () => fetchPageData(slug, language));

@@ -30,6 +30,7 @@ urlpatterns = [
     # Language switching + page/auth namespaces referenced by the shared
     # landing header (partials/language_selector.html → set_language;
     # partials/auth_buttons.html → plugins:* / plugins:profile:*).
+    path("i18n/setlang/", landing_api.set_language_api, name="set_language"),
     path("i18n/", include("django.conf.urls.i18n")),
     path("", include("apps.pages.urls", namespace="plugins")),
 ]

@@ -162,8 +162,16 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
         "wagtailimages.Image", on_delete=models.SET_NULL, null=True, blank=True,
         related_name="+", help_text="Default Open Graph image (1200x630 recommended)",
     )
+    og_type = models.CharField(max_length=50, blank=True, default="website",
+        help_text="Open Graph type (website, article, product, …)")
     twitter_handle = models.CharField(max_length=50, blank=True, default="",
         help_text="Twitter/X handle (without @)")
+    robots_meta = models.CharField(max_length=100, blank=True, default="",
+        choices=[("", "index, follow (default)"), ("noindex, follow", "noindex, follow"),
+                 ("index, nofollow", "index, nofollow"), ("noindex, nofollow", "noindex, nofollow")],
+        help_text="Global robots directive (per-page overrides win)")
+    canonical_url = models.URLField(blank=True, default="",
+        help_text="Optional absolute canonical origin (defaults to the site URL from settings)")
 
     # ── Analytics ──
     google_tag_manager_id = models.CharField(max_length=30, blank=True, default="",
@@ -247,7 +255,10 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
             FieldPanel("meta_keywords"),
             FieldPanel("meta_author"),
             FieldPanel("og_image"),
+            FieldPanel("og_type"),
             FieldPanel("twitter_handle"),
+            FieldPanel("robots_meta"),
+            FieldPanel("canonical_url"),
         ], heading=_("SEO & Metadata")),
         MultiFieldPanel([
             FieldPanel("analytics_provider"),
@@ -310,8 +321,11 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
             "meta_description": self.meta_description,
             "meta_keywords": self.meta_keywords,
             "meta_author": self.meta_author,
+            "og_type": self.og_type or "website",
             "og_image_url": self.og_image.get_rendition("width-1200").url if self.og_image else None,
             "twitter_handle": self.twitter_handle,
+            "robots": self.robots_meta or "index, follow",
+            "canonical_url": self.canonical_url or "",
         }
 
     def get_analytics_context(self) -> dict:

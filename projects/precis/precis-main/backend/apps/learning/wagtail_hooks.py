@@ -2,8 +2,24 @@ from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 
-from .models import Certificate, CourseSnippetViewSet, Enrollment, Review, Wishlist
+from .models import (
+    Certificate,
+    CourseSnippetViewSet,
+    CourseTranslation,
+    Enrollment,
+    Review,
+    Wishlist,
+)
 from .snippets import CourseTagSnippetViewSet, SpecializationSnippetViewSet
+
+
+class CourseTranslationSnippetViewSet(SnippetViewSet):
+    model = CourseTranslation
+    menu_label = _("Course translations")
+    icon = "doc-full-inverse"
+    list_display = ["course", "language", "title", "updated_at"]
+    list_filter = ["language"]
+    search_fields = ["course__title", "title"]
 
 
 class EnrollmentSnippetViewSet(SnippetViewSet):
@@ -76,6 +92,7 @@ class LearningAdminGroup(SnippetViewSetGroup):
     menu_order = 120
     items = (
         CourseSnippetViewSet,
+        CourseTranslationSnippetViewSet,
         SpecializationSnippetViewSet,
         CourseTagSnippetViewSet,
         EnrollmentSnippetViewSet,

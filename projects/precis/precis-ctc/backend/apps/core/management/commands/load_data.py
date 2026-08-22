@@ -61,6 +61,9 @@ class Command(BaseCommand):
             "wagtailcore_pagesubscription",
             "wagtailimages_image",
             "wagtailimages_rendition",
+            # EventTranslation carries explicit integer PKs in events.json;
+            # advance its sequence so admin creates never collide.
+            "handlers_eventtranslation",
         )
         with connection.cursor() as cursor:
             for table in tables:
@@ -229,7 +232,11 @@ class Command(BaseCommand):
         )
         if not dry_run:
             try:
-                call_command("load_course_fixtures", verbosity=0)
+                call_command(
+                    "load_course_fixtures",
+                    verbosity=0,
+                    replace=replace_existing,
+                )
             except Exception as exc:
                 raise CommandError("Failed to load LMS application fixtures") from exc
             self.stdout.write(self.style.SUCCESS("✅\n"))

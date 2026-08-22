@@ -1,10 +1,11 @@
-"""Landing-fusion URL configuration — Wagtail admin + document URLs + page routes."""
+"""Precis Landing URL configuration — Wagtail admin + document URLs + page routes."""
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.views.generic import RedirectView, TemplateView
+from django_fusion.core.middlewares.language import set_language_api
 from django_fusion.designer import urls as fusion_designer_urls
 from django_fusion.tasks.views import TaskCenterView
 from wagtail import urls as wagtail_urls
@@ -66,6 +67,8 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
 
     # ── APIs — backend-driven content for the Astro frontend ──────────
+    path("i18n/setlang/", set_language_api, name="set_language"),
+    path("i18n/", include("django.conf.urls.i18n")),
     path("apis/render-mode/", pages_api.render_mode_api, name="render_mode_api"),
     path("apis/site/settings/", pages_api.site_settings_api, name="site_settings_api"),
     path("apis/navigation/", pages_api.navigation_api, name="navigation_api"),

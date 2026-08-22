@@ -1,10 +1,10 @@
 # =============================================================================
 # precis-lms (Precis LMS) — Traefik router config
 # =============================================================================
-# Containers: precis-lms-backend  (Django + django-fusion, port 5074)
-#             precis-lms-frontend (Astro shell, port 3002)
+# Containers: precis-main-backend  (Django + django-fusion, port 8074)
+#             precis-main-frontend (Astro shell, port 3000)
 # Public domain: lms.structa.cloud
-# Backend paths (/admin, /api, /apis/, /fragment/, /accounts/, /learning/,
+# Backend paths (/admin, /django-admin, /api, /apis/, /fragment/, /accounts/, /learning/,
 #   /profile/*) route to the backend; static/media/sites assets route to
 #   shared-proxy; everything else is served from the frontend.
 # Local development host: precis-lms.localhost (mkcert, no ACME).
@@ -15,13 +15,13 @@ http:
   routers:
     # ---- Public: lms.structa.cloud ----------------------------------------
     precis-lms-backend-http:
-      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`))'
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`) || PathPrefix(`/i18n/`))'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: precis-lms-backend-service
       priority: 200
     precis-lms-backend-https:
-      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`))'
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`) || PathPrefix(`/i18n/`))'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: precis-lms-backend-service
@@ -65,7 +65,7 @@ http:
       priority: 10
 
     precis-lms-api-localhost:
-      rule: '(Host(`precis-lms.localhost`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
+      rule: '(Host(`precis-lms.localhost`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/learning/`) || PathPrefix(`/i18n/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: precis-lms-backend-service
@@ -82,7 +82,7 @@ http:
     precis-lms-frontend-service:
       loadBalancer:
         servers:
-          - url: 'http://precis-lms-frontend:3002'
+          - url: 'http://precis-main-frontend:3000'
         healthCheck:
           path: /
           interval: 30s
@@ -91,9 +91,9 @@ http:
     precis-lms-backend-service:
       loadBalancer:
         servers:
-          - url: 'http://precis-lms-backend:5074'
+          - url: 'http://precis-main-backend:8074'
         healthCheck:
-          path: /health/
+          path: /apis/pages/
           interval: 30s
           timeout: 10s
 

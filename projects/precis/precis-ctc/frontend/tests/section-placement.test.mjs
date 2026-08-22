@@ -153,19 +153,25 @@ test('contact renders the seeded form fields and contact methods', () => {
 });
 
 test('courses index shows the seeded medical-research catalog', () => {
-  // Seeded catalog (medical_research_catalog.json — 6 courses). The static
-  // build HTML-escapes `&` as `&amp;`, so assert the escaped artifact text.
+  // Seeded catalog (medical_research_catalog.json — 8 English courses). The
+  // static build HTML-escapes `&` as `&amp;`, so assert the escaped artifact
+  // text. The catalog page also carries the search/filter/sort toolbar.
   for (const title of [
     'Clinical Trial Design &amp; Protocol Development',
     'Biostatistics for Clinical Research',
-    'Systematic Reviews &amp; Evidence Synthesis',
-    'Medical AI &amp; Clinical Data Analytics',
-    'Scientific &amp; Medical Manuscript Writing',
-    'Research Ethics, GCP &amp; Publication Integrity',
+    'Systematic Review &amp; Meta-Analysis',
+    'Medical AI &amp; Clinical Applications',
+    'Clinical Data Management',
+    'Evidence Synthesis for HTA',
+    'Research Ethics &amp; Integrity',
+    'Scientific Writing for Medical Manuscripts',
   ]) {
     assert.ok(courses.includes(title), `courses should contain: ${title}`);
   }
   assert.match(courses, /Research, from protocol to publication/);
+  assert.match(courses, /courseCatalog\(\)/);
+  assert.match(courses, /catalog__toolbar/);
+  assert.match(courses, /catalog__filters/);
   for (const marker of staleTechMarkers) {
     assert.ok(!courses.includes(marker), `courses should NOT contain: ${marker}`);
   }

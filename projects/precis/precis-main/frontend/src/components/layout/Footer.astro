@@ -32,6 +32,7 @@ const footerGroups = siteSettings?.footer_link_groups?.length
     <div class="grid grid-cols-1 gap-10 lg:grid-cols-3">
       <div class="lg:col-span-1">
         <a href="/" class="mb-4 flex items-center gap-2 font-mono font-semibold text-fu-ink">
+          <img src="/static/branding/logo-1.png" alt={siteName} class="h-8 w-auto" width="1536" height="1024" loading="lazy" decoding="async" />
           <span>{siteName}</span>
         </a>
         <p class="mb-4 text-sm">{siteSettings?.footer_description || 'Full-stack engineering.'}</p>

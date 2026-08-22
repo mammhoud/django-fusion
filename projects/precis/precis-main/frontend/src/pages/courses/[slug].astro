@@ -424,13 +424,18 @@ const heroImage = course?.image_url || course?.header_image;
     transform: translateY(2rem);
     filter: blur(4px);
   }
-  .reveal-up--visible {
+  /* The visible state must out-specify `.js .reveal-up` (two classes),
+     otherwise the hidden rule wins and sections stay invisible/blurred
+     even after the observer fires — same pattern as `.js .reveal.reveal-visible`
+     in globals.css. */
+  .js .reveal-up.reveal-up--visible {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
   }
   @media (prefers-reduced-motion: reduce) {
-    .reveal-up {
+    .js .reveal-up,
+    .js .reveal-up.reveal-up--visible {
       opacity: 1;
       transform: none;
       filter: none;

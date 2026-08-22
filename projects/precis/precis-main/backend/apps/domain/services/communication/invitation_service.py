@@ -39,6 +39,7 @@ class InvitationService:
 
             token = secrets.token_urlsafe(32)
             site_url = getattr(settings, "SITE_URL", "").rstrip("/")
+            site_name = getattr(settings, "SITE_NAME", "Structa Cloud")
             invite_url = f"{site_url}/invite/{token}/"
             subject = "You are invited to join"
             context = {
@@ -49,6 +50,8 @@ class InvitationService:
                 "invitation_type": invitation_type,
                 "message": message,
                 "subject": subject,
+                "site_name": site_name,
+                "site_url": site_url,
             }
 
             email_log = EmailService().send_invitation(

@@ -1,5 +1,5 @@
 /**
- * Landing-fusion site configuration — config only, no static content.
+ * Precis Landing site configuration — config only, no static content.
  *
  * All content (branding, navigation, footer links, contact methods, page data)
  * comes from the Wagtail/django-fusion backend via src/lib/api.ts.

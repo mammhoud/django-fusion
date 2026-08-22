@@ -1,4 +1,4 @@
-"""Landing-Fusion Dramatiq workers.
+"""Precis Landing Dramatiq workers.
 
 Worker implementations live under ``plugins.workers`` so the product task
 boundary is independent from the ``apps.tasks`` TaskExecution model app.

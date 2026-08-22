@@ -269,6 +269,33 @@ class NavigationContractTests(TestCase):
         self.assertContains(login, "Sign in")
         self.assertContains(signup, "Create account")
 
+    def test_me_api_requires_login(self):
+        response = self.client.get("/apis/me/")
+        # login_required redirects anonymous visitors to /accounts/login/.
+        self.assertIn(response.status_code, (301, 302))
+
+    def test_me_api_returns_identity_role_and_capabilities(self):
+        user = self._login("sales_lead")
+        workspace = Workspace.objects.create(name="Northwind", slug="northwind")
+        # The post_save signal auto-creates the profile; assign role/workspace
+        # on the existing one so the OneToOne relation stays intact.
+        profile = user.profile
+        profile.workspace = workspace
+        profile.role = "sales_manager"
+        profile.title = "RevOps lead"
+        profile.save()
+        payload = self.client.get("/apis/me/").json()
+        self.assertEqual(payload["user"]["email"], "sales_lead@example.com")
+        self.assertEqual(payload["user"]["role"], "sales_manager")
+        self.assertEqual(payload["user"]["title"], "RevOps lead")
+        self.assertEqual(payload["user"]["workspace_name"], "Northwind")
+        self.assertIs(payload["capabilities"]["sales"], True)
+        self.assertIs(payload["capabilities"]["marketing"], False)
+        self.assertIs(payload["capabilities"]["manage_deals"], True)
+        # No token material may ever be exposed on the session road.
+        self.assertNotIn("token", payload)
+        self.assertNotIn("access_token", payload)
+
     def test_domain_subpages_render_real_list_screens(self):
         self._login()
         # The pipelines screen is the schema-aware-table contract check: seed

@@ -35,7 +35,6 @@ const subtitle = pageData?.hero?.subtitle || pageData?.search_description || '';
     intro={subtitle || 'Workshops, symposia, and academic writing sessions from the research network.'}
     variant="archive"
     index="07"
-    status="200 OK · research calendar"
     primaryCta={{ label: 'Ask about events', href: '/contact/' }}
     secondaryCta={{ label: 'Browse courses', href: '/courses/' }}
   />
@@ -59,3 +58,87 @@ const subtitle = pageData?.hero?.subtitle || pageData?.search_description || '';
 
   <Toast />
 </Layout>
+
+<script>
+  // The CTC frontend is intentionally static for fast delivery. When a
+  // visitor requests a locale with ?lang=, hydrate the visible Events page
+  // (header + event cards) from the authoritative localized Wagtail API
+  // instead of serving the English build artifact unchanged.
+  const SUPPORTED = ['en', 'sv', 'fr', 'de', 'es', 'ar', 'pt-br'];
+  const UI_COPY = {
+    en: { eyebrow: 'ctc research · events', cta1: 'Ask about events', cta2: 'Browse courses', register: 'Register' },
+    ar: { eyebrow: 'أحداث سي تي سي للأبحاث', cta1: 'اسأل عن الأحداث', cta2: 'تصفح الدورات', register: 'سجّل الآن' },
+    de: { eyebrow: 'CTC-Forschung · Veranstaltungen', cta1: 'Nach Veranstaltungen fragen', cta2: 'Kurse durchstöbern', register: 'Anmelden' },
+    es: { eyebrow: 'CTC Research · eventos', cta1: 'Pregunta por los eventos', cta2: 'Explorar cursos', register: 'Registrarse' },
+    fr: { eyebrow: 'CTC Research · événements', cta1: 'Se renseigner', cta2: 'Parcourir les cours', register: 'S’inscrire' },
+    'pt-br': { eyebrow: 'CTC Research · eventos', cta1: 'Pergunte sobre os eventos', cta2: 'Explorar cursos', register: 'Inscrever-se' },
+    sv: { eyebrow: 'CTC Research · evenemang', cta1: 'Fråga om evenemang', cta2: 'Bläddra bland kurser', register: 'Registrera dig' },
+  };
+
+  const setText = (root: Element | null, selector: string, value: unknown): void => {
+    const node = root?.querySelector(selector);
+    if (node && value) node.textContent = String(value);
+  };
+  const setMany = (root: Element | null, selector: string, values: unknown[]): void => {
+    root?.querySelectorAll(selector).forEach((node: Element, index: number) => {
+      if (values[index]) node.textContent = String(values[index]);
+    });
+  };
+
+  async function syncLocalizedEvents() {
+    const requested = new URLSearchParams(window.location.search).get('lang')?.toLowerCase();
+    if (!requested || !SUPPORTED.includes(requested) || requested === 'en') return;
+    try {
+      let data: Record<string, any> | null = null;
+      for (let attempt = 0; attempt < 3 && !data; attempt += 1) {
+        try {
+          const response: Response = await window.fetch(`/apis/pages/events/?lang=${encodeURIComponent(requested)}&locale_refresh=1`, {
+            cache: 'no-store',
+            headers: { Accept: 'application/json' },
+          });
+          if (response.ok) {
+            const candidate: Record<string, any> = await response.json() as Record<string, any>;
+            if (candidate.language === requested) data = candidate;
+          }
+        } catch (error) {
+          // Retry transient network failures; the final catch below preserves
+          // the usable static page if the backend remains unavailable.
+        }
+        if (!data && attempt < 2) await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+      }
+      if (!data) return;
+      const copy = UI_COPY[requested as keyof typeof UI_COPY] || UI_COPY.en;
+      const hero = data.hero || {};
+
+      const header = document.querySelector('.page-header');
+      setText(header, '.page-header__eyebrow', copy.eyebrow);
+      setText(header, '.page-header__title', hero.title || data.title);
+      setText(header, '.page-header__intro', hero.subtitle || data.search_description);
+      setMany(header, '.page-header__actions a', [copy.cta1, copy.cta2]);
+
+      // Swap event cards in place — the backend event order matches the
+      // build-time order, so index mapping is stable.
+      const events: any[] = data.events || [];
+      document.querySelectorAll('.fu-event-card').forEach((card, index) => {
+        const event = events[index];
+        if (!event) return;
+        setText(card, '.fu-event-card__type', event.event_type_label);
+        setText(card, '.fu-event-card__title', event.title);
+        setText(card, '.fu-event-card__text', event.description);
+        setText(card, '.fu-event-card__meta li:first-child', event.location);
+        setText(card, '.fu-event-card__cta', copy.register);
+      });
+
+      document.documentElement.setAttribute('lang', requested);
+      document.documentElement.setAttribute('dir', requested === 'ar' ? 'rtl' : 'ltr');
+      document.documentElement.dataset.language = requested;
+      document.documentElement.dataset.localizedReady = requested;
+      document.title = data.title || document.title;
+      document.querySelector('meta[name="description"]')?.setAttribute('content', data.seo?.description || hero.subtitle || '');
+    } catch (error) {
+      console.warn('Localized Events content could not be loaded', error);
+    }
+  }
+
+  syncLocalizedEvents();
+</script>

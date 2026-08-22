@@ -26,6 +26,9 @@ COPY projects/precis/precis-main/templates /app/precis-main/templates
 COPY projects/precis/precis-main/assets /app/precis-main/assets
 # Site-level Env overrides (kept in parity with the other Precis sites).
 COPY projects/precis/precis-main/Env /app/precis-main/Env
+# Project-level config cascade (YAML defaults: site identity, admin, CSS panel,
+# static-files reference) — the backend sources env-read defaults from these.
+COPY projects/precis/precis-main/configs /app/precis-main/configs
 
 WORKDIR /app/precis-main/backend
 RUN mkdir -p assets/static assets/staticfiles assets/media \

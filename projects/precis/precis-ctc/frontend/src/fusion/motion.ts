@@ -41,11 +41,10 @@ export async function initFusionMotion(): Promise<void> {
     if (targets.length) {
       gsap.fromTo(
         targets,
-        { opacity: 0, y: 28, filter: 'blur(6px)' },
+        { opacity: 0, y: 28 },
         {
           opacity: 1,
           y: 0,
-          filter: 'blur(0px)',
           duration: 1.05,
           ease: 'power3.out',
           stagger: 0.14,

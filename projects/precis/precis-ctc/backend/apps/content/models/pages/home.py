@@ -42,31 +42,73 @@ class HomePage(BaseFormPage):
                                             template="blocks/media/image_lite.html",
                                             label=_("Background Image"),
                                         ),
-                                    ),
-                                    (
-                                        "subtitle",
-                                        blocks.CharBlock(
-                                            required=True,
-                                            max_length=100,
-                                            label=_("Subtitle"),
+                                    ),                                        (
+                                            "subtitle",
+                                            blocks.CharBlock(
+                                                required=True,
+                                                max_length=100,
+                                                label=_("Subtitle"),
+                                            ),
                                         ),
-                                    ),
-                                    (
-                                        "title",
-                                        blocks.CharBlock(
-                                            required=True,
-                                            max_length=200,
-                                            label=_("Title"),
+                                        (
+                                            "title",
+                                            blocks.CharBlock(
+                                                required=True,
+                                                max_length=200,
+                                                label=_("Title"),
+                                            ),
                                         ),
-                                    ),
-                                    (
-                                        "video_url",
-                                        blocks.URLBlock(required=False, label=_("Video URL")),
-                                    ),
-                                ],
-                                icon="images",
-                                label=_("Slide"),
-                            ),
+                                        (
+                                            "description",
+                                            blocks.TextBlock(
+                                                required=False,
+                                                max_length=400,
+                                                label=_("Description"),
+                                                help_text=_("Optional slide description shown under the title"),
+                                            ),
+                                        ),
+                                        (
+                                            "text_alignment",
+                                            blocks.ChoiceBlock(
+                                                choices=[
+                                                    ("left", _("Left")),
+                                                    ("center", _("Center")),
+                                                    ("right", _("Right")),
+                                                ],
+                                                default="left",
+                                                required=False,
+                                                label=_("Text Alignment"),
+                                            ),
+                                        ),
+                                        (
+                                            "button_text",
+                                            blocks.CharBlock(
+                                                required=False,
+                                                max_length=50,
+                                                label=_("Button Text"),
+                                            ),
+                                        ),
+                                        (
+                                            "button_link",
+                                            blocks.URLBlock(required=False, label=_("Button Link")),
+                                        ),
+                                        (
+                                            "video_url",
+                                            blocks.URLBlock(required=False, label=_("Video URL")),
+                                        ),
+                                        (
+                                            "alt_text",
+                                            blocks.CharBlock(
+                                                required=False,
+                                                max_length=200,
+                                                label=_("Alt Text"),
+                                                help_text=_("Accessible description of the slide image"),
+                                            ),
+                                        ),
+                                    ],
+                                    icon="images",
+                                    label=_("Slide"),
+                                ),
                         ),
                     ],
                     icon="images",

@@ -24,22 +24,18 @@ const pageFeatures = (pageData?.features as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
 
+// All content is Wagtail-driven — no hardcoded fallback copy. The backend
+// seeds capabilities into the Wagtail page for this slug (exposed via
+// /apis/pages/features/); an empty list renders nothing.
 const capabilities = pageFeatures?.length ? pageFeatures.map((f: any) => ({
   title: String(f.title || ''),
   text: String(f.description || ''),
   icon: String(f.icon || 'M13 10V3L4 14h7v7l9-11h-7z'),
-})) : [
-  { title: 'Clinical study design', text: 'Turn an important clinical need into a feasible, ethical, and analysis-ready protocol.', icon: 'M12 3v18M3 12h18' },
-  { title: 'Evidence synthesis', text: 'Build reproducible reviews that make search, appraisal, and uncertainty visible to decision-makers.', icon: 'M4 5h16M4 12h16M4 19h10' },
-  { title: 'Biostatistics', text: 'Choose appropriate methods, communicate effect estimates, and interpret results with clinical context.', icon: 'M3 20V4m0 16h18M7 16l3-5 3 3 5-8' },
-  { title: 'Responsible medical AI', text: 'Evaluate clinical data and AI systems with attention to bias, validation, safety, and implementation.', icon: 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z' },
-  { title: 'Scientific writing', text: 'Shape clear methods, results, and discussion sections for academic readers and reviewers.', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
-  { title: 'Publication integrity', text: 'Strengthen reporting, authorship, reproducibility, and responsible interpretation from protocol to paper.', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-];
+})) : [];
 ---
 
 <Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'CTC Research capabilities — medical AI, biostatistics, evidence synthesis, and publication integrity.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
-  <Hero eyebrow={pageHero?.badge || 'features · the full capability list'} heading={pageHero?.title || 'Built to ship as'} accent='documents' intro={pageHero?.subtitle || 'No SPA, no JSON API, no hydration waterfall. Every page is finished HTML in one response. Here\'s what makes it work.'} primaryCta={{ label: 'See the products', href: '/products' }} secondaryCta={{ label: 'Explore projects', href: '/projects' }} status='200 OK · text/html · every capability in one response' variant="research" />
+  <Hero eyebrow={pageHero?.badge || 'features · the full capability list'} heading={pageHero?.title || 'Built to ship as'} accent='documents' intro={pageHero?.subtitle || 'No SPA, no JSON API, no hydration waterfall. Every page is finished HTML in one response. Here\'s what makes it work.'} primaryCta={{ label: 'See the products', href: '/products' }} secondaryCta={{ label: 'Explore projects', href: '/projects' }} variant="research" />
 
   {capabilities.length ? (
   <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
@@ -51,7 +47,7 @@ const capabilities = pageFeatures?.length ? pageFeatures.map((f: any) => ({
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
         {capabilities.map((cap, i) => (
-          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+          <div class='card reveal p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 80}ms`}>
             <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
               <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d={cap.icon} /></svg>
             </div>

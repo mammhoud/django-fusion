@@ -1,4 +1,4 @@
-"""Landing-fusion template filters for the backend render road."""
+"""Precis Landing template filters for the backend render road."""
 
 from django import template
 

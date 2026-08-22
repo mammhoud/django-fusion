@@ -169,6 +169,68 @@ class LearningCoreTestCase(TestCase):
         self.assertEqual(course.specializations.count(), 1)
         self.assertEqual(course.tags.count(), 3)
 
+    # ── CourseTranslation overlay contract ──────────────────────────────
+
+    def test_seed_creates_six_language_overlays_and_stays_idempotent(self):
+        from apps.learning.management.commands.seed_learning import (
+            COURSE_TRANSLATIONS,
+            Command,
+        )
+        from apps.learning.models import CourseTranslation
+
+        Command().handle()
+        course = Course.objects.get(slug="ship-django-products")
+        self.assertEqual(
+            CourseTranslation.objects.filter(course=course).count(),
+            len(COURSE_TRANSLATIONS),
+        )
+        arabic = CourseTranslation.objects.get(course=course, language="ar")
+        self.assertTrue(arabic.title)
+        self.assertTrue(arabic.description)
+        self.assertIn("modules", arabic.content)
+        # Second run must not duplicate overlays (unique course+language).
+        Command().handle()
+        self.assertEqual(
+            CourseTranslation.objects.filter(course=course).count(),
+            len(COURSE_TRANSLATIONS),
+        )
+
+    def test_course_detail_api_applies_translation_overlay(self):
+        from apps.learning.management.commands.seed_learning import Command
+
+        Command().handle()
+        response = self.client.get("/api/courses/ship-django-products/", {"lang": "fr"})
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertNotEqual(data["title"], "Ship Django Products with HTMX and Alpine")
+        self.assertEqual(data["translation_source"], "model")
+        # The instructional language field must stay canonical.
+        self.assertEqual(data["language"], "en")
+        # Module tree overrides are applied keyed by order.
+        first_module = data["modules"][0]
+        self.assertNotEqual(first_module["title"], "The document-first foundation")
+        self.assertTrue(first_module["lessons"][0]["title"])
+
+    def test_course_detail_api_falls_back_to_english_without_lang(self):
+        from apps.learning.management.commands.seed_learning import Command
+
+        Command().handle()
+        response = self.client.get("/api/courses/ship-django-products/")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["title"], "Ship Django Products with HTMX and Alpine")
+        self.assertNotIn("translation_source", data)
+
+    def test_catalog_cards_carry_translation_when_lang_requested(self):
+        from apps.learning.management.commands.seed_learning import Command
+
+        Command().handle()
+        response = self.client.get("/api/courses/", {"lang": "es"})
+        self.assertEqual(response.status_code, 200)
+        card = response.json()["data"][0]
+        self.assertNotEqual(card["title"], "Ship Django Products with HTMX and Alpine")
+        self.assertEqual(card["translation_source"], "model")
+
     def test_course_search_api_returns_seeded_course(self):
         from apps.learning.management.commands.seed_learning import Command
 

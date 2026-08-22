@@ -16,14 +16,17 @@
 #   Admin          /admin/  /django-admin/
 #   Fusion         /fusion/  /fragment/  /components/
 #   Learning       /learning/
-#   Profile        /profile/
 #   Cart/Checkout  /cart/  /checkout/
 #   Legal/Privacy  /legal/
 #   Newsletter     /newsletter/
 #   i18n           /i18n/
 #   Tasks          /tasks/
-#   Documents      /documents/
 #   Health         /health/  /assets/health/
+#
+# NOTE: /profile/ and /documents/ are Astro-owned routes (auth/learner summary
+# and the publications library) and must reach the static shell. The settings
+# subtree is the exception: it remains a Django-owned authenticated surface and
+# is matched explicitly below.
 #
 # TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
 # =============================================================================
@@ -55,10 +58,14 @@ http:
 
     # ── Django backend — all server-rendered and API paths ───────────────────
     # Covers: /api/ /apis/ /accounts/ /auth/ /admin/ /django-admin/ /fusion/
-    #         /fragment/ /components/ /learning/ /profile/ /cart/ /checkout/
-    #         /legal/ /newsletter/ /i18n/ /tasks/ /documents/ /health/ /assets/health/
+    #         /fragment/ /components/ /learning/ /profile/settings/
+    #         /cart/ /checkout/ /legal/ /newsletter/ /i18n/ /tasks/
+    #         /health/ /assets/health/
+    # NOTE: exact Path() matchers for /admin and /django-admin (without the
+    # trailing slash) are required so Django's APPEND_SLASH handles the 301
+    # — otherwise the Astro catch-all serves its own 404 for /admin.
     ctc-backend:
-      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/api/`) || PathPrefix(`/apis/`) || PathPrefix(`/accounts/`) || PathPrefix(`/auth/`) || PathPrefix(`/admin/`) || PathPrefix(`/django-admin/`) || PathPrefix(`/fusion/`) || PathPrefix(`/fragment/`) || PathPrefix(`/components/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`) || PathPrefix(`/cart/`) || PathPrefix(`/checkout/`) || PathPrefix(`/legal/`) || PathPrefix(`/newsletter/`) || PathPrefix(`/i18n/`) || PathPrefix(`/tasks/`) || PathPrefix(`/documents/`) || PathPrefix(`/health/`) || PathPrefix(`/assets/health/`))'
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/api/`) || PathPrefix(`/apis/`) || PathPrefix(`/accounts/`) || PathPrefix(`/auth/`) || Path(`/admin`) || PathPrefix(`/admin/`) || Path(`/django-admin`) || PathPrefix(`/django-admin/`) || PathPrefix(`/fusion/`) || PathPrefix(`/fragment/`) || PathPrefix(`/components/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/settings`) || PathPrefix(`/cart/`) || PathPrefix(`/checkout/`) || PathPrefix(`/legal/`) || PathPrefix(`/newsletter/`) || PathPrefix(`/i18n/`) || PathPrefix(`/tasks/`) || PathPrefix(`/health/`) || PathPrefix(`/assets/health/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-backend-service

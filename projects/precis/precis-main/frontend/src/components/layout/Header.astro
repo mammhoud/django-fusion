@@ -90,14 +90,9 @@ const displayNav = navItems && navItems.length > 0
 >
   <div class="container-fusion">
     <div class="flex h-16 items-center justify-between">
-      <!-- Wordmark: angle-bracket logo for Structa Cloud -->
+      <!-- Wordmark: brand logo (logo-1) for Structa Cloud -->
       <a href="/" class="flex items-center gap-2.5 font-mono text-[0.95rem] font-semibold tracking-tight text-fu-ink" aria-label={siteName}>
-        <svg class="h-7 w-7" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <rect width="32" height="32" rx="6" fill="#1A1917"/>
-          <path d="M12 8L6 14l6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M20 8l6 6-6 6" stroke="#0B57D0" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M18 6l-4 20" stroke="#FFE14D" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-        </svg>
+        <img src="/static/branding/logo-1.png" alt={siteName} class="h-7 w-auto" width="1536" height="1024" loading="eager" decoding="async" />
         <span>{siteName}</span>
       </a>
 

@@ -1,4 +1,4 @@
-"""Landing-fusion auth app configuration."""
+"""Precis Landing auth app configuration."""
 
 from django.apps import AppConfig
 

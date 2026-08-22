@@ -69,4 +69,19 @@ def before_serve(page, request, serve_args, serve_kwargs):
         # that may not have PageSubscription.route available.
         pass
 
+    # ── SEO context for the Django render road ────────────────────────
+    # Populates ``seo_context`` in the template context so base.html can
+    # render meta description/keywords/OG/Twitter/canonical tags from
+    # SiteSettings (Wagtail-managed) instead of hardcoded strings.
+    try:
+        from apps.content.models.settings import SiteSettings
+
+        settings_obj = SiteSettings.for_request(request)
+        if settings_obj is None:
+            settings_obj = SiteSettings.load()
+        seo_context = settings_obj.get_seo_context() if settings_obj else {}
+    except Exception:
+        seo_context = {}
+    request.seo_context = seo_context
+
     return None  # Don't modify the response — just setting up context

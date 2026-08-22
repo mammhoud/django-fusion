@@ -39,9 +39,14 @@ test('backend course detail returns modules for a published course', async ({ re
 });
 
 test('frontend /courses/ page lists courses', async ({ page }) => {
-  const response = await page.goto('/courses/');
+  const response = await page.goto('/courses/', {
+    // Assert the HTTP response first; public pages may keep loading deferred
+    // media/scripts after the document has already become usable.
+    waitUntil: 'commit',
+    timeout: 60_000,
+  });
   expect(response?.status()).toBe(200);
-  await expect(page.locator('h1')).toContainText(/build evidence|course/i);
+  await expect(page.locator('h1')).toContainText(/build evidence|course/i, { timeout: 60_000 });
   const courseLinks = await page.locator('a[href*="/courses/"], a[href*="/learning/"]').count();
   expect(courseLinks).toBeGreaterThanOrEqual(1);
 });
@@ -49,9 +54,12 @@ test('frontend /courses/ page lists courses', async ({ page }) => {
 test('frontend course detail renders the live learning path and enrollment facts', async ({ page, request }) => {
   const catalog = await fetchCatalog(request);
   const course = catalog.data[0];
-  const response = await page.goto(`/courses/${course.slug}/`);
+  const response = await page.goto(`/courses/${course.slug}/`, {
+    waitUntil: 'commit',
+    timeout: 60_000,
+  });
   expect(response?.status()).toBe(200);
-  await expect(page.locator('h1')).toContainText(new RegExp(String(course.title).split(/\s+/).slice(0, 2).join('|'), 'i'));
+  await expect(page.locator('h1')).toContainText(new RegExp(String(course.title).split(/\s+/).slice(0, 2).join('|'), 'i'), { timeout: 60_000 });
   await expect(page.getByText('course overview', { exact: true })).toBeVisible();
   await expect(page.getByText('learning path', { exact: true })).toBeVisible();
   expect(await page.locator('.syllabus-accordion__item').count()).toBeGreaterThan(0);

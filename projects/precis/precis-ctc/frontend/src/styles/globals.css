@@ -14,30 +14,31 @@
 @source "../../../assets/templates/";
 
 /* ────────────────────────────────────────────────────────────────────────
-   CTC Research — Blue/Teal clinical theme (restored from .archives/ctc-research.bak)
-   Teal primary (#00A1B3) + violet accent (#6C63FF) on cool navy/slate surfaces.
+   CTC Research — Calm Blue/Teal clinical theme (restored from
+   .archives/ctc-research.bak, desaturated for a calmer feel).
+   Teal primary + violet accent on cool slate surfaces.
    Light = clinical white/slate · Dark = deep navy slate.
    ──────────────────────────────────────────────────────────────────────── */
 :root {
-  /* Blue/Teal — cool slate paper + deep navy ink. Teal is the primary;
-     violet is the single supporting accent. */
-  --fu-paper: 216 33% 97%;        /* #F5F7FA — cool slate sheet        */
-  --fu-ink: 220 15% 12%;          /* #1A1D23 — deep navy ink           */
-  --fu-muted: 222 11% 47%;        /* #6B7385 — body grey-blue          */
-  --fu-line: 210 18% 84%;         /* #D0D7DE — structural rule         */
+  /* Calm slate paper + deep navy ink. Teal is the primary; violet is the
+     single supporting accent — both desaturated so the page reads quietly. */
+  --fu-paper: 210 30% 98%;        /* #F8FAFB — cool slate sheet        */
+  --fu-ink: 222 16% 15%;          /* #20242C — deep navy ink           */
+  --fu-muted: 222 10% 45%;        /* #676E7E — body grey-blue          */
+  --fu-line: 213 16% 87%;         /* #D9DDE3 — structural rule         */
   --fu-card: 0 0% 100%;           /* #FFFFFF — surface                 */
 
-  /* Teal primary + violet accent. */
-  --fu-link: 186 100% 35%;        /* #00A1B3                          */
-  --fu-link-dark: 186 100% 27%;   /* #007A88                          */
-  --fu-mark: 243 100% 69%;        /* #6C63FF — violet accent          */
-  --fu-live: 180 100% 25%;        /* #008080 — secondary teal         */
+  /* Calm teal primary + soft periwinkle accent. */
+  --fu-link: 187 55% 32%;         /* #25747E                          */
+  --fu-link-dark: 187 48% 25%;    /* #21575E                          */
+  --fu-mark: 244 48% 57%;         /* #645DC6 — violet accent          */
+  --fu-live: 180 42% 26%;         /* #265E5E — secondary teal         */
 
   /* Legacy aliases — teal resolves to primary, amber to the violet accent. */
-  --fu-teal: 186 100% 35%;
-  --fu-teal-bright: 186 85% 42%;
-  --fu-amber: 243 100% 69%;
-  --fu-fog: 215 12% 45%;
+  --fu-teal: 187 55% 32%;
+  --fu-teal-bright: 187 48% 38%;
+  --fu-amber: 244 48% 57%;
+  --fu-fog: 222 10% 45%;
 
   /* Legacy aliases (kept so existing fu-* utilities keep working) */
   --fu-bg: var(--fu-paper);
@@ -48,7 +49,7 @@
   --fu-accent: var(--fu-link);
 }
 
-/* Dark = deep navy slate surfaces with bright teal/violet accents. */
+/* Dark = deep navy slate surfaces with calm teal/periwinkle accents. */
 .dark {
   --fu-paper: 222 47% 11%;        /* #0F172A */
   --fu-ink: 210 40% 96%;          /* #F1F5F9 */
@@ -56,14 +57,14 @@
   --fu-line: 217 19% 27%;         /* #374151 */
   --fu-card: 217 33% 17%;         /* #1E293B */
 
-  --fu-link: 203 58% 60%;         /* #5FA8D4 */
-  --fu-link-dark: 203 48% 44%;    /* #3A7CA5 */
-  --fu-mark: 240 100% 77%;        /* #8B8BFF */
-  --fu-live: 180 100% 32%;        /* #00A3A3 */
+  --fu-link: 201 42% 62%;         /* #75AAC7 */
+  --fu-link-dark: 201 40% 48%;    /* #4989AB */
+  --fu-mark: 240 48% 75%;         /* #A1A1DE */
+  --fu-live: 180 42% 34%;         /* #327B7B */
 
-  --fu-teal: 203 58% 60%;
-  --fu-teal-bright: 203 58% 66%;
-  --fu-amber: 240 100% 77%;
+  --fu-teal: 201 42% 62%;
+  --fu-teal-bright: 201 42% 64%;
+  --fu-amber: 240 48% 75%;
   --fu-fog: 215 20% 65%;
 
   --fu-bg: var(--fu-paper);
@@ -322,19 +323,31 @@
     color: hsl(var(--fu-link));
   }
 
-  /* ── Spring scroll reveal (replaces flat 14px ease-out) ─────────── */
-  .reveal {
+  /* ── Spring scroll reveal — clean rise, no blur, no-JS safe ─────── */
+  /* Hidden state applies only once `.js` is set (inline in Layout head),
+     so content is fully visible without JavaScript and nothing can ever
+     stay blurred or stuck at opacity 0. No `filter` anywhere: blur on
+     scrolling content is expensive and, once applied, easy to leave
+     behind — a translate+opacity rise reads just as premium. */
+  .js .reveal {
     opacity: 0;
-    transform: translateY(28px) scale(0.985);
-    filter: blur(4px);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium),
-      filter 0.8s var(--ease-premium);
+    transform: translateY(26px) scale(0.99);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
     transition-delay: var(--reveal-delay, 0ms);
   }
-  .reveal.reveal-visible {
+  .js .reveal.reveal-visible {
     opacity: 1;
     transform: translateY(0) scale(1);
-    filter: blur(0);
+    filter: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal,
+    .js .reveal.reveal-visible {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      transition: none;
+    }
   }
 
   /* ── Hero — the top sheet of the document ───────────────────────── */
@@ -416,17 +429,12 @@
     @apply text-fu-muted leading-relaxed mb-4;
   }
 
-  /* Scroll-reveal (Alpine.js powered) */
+  /* Scroll-reveal (Alpine.js powered) — the canonical `.reveal` block
+     lives in the Spring scroll reveal section above; this one only
+     carries the boot-safe `[x-cloak]` helper. (The old duplicate `.reveal`
+     rule here silently overrode the spring transition, dropped `filter`
+     from the transition list, and left the blur stuck on cards.) */
   [x-cloak] { display: none !important; }
-  .reveal {
-    opacity: 0;
-    transform: translateY(14px);
-    transition: opacity 0.55s ease-out, transform 0.55s ease-out;
-  }
-  .reveal.reveal-visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
 
   /* ── BEM custom styles for the full-document pages (features/products) ── */
   /* Page-level sections — a sheet in the document. */
@@ -486,10 +494,10 @@
     z-index: 1;
   }
   @media (min-width: 1024px) { .hero__content { text-align: left; } }
-  .hero__eyebrow {
+  .js .hero__eyebrow {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(22px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
     margin-bottom: 1.5rem;
     font-family: var(--font-mono);
     font-size: 0.68rem;
@@ -500,10 +508,10 @@
   .hero__eyebrow::before { content: "[ "; opacity: 0.7; }
   .hero__eyebrow::after  { content: " ]"; opacity: 0.7; }
   .hero__eyebrow.reveal-visible { opacity: 1; transform: translateY(0); }
-  .hero__heading {
+  .js .hero__heading {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(22px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
     margin-bottom: 1.5rem;
     font-family: var(--font-display);
     font-weight: 400;
@@ -528,10 +536,10 @@
     background: hsl(var(--fu-link) / 0.85);
     pointer-events: none;
   }
-  .hero__intro {
+  .js .hero__intro {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(22px);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
     margin-bottom: 2.25rem;
     max-width: 34rem;
     font-size: 1rem;
@@ -541,41 +549,38 @@
   .hero__intro.reveal-visible { opacity: 1; transform: translateY(0); }
   @media (min-width: 640px) { .hero__intro { font-size: 1.1rem; } }
   @media (min-width: 1024px) { .hero__intro { margin-inline: 0; } }
-  .hero__actions {
+  .js .hero__actions {
     opacity: 0;
     transform: translateY(24px) scale(0.98);
-    filter: blur(4px);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 0.85rem;
   }
-  .hero__actions.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .hero__actions.reveal-visible { opacity: 1; transform: translateY(0) scale(1); }
   @media (min-width: 640px) { .hero__actions { flex-direction: row; align-items: center; } }
   @media (min-width: 1024px) { .hero__actions { justify-content: flex-start; } }
-  .hero__status {
+  .js .hero__status {
     opacity: 0;
     transform: translateY(24px) scale(0.98);
-    filter: blur(4px);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
     margin-top: 2.25rem;
     display: flex;
     align-items: center;
   }
   @media (min-width: 1024px) { .hero__status { justify-content: flex-start; } }
-  .hero__status.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-  .hero__source-toggle {
+  .hero__status.reveal-visible { opacity: 1; transform: translateY(0) scale(1); }
+  .js .hero__source-toggle {
     opacity: 0;
-    transform: translateY(28px) scale(0.98);
-    filter: blur(4px);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), filter 0.8s var(--ease-premium);
+    transform: translateY(26px) scale(0.98);
+    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
     margin-top: 3rem;
     max-width: 30rem;
     position: relative;
     z-index: 1;
   }
-  .hero__source-toggle.reveal-visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+  .hero__source-toggle.reveal-visible { opacity: 1; transform: translateY(0) scale(1); }
   @media (min-width: 1024px) { .hero__source-toggle { margin-top: 0; } }
   .hero__source-bar {
     margin-bottom: 0.75rem;
@@ -759,25 +764,163 @@
     background: hsl(var(--fu-card));
     padding: 4rem 0;
   }
-  .home-slider__frame { position: relative; overflow: hidden; border: 2px solid hsl(var(--fu-ink)); background: hsl(var(--fu-paper)); }
+  .home-slider__frame { position: relative; overflow: hidden; border: 2px solid hsl(var(--fu-ink)); background: hsl(var(--fu-paper)); user-select: none; -webkit-user-select: none; touch-action: pan-y; }
   .home-slider__track { display: flex; transition: transform 0.7s var(--ease-premium); }
   .home-slider__slide { min-width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.8fr); min-height: 22rem; }
-  .home-slider__copy { display: flex; flex-direction: column; justify-content: center; padding: 2rem; }
-  .home-slider__index { margin-bottom: 1rem; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.16em; color: hsl(var(--fu-link)); }
-  .home-slider__title { max-width: 12ch; margin: 0 0 1rem; font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3.4rem); line-height: 0.98; text-transform: uppercase; color: hsl(var(--fu-ink)); }
-  .home-slider__text { max-width: 32rem; color: hsl(var(--fu-muted)); line-height: 1.65; }
-  .home-slider__media { min-height: 16rem; border-left: 2px solid hsl(var(--fu-ink)); background: hsl(var(--fu-ink)); }
-  .home-slider__media img { width: 100%; height: 100%; min-height: 16rem; object-fit: cover; opacity: 0.88; }
+  .home-slider__copy { display: flex; flex-direction: column; justify-content: center; padding: 2.25rem 2.5rem; }
+  .home-slider__index { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.16em; }
+  .home-slider__index-num { color: hsl(var(--fu-link)); font-weight: 600; }
+  .home-slider__index-total { color: hsl(var(--fu-muted)); }
+  .home-slider__index-label { padding-left: 1rem; border-left: 1px solid hsl(var(--fu-line)); color: hsl(var(--fu-muted)); text-transform: uppercase; }
+  .home-slider__title { max-width: 14ch; margin: 0 0 1.1rem; font-family: var(--font-display); font-size: clamp(1.9rem, 4.2vw, 3.6rem); line-height: 0.96; text-transform: uppercase; color: hsl(var(--fu-ink)); }
+  .home-slider__text { max-width: 34rem; color: hsl(var(--fu-muted)); line-height: 1.7; }
+  .home-slider__cta-arrow { display: inline-flex; margin-left: 0.35rem; transition: transform 0.4s var(--ease-premium); }
+  .home-slider__copy a:hover .home-slider__cta-arrow { transform: translateX(4px); }
+  .home-slider__media { position: relative; min-height: 16rem; border-left: 2px solid hsl(var(--fu-ink)); background: hsl(var(--fu-ink)); }
+  .home-slider__media img { width: 100%; height: 100%; min-height: 16rem; object-fit: cover; opacity: 0.92; transition: opacity 0.6s var(--ease-premium), transform 0.9s var(--ease-premium); }
+  .home-slider__slide:hover .home-slider__media img { opacity: 1; transform: scale(1.015); }
   .home-slider__placeholder { display: flex; min-height: 16rem; align-items: center; justify-content: center; padding: 2rem; color: hsl(var(--fu-paper)); font-family: var(--font-mono); text-align: center; text-transform: uppercase; letter-spacing: 0.12em; }
-  .home-slider__controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 2px solid hsl(var(--fu-ink)); padding: 1rem 1.25rem; }
+
+  /* Autoplay progress — hairline sweeping the slide lifetime. Driven by a
+     CSS animation that restarts on slide change (see HomeSlider.astro). */
+  .home-slider__progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    z-index: 5;
+    background: hsl(var(--fu-link));
+    transform-origin: left;
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  .home-slider__progress.is-running {
+    opacity: 1;
+    animation: home-slider-progress var(--home-slider-duration, 7000ms) linear forwards;
+  }
+  @keyframes home-slider-progress {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .home-slider__progress.is-running { animation: none; opacity: 0.35; }
+  }
+
+  .home-slider__controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-top: 2px solid hsl(var(--fu-ink)); padding: 0.9rem 1.25rem; }
+  .home-slider__control-group { display: inline-flex; align-items: center; gap: 0.75rem; }
   .home-slider__dots { display: flex; gap: 0.4rem; }
-  .home-slider__dot { width: 1.8rem; height: 0.35rem; border: 1px solid hsl(var(--fu-ink)); background: transparent; }
-  .home-slider__dot[aria-current='true'] { background: hsl(var(--fu-link)); }
+  .home-slider__dot {
+    position: relative;
+    width: 2.2rem;
+    height: 0.35rem;
+    padding: 0;
+    border: 1px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.3s var(--ease-premium);
+  }
+  .home-slider__dot-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: hsl(var(--fu-link));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-premium);
+  }
+  .home-slider__dot:hover { border-color: hsl(var(--fu-link)); }
+  .home-slider__dot[aria-current='true'] .home-slider__dot-fill { transform: scaleX(1); }
+  .home-slider__play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border: 1.5px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-paper));
+    color: hsl(var(--fu-ink));
+    cursor: pointer;
+    transition: background 0.3s var(--ease-premium), color 0.3s var(--ease-premium);
+  }
+  .home-slider__play:hover { background: hsl(var(--fu-ink)); color: hsl(var(--fu-paper)); }
   .home-slider__arrow { display: inline-flex; align-items: center; gap: 0.5rem; }
-  @media (max-width: 700px) {
-    .home-slider__slide { grid-template-columns: 1fr; }
-    .home-slider__media { order: -1; border-left: 0; border-bottom: 2px solid hsl(var(--fu-ink)); }
+  @media (max-width: 768px) {
+    .home-slider { padding: 2.5rem 0; }
+    .home-slider__slide { grid-template-columns: 1fr; min-height: auto; }
+    .home-slider__media { order: -1; border-left: 0; border-bottom: 2px solid hsl(var(--fu-ink)); min-height: 10rem; }
+    .home-slider__media img { min-height: 10rem; }
     .home-slider__copy { padding: 1.5rem; }
+    .home-slider__title { font-size: clamp(1.4rem, 5vw, 2rem); max-width: 100%; }
+  }
+  @media (max-width: 480px) {
+    .home-slider { padding: 2rem 0; }
+    .home-slider__copy { padding: 1.25rem; }
+    .home-slider__title { font-size: 1.3rem; }
+    .home-slider__media { min-height: 8rem; }
+    .home-slider__media img { min-height: 8rem; }
+    .home-slider__index { flex-wrap: wrap; gap: 0.5rem; }
+  }
+
+  /* ── Reusable Wagtail slider block (fu-slider, both roads) ──────── */
+  .fu-slider {
+    position: relative;
+    border-top: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-card));
+    padding: 4rem 0;
+  }
+  .fu-slider__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: 2.25rem;
+  }
+  .fu-slider__nav { display: inline-flex; gap: 0.5rem; }
+  .fu-slider__frame {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid hsl(var(--fu-ink));
+    background: hsl(var(--fu-card));
+    box-shadow: inset 0 1px 0 hsl(var(--fu-paper) / 0.6);
+  }
+  .fu-slider__track { display: flex; transition: transform 0.7s var(--ease-premium); }
+  .fu-slider__shell {
+    flex: 0 0 100%;
+    display: flex;
+    padding: 0.5rem;
+  }
+  .fu-slider__card {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    border: 1px solid hsl(var(--fu-ink) / 0.9);
+    background: hsl(var(--fu-paper));
+    box-shadow: 0 0 0 0 hsl(var(--fu-ink));
+    transition: box-shadow 0.5s var(--ease-premium), transform 0.5s var(--ease-premium);
+  }
+  .fu-slider__shell:hover .fu-slider__card { box-shadow: 5px 5px 0 0 hsl(var(--fu-ink)); transform: translate(-2px, -2px); }
+  .fu-slider__art { position: relative; display: block; overflow: hidden; aspect-ratio: 16 / 9; border-bottom: 1px solid hsl(var(--fu-ink) / 0.9); background: hsl(var(--fu-ink)); }
+  .fu-slider__art img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transform: scale(1.01); transition: transform 0.9s var(--ease-premium), opacity 0.5s var(--ease-premium); will-change: transform; }
+  .fu-slider__shell:hover .fu-slider__art img { transform: scale(1.06); opacity: 1; }
+  .fu-slider__body { display: flex; flex: 1; flex-direction: column; gap: 0.6rem; padding: 1.35rem; }
+  .fu-slider__subtitle { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.14em; color: hsl(var(--fu-link)); }
+  .fu-slider__title { font-family: var(--font-display); font-size: 1.35rem; line-height: 1.1; color: hsl(var(--fu-ink)); }
+  .fu-slider__desc { color: hsl(var(--fu-muted)); font-size: 0.9rem; line-height: 1.6; }
+  .fu-slider__dots { display: flex; justify-content: center; gap: 0.4rem; border-top: 2px solid hsl(var(--fu-ink)); padding: 0.9rem; }
+  .fu-slider__dot {
+    width: 1.8rem;
+    height: 0.35rem;
+    border: 1px solid hsl(var(--fu-ink));
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.4s var(--ease-premium), transform 0.4s var(--ease-premium);
+  }
+  .fu-slider__dot:hover { transform: translateY(-2px); }
+  .fu-slider__dot[aria-current='true'] { background: hsl(var(--fu-link)); }
+  @media (max-width: 639px) {
+    .fu-slider__head { align-items: flex-start; flex-direction: column; }
   }
 
   /* ── Stats BEM block ────────────────────────────────────────────── */
@@ -1560,10 +1703,66 @@
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
+  .reveal, .js .reveal, .reveal.reveal-visible,
+  .hero__eyebrow, .hero__heading, .hero__intro, .hero__actions,
+  .hero__status, .hero__source-toggle, .hero__breadcrumb,
+  .features__card, .fu-event-card, .fu-certificate__card,
+  .blog-preview__card, .team__card, .timeline__card,
+  .course-slider__shell, .reveal-up {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
   .animate-fusion-pulse, .animate-fusion-blink { animation: none !important; }
   .fusion-skeleton__line, .fusion-skeleton__card { animation: none !important; }
   .htmx-indicator-progress__bar { animation: none !important; }
+}
+
+/* Progressive enhancement fallback: reveal-driven content must never be
+   unreadable when a browser blocks Alpine, an observer is unavailable, or
+   JavaScript is disabled. Layout.astro adds `.js` before paint when motion
+   can be attempted; `fusion-motion-ready` is added on `alpine:init` only
+   when Alpine actually boots its directives. Without either, the document
+   remains fully readable — x-intersect reveals can never strand content
+   at opacity 0 (same contract as precis-main's globals.css). */
+html:not(.js) .reveal,
+html:not(.fusion-motion-ready) .reveal,
+html:not(.js) .hero__eyebrow,
+html:not(.fusion-motion-ready) .hero__eyebrow,
+html:not(.js) .hero__heading,
+html:not(.fusion-motion-ready) .hero__heading,
+html:not(.js) .hero__intro,
+html:not(.fusion-motion-ready) .hero__intro,
+html:not(.js) .hero__actions,
+html:not(.fusion-motion-ready) .hero__actions,
+html:not(.js) .hero__status,
+html:not(.fusion-motion-ready) .hero__status,
+html:not(.js) .hero__source-toggle,
+html:not(.fusion-motion-ready) .hero__source-toggle,
+html:not(.js) .hero__breadcrumb,
+html:not(.fusion-motion-ready) .hero__breadcrumb,
+html:not(.js) .features__card,
+html:not(.fusion-motion-ready) .features__card,
+html:not(.js) .fu-event-card,
+html:not(.fusion-motion-ready) .fu-event-card,
+html:not(.js) .fu-certificate__card,
+html:not(.fusion-motion-ready) .fu-certificate__card,
+html:not(.js) .blog-preview__card,
+html:not(.fusion-motion-ready) .blog-preview__card,
+html:not(.js) .team__card,
+html:not(.fusion-motion-ready) .team__card,
+html:not(.js) .timeline__card,
+html:not(.fusion-motion-ready) .timeline__card,
+html:not(.js) .course-slider__shell,
+html:not(.fusion-motion-ready) .course-slider__shell,
+/* The course-page reveal runs on its own IntersectionObserver (not Alpine),
+   so it only needs the no-JS half of this net. */
+html:not(.js) .reveal-up {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+  transition: none !important;
 }
 
 /* ── Skeleton loading (default content-on-the-way state) ─────────────── */

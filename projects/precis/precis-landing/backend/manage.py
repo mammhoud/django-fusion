@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Landing-fusion backend management entry point (mirrors cms-fusion conventions)."""
+"""Precis Landing backend management entry point (mirrors cms-fusion conventions)."""
 from __future__ import annotations
 
 import os

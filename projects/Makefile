@@ -179,7 +179,7 @@ export SERVER_TYPE
 # the MANAGE fallback (legacy aliases: vresume, cms-fusion, ...).
 BACKEND_MAKE := $(if $(filter $(SITE),precis-ctc),precis/precis-ctc/backend,$(if $(filter $(SITE),precis-main),precis/precis-main/backend,$(if $(filter $(SITE),loop-crm),loop-crm/backend,)))
 
-.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy redeploy-with-stack docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate superuser server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy redeploy-with-stack docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -308,6 +308,7 @@ validate-config:
 validate-compose-env:
 	@printf '%s\n' 'Compose infrastructure wiring (secret values are not printed):'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'site-service' 'db-service' 'redis-service' 'db-name-env' 'db-credential-envs' 'redis-secret-env'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'precis-main-backend' 'postgres' 'default-redis' 'DB_NAME_LANDING' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'precis-ctc-website' 'postgres' 'default-redis' 'DB_NAME_CTC' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'lms-web' 'postgres' 'default-redis' 'DB_NAME_LMS' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'vresume-web' 'postgres' 'default-redis' 'DB_NAME_VRESUME' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
@@ -565,6 +566,18 @@ migrate:
 		$(MAKE) -C $(BACKEND_MAKE) migrate; \
 	else \
 		$(MANAGE) migrate; \
+	fi
+
+# Create a Django superuser for the selected site. Interactive by default;
+# pass DJANGO_SUPERUSER_EMAIL + DJANGO_SUPERUSER_PASSWORD (and optionally
+# DJANGO_SUPERUSER_USERNAME) for a non-interactive run.
+#   make superuser WEBSITE=precis-main
+#   DJANGO_SUPERUSER_EMAIL=admin@structa.cloud DJANGO_SUPERUSER_PASSWORD=... make superuser WEBSITE=precis-main
+superuser:
+	@if [ -n "$(BACKEND_MAKE)" ]; then \
+		$(MAKE) -C $(BACKEND_MAKE) superuser; \
+	else \
+		$(MANAGE) createsuperuser; \
 	fi
 
 tests:

@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright E2E for Landing-fusion (landing.structa.cloud) — full
+ * Playwright E2E for Precis Landing (structa.cloud) — full
  * feature surface: static Astro pages + the Django/Wagtail backend roads
  * (learning, fragments, APIs, admin).
  *

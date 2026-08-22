@@ -25,7 +25,6 @@ try {
 const pageHero = pageData?.hero;
 const pageCta = pageData?.cta;
 const pageStats = (pageData?.stats as any[] | undefined);
-const pageFeatures = (pageData?.features as any[] | undefined);
 const pageTestimonials = (pageData?.testimonials as any[] | undefined);
 const pageFaq = (pageData?.faq as any[] | undefined);
 const pageCounters = (pageData?.counters as any[] | undefined);
@@ -60,40 +59,23 @@ const archiveGalleryItems = mediaManifest?.items.slice(0, 18).map((item) => ({
 }));
 const galleryItems = pageGalleryItems?.length ? pageGalleryItems : archiveGalleryItems;
 
-const skills = pageFeatures?.length ? pageFeatures.map((f: any) => ({
-  icon: String(f.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
-  title: String(f.title || ''),
-  description: String(f.description || ''),
-})) : [
-  { icon: 'M12 3v18M3 12h18', title: 'Clinical study design', description: 'Translate the clinical need into a focused question, protocol, and analysis plan.' },
-  { icon: 'M4 5h16M4 12h16M4 19h10', title: 'Evidence synthesis', description: 'Make search, appraisal, extraction, and uncertainty visible to the whole team.' },
-  { icon: 'M3 20V4m0 16h18M7 16l3-5 3 3 5-8', title: 'Biostatistics and analytics', description: 'Use appropriate methods to interpret clinical data and communicate effect estimates.' },
-  { icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5', title: 'Scientific writing', description: 'Shape clear methods, results, discussion, and reporting for academic readers.' },
-];
-
-const missionValues = [
-  { title: 'Interdisciplinary research', text: 'Medical AI, biostatistics, and clinical evidence synthesis in one center — from protocol design to publication integrity.' },
-  { title: 'Evidence you can build on', text: 'Structured methods, reproducible reviews, and responsible data analytics that turn research intent into trusted evidence.' },
-  { title: 'Learning that sticks', text: 'Courses and certificates shaped for clinicians, biostatisticians, and medical writers — with a visible next action at every step.' },
-];
+// All content is Wagtail-driven — no hardcoded fallback copy. The backend
+// seeds mission/skills/faq blocks into AboutPage.facts (localized per
+// language) and /apis/pages/about/ exposes them under mission_values /
+// skills / faq. Empty sections render nothing rather than static strings.
+const skills = (pageData?.skills as any[] | undefined) || [];
+const missionValues = (pageData?.mission_values as any[] | undefined) || [];
 
 const testimonialItems = pageTestimonials?.length ? pageTestimonials.map((t: any) => ({
   quote: String(t.quote || ''),
   author: String(t.author || ''),
   role: String(t.role || ''),
-})) : [{
-  quote: 'The strongest part of the process was seeing the reasoning documented from question to manuscript.',
-  author: 'Clinical research partner',
-  role: 'Evidence program · CTC Research',
-}];
+})) : [];
 
-const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
+const faqItems = (pageFaq?.length ? pageFaq : (pageData?.faq as any[] | undefined))?.map((f: any) => ({
   question: String(f.question || ''),
   answer: String(f.answer || ''),
-})) : [
-  { question: 'What makes the CTC approach different?', answer: 'We connect clinical context, transparent methods, evidence quality, and publication practice instead of treating them as separate handoffs.' },
-  { question: 'Can you work with an existing protocol or manuscript?', answer: 'Yes. We can review a draft, strengthen the analysis plan, or help the team identify the next defensible research step.' },
-];
+})) || [];
 ---
 
 <Layout
@@ -111,7 +93,6 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
     intro={pageHero?.subtitle || 'A globally recognized center of excellence advancing health and well-being through interdisciplinary innovation, medical AI, and high-impact research.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Explore courses', href: '/courses/' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Meet the team', href: '/team/' }}
-    status='200 OK · text/html · the center, in one response'
     gallery={galleryItems}
     variant="research"
   />
@@ -122,7 +103,7 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
     intro="A concise view of the research, training, and writing work supported by CTC Research."
   />
 
-  <section class='about-subpage about-subpage--directory doc-sheet bg-fu-card py-16 md:py-20'>
+  <section class='about-subpage about-subpage--directory doc-sheet bg-fu-card py-16 md:py-20' data-localized-block='directory'>
     <div class='container-fusion'>
       <div class='about-subpage__intro'>
         <p class='tag-marker mb-4'>about CTC Research</p>
@@ -146,17 +127,17 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
     </div>
   </section>
 
-  <!-- Mission -->
-  <section class='doc-sheet bg-fu-paper py-20 md:py-24'>
+  {missionValues.length ? (
+  <section class='doc-sheet bg-fu-paper py-20 md:py-24' data-localized-block='mission'>
     <div class='container-fusion'>
       <div class='mx-auto mb-14 max-w-2xl text-center'>
-        <p class='tag-marker mb-4'>philosophy</p>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Why CTC Research</h2>
-        <p class='text-fu-muted'>Three principles guide every program: interdisciplinary research, evidence you can build on, and learning that sticks.</p>
+        <p class='tag-marker mb-4'>{pageData?.mission_subtitle || 'philosophy'}</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{pageData?.mission_title || 'Why CTC Research'}</h2>
+        {pageData?.mission_intro ? <p class='text-fu-muted'>{pageData.mission_intro}</p> : null}
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
         {missionValues.map((value, i) => (
-          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+          <div class='card reveal p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 80}ms`}>
             <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
               <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
                 <path stroke-linecap='round' stroke-linejoin='round'
@@ -172,6 +153,7 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
       </div>
     </div>
   </section>
+  ) : null}
 
   <CertificateCard
     heading='Credentials that travel'
@@ -180,19 +162,19 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
 
   {skills.length ? (
   <Features
-    heading='What we do, in detail'
-    intro='From protocol design to publication integrity, these are the capabilities that power CTC Research.'
+    heading={pageData?.skills_title || 'What we do, in detail'}
+    intro={pageData?.skills_intro || 'From protocol design to publication integrity, these are the capabilities that power CTC Research.'}
     features={skills.map((s) => ({
       icon: 'rocket' as const,
       title: s.title,
       description: s.description,
-      _iconPath: s.icon,
+      _iconPath: s.icon_class || s.icon || '',
     }))}
   />
   ) : null}
 
-  <Testimonials testimonials={testimonialItems} />
-  <FAQ items={faqItems} />
+  {testimonialItems.length ? <Testimonials testimonials={testimonialItems} /> : null}
+  {faqItems.length ? <FAQ items={faqItems} /> : null}
 
   {methods?.length ? (
   <section class='doc-sheet bg-fu-card py-20 md:py-28'>
@@ -203,7 +185,7 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
         {methods.map((method: string, i: number) => (
-          <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+          <div class='card reveal p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 80}ms`}>
             <span class='mb-4 block font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-teal'>{String(i + 1).padStart(2, '0')}</span>
             <p class='font-display text-lg font-normal text-fu-ink'>{method}</p>
           </div>
@@ -236,7 +218,7 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
       </div>
       <div class='grid grid-flow-dense grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3'>
         {galleryItems.map((item: any, i: number) => (
-          <div class='card reveal group overflow-hidden' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 60}ms`}>
+          <div class='card reveal group overflow-hidden' x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 60}ms`}>
             <div class='aspect-square overflow-hidden bg-fu-line/40'>
               {item.src ? (
                 <img src={item.src} alt={item.alt || item.caption} loading='lazy' class='h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105' />
@@ -270,3 +252,121 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
 
   <Toast />
 </Layout>
+
+<script>
+  // The CTC frontend is intentionally static for fast delivery. When a
+  // visitor requests a locale with ?lang=, hydrate the visible About page
+  // from the authoritative localized Wagtail API instead of serving the
+  // English build artifact unchanged.
+  const SUPPORTED = ['en', 'sv', 'fr', 'de', 'es', 'ar', 'pt-br'];
+  const UI_COPY = {
+    en: { directory: 'Explore the center', directoryIntro: 'Read how we work, how we teach, and how research teams can work with us.', research: 'Research approach', researchText: 'Protocols, evidence synthesis, medical AI, and publication practice.', education: 'Education and training', educationText: 'Courses for clinicians, researchers, biostatisticians, and medical writers.', counters: 'The center, in numbers', counterIntro: 'A concise view of the research, training, and writing work supported by CTC Research.', credentials: 'Credentials that travel', credentialsIntro: 'Every program at the center issues a verifiable completion record, from evidence synthesis to biostatistics for clinical teams.', faq: 'Questions, answered in plain HTML', ctaFallback: 'Let’s advance health together', ctaIntro: 'Partner with us on medical AI research, clinical evidence, and health innovation — or join a learning path.', ctaLabel: 'Get in touch' },
+    ar: { directory: 'استكشف المركز', directoryIntro: 'تعرّف إلى طريقة عملنا وتعليمنا وكيف يمكن لفرق البحث التعاون معنا.', research: 'منهج البحث', researchText: 'تصميم البروتوكولات وتجميع الأدلة والذكاء الاصطناعي الطبي وممارسة النشر.', education: 'التعليم والتدريب', educationText: 'دورات للأطباء والباحثين والإحصائيين الحيويين والكتّاب الطبيين.', counters: 'المركز بالأرقام', counterIntro: 'لمحة موجزة عن البحث والتدريب والكتابة التي يدعمها مركز سي تي سي للبحث.', credentials: 'شهادات تمتد معك', credentialsIntro: 'يصدر كل برنامج في المركز سجلاً قابلاً للتحقق عند إتمامه، من تجميع الأدلة إلى الإحصاء الحيوي للفرق السريرية.', faq: 'أسئلة وإجابات واضحة', ctaFallback: 'لنتقدم بالصحة معاً', ctaIntro: 'تعاون معنا في أبحاث الذكاء الاصطناعي الطبي والأدلة السريرية والابتكار الصحي، أو ابدأ مساراً تعليمياً.', ctaLabel: 'تواصل معنا' },
+    de: { directory: 'Das Zentrum entdecken', directoryIntro: 'Erfahren Sie, wie wir arbeiten, lehren und mit Forschungsteams zusammenarbeiten.', research: 'Forschungsansatz', researchText: 'Protokolle, Evidenzsynthese, medizinische KI und Publikationspraxis.', education: 'Bildung und Training', educationText: 'Kurse für Ärzte, Forschende, Biostatistiker und medizinische Autoren.', counters: 'Das Zentrum in Zahlen', counterIntro: 'Ein kompakter Überblick über die von CTC Research unterstützte Forschung, Ausbildung und wissenschaftliche Arbeit.', credentials: 'Zertifikate, die bleiben', credentialsIntro: 'Jedes Programm stellt einen überprüfbaren Abschlussnachweis aus.', faq: 'Fragen, klar beantwortet', ctaFallback: 'Gemeinsam Gesundheit voranbringen', ctaIntro: 'Arbeiten Sie mit uns an medizinischer KI, klinischer Evidenz und Innovation.', ctaLabel: 'Kontakt aufnehmen' },
+    es: { directory: 'Explora el centro', directoryIntro: 'Conoce cómo trabajamos, cómo enseñamos y cómo colaboramos con equipos de investigación.', research: 'Enfoque de investigación', researchText: 'Protocolos, síntesis de evidencia, IA médica y práctica editorial.', education: 'Educación y formación', educationText: 'Cursos para clínicos, investigadores, bioestadísticos y escritores médicos.', counters: 'El centro en cifras', counterIntro: 'Una visión breve de la investigación, formación y escritura que apoya CTC Research.', credentials: 'Credenciales que te acompañan', credentialsIntro: 'Cada programa emite un registro verificable de finalización.', faq: 'Preguntas con respuestas claras', ctaFallback: 'Avancemos juntos la salud', ctaIntro: 'Colabora con nosotros en IA médica, evidencia clínica e innovación sanitaria.', ctaLabel: 'Contacta con nosotros' },
+    fr: { directory: 'Découvrir le centre', directoryIntro: 'Découvrez notre façon de travailler, d’enseigner et de collaborer avec les équipes de recherche.', research: 'Approche de recherche', researchText: 'Protocoles, synthèse des données probantes, IA médicale et publication.', education: 'Éducation et formation', educationText: 'Des formations pour cliniciens, chercheurs, biostatisticiens et rédacteurs médicaux.', counters: 'Le centre en chiffres', counterIntro: 'Un aperçu concis des travaux de recherche, de formation et de rédaction soutenus par CTC Research.', credentials: 'Des attestations qui vous suivent', credentialsIntro: 'Chaque programme délivre un relevé de réussite vérifiable.', faq: 'Des réponses claires à vos questions', ctaFallback: 'Faisons progresser la santé ensemble', ctaIntro: 'Collaborez avec nous sur l’IA médicale, les données cliniques et l’innovation en santé.', ctaLabel: 'Nous contacter' },
+    'pt-br': { directory: 'Explore o centro', directoryIntro: 'Veja como trabalhamos, ensinamos e colaboramos com equipes de pesquisa.', research: 'Abordagem de pesquisa', researchText: 'Protocolos, síntese de evidências, IA médica e publicação científica.', education: 'Educação e treinamento', educationText: 'Cursos para clínicos, pesquisadores, bioestatísticos e redatores médicos.', counters: 'O centro em números', counterIntro: 'Uma visão concisa da pesquisa, formação e redação apoiadas pela CTC Research.', credentials: 'Credenciais que acompanham você', credentialsIntro: 'Cada programa emite um registro verificável de conclusão.', faq: 'Perguntas respondidas com clareza', ctaFallback: 'Vamos avançar a saúde juntos', ctaIntro: 'Colabore conosco em IA médica, evidências clínicas e inovação em saúde.', ctaLabel: 'Fale conosco' },
+    sv: { directory: 'Utforska centret', directoryIntro: 'Läs om hur vi arbetar, undervisar och samarbetar med forskarteam.', research: 'Forskningsansats', researchText: 'Protokoll, evidenssyntes, medicinsk AI och publiceringsarbete.', education: 'Utbildning och träning', educationText: 'Kurser för kliniker, forskare, biostatistiker och medicinska skribenter.', counters: 'Centret i siffror', counterIntro: 'En kort översikt över den forskning, utbildning och skrivning som CTC Research stöder.', credentials: 'Meriter som följer med', credentialsIntro: 'Varje program ger ett verifierbart intyg efter slutförande.', faq: 'Frågor med tydliga svar', ctaFallback: 'Låt oss utveckla hälsan tillsammans', ctaIntro: 'Samarbeta med oss kring medicinsk AI, klinisk evidens och hälsoinnovation.', ctaLabel: 'Kontakta oss' },
+  };
+
+  const stripHtml = (value: unknown): string => String(value || '').replace(/<[^>]*>/g, '').trim();
+  const setText = (root: Element | null, selector: string, value: unknown): void => {
+    const node = root?.querySelector(selector);
+    if (node && value) node.textContent = String(value);
+  };
+  const setMany = (root: Element | null, selector: string, values: unknown[]): void => {
+    root?.querySelectorAll(selector).forEach((node: Element, index: number) => {
+      if (values[index]) node.textContent = String(values[index]);
+    });
+  };
+
+  async function syncLocalizedAbout() {
+    const requested = new URLSearchParams(window.location.search).get('lang')?.toLowerCase();
+    if (!requested || !SUPPORTED.includes(requested) || requested === 'en') return;
+    try {
+      // The public site can briefly return a gateway response while Django and
+      // the proxy warm their caches. Retry a bounded number of times so a
+      // localized request never silently falls back to the English static shell.
+      let data: Record<string, any> | null = null;
+      for (let attempt = 0; attempt < 3 && !data; attempt += 1) {
+        try {
+          const response: Response = await window.fetch(`/apis/pages/about/?lang=${encodeURIComponent(requested)}&locale_refresh=1`, {
+            cache: 'no-store',
+            headers: { Accept: 'application/json' },
+          });
+          if (response.ok) {
+            const candidate: Record<string, any> = await response.json() as Record<string, any>;
+            if (candidate.language === requested) data = candidate;
+          }
+        } catch (error) {
+          // Retry transient network failures; the final catch below preserves
+          // the usable static page if the backend remains unavailable.
+        }
+        if (!data && attempt < 2) await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+      }
+      if (!data) return;
+      const copy = UI_COPY[requested as keyof typeof UI_COPY] || UI_COPY.en;
+      const hero = document.querySelector('[data-localized-block="hero"]');
+      const heroData = data.hero || {};
+      setText(hero, '.hero__eyebrow', heroData.badge);
+      setText(hero, '.hero__heading', heroData.title || data.title);
+      setText(hero, '.hero__intro', heroData.subtitle || data.mission_intro || stripHtml(data.experience_description));
+      setMany(hero, '.hero__actions a', [heroData.primary_cta?.label, heroData.secondary_cta?.label]);
+
+      const directory = document.querySelector('[data-localized-block="directory"]');
+      setText(directory, 'h2', copy.directory);
+      setText(directory, '.about-subpage__intro p:last-child', copy.directoryIntro);
+      setMany(directory, '.about-subpage__card h3', [copy.research, copy.education]);
+      setMany(directory, '.about-subpage__card p', [copy.researchText, copy.educationText]);
+
+      const counters = document.querySelector('.fu-counter');
+      setText(counters, '.fu-counter__header h2', copy.counters);
+      setText(counters, '.fu-counter__header p', copy.counterIntro);
+
+      const mission = document.querySelector('[data-localized-block="mission"]');
+      // The mission block's title/subtitle are plain utility-class headings
+      // (not `.page-section__title` like the Features/FAQ blocks), so target
+      // them by their actual markup inside the centered intro container.
+      setText(mission, '.mx-auto .tag-marker', data.mission_subtitle);
+      setText(mission, '.mx-auto h2', data.mission_title);
+      setText(mission, '.mx-auto p.text-fu-muted', data.mission_intro);
+      setMany(mission, '.card h3', (data.mission_values || []).map((item: { title: string }) => item.title));
+      setMany(mission, '.card p', (data.mission_values || []).map((item: { text: string }) => item.text));
+
+      const skills = document.querySelector('[data-localized-block="skills"]');
+      setText(skills, '.page-section__title', data.skills_title);
+      setText(skills, '.features__header p.text-fu-muted', data.skills_intro);
+      setMany(skills, '.features__title', (data.skills || []).map((item: { title: string }) => item.title));
+      setMany(skills, '.features__text', (data.skills || []).map((item: { description: string }) => item.description));
+
+      const faq = document.querySelector('[data-localized-block="faq"]');
+      setText(faq, '.page-section__title', copy.faq);
+      const faqItems = data.faq || [];
+      faq?.querySelectorAll('.faq__list > div').forEach((item, index) => {
+        const question = item.querySelector('button span.flex-1');
+        const answer = item.querySelector('button ~ div p');
+        if (faqItems[index]) {
+          if (question) question.textContent = faqItems[index].question;
+          if (answer) answer.textContent = faqItems[index].answer;
+          (item as HTMLElement).hidden = false;
+        } else (item as HTMLElement).hidden = true;
+      });
+
+      const cta = document.querySelector('[data-localized-block="cta"]');
+      setText(cta, '.cta__heading', data.cta?.title || copy.ctaFallback);
+      setText(cta, '.cta__intro', data.cta?.subtitle || copy.ctaIntro);
+      setText(cta, '.cta__actions a:first-child', data.cta?.primary_cta?.label || copy.ctaLabel);
+
+      document.documentElement.setAttribute('lang', requested);
+      document.documentElement.setAttribute('dir', requested === 'ar' ? 'rtl' : 'ltr');
+      document.documentElement.dataset.language = requested;
+      document.documentElement.dataset.localizedReady = requested;
+      document.title = data.title || document.title;
+      document.querySelector('meta[name="description"]')?.setAttribute('content', data.seo?.description || data.mission_intro || '');
+    } catch (error) {
+      console.warn('Localized About content could not be loaded', error);
+    }
+  }
+
+  syncLocalizedAbout();
+</script>

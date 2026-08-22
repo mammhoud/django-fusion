@@ -20,6 +20,7 @@ from django.urls import include, path
 
 from apps.core import urls as cart_urls
 from apps.pages.profile import urls as profile_urls
+from apps.pages.accounts import urls as account_urls
 
 app_name = "handlers"
 
@@ -31,4 +32,9 @@ urlpatterns = [
     # Cart & checkout endpoints — same URLconf patterns so `handlers:cart-count`
     # / `handlers:checkout` resolve to the canonical /cart/ routes.
     path("cart/", include(cart_urls.urlpatterns)),
+    # Accounts routes (auth login/signup, create-password, registration
+    # success, policy/terms/consent) — re-mapped so `handlers:create-password`
+    # and `handlers:registration-success` resolve to /auth/... paths used by
+    # the registration confirmation emails.
+    path("", include(account_urls.urlpatterns)),
 ]

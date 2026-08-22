@@ -32,6 +32,26 @@ if settings.SERVER_ENV.value in ["demo", "development"]:
 # Language Configuration
 # -------------------------------
 LANGUAGE_CODE = settings.get("LANGUAGE_CODE", "en")
+# Shared django-fusion language contract. Sites may narrow this catalog through
+# their Wagtail SiteLanguage snippets, but Django's base settings remain the
+# validation source for middleware, cookies, sessions, and translations.
+FUSION_LANGUAGES = settings.get(
+    "FUSION_LANGUAGES",
+    [
+        ("en", _("English")),
+        ("ar", _("Arabic")),
+        ("sv", _("Swedish")),
+        ("fr", _("French")),
+        ("de", _("German")),
+        ("es", _("Spanish")),
+        ("pt", _("Portuguese")),
+        ("pt-br", _("Portuguese (Brazil)")),
+    ],
+)
+# Session key used by products that persist the language alongside Django's
+# language cookie. Django's stock set_language view does not define this
+# setting, so keep the shared default explicit for middleware/API consumers.
+LANGUAGE_SESSION_KEY = settings.get("LANGUAGE_SESSION_KEY", "_language")
 LANGUAGE_COOKIE_NAME = settings.get("LANGUAGE_COOKIE_NAME", "django_language")
 LANGUAGE_COOKIE_AGE = settings.get("LANGUAGE_COOKIE_AGE", 60 * 60 * 24 * 365)  # 1 year
 LANGUAGE_COOKIE_DOMAIN = settings.get("LANGUAGE_COOKIE_DOMAIN", None)
@@ -43,16 +63,7 @@ LANGUAGE_COOKIE_SAMESITE = settings.get("LANGUAGE_COOKIE_SAMESITE", "Lax")
 # -------------------------------
 # Available Languages
 # -------------------------------
-LANGUAGES = settings.get(
-    "LANGUAGES",
-    [
-        ("en", _("English")),
-        ("fr", _("French")),
-        ("de", _("German")),
-        ("es", _("Spanish")),
-        ("ar", _("العربيّة")),
-    ],
-)
+LANGUAGES = settings.get("LANGUAGES", FUSION_LANGUAGES)
 
 # Language BiDi support (right-to-left languages)
 LANGUAGES_BIDI = settings.get("LANGUAGES_BIDI", ["ar", "he", "fa", "ur"])
@@ -74,7 +85,7 @@ TRANSLATION_FILES = {
 # Wagtail Internationalization
 # -------------------------------
 WAGTAIL_I18N_ENABLED = settings.get("WAGTAIL_I18N_ENABLED", True)
-WAGTAIL_CONTENT_LANGUAGES = LANGUAGES
+WAGTAIL_CONTENT_LANGUAGES = settings.get("WAGTAIL_CONTENT_LANGUAGES", LANGUAGES)
 
 # Wagtail Locale model configuration
 WAGTAIL_I18N_LOCALE_MODEL = "wagtailcore.Locale"

@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# precis-ctc — site.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Site identity + public domains for CTC Research. Consumed by the shared
+# configs stack (configs.default → cfg()) and django-fusion's config.project
+# loader; environment variables override (Compose sets SITE_DOMAIN,
+# ALLOWED_HOSTS, WAGTAILADMIN_BASE_URL explicitly in production).
+#
+# Public hosts: ctc-research.com / www.ctc-research.com / arch.ctc-research.com
+# Traefik routes them in application/proxy/configs/traefik/dynamic/
+#   ctc-research.yml → precis-ctc backend + frontend.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  SITE:
+    name: precis-ctc
+    aliases:
+      - ctc
+      - ctc-website
+      - ctc-research.com
+      - research
+    primary_domain: ctc-research.com
+    domains:
+      - ctc-research.com
+      - www.ctc-research.com
+      - arch.ctc-research.com
+    allowed_hosts:
+      - ctc-research.com
+      - www.ctc-research.com
+      - arch.ctc-research.com
+      - ctc-research.localhost
+      - localhost
+      - 127.0.0.1
+      - precis-ctc-website
+    default_email: "CTC Research <noreply@ctc-research.com>"
+    module: LMS
+    wagtail_site_name: "CTC Research"

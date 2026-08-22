@@ -223,6 +223,18 @@ class TestFixtureContent(TestCase):
         assert "pages" in data
         assert "total" in data
 
+    def test_wagtail_page_api_uses_requested_locale(self):
+        """The localized page list and payload come from Wagtail rows."""
+        listing = self.client.get("/apis/pages/?lang=ar")
+        assert listing.status_code == 200
+        assert listing.json()["language"] == "ar"
+        assert {page["slug"] for page in listing.json()["pages"]} == {"home-ar"}
+
+        page = self.client.get("/apis/pages/home-ar/?lang=ar")
+        assert page.status_code == 200
+        assert page.json()["language"] == "ar"
+        assert page.json()["title"] == "الصفحة الرئيسية"
+
     # ── render_first behavior ───────────────────────────────────────
 
     def test_render_first_is_boolean(self):

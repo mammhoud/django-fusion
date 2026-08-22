@@ -1,8 +1,8 @@
 # ───────────────────────────────────────────────────────────────────
 # precis-landing — site-specific environment overrides
 # ───────────────────────────────────────────────────────────────────
-# Documented source of truth for the Landing-Fusion website identity.
-# Landing-Fusion resolves settings through os.environ (standalone
+# Documented source of truth for the Precis Landing website identity.
+# Precis Landing resolves settings through os.environ (standalone
 # backend/settings.py); this file documents the site-level contract and
 # keeps the Env layout in parity with the other Precis sites.
 # ───────────────────────────────────────────────────────────────────

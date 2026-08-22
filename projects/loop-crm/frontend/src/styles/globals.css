@@ -500,3 +500,39 @@ button.loop-app-nav-label { display:flex; width:100%; justify-content:space-betw
 .loop-app-nav-toggle { margin-left:auto; padding:0 .2rem; border:0; background:none; color:var(--loop-dim); font:600 .8rem "JetBrains Mono",monospace; line-height:1; cursor:pointer; transition:color .2s ease,transform .2s ease; }
 .loop-app-nav-toggle:hover { color:var(--loop-accent-bright); }
 .loop-app-nav-group[data-collapsed="true"] .loop-app-nav-toggle { transform:rotate(-90deg); }
+/* ── Profile (account/profile/) ──────────────────────────────────────────── */
+.loop-profile { display:grid; gap:1.5rem; margin-top:2.2rem; animation:loop-rise .5s cubic-bezier(.16,1,.3,1) both; }
+.loop-profile__identity { display:flex; align-items:center; gap:1.3rem; padding:1.4rem; border:1px solid var(--loop-line); background:var(--loop-panel); }
+.loop-profile__avatar { display:grid; place-items:center; width:4.2rem; height:4.2rem; border:1px solid var(--loop-accent); background:#0d0d0d; color:var(--loop-accent-bright); font:700 1.25rem "JetBrains Mono",monospace; letter-spacing:.02em; }
+.loop-profile__name-row { display:flex; flex-wrap:wrap; align-items:center; gap:.7rem; }
+.loop-profile__name-row h2 { margin:0; color:var(--loop-ink); font-family:"Bricolage Grotesque","Arial Black",ui-sans-serif,sans-serif; font-size:clamp(1.4rem,2.6vw,2rem); font-weight:900; text-transform:uppercase; line-height:1; letter-spacing:-.04em; }
+.loop-profile__pill { display:inline-flex; align-items:center; padding:.28rem .55rem; border:1px solid var(--loop-line); background:#0d0d0d; color:var(--loop-accent-bright); font:600 .58rem "JetBrains Mono",monospace; letter-spacing:.08em; text-transform:uppercase; }
+.loop-profile__pill::before { content:"+ "; color:var(--loop-dim); }
+.loop-profile__email { margin:.5rem 0 0; color:var(--loop-muted); font-size:.9rem; }
+.loop-profile__grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; background:var(--loop-line); border:1px solid var(--loop-line); }
+.loop-profile__card { border:0; background:#0e0e0e; }
+.loop-profile__value { display:block; color:var(--loop-ink); font-size:1.3rem; text-transform:uppercase; letter-spacing:-.02em; }
+.loop-profile__copy { margin:.45rem 0 0; color:var(--loop-muted); font-size:.85rem; line-height:1.55; }
+.loop-profile__capabilities { display:grid; gap:.15rem; }
+.loop-profile__capability { display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:.34rem 0; border-bottom:1px solid var(--loop-line-soft); color:var(--loop-muted); font-size:.82rem; }
+.loop-profile__capability:last-child { border-bottom:0; }
+.loop-profile__ok { color:var(--loop-terminal-green); font:600 .6rem "JetBrains Mono",monospace; letter-spacing:.06em; text-transform:uppercase; }
+.loop-profile__no { color:var(--loop-dim); font:600 .6rem "JetBrains Mono",monospace; letter-spacing:.06em; text-transform:uppercase; }
+.loop-profile__security { padding:1rem 0 .4rem; }
+.loop-profile__kicker { color:var(--loop-accent); font:600 .62rem "JetBrains Mono",monospace; letter-spacing:.12em; text-transform:uppercase; }
+.loop-profile__security h3 { margin:.5rem 0 1rem; color:var(--loop-ink); font-family:"Bricolage Grotesque","Arial Black",ui-sans-serif,sans-serif; font-size:1.3rem; font-weight:900; text-transform:uppercase; letter-spacing:-.03em; }
+.loop-profile__actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; background:var(--loop-line); border:1px solid var(--loop-line); }
+.loop-profile__action { position:relative; display:flex; flex-direction:column; gap:.35rem; padding:1.15rem 1.3rem; background:#0e0e0e; color:var(--loop-muted); text-decoration:none; transition:background .22s ease,transform .22s ease; }
+.loop-profile__action:hover { background:#141414; transform:translateY(-1px); }
+.loop-profile__action strong { color:var(--loop-ink); font-size:.95rem; }
+.loop-profile__action span { font-size:.78rem; line-height:1.45; }
+.loop-profile__action b { position:absolute; right:1.1rem; bottom:1rem; color:var(--loop-accent); font:500 1.05rem "JetBrains Mono",monospace; transition:transform .2s ease; }
+.loop-profile__action:hover b { transform:translateX(4px); }
+.loop-profile__error { padding:2rem; border:1px solid var(--loop-accent); background:var(--loop-panel); }
+.loop-profile__error strong { display:block; color:var(--loop-ink); text-transform:uppercase; letter-spacing:-.02em; }
+.loop-profile__error p { margin:.5rem 0 1.2rem; color:var(--loop-muted); max-width:40rem; line-height:1.55; }
+.loop-profile__avatar-skeleton { width:4.2rem; height:4.2rem; }
+.loop-profile__line { height:.75rem; width:16rem; background:var(--loop-panel-raised); animation:loop-shimmer 1.2s linear infinite; }
+.loop-profile__line--name { width:20rem; height:1.6rem; margin-bottom:.6rem; }
+.loop-profile__card-skeleton { height:9rem; background:var(--loop-panel); animation:loop-shimmer 1.2s linear infinite; }
+@media (max-width:760px) { .loop-profile__grid, .loop-profile__actions { grid-template-columns:1fr; } .loop-profile__identity { flex-wrap:wrap; } }

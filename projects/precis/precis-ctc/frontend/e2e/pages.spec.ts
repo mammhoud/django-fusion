@@ -7,14 +7,15 @@ import { expect, test } from '@playwright/test';
 const PAGES: Array<[string, RegExp | null]> = [
   ['/', /clinical|research|evidence/i],
   ['/about/', /about|research/i],
+  ['/about/founder/', /founder|built by/i],
   ['/about/research/', /research|checked/i],
   ['/about/education/', /learn|education/i],
   ['/blog/', /blog|insight/i],
   ['/pricing/', /pricing/i],
   ['/features/', /documents|capabilit/i],
   ['/products/', /program|product/i],
-  ['/services/', /research|service/i],
-  ['/team/', /team|network/i],
+  ['/services/', /capabilit|research|service/i],
+  ['/team/', /innovator|team|network/i],
   ['/events/', /event|research/i],
   ['/faq/', /faq|question/i],
   ['/contact/', /contact|research/i],
@@ -22,7 +23,7 @@ const PAGES: Array<[string, RegExp | null]> = [
   ['/documents/', /document|research/i],
   ['/projects/', /program|project/i],
   ['/profile/', /profile|learning/i],
-  ['/blog/why-landing-pages-as-documents/', null],
+  ['/blog/medical-ai-clinical-evidence-limits/', /medical ai|blog/i],
 ];
 
 for (const [path, headingPattern] of PAGES) {

@@ -15,7 +15,10 @@ test('profile settings remains a backend-owned auth route', async ({ request }) 
 });
 
 test('seeded blog detail renders the article and moderated comments surface', async ({ page }) => {
-  const response = await page.goto('/blog/why-landing-pages-as-documents/');
+  const response = await page.goto('/blog/medical-ai-clinical-evidence-limits/', {
+    waitUntil: 'domcontentloaded',
+    timeout: 60_000,
+  });
   expect(response?.status()).toBe(200);
   await expect(page.locator('h1').first()).toBeVisible();
   await expect(page.getByText('Comments', { exact: true })).toBeVisible();

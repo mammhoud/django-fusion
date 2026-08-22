@@ -256,9 +256,177 @@ Alpine.data('productGrid', (config) => () => ({
 }));
 };
 
+/**
+ * courseCatalog — the client component behind the /courses/ catalog page.
+ *
+ * The course grid is fully server-rendered (no-JS fallback shows every
+ * course); this component layers search, filters, sort and grid/list views
+ * on top by reading the per-card data-* attributes emitted by
+ * pages/courses/index.astro. Filter options are derived from the cards
+ * themselves so the UI can never drift from the seeded content.
+ */
+const registerCourseCatalog = (Alpine) => {
+Alpine.data('courseCatalog', () => ({
+  // Filter state
+  q: '',
+  difficulty: [],
+  language: '',
+  spec: '',
+  tags: [],
+  offer: 'all',
+  cert: false,
+  sort: 'default',
+  view: 'grid',
+  showFilters: false,
+  // Derived
+  cards: [],
+  total: 0,
+  count: 0,
+  activeCount: 0,
+  options: { difficulties: [], languages: [], specs: [], tags: [] },
+
+  init() {
+    this.cards = Array.from(this.$root.querySelectorAll('.c-course'));
+    this.total = this.cards.length;
+    this.count = this.total;
+    this.options = this.buildOptions();
+    this.apply();
+    this.bindSearchShortcut();
+  },
+
+  buildOptions() {
+    const difficulties = new Set();
+    const languages = new Set();
+    const specs = new Set();
+    const tags = new Set();
+    for (const card of this.cards) {
+      const diff = card.dataset.difficulty;
+      const lang = card.dataset.language;
+      if (diff) difficulties.add(diff.replace(/\b\w/g, (c) => c.toUpperCase()));
+      if (lang) languages.add(lang);
+      for (const s of (card.dataset.specs || '').split(/\s+/).filter(Boolean)) specs.add(s);
+      for (const t of (card.dataset.tags || '').split(/\s+/).filter(Boolean)) tags.add(t);
+    }
+    return {
+      difficulties: [...difficulties].sort(),
+      languages: [...languages].sort(),
+      specs: [...specs].sort(),
+      tags: [...tags].sort(),
+    };
+  },
+
+  matches(card) {
+    const d = card.dataset;
+    // Search — title + short description
+    if (this.q.trim() && !(d.search || '').includes(this.q.trim().toLowerCase())) return false;
+    // Difficulty — any-of
+    if (this.difficulty.length) {
+      const diff = (d.difficulty || '').replace(/\b\w/g, (c) => c.toUpperCase());
+      if (!this.difficulty.includes(diff)) return false;
+    }
+    // Language
+    if (this.language && d.language !== this.language) return false;
+    // Specialization
+    if (this.spec && !(d.specs || '').split(/\s+/).includes(this.spec)) return false;
+    // Tags — any-of
+    if (this.tags.length) {
+      const cardTags = (d.tags || '').split(/\s+/);
+      if (!this.tags.some((t) => cardTags.includes(t))) return false;
+    }
+    // Offer — free vs paid
+    if (this.offer === 'free' && d.free !== '1') return false;
+    if (this.offer === 'paid' && d.free === '1') return false;
+    // Certificate
+    if (this.cert && d.cert !== '1') return false;
+    return true;
+  },
+
+  apply() {
+    const grid = this.$root.querySelector('.catalog__grid');
+    if (!grid) return;
+    const visible = [];
+    for (const card of this.cards) {
+      const show = this.matches(card);
+      card.classList.toggle('is-hidden', !show);
+      if (show) visible.push(card);
+    }
+    // Sort — reorder only the visible cards in place.
+    const sorted = this.sortCards(visible);
+    if (sorted.length) {
+      const fragment = document.createDocumentFragment();
+      for (const card of sorted) fragment.appendChild(card);
+      grid.appendChild(fragment);
+    }
+    this.count = visible.length;
+    this.activeCount = this.countActiveFilters();
+  },
+
+  sortCards(cards) {
+    const price = (card) => Number(card.dataset.price || 0);
+    const sorted = [...cards];
+    switch (this.sort) {
+      case 'rating': sorted.sort((a, b) => Number(b.dataset.rating || 0) - Number(a.dataset.rating || 0)); break;
+      case 'price-asc': sorted.sort((a, b) => price(a) - price(b)); break;
+      case 'price-desc': sorted.sort((a, b) => price(b) - price(a)); break;
+      case 'duration': sorted.sort((a, b) => Number(a.dataset.duration || 0) - Number(b.dataset.duration || 0)); break;
+      case 'title': sorted.sort((a, b) => (a.dataset.search || '').localeCompare(b.dataset.search || '')); break;
+      default: break; // keep server order (featured first, newest first)
+    }
+    return sorted;
+  },
+
+  countActiveFilters() {
+    let n = 0;
+    if (this.q.trim()) n += 1;
+    n += this.difficulty.length;
+    if (this.language) n += 1;
+    if (this.spec) n += 1;
+    n += this.tags.length;
+    if (this.offer !== 'all') n += 1;
+    if (this.cert) n += 1;
+    if (this.sort !== 'default') n += 1;
+    return n;
+  },
+
+  toggleTag(tag) {
+    this.tags = this.tags.includes(tag)
+      ? this.tags.filter((t) => t !== tag)
+      : [...this.tags, tag];
+    this.apply();
+  },
+
+  setView(view) {
+    this.view = view;
+    this.$root.dataset.view = view;
+  },
+
+  clear() {
+    this.q = '';
+    this.difficulty = [];
+    this.language = '';
+    this.spec = '';
+    this.tags = [];
+    this.offer = 'all';
+    this.cert = false;
+    this.sort = 'default';
+    this.apply();
+  },
+
+  bindSearchShortcut() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && !['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName || '')) {
+        e.preventDefault();
+        this.$root.querySelector('.catalog__search-input')?.focus();
+      }
+    });
+  },
+}));
+};
+
 export default (Alpine) => {
   Alpine.plugin(intersect);
   Alpine.plugin(collapse);
   registerRenderModeSwitch(Alpine);
   registerProductGrid(Alpine);
+  registerCourseCatalog(Alpine);
 };

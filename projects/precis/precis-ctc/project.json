@@ -90,6 +90,13 @@
         "command": "make redeploy",
         "cwd": "projects/precis/precis-ctc"
       }
+    },
+    "cleanup": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "make -C ../../.. cleanup",
+        "cwd": "projects/precis/precis-ctc"
+      }
     }
   }
 }

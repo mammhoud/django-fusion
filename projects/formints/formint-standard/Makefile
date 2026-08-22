@@ -129,7 +129,7 @@ build-server-%:      ## Build the server for a specific target triple (e.g. buil
 # The script requires in PATH: chromium-browser (or chromium), ImageMagick
 # `convert`, and pnpm. Each is checked at script entry with a hint to install.
 #
-# Outputs are staged into Landing-Fusion's related/formints directory by the
+# Outputs are staged into Precis Landing's related/formints directory by the
 # active Formint capture workflow; the canonical names are edition-first.
 screenshots: port-kill  ## Capture 6 polished JPG screenshots into related/formints/
 	@bash ../scripts/dev/capture-screenshots.sh

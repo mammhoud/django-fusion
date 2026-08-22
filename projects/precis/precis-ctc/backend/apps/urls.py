@@ -123,6 +123,7 @@ urlpatterns = [
     # to a no-op because its import path references the legacy
     # ``django_fusion.contrib.debug_tools`` package, so register the i18n
     # views explicitly here.
+    path("i18n/setlang/", landing_api.set_language_api, name="set_language"),
     path("i18n/", include("django.conf.urls.i18n")),
     # Stable Fusion health contract used by deployment smoke checks. Keep the
     # existing /api/health/ endpoint for API clients and expose this explicit

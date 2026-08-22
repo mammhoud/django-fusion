@@ -55,7 +55,6 @@ const processSteps = (pageProcess || []).map((p: any) => ({
     intro={pageHero?.subtitle || 'Protocol development, evidence synthesis, medical writing, and responsible analytics for research teams that need clear methods and publishable results.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Discuss a study', href: '/contact/' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Explore courses', href: '/courses/' }}
-    status='200 OK · clinical evidence services'
     variant="contact"
   />
 
@@ -69,7 +68,7 @@ const processSteps = (pageProcess || []).map((p: any) => ({
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
         {serviceItems.map((service, i) => (
-          <div class='card reveal flex flex-col gap-4 p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`transition-delay: ${i * 80}ms`}>
+          <div class='card reveal flex flex-col gap-4 p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`transition-delay: ${i * 80}ms`}>
             <div class='mb-1 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
               <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
                 <path stroke-linecap='round' stroke-linejoin='round' d={service.icon} />

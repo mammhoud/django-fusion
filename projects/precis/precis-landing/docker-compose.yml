@@ -11,13 +11,18 @@ services:
         required: false
     environment:
       DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
       DJANGO_SECRET_KEY: ${LANDING_DJANGO_SECRET_KEY:-precis-landing-change-me}
       DJANGO_DEBUG: "0"
       DJANGO_ALLOWED_HOSTS: structa.cloud,www.structa.cloud,localhost,127.0.0.1,precis-landing-backend,precis-landing-frontend
       CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
       CORS_ALLOWED_ORIGINS: https://structa.cloud,https://www.structa.cloud,http://localhost:3000,http://127.0.0.1:3000
-      # Shared PostgreSQL cluster (application/databases) — site-owned DB.
-      DJANGO_DB_ENGINE: django.db.backends.postgresql
+      # Database wiring by type (configs/database.yml contract, parity with
+      # precis-main). postgres is the container default (shared cluster,
+      # application/databases, credentials from .env); DB_TYPE=sqlite keeps
+      # the container on SQLite (CI/local runs).
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
       DJANGO_DB_NAME: ${DB_NAME_LANDING:-db_precis_landing}
       DJANGO_DB_USER: ${POSTGRES_USER:-admin}
       DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
@@ -45,6 +50,10 @@ services:
       - precis-landing-static:/app/precis-landing/backend/assets/staticfiles
       # Site-level Env overrides (kept in parity with the other Precis sites).
       - ./Env:/app/precis-landing/Env:ro
+      # Project config cascade (configs/*.yml) — YAML defaults for the
+      # type-wired database contract. Also baked into the image by the
+      # backend Dockerfile; the mount keeps local edits live.
+      - ./configs:/app/precis-landing/configs:ro
     networks:
       - common
       - traefik-net
@@ -73,10 +82,12 @@ services:
         required: false
     environment:
       DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
       DJANGO_SECRET_KEY: ${LANDING_DJANGO_SECRET_KEY:-precis-landing-change-me}
       DJANGO_DEBUG: "0"
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,precis-landing-backend
-      DJANGO_DB_ENGINE: django.db.backends.postgresql
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
       DJANGO_DB_NAME: ${DB_NAME_LANDING:-db_precis_landing}
       DJANGO_DB_USER: ${POSTGRES_USER:-admin}
       DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
@@ -96,6 +107,7 @@ services:
       # scheduler's sync_task_history job mirrors into the same TaskExecution
       # table.
       - ./Env:/app/precis-landing/Env:ro
+      - ./configs:/app/precis-landing/configs:ro
     # The backend applies migrations at startup, so wait for it to be healthy.
     depends_on:
       backend:

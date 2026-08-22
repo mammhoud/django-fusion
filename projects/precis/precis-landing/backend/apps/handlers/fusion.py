@@ -1,5 +1,5 @@
 """
-Landing-fusion routing — django-fusion Application for the marketing pages.
+Precis Landing routing — django-fusion Application for the marketing pages.
 
 The public marketing surface is registered as a single ``Application`` with
 one ``menu_path`` entry per page (name / icon / title metadata), reusing the

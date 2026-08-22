@@ -1,5 +1,5 @@
 """
-Landing-fusion Wagtail page models.
+Precis Landing Wagtail page models.
 
 Each page type carries the editable fields that drive the Astro frontend
 sections (hero, stats, features, testimonials, pricing, faq, cta, contact).

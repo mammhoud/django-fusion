@@ -1,5 +1,5 @@
 """
-Landing-fusion backend settings.
+Precis Landing backend settings.
 
 A self-contained Django + Wagtail configuration for the landing-only slice of
 the ASTRO migration. Unlike the shared ``configs.default`` layer used by the
@@ -12,6 +12,28 @@ import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# ── Layered config cascade ───────────────────────────────────────────────────
+# Sources env-read *defaults* from the project configs dir (configs/README.md):
+# shared Env YAML → configs/*.yml → Env/_site.yml → .env, with environment
+# variables always winning. The cascade is optional sugar — a container or
+# checkout without configs/ behaves exactly as before (env-only).
+# See libs/django-fusion/src/django_fusion/config/project.py.
+try:
+    from django_fusion.config.project import load_config
+
+    _cascade = load_config(BASE_DIR)
+except Exception:  # pragma: no cover — cascade is optional; never break boot
+    _cascade = None
+
+
+def _cfg(key: str, default=None):
+    """Return a cascade value (env already wins inside the cascade) or default."""
+    if _cascade is None:
+        return default
+    value = _cascade.get(key, default)
+    return default if value is None else value
+
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "precis-landing-dev-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
@@ -87,6 +109,7 @@ MIDDLEWARE = [
     # compiled fusion.css after `make css` + collectstatic.
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -94,6 +117,9 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django_htmx.middleware.HtmxMiddleware",
+    # Shared django-fusion language contract: query → session → cookie →
+    # negotiated/default language, with the configured Django cookie settings.
+    "django_fusion.core.middlewares.language.DefaultLanguageMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     "apps.handlers.middleware.LandingCorsMiddleware",
 ]
@@ -101,7 +127,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "urls"
 
 _PROJECT_DIR = BASE_DIR.parent  # projects/
-# Landing-fusion owns a colocated assets directory at
+# Precis Landing owns a colocated assets directory at
 # projects/precis/precis-landing/assets (not the monorepo-level projects/assets).
 _ASSETS_DIR = BASE_DIR.parent / "assets"
 
@@ -156,26 +182,56 @@ WSGI_APPLICATION = "wsgi.application"
 APPEND_SLASH = False
 
 # ── Database ───────────────────────────────────────────────────────
-# Local dev defaults to SQLite. Set DJANGO_DB_ENGINE=django.db.backends.postgresql
-# (or USE_POSTGRES=1) to connect to the shared ``postgres`` container
-# (application/databases) with this site's own database (DB_NAME_LANDING →
-# db_precis_landing), matching the other Precis/Fusion sites on the shared cluster.
-if os.environ.get("DJANGO_DB_ENGINE", "") == "django.db.backends.postgresql" or os.environ.get("USE_POSTGRES", "0") == "1":
+# Database selection is wired by *type* through the project config cascade
+# (configs/database.yml — DATABASE.type: sqlite | postgres), kept in parity
+# with precis-main, with environment variables always winning:
+#
+#   DB_TYPE=sqlite|postgres   → authoritative shortcut (used by Compose/CI)
+#   DJANGO_DB_ENGINE          → django.db.backends.postgresql forces postgres
+#   USE_POSTGRES=1            → legacy flag, forces postgres
+#   DATABASE.type (cascade)   → fallback when no env var is set
+#
+# The active type picks its connection map from the cascade
+# (DATABASE.sqlite / DATABASE.postgres), so forcing a type via env always
+# resolves the right name/user/host/port. Postgres connects to the shared
+# ``postgres`` container (application/databases) with this site's own database
+# (DB_NAME_LANDING → db_precis_landing); the password comes from .env
+# (POSTGRES_PASSWORD / DJANGO_DB_PASSWORD) — never from YAML.
+_db_type = os.environ.get("DB_TYPE", "").strip().lower()
+if _db_type == "sqlite":
+    _use_postgres = False
+elif _db_type in ("postgres", "postgresql"):
+    _use_postgres = True
+else:
+    _use_postgres = (
+        os.environ.get("DJANGO_DB_ENGINE", "") == "django.db.backends.postgresql"
+        or os.environ.get("USE_POSTGRES", "0") == "1"
+        or str(_cfg("DATABASE.type", "sqlite")).lower() in {"postgres", "postgresql"}
+    )
+
+if _use_postgres:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.environ.get("DJANGO_DB_NAME", "db_precis_landing"),
-            "USER": os.environ.get("DJANGO_DB_USER", "admin"),
-            "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD", ""),
-            "HOST": os.environ.get("DJANGO_DB_HOST", "postgres"),
-            "PORT": os.environ.get("DJANGO_DB_PORT", "5432"),
+            "NAME": os.environ.get("DJANGO_DB_NAME") or _cfg("DATABASE.postgres.name", "db_precis_landing"),
+            "USER": os.environ.get("DJANGO_DB_USER") or _cfg("DATABASE.postgres.user", "admin"),
+            "PASSWORD": os.environ.get("DJANGO_DB_PASSWORD") or _cfg("DATABASE.postgres.password", ""),
+            "HOST": os.environ.get("DJANGO_DB_HOST") or _cfg("DATABASE.postgres.host", "postgres"),
+            "PORT": os.environ.get("DJANGO_DB_PORT") or str(_cfg("DATABASE.postgres.port", "5432")),
         }
     }
 else:
+    _db_sqlite_name = os.environ.get("DJANGO_DB_PATH")
+    if _db_sqlite_name:
+        _db_sqlite_path = Path(_db_sqlite_name)
+    else:
+        _db_sqlite_path = Path(_cfg("DATABASE.sqlite.name", "")) if _cfg("DATABASE.sqlite.name", "") else BASE_DIR / "db.sqlite3"
+        if not _db_sqlite_path.is_absolute():
+            _db_sqlite_path = BASE_DIR / _db_sqlite_path
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": Path(os.environ.get("DJANGO_DB_PATH", str(BASE_DIR / "db.sqlite3"))),
+            "NAME": _db_sqlite_path,
         }
     }
 
@@ -333,16 +389,16 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ── i18n ───────────────────────────────────────────────────────────
-LANGUAGE_CODE = "en"
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "en")
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Supported languages — mirrors the Astro frontend translations module.
-# Swedish (sv) added per request; Arabic (ar) has full RTL support.
-from django.utils.translation import gettext_lazy as _
-
-LANGUAGES = [
+# Shared Django/Wagtail language catalog. Wagtail SiteLanguage snippets
+# control editorial visibility; settings validate requests before seeding.
+FUSION_LANGUAGES = [
     ("en", _("English")),
     ("ar", _("Arabic")),
     ("sv", _("Swedish")),
@@ -351,6 +407,18 @@ LANGUAGES = [
     ("es", _("Spanish")),
     ("pt", _("Portuguese")),
 ]
+LANGUAGES = FUSION_LANGUAGES
+LANGUAGE_SESSION_KEY = os.environ.get("LANGUAGE_SESSION_KEY", "_language")
+LANGUAGE_COOKIE_NAME = os.environ.get("LANGUAGE_COOKIE_NAME", "django_language")
+LANGUAGE_COOKIE_AGE = int(os.environ.get("LANGUAGE_COOKIE_AGE", str(60 * 60 * 24 * 365)))
+LANGUAGE_COOKIE_DOMAIN = os.environ.get("LANGUAGE_COOKIE_DOMAIN") or None
+LANGUAGE_COOKIE_PATH = os.environ.get("LANGUAGE_COOKIE_PATH", "/")
+LANGUAGE_COOKIE_SECURE = os.environ.get("LANGUAGE_COOKIE_SECURE", "0").lower() in {"1", "true", "yes", "on"}
+LANGUAGE_COOKIE_HTTPONLY = os.environ.get("LANGUAGE_COOKIE_HTTPONLY", "0").lower() in {"1", "true", "yes", "on"}
+LANGUAGE_COOKIE_SAMESITE = os.environ.get("LANGUAGE_COOKIE_SAMESITE", "Lax")
+
+# Supported languages — mirrors the Astro frontend translations module.
+# Swedish (sv) added per request; Arabic (ar) has full RTL support.
 LANGUAGES_BIDI = ["ar"]
 
 # Wagtail's native locale model is enabled alongside the landing overlay
@@ -367,20 +435,9 @@ LOCALE_PATHS = [
     BASE_DIR / "backend" / "locale",
 ]
 
-# Locale middleware — detects the user's language preference from the
-# ``django_language`` cookie (set by the Astro language switcher) or the
-# Accept-Language header, and activates it for the request.
-MIDDLEWARE.insert(
-    MIDDLEWARE.index("django.contrib.sessions.middleware.SessionMiddleware") + 1,
-    "django.middleware.locale.LocaleMiddleware",
-)
-# After LocaleMiddleware: activate the locale from the landing ?lang= / cookie
-# resolver so {% translate %} tags on server-rendered pages and fragments
-# follow the same language the content-overlay API uses.
-MIDDLEWARE.insert(
-    MIDDLEWARE.index("django.middleware.locale.LocaleMiddleware") + 1,
-    "apps.handlers.middleware.LandingLocaleMiddleware",
-)
+# The shared django-fusion middleware above owns query/session/cookie/header
+# negotiation for both full documents and HTMX fragments. Keep this settings
+# module free of a second locale resolver.
 
 # i18n URL pattern — when True, Django prefixes URLs with the language code
 # (e.g. /en/about/, /ar/about/). The landing site uses cookie-based switching

@@ -104,6 +104,9 @@
     "clean": {
       "cache": false
     },
+    "cleanup": {
+      "cache": false
+    },
     "dev": {
       "cache": false
     },

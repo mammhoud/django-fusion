@@ -1,0 +1,46 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# formint-cloud — defaults.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Local-dev and deployment *defaults* for the Formint Cloud master. Lowest
+# project-owned YAML layer; every value here can be overridden by the project
+# `.env` or environment variables (DJANGO_* — always win).
+#
+# Loaded by django-fusion's `config.project` loader (`load_config`) for
+# diagnostics (`make config-show`/`config-check`); the Django settings
+# (backend/configs/__init__.py) remain env-driven.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  # ── Local-dev defaults ──────────────────────────────────────────────
+  DEBUG: true
+  ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+    - formint-cloud-backend
+    - formint-cloud-frontend
+  PORT: 8082          # Unfold admin + bolt surface
+  API_PORT: 8767      # server-compatible API surface
+  FRONTEND_PORT: 4323 # Astro dev server
+
+  # ── Static files reference (read → output → deploy) ────────────────
+  STATIC:
+    read_dirs:
+      - backend/apps/core/static
+      - frontend/public
+    output_dir: backend/staticfiles
+    media_dir: backend/media
+    bundle_stats: backend/assets/static/bundles/bundles.json
+    css_path: backend/apps/core/static/tactical/css/tactical.css
+    deploy:
+      static_volume: formint-cloud-static
+      media_volume: formint-cloud-media
+      static_url: /static/
+      media_url: /media/
+      static_server: "whitenoise (backend)"
+      media_server: "whitenoise (backend)"
+
+development:
+  DEBUG: true
+
+production:
+  DEBUG: false

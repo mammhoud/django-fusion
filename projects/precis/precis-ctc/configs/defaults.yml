@@ -1,0 +1,51 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# precis-ctc — defaults.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Local-dev and deployment *defaults* for CTC Research. This is the lowest
+# project-owned layer of the config cascade; every value here can be overridden
+# by `Env/_site.yml`, the project `.env`, or environment variables (Compose
+# `environment:` wins over everything).
+#
+# Loaded by the shared configs stack (`projects/precis/configs/settings/conf.py`
+# → `cfg()`) BEFORE `Env/_site.yml`, and by django-fusion's `config.project`
+# loader (same order). See configs/README.md.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  # ── Local-dev defaults ──────────────────────────────────────────────
+  DEBUG: true
+  ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+    - ctc-research.localhost
+    - ctc-research.com
+    - www.ctc-research.com
+    - arch.ctc-research.com
+    - precis-ctc-website
+  PORT: 5070
+  FRONTEND_PORT: 3002        # Astro container port (host maps 3003:3002)
+  FUSION_RENDER_FIRST: false
+
+  # ── Static files reference (read → output → deploy) ────────────────
+  STATIC:
+    read_dirs:                # STATICFILES_DIRS — what collectstatic reads
+      - backend/assets/static
+      - assets/static
+      - frontend/public
+    output_dir: backend/assets/staticfiles   # STATIC_ROOT (bind-mounted to proxy)
+    media_dir: assets/media                  # host shared media tree (projects/assets/media/ctc-research)
+    bundle_stats: backend/assets/static/bundles/bundles.json
+    css_path: assets/static/css/fusion.css   # compiled design system
+    deploy:
+      static_url: /static/
+      media_url: /media/ctc-research/
+      static_server: "shared-proxy nginx → /var/www/sites/ctc-research/static"
+      media_server: "shared-proxy nginx → /var/www/media/ctc-research"
+      container_static_root: /app/precis-ctc/assets/staticfiles
+      container_media_root: /app/media
+
+development:
+  DEBUG: true
+
+production:
+  DEBUG: false

@@ -17,13 +17,13 @@ NC     := \033[0m
 DEFAULT_PORT := 8074
 PYTHONPATH := $(CURDIR):$(CURDIR)/apps
 export PYTHONPATH
-UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
+UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo $(HOME)/.local/bin/uv) || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ../../..
 UV_RUN := $(UV) run
 MANAGE := $(UV_RUN) python manage.py
 
 help: ## Show backend commands
-	@echo -e "$(CYAN)=== Landing-Fusion Backend (Django + Wagtail) ===$(NC)"
+	@echo -e "$(CYAN)=== Precis Landing Backend (Django + Wagtail) ===$(NC)"
 	@echo -e "$(BLUE)Site: precis-landing$(NC)"
 	@awk 'BEGIN {FS = ":.*##"; printf ""} /^[a-zA-Z_-]+:.*?##/ { printf "  $(CYAN)%-18s$(NC) %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
@@ -52,8 +52,13 @@ static: collectstatic ## Alias for collectstatic
 collectstatic: ## Collect static files
 	@$(MANAGE) collectstatic --noinput
 
-superuser: ## Create superuser (interactive)
-	@$(MANAGE) createsuperuser
+superuser: ## Create superuser — interactive, or non-interactive with DJANGO_SUPERUSER_EMAIL / DJANGO_SUPERUSER_PASSWORD set
+	@if [ -n "$${DJANGO_SUPERUSER_EMAIL:-}" ] && [ -n "$${DJANGO_SUPERUSER_PASSWORD:-}" ]; then \
+		echo -e "$(BLUE)Creating superuser non-interactively (DJANGO_SUPERUSER_EMAIL/PASSWORD)...$(NC)"; \
+		$(MANAGE) createsuperuser --noinput --username "$${DJANGO_SUPERUSER_USERNAME:-admin}"; \
+	else \
+		$(MANAGE) createsuperuser; \
+	fi
 
 shell: ## Django shell
 	@$(MANAGE) shell

@@ -29,13 +29,23 @@ def _qp_int(request, key: str, default: int = 1) -> int:
         return default
 
 
-def _event_to_dict(event) -> dict:
-    """Serialize an Event model instance to the frontend Event shape."""
+def _event_to_dict(event, language: str = "") -> dict:
+    """Serialize an Event model instance to the frontend Event shape.
+
+    When ``language`` is requested, an EventTranslation overlay (if present)
+    overrides the canonical English title/description/location — empty overlay
+    fields fall back to the canonical row.
+    """
+    translation = None
+    if language:
+        translation = event.translations.filter(language=language).first()
     return {
         "id": event.pk,
-        "title": event.title,
+        "title": translation.title if translation and translation.title else event.title,
         "slug": getattr(event, "slug", "") or "",
-        "description": getattr(event, "description", "") or "",
+        "description": (
+            translation.description if translation and translation.description else getattr(event, "description", "") or ""
+        ),
         "short_description": getattr(event, "short_description", "") or "",
         "featured_image": (
             event.featured_image.file.url
@@ -44,7 +54,9 @@ def _event_to_dict(event) -> dict:
         ),
         "start_date": event.start_date.isoformat() if getattr(event, "start_date", None) else None,
         "end_date": event.end_date.isoformat() if getattr(event, "end_date", None) else None,
-        "location": getattr(event, "location", "") or "",
+        "location": (
+            translation.location if translation and translation.location else getattr(event, "location", "") or ""
+        ),
         "is_online": bool(getattr(event, "is_online", False)),
         "meeting_url": getattr(event, "meeting_url", "") or "",
         "capacity": getattr(event, "capacity", 0) or 0,
@@ -61,6 +73,20 @@ def _event_to_dict(event) -> dict:
             else None
         ),
     }
+
+
+def _event_language(request) -> str:
+    """Resolve the requested event locale from the query string."""
+    from django_fusion.core.middlewares.language import normalize_language
+
+    requested = (request.GET.get("lang") or request.GET.get("language") or "").lower()
+    try:
+        from apps.content.models.languages import SUPPORTED_LANGUAGE_CHOICES
+
+        codes = [code for code, _ in SUPPORTED_LANGUAGE_CHOICES]
+    except Exception:
+        codes = ["en", "sv", "fr", "de", "es", "ar", "pt-br"]
+    return normalize_language(requested, codes) or ""
 
 
 def list_events(request):
@@ -80,9 +106,10 @@ def list_events(request):
         per_page = _qp_int(request, "per_page", 12)
         total = qs.count()
         events = qs[(page - 1) * per_page : page * per_page]
+        language = _event_language(request)
 
         return JsonResponse({
-            "results": [_event_to_dict(e) for e in events],
+            "results": [_event_to_dict(e, language) for e in events],
             "count": total,
             "next": None,
             "previous": None,
@@ -106,8 +133,9 @@ def upcoming_events(request):
             .order_by("start_date")
         )
         events = list(qs[:6])
+        language = _event_language(request)
         # Frontend declares getUpcomingEvents as Event[] (raw array, not paginated).
-        return JsonResponse([_event_to_dict(e) for e in events], safe=False)
+        return JsonResponse([_event_to_dict(e, language) for e in events], safe=False)
     except Exception:
         logger.exception("Error listing upcoming events")
         return JsonResponse({"results": [], "count": 0})

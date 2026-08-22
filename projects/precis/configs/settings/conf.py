@@ -254,8 +254,23 @@ class MainSettings(BaseSettings):
             CONFIG_DIR / ".secrets.yml",
         ]
 
-        # ── Per-project Env overrides (loaded last, highest priority) ──
+        # ── Per-project configs dir (beside frontend/backend) ─────────────
+        # Project-level YAML defaults (defaults.yml, site.yml, admin.yml,
+        # theme.yml) load before Env/_site.yml so site overrides keep the
+        # highest YAML priority. Keeps the project configs contract in parity
+        # with the django-fusion ``config.project`` loader used by precis-main.
         _site_dir = Path(self.WEBSITE_DIR)
+        _project_configs_dir = _site_dir / "configs"
+        if _project_configs_dir.is_dir():
+            for _name in ("defaults.yml", "site.yml", "admin.yml", "theme.yml"):
+                _candidate = _project_configs_dir / _name
+                if _candidate.is_file():
+                    settings_files.append(_candidate)
+            for _candidate in sorted(_project_configs_dir.glob("*.yml")):
+                if _candidate.name not in ("defaults.yml", "site.yml", "admin.yml", "theme.yml") and _candidate not in settings_files:
+                    settings_files.append(_candidate)
+
+        # ── Per-project Env overrides (loaded last, highest priority) ──
         _site_env_yml = _site_dir / "Env" / "_site.yml"
         if _site_env_yml.exists():
             settings_files.append(_site_env_yml)

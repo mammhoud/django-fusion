@@ -39,18 +39,24 @@ services:
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     env_file:
+      # Repo-root .env fills gaps; the local application/databases/.env
+      # (copy .env.example) is listed LAST so it wins on conflicts — it is
+      # also the Compose interpolation source, keeping credentials consistent.
       - ../../.env
+      - path: ./.env
+        required: false
     environment:
-      # Core PostgreSQL settings (all sourced from the repo-root .env).
+      # Core PostgreSQL settings — all sourced from .env (local .env.example
+      # ships generated random defaults; it overrides the repo-root .env).
       POSTGRES_USER: ${POSTGRES_USER:-admin}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}
       POSTGRES_DB: ${POSTGRES_DB:-app_db}
       PGDATA: /var/lib/postgresql/data/pgdata
       # Multiple databases – comma-separated list: db:owner:password.
-      # Set POSTGRES_DATABASES in the repo-root .env to override. The fallback
-      # reuses the same per-role credentials the site compose files read
-      # (POSTGRES_PASSWORD) so no secrets are hardcoded here.
-      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_precis_lms:structa:${POSTGRES_PASSWORD:-postgres},db_precis_ctc:structa:${POSTGRES_PASSWORD:-postgres},db_vresume:structa:${POSTGRES_PASSWORD:-postgres},coder:coder:${CODER_DB_PASSWORD:-postgres},db_loop_crm:structa:${POSTGRES_PASSWORD:-postgres},db_precis_landing:structa:${POSTGRES_PASSWORD:-postgres},affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
+      # Set POSTGRES_DATABASES in .env to override. The fallback reuses the
+      # same per-role credentials the site compose files read, so no secrets
+      # are hardcoded here — every password resolves from .env.
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_precis_lms:structa:${POSTGRES_PASSWORD},db_precis_ctc:structa:${POSTGRES_PASSWORD},db_vresume:structa:${POSTGRES_PASSWORD},coder:coder:${CODER_DB_PASSWORD:?CODER_DB_PASSWORD must be set in .env},db_loop_crm:structa:${POSTGRES_PASSWORD},db_precis_landing:structa:${POSTGRES_PASSWORD},affine:affine:${AFFINE_DB_PASSWORD:?AFFINE_DB_PASSWORD must be set}}"
 
       # ---- NEW: Force re‑initialization on every start ----
       # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again
@@ -92,6 +98,10 @@ services:
       redis-server /usr/local/etc/redis/redis.conf
       --appendonly yes
       --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
+    env_file:
+      - ../../.env
+      - path: ./.env
+        required: false
     ports:
       - "${REDIS_PORT:-6379}:6379"
     volumes:

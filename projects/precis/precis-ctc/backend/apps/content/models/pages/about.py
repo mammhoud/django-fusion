@@ -255,6 +255,82 @@ class AboutPage(BasePage):
                     label=_("Clients Section"),
                 ),
             ),
+            (
+                "mission",
+                blocks.StructBlock(
+                    [
+                        ("subtitle", blocks.CharBlock(max_length=100, required=False, label=_("Subtitle"))),
+                        ("title", blocks.CharBlock(max_length=200, required=False, label=_("Title"))),
+                        ("intro", blocks.TextBlock(required=False, label=_("Intro"))),
+                        (
+                            "values",
+                            blocks.ListBlock(
+                                blocks.StructBlock(
+                                    [
+                                        ("title", blocks.CharBlock(max_length=200, label=_("Title"))),
+                                        ("text", blocks.TextBlock(label=_("Text"))),
+                                    ],
+                                    label=_("Value"),
+                                ),
+                                label=_("Values"),
+                            ),
+                        ),
+                    ],
+                    icon="placeholder",
+                    label=_("Mission & Values"),
+                ),
+            ),
+            (
+                "skills",
+                blocks.StructBlock(
+                    [
+                        ("subtitle", blocks.CharBlock(max_length=100, required=False, label=_("Subtitle"))),
+                        ("title", blocks.CharBlock(max_length=200, required=False, label=_("Title"))),
+                        ("intro", blocks.TextBlock(required=False, label=_("Intro"))),
+                        (
+                            "items",
+                            blocks.ListBlock(
+                                blocks.StructBlock(
+                                    [
+                                        ("icon_class", blocks.CharBlock(required=False, max_length=100, label=_("Icon Class"))),
+                                        ("title", blocks.CharBlock(max_length=200, label=_("Title"))),
+                                        ("description", blocks.TextBlock(required=False, label=_("Description"))),
+                                    ],
+                                    label=_("Skill"),
+                                ),
+                                label=_("Skills"),
+                            ),
+                        ),
+                    ],
+                    icon="cog",
+                    label=_("Skills / Capabilities"),
+                ),
+            ),
+            (
+                "faq",
+                blocks.StructBlock(
+                    [
+                        ("subtitle", blocks.CharBlock(max_length=100, required=False, label=_("Subtitle"))),
+                        ("title", blocks.CharBlock(max_length=200, required=False, label=_("Title"))),
+                        ("intro", blocks.TextBlock(required=False, label=_("Intro"))),
+                        (
+                            "items",
+                            blocks.ListBlock(
+                                blocks.StructBlock(
+                                    [
+                                        ("question", blocks.CharBlock(max_length=300, label=_("Question"))),
+                                        ("answer", blocks.TextBlock(label=_("Answer"))),
+                                    ],
+                                    label=_("FAQ Item"),
+                                ),
+                                label=_("FAQ Items"),
+                            ),
+                        ),
+                    ],
+                    icon="help",
+                    label=_("FAQ"),
+                ),
+            ),
         ],
         use_json_field=True,
         null=True,

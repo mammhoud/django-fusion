@@ -1,5 +1,5 @@
 /**
- * Landing-fusion translations — the single source of truth for every visible
+ * Precis Landing translations — the single source of truth for every visible
  * UI string.  Each page imports ``t(lang, key)`` to resolve the active language.
  *
  * Adding a language:

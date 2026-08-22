@@ -3,6 +3,13 @@
 
 PROJECT := precis-ctc
 
+# ── Config cascade (YAML defaults + .env) ──────────────────────────
+# Merges shared Env YAML (projects/precis/configs/Env) → configs/*.yml →
+# Env/_site.yml → .env → environment variables (highest). See configs/README.md.
+UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo $(HOME)/.local/bin/uv) || echo /root/.local/bin/uv)
+UV := $(UV_BIN) --project ../..
+UV_RUN := $(UV) run
+
 # Root .env carries POSTGRES_PASSWORD, REDIS_PASSWORD, and per-site DB names.
 # Docker Compose auto-loads a .env from the CWD (this directory), but the
 # shared secrets live three levels up. Pass it explicitly so interpolation of
@@ -19,7 +26,7 @@ GREEN := \033[0;32m
 NC := \033[0m
 
 .PHONY: help check test run-dev migrate collectstatic shell \
-        frontend-dev frontend-build frontend-check \
+        frontend-dev frontend-build frontend-check config-show config-check \
         build up down logs restart front-logs back-logs worker-logs status \
         clean-docker rebuild-backend rebuild-frontend clean \
         install-assets build-assets build-assets-dev assets-full skeleton-manifest redeploy
@@ -27,6 +34,7 @@ NC := \033[0m
 help:
 	@echo "$(PROJECT) — Django/Wagtail + Astro medical research center"
 	@echo "  Checks:  make check | test"
+	@echo "  Config:  make config-show | config-check   (config cascade + static-files plan)"
 	@echo "  Dev:     make run-dev | frontend-dev"
 	@echo "  Docker:  make build | up | down | logs | restart | status"
 	@echo "  Redeploy: make redeploy   (front + back + worker + scheduler)"
@@ -61,6 +69,13 @@ frontend-build:
 
 frontend-check:
 	cd frontend && npm run check
+
+# ── Config cascade (merged YAML + .env + env) ───────────────────────
+config-show: ## Print the merged config + resolved front/back views + static plan
+	@$(UV_RUN) python -c "from pathlib import Path; from django_fusion.config.project import load_config, staticfiles_plan; root = Path('.').resolve(); c = load_config(root); print('PROJECT CONFIG —', c.get('SITE.name', 'precis-ctc'), '| env:', c.env); [print(f'  {k}: {v}') for k in ('DEBUG', 'ALLOWED_HOSTS', 'PORT', 'FRONTEND_PORT', 'FUSION_RENDER_FIRST', 'SITE_DOMAIN', 'DOMAIN_NAME') if (v := c.get(k)) is not None]; print('  SITE:', c.section('SITE') or {}); print('  ADMIN:', c.section('ADMIN') or {}); print('  CSS_PANEL:', c.section('CSS_PANEL') or {}); print('  resolved back (https://ctc-research.com):'); [print(f'    {k}: {v}') for k, v in c.resolve('https://ctc-research.com', 'back').get('SITE', {}).items()]; print(); print(staticfiles_plan(root, overrides=c.section('STATIC')).render())"
+
+config-check: ## Validate required identity keys resolve from the config
+	@$(UV_RUN) python -c "from django_fusion.config.project import load_config; c = load_config('.'); req = {'SITE.name': 'precis-ctc', 'SITE.primary_domain': 'ctc-research.com', 'SITE.domains': 'ctc-research.com', 'ADMIN.panel_path': '/admin/'}; missing = [k for k, _ in req.items() if not c.get(k)]; print('CONFIG CHECK — OK ✅' if not missing else f'CONFIG CHECK — MISSING: {missing}'); raise SystemExit(1 if missing else 0)"
 
 # ── Webpack Asset Build (Django-side SCSS/JS) ─────────────────────────
 # Extends projects/webpack/base.config.js — see webpack/precis.config.js

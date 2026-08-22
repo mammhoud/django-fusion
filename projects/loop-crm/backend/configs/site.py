@@ -43,12 +43,50 @@ _DEFAULTS: dict[str, Any] = {
 }
 
 
+def _load_cascade() -> Any:
+    """Load the project config cascade (configs/*.yml → Env/_site.yml → .env).
+
+    Optional sugar via django-fusion's ``config.project`` loader; never raises
+    so an env-only checkout behaves exactly as before.
+    """
+    try:
+        from django_fusion.config.project import load_config
+
+        return load_config(SITE_DIR)
+    except Exception:  # pragma: no cover — cascade is optional
+        return None
+
+
 def site_config() -> dict[str, Any]:
-    """Return Loop-CRM's site identity (single site, no registry lookup)."""
+    """Return Loop-CRM's site identity (single site, no registry lookup).
+
+    Defaults come from ``_DEFAULTS`` overlaid by the project config cascade
+    (``configs/site.yml`` + ``configs/admin.yml``) so the YAML files are the
+    source of truth; ``configure_site_environment`` still seeds them with
+    ``os.environ.setdefault``, so an explicit environment always wins.
+    """
     config = dict(_DEFAULTS)
     config["allowed_hosts"] = list(_DEFAULTS["allowed_hosts"])
     config["csrf_trusted_origins"] = list(_DEFAULTS["csrf_trusted_origins"])
     config["cors_allowed_origins"] = list(_DEFAULTS["cors_allowed_origins"])
+
+    cascade = _load_cascade()
+    if cascade is not None:
+        site = cascade.section("SITE")
+        if site:
+            if site.get("name"):
+                config["name"] = site["name"]
+            domain = site.get("primary_domain") or site.get("domain")
+            if domain:
+                config["domain"] = domain
+            if site.get("allowed_hosts"):
+                config["allowed_hosts"] = list(site["allowed_hosts"])
+        admin = cascade.section("ADMIN")
+        if admin:
+            if admin.get("csrf_trusted_origins"):
+                config["csrf_trusted_origins"] = list(admin["csrf_trusted_origins"])
+            if admin.get("cors_allowed_origins"):
+                config["cors_allowed_origins"] = list(admin["cors_allowed_origins"])
     return config
 
 

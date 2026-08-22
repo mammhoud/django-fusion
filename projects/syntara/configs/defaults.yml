@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# syntara (Cypercloud) — defaults.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Local-dev and deployment *defaults*. Lowest project-owned YAML layer; every
+# value here can be overridden by Env/_site.yml, the project `.env`, or
+# environment variables (CYPERCLOUD_* / DJANGO_* — always win).
+#
+# Loaded by django-fusion's `config.project` loader (`load_config`) — see
+# configs/README.md. The Dynaconf loader files (settings.yml, models.yml)
+# remain the AI/model configuration source.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  # ── Local-dev defaults ──────────────────────────────────────────────
+  DEBUG: true
+  ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+    - cypercloud.localhost
+    - syntara-backend
+  PORT: 5073
+  FRONTEND_PORT: 5093
+
+  # ── Static files reference (read → output → deploy) ────────────────
+  STATIC:
+    read_dirs:
+      - assets/static
+      - assets/bundles
+      - static
+    output_dir: staticfiles
+    media_dir: assets/media
+    bundle_stats: assets/bundles/cypercloud/bundles.json
+    css_path: assets/static/css/fusion.css
+    deploy:
+      static_url: /static/
+      media_url: /media/
+      static_server: "whitenoise (backend)"
+
+development:
+  DEBUG: true
+
+production:
+  DEBUG: false

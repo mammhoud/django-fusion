@@ -1,5 +1,5 @@
 """
-Landing-fusion Product snippet — the editor-managed product catalog.
+Precis Landing Product snippet — the editor-managed product catalog.
 
 Products are managed as Wagtail snippets (mirroring the Course snippet in
 ``apps.learning.models.courses.info``) so every product carries the same

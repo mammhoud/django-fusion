@@ -289,11 +289,78 @@ DASHBOARD_CONTENT_BLOCKS = [
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Slider Block (reusable — hero/carousel on any page)
+# ═══════════════════════════════════════════════════════════════════
+
+class SliderSlideBlock(blocks.StructBlock):
+    """A single slide: image, subtitle, title, description, and optional CTA."""
+
+    image = ImageChooserBlock(required=False, label=_("Image"))
+    subtitle = blocks.CharBlock(required=False, max_length=150, label=_("Subtitle"))
+    title = blocks.CharBlock(required=True, max_length=200, label=_("Title"))
+    description = blocks.TextBlock(required=False, max_length=400, label=_("Description"))
+    text_alignment = blocks.ChoiceBlock(
+        choices=[
+            ("left", _("Left")),
+            ("center", _("Center")),
+            ("right", _("Right")),
+        ],
+        default="left",
+        required=False,
+        label=_("Text Alignment"),
+    )
+    button_text = blocks.CharBlock(required=False, max_length=50, label=_("Button Text"))
+    button_link = blocks.URLBlock(required=False, label=_("Button Link"))
+    alt_text = blocks.CharBlock(required=False, max_length=200, label=_("Alt Text"))
+
+    class Meta:
+        icon = "images"
+        label = _("Slide")
+
+
+class SliderBlock(blocks.StructBlock):
+    """Swiper-style carousel: loop, autoplay, navigation, and dots.
+
+    Renders server-side (no-JS shows the full strip) and enhances with
+    Alpine when available — mirrors the frontend course-slider contract.
+    """
+
+    heading = blocks.CharBlock(required=False, max_length=200, label=_("Heading"))
+    intro = blocks.TextBlock(required=False, max_length=400, label=_("Intro"))
+    slides = blocks.ListBlock(SliderSlideBlock(), label=_("Slides"))
+
+    # Swiper-style options
+    loop = blocks.BooleanBlock(default=True, required=False, label=_("Loop"), help_text=_("Wrap around at the end"))
+    autoplay = blocks.BooleanBlock(default=True, required=False, label=_("Autoplay"))
+    autoplay_interval = blocks.IntegerBlock(default=7000, min_value=1000, max_value=30000, required=False, label=_("Autoplay Interval (ms)"))
+    show_navigation = blocks.BooleanBlock(default=True, required=False, label=_("Show Arrows"))
+    show_dots = blocks.BooleanBlock(default=True, required=False, label=_("Show Dots"))
+    per_view = blocks.ChoiceBlock(
+        choices=[
+            (1, "1"),
+            (2, "2"),
+            (3, "3"),
+        ],
+        default=1,
+        required=False,
+        label=_("Slides Per View"),
+        help_text=_("Desktop slides per view (mobile always shows 1)"),
+    )
+
+    class Meta:
+        icon = "images"
+        label = _("Slider")
+        template = "blocks/slider.html"
+        group = _("Media")
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Global StreamBlock (used by all page types)
 # ═══════════════════════════════════════════════════════════════════
 
 PAGE_CONTENT_BLOCKS = [
     ("hero", HeroBlock()),
+    ("slider", SliderBlock()),
     ("stats", StatsBlock()),
     ("section_header", SectionHeaderBlock()),
     ("rich_section", RichSectionBlock()),

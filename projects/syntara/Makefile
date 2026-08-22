@@ -8,7 +8,15 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-PYTHON     ?= python3
+# Resolve the Python interpreter. `uv run` prefers the project's pinned
+# environment (requirements.txt) and falls back to a managed interpreter;
+# plain `python3` has no Django in most agent workspaces.
+UV         ?= uv
+ifneq (,$(wildcard .venv/bin/python))
+PYTHON     ?= .venv/bin/python
+else
+PYTHON     ?= $(UV) run python
+endif
 MANAGE     := $(PYTHON) manage.py
 ASSETS_DIR := assets
 BUNDLES_DIR := $(ASSETS_DIR)/bundles/cypercloud
@@ -57,10 +65,11 @@ help:
 	@echo "  make migrate-status     Show migration status"
 	@echo "  make db-reset           Reset database (careful!)"
 	@echo ""
-	@echo "⚙️  CONFIGURATION (Dynaconf):"
-	@echo "  make config-check       Verify Dynaconf configuration loads"
-	@echo "  make config-validate    Validate configuration structure"
-	@echo "  make config-show        Display current configuration"
+	@echo "⚙️  CONFIGURATION (YAML cascade + Dynaconf):"
+	@echo "  make config-check       Verify YAML cascade identity resolves"
+	@echo "  make config-validate    Validate Dynaconf AI/model config"
+	@echo "  make config-show        Show merged cascade + static plan"
+	@echo "  make config-status      Alias for config-show"
 	@echo "  make config-env         Show environment variables"
 	@echo ""
 	@echo "⚙️  DJANGO MANAGEMENT:"
@@ -254,61 +263,29 @@ db-reset:
 	fi
 
 # ============================================================
-# CONFIGURATION MANAGEMENT (Dynaconf)
+# CONFIGURATION MANAGEMENT (YAML cascade + Dynaconf)
 # ============================================================
-.PHONY: config-check config-status config-validate config-show
+.PHONY: config-check config-status config-validate config-show config-env
 
-config-check:
-	@echo "✅ Checking Dynaconf configuration…"
-	@$(PYTHON) -c "\
-		from django_fusion.config.loader import load_dynaconf_settings;\
-		settings = load_dynaconf_settings(config_dir='configs/');\
-		settings.load();\
-		print('✅ Configuration loaded successfully');\
-		print(f'  Environment: {settings.env}');\
-		print(f'  Debug: {settings.get(\"DJANGO.debug\")}');\
-		print(f'  Database: {settings.get(\"DATABASE.engine\", \"sqlite3\")}')" 2>&1
+config-check: ## Validate required identity keys resolve from the config cascade
+	@echo "✅ Checking YAML cascade configuration…"
+	@$(PYTHON) -c "from django_fusion.config.project import load_config; c = load_config('.'); req = {'SITE.name': 'syntara', 'SITE.runtime_name': 'cypercloud', 'SITE.primary_domain': 'cypercloud.localhost', 'ADMIN.panel_path': '/admin/'}; missing = [k for k, _ in req.items() if not c.get(k)]; print('CONFIG CHECK — OK ✅' if not missing else f'CONFIG CHECK — MISSING: {missing}'); raise SystemExit(1 if missing else 0)"
 
-config-validate:
-	@echo "🔍 Validating configuration structure…"
-	@$(PYTHON) -c "\
-		from django.conf import settings;\
-		from django_fusion.config.loader import load_dynaconf_settings, ModelsRegistry, TemplateRegistry;\
-		dynaconf = load_dynaconf_settings(config_dir='configs/').load();\
-		models = ModelsRegistry(dynaconf);\
-		templates = TemplateRegistry(dynaconf);\
-		print('✅ Configuration validation passed');\
-		print(f'  Models configured: {len(models.list_models())}');\
-		print(f'  Template apps: {len(templates.list_apps())}');\
-		for app in templates.list_apps():\
-			print(f'    - {app.get(\"slug\")}: {app.get(\"name\")}')" 2>&1
+config-validate: ## Validate Dynaconf AI/model configuration loads
+	@echo "🔍 Validating Dynaconf configuration…"
+	@$(PYTHON) -c "from django_fusion.config.loader import load_dynaconf_settings, ModelsRegistry; s = load_dynaconf_settings(config_dir='configs/').load(); m = ModelsRegistry(s); print('✅ Dynaconf validation passed'); print(f'  Models configured: {len(m.list_models())}')" 2>&1
 
-config-show:
+config-show: ## Print merged cascade + resolved views + static plan + Dynaconf models
 	@echo "📋 Current configuration:"
 	@echo ""
-	@echo "Django Settings:"
-	@$(PYTHON) -c "\
-		from django_fusion.config.loader import load_dynaconf_settings;\
-		s = load_dynaconf_settings(config_dir='configs/').load();\
-		print(f'  Secret Key: ***{s.get(\"DJANGO.secret_key\", \"not-set\")[-8:]}');\
-		print(f'  Debug: {s.get(\"DJANGO.debug\")}');\
-		print(f'  Allowed Hosts: {s.get(\"DJANGO.allowed_hosts\")}')" 2>&1
+	@echo "Cascade (config.project):"
+	@$(PYTHON) -c "from pathlib import Path; from django_fusion.config.project import load_config, staticfiles_plan; root = Path('.').resolve(); c = load_config(root); print('PROJECT CONFIG —', c.get('SITE.name', 'syntara'), '| env:', c.env); [print(f'  {k}: {v}') for k in ('DEBUG', 'ALLOWED_HOSTS', 'PORT', 'FRONTEND_PORT', 'FUSION_RENDER_FIRST', 'SITE_DOMAIN', 'DOMAIN_NAME') if (v := c.get(k)) is not None]; print('  SITE:', c.section('SITE') or {}); print('  ADMIN:', c.section('ADMIN') or {}); print('  CSS_PANEL:', c.section('CSS_PANEL') or {}); print('  resolved back (http://cypercloud.localhost:5073):'); [print(f'    {k}: {v}') for k, v in c.resolve('http://cypercloud.localhost:5073', 'back').get('SITE', {}).items()]; print(); print(staticfiles_plan(root, overrides=c.section('STATIC')).render())"
 	@echo ""
-	@echo "Database:"
-	@$(PYTHON) -c "\
-		from django_fusion.config.loader import load_dynaconf_settings;\
-		s = load_dynaconf_settings(config_dir='configs/').load();\
-		db = s.get('DATABASE', {});\
-		print(f'  Engine: {db.get(\"engine\", \"sqlite3\")}')" 2>&1
+	@echo "Dynaconf (AI models):"
+	@$(PYTHON) -c "from django_fusion.config.loader import load_dynaconf_settings, ModelsRegistry; s = load_dynaconf_settings(config_dir='configs/').load(); m = ModelsRegistry(s); print('  Environment: ' + str(s.get('current_env', 'development'))); [print('  - ' + str(model.get('name')) + ' (' + str(model.get('provider')) + ')') for model in m.list_models()[:3]]" 2>&1
 	@echo ""
-	@echo "AI Models:"
-	@$(PYTHON) -c "\
-		from django_fusion.config.loader import load_dynaconf_settings, ModelsRegistry;\
-		s = load_dynaconf_settings(config_dir='configs/').load();\
-		m = ModelsRegistry(s);\
-		for model in m.list_models()[:3]:\
-			print(f'  - {model.get(\"name\")} ({model.get(\"provider\")})')" 2>&1
-	@echo ""
+
+config-status: config-show ## Alias for config-show
 
 config-env:
 	@echo "🌍 Environment variables:"

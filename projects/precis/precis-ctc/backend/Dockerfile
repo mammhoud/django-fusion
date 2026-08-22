@@ -78,6 +78,11 @@ COPY backend ${APP_HOME}/${PROJECT_PATH}
 # Canonical shared settings package (configs additional context).
 COPY --from=configs / ${APP_HOME}/${PROJECT_PATH}/configs
 COPY Env ${APP_HOME}/${PROJECT_PATH}/Env
+# Project-level config cascade (configs/*.yml — defaults/site/admin). In this
+# image the site root's configs/ dir also hosts the shared settings package
+# (COPIED above), so the YAMLs land at its top level — exactly the
+# `<SITE_DIR>/configs/*.yml` glob conf.py loads before Env/_site.yml.
+COPY configs ${APP_HOME}/${PROJECT_PATH}/configs
 # Asset/template source is part of the runtime image. Production Compose does
 # not bind-mount source directories because remote Docker engines can expose a
 # partial synchronized tree and mask the files copied above.

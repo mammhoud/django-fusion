@@ -1,6 +1,7 @@
 ---
 import Skeleton from '@/components/ui/Skeleton.astro';
 import MediaGallery from '@/components/ui/MediaGallery.astro';
+import Breadcrumb from '@/components/blocks/Breadcrumb.astro';
 
 // ═══════════════════════════════════════════════════════════════════
 // CTC Research hero — brand-kit treatment (high-end-visual-design §3B)
@@ -27,13 +28,14 @@ interface Props {
   intro?: string;
   primaryCta?: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
-  status?: string;
   /** Optional media gallery items for the right-hand panel. */
   gallery?: GalleryItem[];
   /** Optional evidence points shown when no gallery is provided. */
   evidence?: { value: string; label: string }[];
   /** Page-specific visual treatment for the shared hero component. */
   variant?: 'home' | 'research' | 'learning' | 'archive' | 'legal' | 'network' | 'contact' | 'product';
+  /** Optional breadcrumb override; defaults to Home / <heading>. */
+  breadcrumbs?: { label: string; href?: string }[];
 }
 
 const {
@@ -44,7 +46,6 @@ const {
     'CTC Research advances health through interdisciplinary innovation — medical AI, clinical evidence, and high-impact research, delivered as fast, server-rendered documents.',
   primaryCta = { label: 'Start building', href: '/#cta' },
   secondaryCta = { label: 'Read the docs', href: '/about' },
-  status = '200 OK · text/html · 0 KB client JS',
   gallery = [],
   evidence = [
     { value: '17+', label: 'years of research' },
@@ -52,12 +53,14 @@ const {
     { value: '7', label: 'languages' },
   ],
   variant = 'research',
+  breadcrumbs = [{ label: 'Home', href: '/' }, { label: heading }],
 } = Astro.props;
 
 const showGallery = gallery.length > 0;
+const showBreadcrumb = breadcrumbs.length > 1;
 ---
 
-<section class:list={["hero", `hero--${variant}`]} data-page-variant={variant}>
+<section class:list={["hero", `hero--${variant}`]} data-page-variant={variant} data-localized-block="hero">
   <!-- Skeleton while Alpine boots (x-intersect reveals) — component-matched height -->
   <div data-hydrate-skeleton>
     <Skeleton variant="hero-section" />
@@ -74,9 +77,15 @@ const showGallery = gallery.length > 0;
     </svg>
 
     <div class="hero__content">
+      {showBreadcrumb && (
+        <div class="hero__breadcrumb" x-data x-intersect="$el.classList.add('reveal-visible')">
+          <Breadcrumb items={breadcrumbs} />
+        </div>
+      )}
       <p
         class="hero__eyebrow"
-        x-data x-intersect="$el.classList.add('reveal-visible')" x-cloak
+        x-data x-intersect="$el.classList.add('reveal-visible')"
+        data-l10n="hero.badge"
       >
         {eyebrow}
       </p>
@@ -84,6 +93,7 @@ const showGallery = gallery.length > 0;
       <h1
         class="hero__heading"
         x-data x-intersect="$el.classList.add('reveal-visible')"
+        data-l10n="hero.title"
       >
         {heading}{' '}
         <span class="hero__accent">
@@ -96,6 +106,7 @@ const showGallery = gallery.length > 0;
         class="hero__intro"
         x-data x-intersect="$el.classList.add('reveal-visible')"
         style="transition-delay: 100ms"
+        data-l10n="hero.subtitle"
       >
         {intro}
       </p>
@@ -106,7 +117,7 @@ const showGallery = gallery.length > 0;
         style="transition-delay: 200ms"
       >
         <a href={primaryCta.href} class="btn-primary group relative !px-8 !py-3.5 overflow-hidden">
-          <span class="relative z-10">{primaryCta.label}</span>
+          <span class="relative z-10" data-l10n="hero.cta1">{primaryCta.label}</span>
           <span class="absolute inset-0 z-0 -translate-x-full bg-fu-link-dark transition-transform duration-500 group-hover:translate-x-0" style="transition-timing-function: cubic-bezier(0.32,0.72,0,1)" aria-hidden="true"></span>
           <span class="relative z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/15 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-[1px]" style="transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)">
             <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
@@ -114,18 +125,11 @@ const showGallery = gallery.length > 0;
             </svg>
           </span>
         </a>
-        <a href={secondaryCta.href} class="btn-secondary !px-8 !py-3.5">
+        <a href={secondaryCta.href} class="btn-secondary !px-8 !py-3.5" data-l10n="hero.cta2">
           {secondaryCta.label}
         </a>
       </div>
 
-      <p
-        class="hero__status"
-        x-data x-intersect="$el.classList.add('reveal-visible')"
-        style="transition-delay: 260ms"
-      >
-        <span class="status-line"><span class="dot" aria-hidden="true"></span>{status}</span>
-      </p>
     </div>
 
     <!-- ── Right-hand panel: media gallery OR medical evidence (no code) ── -->

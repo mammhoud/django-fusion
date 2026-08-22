@@ -1,0 +1,70 @@
+{% load i18n static wagtailimages_tags %}
+
+{# ============================================================ #}
+{# Reusable SliderBlock — Swiper-style carousel (server-rendered #}
+{# strip; Alpine moves the window when JS is available).       #}
+{# Mirrors the frontend course-slider contract: no-JS shows     #}
+{# every slide stacked; with JS it becomes a loop carousel.     #}
+{# ============================================================ #}
+{% with slides=block.value.slides per_view=block.value.per_view|default:1 %}
+{% if slides %}
+<section class="fu-slider"
+         aria-labelledby="fu-slider-title-{{ block.id }}"
+         x-data="{ active: 0, perView: {{ per_view }}, timer: null, init() { this.perView = window.innerWidth < 640 ? 1 : {{ per_view }}; this.timer = setInterval(() => this.next(), {{ block.value.autoplay_interval|default:7000 }}); }, maxIndex() { return Math.max(0, {{ slides|length }} - this.perView); }, next() { {% if block.value.loop %}this.active = this.active >= this.maxIndex() ? 0 : this.active + 1;{% else %}this.active = Math.min(this.active + 1, this.maxIndex());{% endif %} }, previous() { {% if block.value.loop %}this.active = this.active <= 0 ? this.maxIndex() : this.active - 1;{% else %}this.active = Math.max(this.active - 1, 0);{% endif %} }, goTo(index) { this.active = Math.min(index, this.maxIndex()); } }">
+  <div class="container-fusion">
+    {% if block.value.heading %}
+    <div class="fu-slider__head">
+      <div class="fu-slider__title-group">
+        <p class="tag-marker mb-3">{% trans "highlights" %}</p>
+        <h2 id="fu-slider-title-{{ block.id }}" class="page-section__title mb-0">{{ block.value.heading }}</h2>
+        {% if block.value.intro %}<p class="mt-3 max-w-xl text-sm leading-relaxed text-fu-muted">{{ block.value.intro }}</p>{% endif %}
+      </div>
+      {% if block.value.show_navigation %}
+      <div class="fu-slider__nav">
+        <button type="button" class="btn-secondary !px-3 !py-2" @click="previous()" aria-label="{% trans 'Previous slide' %}">←</button>
+        <button type="button" class="btn-primary !px-3 !py-2" @click="next()" aria-label="{% trans 'Next slide' %}">→</button>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="fu-slider__frame" @mouseenter="clearInterval(timer)" @mouseleave="timer = setInterval(() => next(), {{ block.value.autoplay_interval|default:7000 }})">
+      <div class="fu-slider__track" :style="`transform: translateX(-${active * (100 / perView)}%)`">
+        {% for slide in slides %}
+        <div class="fu-slider__shell" :aria-hidden="`active > ${ {{ forloop.counter0 }} } || active + perView <= {{ forloop.counter0 }}`">
+          <div class="fu-slider__card">
+            {% if slide.image %}
+            {% image slide.image fill-960x540 format-webp as art %}
+            <div class="fu-slider__art">
+              <img src="{{ art.url }}" alt="{{ slide.alt_text|default:slide.title }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}" />
+            </div>
+            {% endif %}
+            <div class="fu-slider__body">
+              {% if slide.subtitle %}<p class="fu-slider__subtitle">{{ slide.subtitle }}</p>{% endif %}
+              <h3 class="fu-slider__title">{{ slide.title }}</h3>
+              {% if slide.description %}<p class="fu-slider__desc">{{ slide.description }}</p>{% endif %}
+              {% if slide.button_text and slide.button_link %}
+              <a class="btn-primary group mt-auto inline-flex w-fit !px-5 !py-2.5 text-sm" href="{{ slide.button_link }}">
+                {{ slide.button_text }}
+                <span class="flex h-5 w-5 items-center justify-center rounded-full bg-white/15" aria-hidden="true">
+                  <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </span>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% if block.value.show_dots %}
+      <div class="fu-slider__dots" role="tablist" aria-label="{% trans 'Slides' %}">
+        {% for slide in slides %}
+        <button type="button" class="fu-slider__dot" role="tab" :aria-selected="`active === ${ {{ forloop.counter0 }} }`" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" :aria-current="`active === ${ {{ forloop.counter0 }} } ? 'true' : 'false'`" @click="goTo({{ forloop.counter0 }})" aria-label="{% blocktranslate with n=forloop.counter %}Show slide {{ n }}{% endblocktranslate %}"></button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endwith %}

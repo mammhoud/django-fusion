@@ -17,13 +17,13 @@ NC     := \033[0m
 DEFAULT_PORT := 8074
 PYTHONPATH := $(CURDIR):$(CURDIR)/apps
 export PYTHONPATH
-UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
+UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo $(HOME)/.local/bin/uv) || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ../../..
 UV_RUN := $(UV) run
 MANAGE := $(UV_RUN) python manage.py
 
 help: ## Show backend commands
-	@echo -e "$(CYAN)=== Landing-Fusion Backend (Django + Wagtail) ===$(NC)"
+	@echo -e "$(CYAN)=== Precis Landing Backend (Django + Wagtail) ===$(NC)"
 	@echo -e "$(BLUE)Site: precis-landing$(NC)"
 	@awk 'BEGIN {FS = ":.*##"; printf ""} /^[a-zA-Z_-]+:.*?##/ { printf "  $(CYAN)%-18s$(NC) %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 

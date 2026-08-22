@@ -244,7 +244,7 @@ const faqItems = pageFaq?.map((f: any) => ({
         </div>
         <div class='grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3'>
           {pageApplications.applications.map((app: any, i: number) => (
-            <a href={app.href || app.url || '#'} class='card application__card reveal p-6' style={`--reveal-i: ${i}`} x-data x-intersect='`$el.classList.add("reveal-visible")`'>
+            <a href={app.href || app.url || '#'} class='card application__card reveal p-6' style={`--reveal-i: ${i}`} x-data x-intersect="$el.classList.add('reveal-visible')">
               <div class='flex items-center justify-between gap-3'>
                 <span class='tag-marker' style='margin:0'>{app.name}</span>
                 {app.edition && <span class='edition-chip'>{app.edition}</span>}
@@ -369,7 +369,7 @@ const faqItems = pageFaq?.map((f: any) => ({
         </div>
         <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
           {capabilities.map((cap, i) => (
-            <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
+            <div class='card reveal p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
               <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
                 <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
                   <path stroke-linecap='round' stroke-linejoin='round' d={cap.icon} />
@@ -396,7 +396,7 @@ const faqItems = pageFaq?.map((f: any) => ({
         {profileIcp.length ? (
           <div class='grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3'>
             {profileIcp.map((persona, i) => (
-              <div class='card reveal p-6' x-data x-intersect='`$el.classList.add("reveal-visible")`' style={`--reveal-i: ${i}`}>
+              <div class='card reveal p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
                 <span class='tag-marker' style='margin:0'>ideal customer</span>
                 <h3 class='mt-4 font-display text-lg font-semibold text-fu-ink'>{persona.title}</h3>
                 <div class='mt-4'>

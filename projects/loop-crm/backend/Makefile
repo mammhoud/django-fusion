@@ -9,7 +9,7 @@ SHELL := /bin/bash
 DEFAULT_PORT := 8000
 PYTHONPATH := $(CURDIR):$(CURDIR)/apps
 export PYTHONPATH
-UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
+UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo $(HOME)/.local/bin/uv) || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ../..
 UV_RUN := $(UV) run
 MANAGE := $(UV_RUN) python manage.py

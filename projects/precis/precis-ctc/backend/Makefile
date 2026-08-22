@@ -24,7 +24,7 @@ DEFAULT_PORT := 5070
 # PYTHONPATH includes site root, workspace root, www subdirectory, and libs
 PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../../../..):$(abspath ../../../../libs/django-fusion/src)
 export PYTHONPATH
-UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
+UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo $(HOME)/.local/bin/uv) || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ../../..
 UV_RUN := $(UV) run --frozen
 MANAGE := $(UV_RUN) python manage.py

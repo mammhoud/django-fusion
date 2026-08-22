@@ -28,7 +28,7 @@ export function esc(value: unknown): string {
 }
 
 /** Reveal directive shared by every card (scroll-into-view via x-intersect). */
-const REVEAL = 'x-data x-intersect=\'`$el.classList.add("reveal-visible")`\'';
+const REVEAL = 'x-data x-intersect="$el.classList.add(\'reveal-visible\')"';
 
 /** One catalog card — the exact markup the products page grid shares. */
 export function productCardMarkup(product: ProductCard, index: number): string {

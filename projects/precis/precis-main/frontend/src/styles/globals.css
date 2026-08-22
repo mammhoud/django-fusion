@@ -2564,6 +2564,9 @@ html:not(.js) .blog-preview__card,
 html:not(.js) .team__card,
 html:not(.js) .timeline__card,
 html:not(.fusion-motion-ready) .timeline__card,
+/* The course-page reveal runs on its own IntersectionObserver (not Alpine),
+   so it only needs the no-JS half of this net. */
+html:not(.js) .reveal-up,
 html:not(.fusion-motion-ready) .brand-board__construction .product-logo {
   opacity: 1 !important;
   transform: none !important;

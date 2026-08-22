@@ -1,5 +1,5 @@
 /**
- * Landing-Fusion — Django-side JavaScript entry point.
+ * Precis Landing — Django-side JavaScript entry point.
  * Bundled by webpack (webpack/precis-landing.config.js).
  * Consumed by django-webpack-loader via {% render_bundle 'landing' 'js' %}.
  */
