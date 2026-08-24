@@ -99,4 +99,4 @@ http:
     ctc-media-service:
       loadBalancer:
         servers:
-          - url: 'http://shared-proxy:80'
+          - url: 'http://assets-proxy:80'

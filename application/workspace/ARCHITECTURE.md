@@ -15,7 +15,7 @@ Traefik (:80/:443, Let's Encrypt)
 ```
 
 AFFiNE is served at `https://tools.structa.cloud/space/` (path-based split by
-the shared-proxy Nginx). The Coder workspace page separately exposes VS Code
+the tools-proxy Nginx). The Coder workspace page separately exposes VS Code
 Web, a web-based File Browser, and the web terminal. The retired
 `coder.structa.cloud` and `code.structa.cloud` aliases are gone. No workspace
 application port is published on the host.
@@ -60,13 +60,13 @@ the credentials are required environment variables, not repository defaults.
 The migration is a one-shot job and an exited-zero migration container is
 expected. `proxy-affine` has an HTTP healthcheck on port 3010.
 
-`shared-proxy` has an independent healthcheck: it validates Nginx syntax and
+`tools-proxy` has an independent healthcheck: it validates Nginx syntax and
 its local `/health/` endpoint. It does not become unhealthy merely because
 Docus or AFFiNE is restarting.
 
 ## Routing and certificates
 
-Traefik routes `space.structa.cloud` to `shared-proxy` and uses the
+Traefik routes `space.structa.cloud` to `tools-proxy` and uses the
 `letsencrypt-http` resolver for the public HTTPS router. Local `.localhost`
 aliases do not request ACME certificates.
 

@@ -27,16 +27,16 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to bottom, var(--color-navy-opacity-10), var(--color-navy-opacity-20));
+    background: var(--theme-bg-secondary);
+
 }
 
 .banner__card {
     margin-top: -80px;
     border: none;
     box-shadow: var(--shadow-xl);
-    backdrop-filter: blur(12px);
     background: var(--color-profile-card-bg);
-    border-radius: 20px;
+    
     border: 1px solid var(--color-white-opacity-20);
     overflow: hidden;
     transition: transform 0.4s ease, box-shadow 0.4s ease;
@@ -78,7 +78,7 @@
     width: 18px;
     height: 18px;
     background: var(--success-color);
-    border-radius: 50%;
+    
     border: 3px solid var(--color-named-white);
     box-shadow: 0 0 0 3px var(--color-success-opacity-02);
     z-index: 10;
@@ -95,7 +95,7 @@
     background: var(--gradient-primary);
     border: none;
     color: var(--color-named-white);
-    border-radius: 50%;
+    
     opacity: 0;
     transform: translateY(10px) scale(0.9);
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -118,7 +118,8 @@
 .profile__name {
     color: var(--text-primary);
     font-weight: 700;
-    background: linear-gradient(90deg, var(--primary-dark), var(--secondary-color));
+    background: var(--theme-bg-secondary);
+
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -147,7 +148,7 @@
     transform: translateY(-50%);
     width: 6px;
     height: 6px;
-    border-radius: 50%;
+    
     background: var(--primary-light);
     transition: all 0.3s ease;
 }
@@ -172,15 +173,17 @@
 
 .profile__stat {
     padding: 0.75rem 1.25rem;
-    background: linear-gradient(135deg, var(--background-light) 0%, #F1F5F9 100%);
-    border-radius: 12px;
+    background: var(--theme-bg-secondary);
+
+    
     border-left: 4px solid var(--primary-light);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
 
 .profile__stat:hover {
-    background: linear-gradient(135deg, var(--color-container-lighter) 0%, var(--color-container-lightest) 100%);
+    background: var(--theme-bg-secondary);
+
     transform: translateX(8px);
     border-left-color: var(--primary-color);
     box-shadow: var(--shadow-md);
@@ -215,7 +218,7 @@
 }
 
 .profile__action {
-    border-radius: 12px;
+    
     font-weight: 600;
     padding: 0.75rem 1.75rem;
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -231,7 +234,7 @@
     left: 50%;
     width: 0;
     height: 0;
-    border-radius: 50%;
+    
     background: var(--color-white-opacity-10);
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
@@ -277,7 +280,7 @@
     border: 2px solid var(--primary-light);
     color: var(--primary-color);
     padding: 0.75rem 1.5rem;
-    border-radius: 12px;
+    
     font-weight: 600;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -305,7 +308,7 @@
     margin-top: 0.5rem;
     background: var(--color-named-white);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    
     box-shadow: var(--shadow-xl);
     min-width: 200px;
     opacity: 0;
@@ -337,7 +340,8 @@
 }
 
 .profile__dropdown-item:hover {
-    background: linear-gradient(90deg, var(--color-container-lighter), var(--color-container-lightest));
+    background: var(--theme-bg-secondary);
+
     color: var(--primary-dark);
     padding-left: 1.25rem;
     transform: translateX(4px);
@@ -358,7 +362,8 @@
 
 .profile__dropdown-divider {
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    background: var(--theme-bg-secondary);
+
     margin: 0.5rem 0;
 }
 
@@ -366,7 +371,7 @@
 .profile__nav-card {
     border: none;
     box-shadow: var(--shadow-lg);
-    border-radius: 16px;
+    
     background: var(--color-named-white);
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -393,7 +398,7 @@
     padding: 1rem 1.25rem;
     color: var(--text-secondary);
     text-decoration: none;
-    border-radius: 12px;
+    
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
@@ -420,7 +425,8 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, var(--color-info-opacity-blue-05), var(--color-info-opacity-blue-02));
+    background: var(--theme-bg-secondary);
+
     opacity: 0;
     transition: opacity 0.4s ease;
 }
@@ -445,15 +451,13 @@
     color: var(--color-named-white);
     box-shadow: 0 8px 20px -6px rgba(var(--color-primary-rgb), 0.4);
     transform: translateX(4px);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
 }
 
 .profile__nav-link.active::before {
     transform: scaleY(0.6);
     background: var(--color-named-white);
     left: 2px;
-    border-radius: 4px;
+    
 }
 
 .profile__nav-link.active:hover {
@@ -497,7 +501,7 @@
     background: var(--gradient-accent);
     color: var(--color-named-white);
     padding: 0.25rem 0.75rem;
-    border-radius: 20px;
+    
     position: relative;
     z-index: 1;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -511,7 +515,8 @@
 .profile__nav-divider {
     margin: 1rem 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    background: var(--theme-bg-secondary);
+
     opacity: 0.5;
 }
 
@@ -523,7 +528,8 @@
 .profile__welcome-title {
     font-weight: 700;
     color: var(--text-primary);
-    background: linear-gradient(90deg, var(--primary-dark), var(--secondary-color));
+    background: var(--theme-bg-secondary);
+
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -559,7 +565,7 @@
 /* Stat Cards */
 .profile__stat-card {
     transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border-radius: 16px;
+    
     border: 1px solid var(--border-color);
     overflow: hidden;
     position: relative;
@@ -601,8 +607,9 @@
     justify-content: center;
     width: 56px;
     height: 56px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, var(--color-info-opacity-blue-10), var(--color-info-opacity-blue-15));
+    
+    background: var(--theme-bg-secondary);
+
     color: var(--primary-color);
     font-size: 1.5rem;
     transition: all 0.4s ease;
@@ -610,16 +617,19 @@
 
 .profile__stat-card:hover .profile__stat-icon {
     transform: scale(1.1) rotate(10deg);
-    background: linear-gradient(135deg, var(--color-info-opacity-20), var(--color-info-opacity-blue-25));
+    background: var(--theme-bg-secondary);
+
 }
 
 .profile__stat-card:nth-child(2) .profile__stat-icon {
-    background: linear-gradient(135deg, var(--color-info-opacity-10), var(--color-info-opacity-15));
+    background: var(--theme-bg-secondary);
+
     color: var(--secondary-color);
 }
 
 .profile__stat-card:nth-child(3) .profile__stat-icon {
-    background: linear-gradient(135deg, var(--color-warning-opacity-amber-10), var(--color-warning-opacity-amber-15));
+    background: var(--theme-bg-secondary);
+
     color: var(--accent-color);
 }
 
@@ -649,7 +659,7 @@
 .profile__stat-trend {
     font-size: 0.75rem;
     padding: 0.375rem 0.75rem;
-    border-radius: 20px;
+    
     background: var(--color-success-opacity-10);
     color: var(--success-color);
     font-weight: 600;
@@ -661,7 +671,7 @@
 }
 
 .profile__stat-progress .progress {
-    border-radius: 10px;
+    
     height: 8px;
     background: var(--color-info-opacity-blue-10);
     overflow: hidden;
@@ -669,7 +679,7 @@
 
 .profile__stat-progress .progress-bar {
     background: var(--gradient-primary);
-    border-radius: 10px;
+    
     transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -705,7 +715,7 @@
         top: auto;
         bottom: 0;
         transform: translateY(100%);
-        border-radius: 20px 20px 0 0;
+        
     }
 
     .profile__dropdown-menu.show {
@@ -783,18 +793,20 @@
 .profile__timeline::-webkit-scrollbar-track,
 .profile__progress-list::-webkit-scrollbar-track {
     background: var(--color-gray-opacity-50);
-    border-radius: 10px;
+    
 }
 
 .profile__timeline::-webkit-scrollbar-thumb,
 .profile__progress-list::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom, var(--primary-light), var(--primary-color));
-    border-radius: 10px;
+    background: var(--theme-bg-secondary);
+
+    
 }
 
 .profile__timeline::-webkit-scrollbar-thumb:hover,
 .profile__progress-list::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, var(--primary-color), var(--primary-dark));
+    background: var(--theme-bg-secondary);
+
 }
 
 /* Performance optimization */
@@ -810,12 +822,10 @@
 /* Loading skeleton */
 .profile__loading {
     animation: shimmer 2s infinite linear;
-    background: linear-gradient(90deg,
-        var(--color-gray-opacity-shimmer) 25%,
-        var(--color-gray-opacity-90) 50%,
-        var(--color-gray-opacity-shimmer) 75%);
+    background: var(--theme-bg-secondary);
+
     background-size: 200% 100%;
-    border-radius: 8px;
+    
 }
 
 @keyframes shimmer {
@@ -841,8 +851,8 @@
 
 .border-blue-gradient {
     border: 2px solid transparent;
-    background: linear-gradient(var(--color-named-white), var(--color-named-white)) padding-box,
-                var(--gradient-primary) border-box;
+    background: var(--theme-bg-secondary);
+
 }
 
 /* Focus states for accessibility */
@@ -1041,7 +1051,7 @@
         background: var(--color-input-invalid);
         color: var(--color-named-white);
         padding: 8px 12px;
-        border-radius: 4px;
+        
         font-size: 12px;
         max-width: 250px;
         box-shadow: 0 2px 10px var(--color-opacity-10);
@@ -1089,7 +1099,7 @@
         font-size: 12px;
         height: 4px;
         background: var(--color-rating-inactive);
-        border-radius: 2px;
+        
         overflow: hidden;
     }
 
@@ -1143,7 +1153,7 @@
 .filter-style-3 li a {
     display: inline-block;
     padding: 0.5rem 1rem;
-    border-radius: 25px;
+    
     text-decoration: none;
     transition: all 0.3s ease;
     border: 2px solid var(--color-border-light);
@@ -1216,7 +1226,7 @@
     height: 3rem;
     border: 3px solid var(--color-background-f3);
     border-top: 3px solid var(--color-rating-active);
-    border-radius: 50%;
+    
     animation: spin 1s linear infinite;
     margin: 0 auto 1rem;
 }
@@ -1239,15 +1249,16 @@
 }
 
 .bg-gradient-primary {
-    background: linear-gradient(135deg, var(--bs-primary) 0%, #6c63ff 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 .rounded-3 {
-    border-radius: 0.75rem !important;
+    
 }
 
 .rounded-4 {
-    border-radius: 1rem !important;
+    
 }
 
 /* Form styling - Back to classic style */
@@ -1275,7 +1286,8 @@ textarea.form-control {
 
 /* Button styling */
 .btn-primary {
-    background: linear-gradient(45deg, var(--bs-primary), #6c63ff);
+    background: var(--theme-bg-secondary);
+
     border: none;
     font-weight: 600;
     letter-spacing: 0.5px;
@@ -1328,7 +1340,7 @@ textarea.form-control {
 /* Alert styling */
 .alert {
     border: none;
-    border-radius: 0.75rem;
+    
     padding: 1rem 1.25rem;
 }
 
@@ -1389,12 +1401,12 @@ textarea.form-control::-webkit-scrollbar {
 
 textarea.form-control::-webkit-scrollbar-track {
     background: var(--color-background-f1);
-    border-radius: 4px;
+    
 }
 
 textarea.form-control::-webkit-scrollbar-thumb {
     background: var(--color-gray-550);
-    border-radius: 4px;
+    
 }
 
 textarea.form-control::-webkit-scrollbar-thumb:hover {
@@ -1421,34 +1433,39 @@ textarea:-webkit-autofill:focus {
 /* BEM Styles for Profiled Tab Panels */
 .profiled-panel {
     padding: 1.5rem;
-    border-radius: 0.5rem;
+    
     margin-bottom: 1.5rem;
     box-shadow: 0 2px 10px var(--color-shadow-light);
 }
 
 .profiled-panel--dashboard {
     border-left: 4px solid var(--color-primary-blue);
-    background: linear-gradient(135deg, var(--color-blue-opacity-05) 0%, var(--color-blue-opacity-02) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 .profiled-panel--enrolled-courses {
     border-left: 4px solid var(--color-gray-600);
-    background: linear-gradient(135deg, var(--color-gray-opacity-05) 0%, var(--color-gray-opacity-02) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 .profiled-panel--certifications {
     border-left: 4px solid var(--color-accent-5);
-    background: linear-gradient(135deg, var(--color-warning-opacity-orange-05) 0%, var(--color-warning-opacity-orange-02) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 .profiled-panel--messages {
     border-left: 4px solid var(--color-input-valid);
-    background: linear-gradient(135deg, var(--color-success-opacity-green-05) 0%, var(--color-success-opacity-green-02) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 .profiled-panel--notes {
     border-left: 4px solid var(--color-accent-violet);
-    background: linear-gradient(135deg, var(--color-violet-opacity-05) 0%, var(--color-violet-opacity-02) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 .profiled-panel__header {
@@ -1490,7 +1507,7 @@ textarea:-webkit-autofill:focus {
 .profiled-panel__badge {
     font-size: 0.75rem;
     padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
+    
 }
 
 .profiled-panel__content {
@@ -1500,7 +1517,7 @@ textarea:-webkit-autofill:focus {
 /* Dashboard Specific */
 .stat-card {
     background: var(--color-named-white);
-    border-radius: 0.375rem;
+    
     padding: 1rem;
     box-shadow: 0 1px 3px var(--color-opacity-10);
     transition: transform 0.2s ease;
@@ -1513,7 +1530,7 @@ textarea:-webkit-autofill:focus {
 .stat-card__icon {
     width: 48px;
     height: 48px;
-    border-radius: 0.375rem;
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1538,7 +1555,7 @@ textarea:-webkit-autofill:focus {
 /* Course Cards */
 .course-card {
     border: 1px solid var(--color-rating-inactive);
-    border-radius: 0.5rem;
+    
     overflow: hidden;
     transition: all 0.3s ease;
 }
@@ -1563,7 +1580,7 @@ textarea:-webkit-autofill:focus {
 .cert-card {
     background: var(--color-named-white);
     border: 1px solid var(--color-border-light);
-    border-radius: 0.5rem;
+    
     padding: 1.25rem;
     position: relative;
 }
@@ -1574,7 +1591,7 @@ textarea:-webkit-autofill:focus {
     right: 20px;
     font-size: 0.75rem;
     padding: 0.25rem 0.75rem;
-    border-radius: 1rem;
+    
 }
 
 /* Message Items */
@@ -1583,7 +1600,7 @@ textarea:-webkit-autofill:focus {
     padding: 0.75rem;
     margin-bottom: 0.5rem;
     background: var(--color-named-white);
-    border-radius: 0.375rem;
+    
     transition: all 0.2s ease;
 }
 
@@ -1601,7 +1618,7 @@ textarea:-webkit-autofill:focus {
 .note-item {
     background: var(--color-named-white);
     border: 1px solid var(--color-rating-inactive);
-    border-radius: 0.375rem;
+    
     padding: 1rem;
     margin-bottom: 0.75rem;
 }
@@ -1636,7 +1653,7 @@ textarea:-webkit-autofill:focus {
 
 .profile-section {
     background: var(--color-named-white);
-    border-radius: 0.5rem;
+    
     padding: 1.25rem;
     border: 1px solid var(--color-rating-inactive);
 }
@@ -1676,7 +1693,7 @@ textarea:-webkit-autofill:focus {
 
 .profile-bio {
     background: var(--color-course-module);
-    border-radius: 0.375rem;
+    
     padding: 1rem;
     min-height: 80px;
 }
@@ -1684,7 +1701,8 @@ textarea:-webkit-autofill:focus {
 /* Profile Panel Specific Colors */
 .profiled-panel--profile {
     border-left: 4px solid var(--color-accent-cyan);
-    background: linear-gradient(135deg, var(--color-cyan-opacity-05) 0%, var(--color-cyan-opacity-02) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 .profiled-panel__title--profile {
@@ -1713,14 +1731,14 @@ textarea:-webkit-autofill:focus {
 
 /* Modal Styles */
 .modal-content {
-    border-radius: 10px;
+    
     border: none;
 }
 
 .modal-header {
     border-bottom: 1px solid var(--bs-border-color);
     background-color: var(--bs-light);
-    border-radius: 10px 10px 0 0;
+    
 }
 
 /* Connection Status */
@@ -1729,7 +1747,7 @@ textarea:-webkit-autofill:focus {
     align-items: center;
     gap: 5px;
     padding: 2px 8px;
-    border-radius: 20px;
+    
     font-size: 0.875rem;
 }
 

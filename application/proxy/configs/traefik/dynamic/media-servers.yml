@@ -1,7 +1,7 @@
 # =============================================================================
 # Media servers — Traefik router config
 # =============================================================================
-# All media.* subdomains route to the running shared-proxy Nginx container.
+# All media.* subdomains route to the running assets-proxy Nginx container.
 # Domains: media.structa.cloud, media.ctc-research.com, media.vresume.structa.cloud
 # (media.lms.com was removed — the domain no longer resolves and its certResolver
 # kept triggering failed Let's Encrypt attempts)
@@ -9,21 +9,21 @@
 
 http:
   routers:
-    shared-proxy-http:
+    assets-proxy-http:
       rule: Host(`media.structa.cloud`)
       entryPoints:
       - web
       middlewares:
       - redirect-to-https
-      service: shared-proxy-service
-    shared-proxy-https:
+      service: assets-proxy-service
+    assets-proxy-https:
       rule: Host(`media.structa.cloud`)
       entryPoints:
       - web-secure
       middlewares:
       - compress
       - security-headers
-      service: shared-proxy-service
+      service: assets-proxy-service
       tls:
         certResolver: letsencrypt-http
     ctc-media-http:
@@ -59,15 +59,15 @@ http:
       - security-headers
       service: vresume-media-service
   services:
-    shared-proxy-service:
+    assets-proxy-service:
       loadBalancer:
         servers:
-        - url: http://shared-proxy:80
+        - url: http://assets-proxy:80
     ctc-media-service:
       loadBalancer:
         servers:
-        - url: http://shared-proxy:80
+        - url: http://assets-proxy:80
     vresume-media-service:
       loadBalancer:
         servers:
-        - url: http://shared-proxy:80
+        - url: http://assets-proxy:80

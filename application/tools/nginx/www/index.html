@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structa Cloud — Media</title>
+  <title>Structa Cloud — Application Index</title>
   <meta name="robots" content="noindex">
   <style>
     :root {
@@ -114,15 +114,30 @@
 </head>
 <body>
   <main>
-    <p class="tag">Structa Cloud · Shared Media</p>
-    <h1>Media <em>front door</em></h1>
+    <p class="tag">Structa Cloud · Application Index</p>
+    <h1>Structa <em>front door</em></h1>
     <p class="sub">
-      This host serves the Structa Cloud shared assets — static bundles, media
-      uploads, and documentation. Everything below is mounted read-only from
-      the shared media tree.
+      Root entry point for the Structa Cloud platform — tools, workspaces,
+      documentation, static assets, and media uploads. All served by the
+      shared-proxy Nginx under this host.
     </p>
 
     <div class="grid">
+      <a class="card" href="https://tools.structa.cloud/">
+        <span class="k">tools</span>
+        <span class="t">Tools</span>
+        <span class="d">Self-hosted utilities — notes, automation, DB admin, email catcher, monitoring.</span>
+      </a>
+      <a class="card" href="https://ops.structa.cloud/">
+        <span class="k">automation</span>
+        <span class="t">xyOps</span>
+        <span class="d">Job scheduling, workflows, server monitoring, alerts, and incident tickets.</span>
+      </a>
+      <a class="card" href="https://space.structa.cloud/">
+        <span class="k">workspace</span>
+        <span class="t">Space</span>
+        <span class="d">Cloud development environment — VS Code, terminals, AI agents.</span>
+      </a>
       <a class="card" href="/docs/">
         <span class="k">docs</span>
         <span class="t">Documentation</span>
@@ -140,7 +155,7 @@
       </div>
     </div>
 
-    <footer>media.structa.cloud</footer>
+    <footer>media.structa.cloud · application index</footer>
   </main>
 </body>
 </html>

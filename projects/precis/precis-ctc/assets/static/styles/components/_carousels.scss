@@ -95,7 +95,7 @@
     height: 50px;
     background: rgba(var(--theme-surface-rgb), 0.9);
     border: 1px solid var(--theme-border-primary);
-    border-radius: 50%;
+    
     color: var(--theme-text-primary);
     font-size: 1.5rem;
     cursor: pointer;
@@ -159,7 +159,7 @@
     display: block;
     -webkit-backface-visibility: visible;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 50%;
+    
     cursor: pointer;
 }
 
@@ -172,7 +172,7 @@
 
 .owl-carousel .owl-dot.active span {
     width: 30px;
-    border-radius: 15px;
+    
 }
 
 /* Owl Carousel Client Box */
@@ -180,7 +180,7 @@
     padding: 2rem;
     background: var(--theme-surface);
     border: 1px solid var(--theme-border-primary);
-    border-radius: 12px;
+    
     text-align: center;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     height: 100%;
@@ -233,7 +233,7 @@
 .hoverbox-7 {
     position: relative;
     overflow: hidden;
-    border-radius: 12px;
+    
 }
 
 .hoverbox-7::before {
@@ -244,9 +244,8 @@
     z-index: 1;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg,
-            rgba(var(--theme-primary-rgb), 0.85) 0%,
-            rgba(var(--theme-accent-rgb), 0.75) 100%);
+    background: var(--theme-bg-secondary);
+
     visibility: hidden;
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
@@ -450,9 +449,8 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg,
-            rgba(var(--theme-primary-rgb), 0.7) 0%,
-            rgba(var(--theme-primary-darker-rgb), 0.4) 100%);
+    background: var(--theme-bg-secondary);
+
     z-index: 1;
 }
 
@@ -511,7 +509,7 @@
     background: var(--color-white);
     color: var(--theme-primary);
     border: none;
-    border-radius: 50px;
+    
     font-weight: 600;
     font-size: 1.125rem;
     cursor: pointer;
@@ -538,7 +536,7 @@
     background: transparent;
     color: var(--color-white);
     border: 2px solid var(--color-white-opacity-50);
-    border-radius: 50px;
+    
     font-weight: 600;
     font-size: 1.125rem;
     cursor: pointer;
@@ -582,7 +580,7 @@
     width: 60px;
     height: 60px;
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -600,7 +598,7 @@
     width: 100%;
     height: 100%;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
+    
     animation: pulse 2s infinite;
 }
 
@@ -614,7 +612,7 @@
 /* ============ PREVIEW VIDEO CAROUSEL ============ */
 #previewVideoCarousel {
     position: relative;
-    border-radius: 16px;
+    
     overflow: hidden;
     background: var(--theme-bg-secondary);
 }
@@ -633,7 +631,7 @@
     transform: translateY(-50%);
     opacity: 0.3;
     transition: all 0.3s ease;
-    border-radius: 50%;
+    
     background: rgba(var(--theme-surface-rgb), 0.8);
     border: 1px solid var(--theme-border-primary);
 }
@@ -680,10 +678,11 @@
 
 .slider-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #007bff, #00d4ff);
+    background: var(--theme-bg-secondary);
+
     width: 0%;
     transition: width 0.1s linear;
-    border-radius: 0 2px 2px 0;
+    
 }
 
 /* Notification styles */
@@ -695,12 +694,11 @@
     background: rgba(0, 0, 0, 0.85);
     color: white;
     padding: 12px 24px;
-    border-radius: 30px;
+    
     font-size: 14px;
     z-index: 10000;
     transition: transform 0.3s ease;
     pointer-events: none;
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
@@ -728,10 +726,9 @@
     gap: 20px;
     background: rgba(0, 0, 0, 0.8);
     padding: 12px 25px;
-    border-radius: 40px;
+    
     color: white;
     z-index: 1000;
-    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -750,7 +747,7 @@
     color: white;
     width: 44px;
     height: 44px;
-    border-radius: 50%;
+    
     cursor: pointer;
     font-size: 18px;
     display: flex;
@@ -917,7 +914,7 @@
     position: relative;
     min-height: 200px;
     background: var(--theme-bg-secondary);
-    border-radius: 12px;
+    
     overflow: hidden;
 }
 
@@ -928,10 +925,8 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.1) 50%,
-            transparent 100%);
+    background: var(--theme-bg-secondary);
+
     animation: loadingShimmer 1.5s infinite;
 }
 
@@ -1091,9 +1086,8 @@
 
 [data-theme="dark"] .hero-slide__overlay,
 .dark-theme .hero-slide__overlay {
-    background: linear-gradient(135deg,
-            rgba(var(--theme-primary-darker-rgb), 0.8) 0%,
-            rgba(var(--theme-primary-rgb), 0.6) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 /* ============ CAROUSEL ACCESSIBILITY ============ */

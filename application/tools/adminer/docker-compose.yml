@@ -3,7 +3,7 @@
 # =============================================================================
 # Replaces the commented-out service that used to live in
 # application/databases/docker-compose.yml. Routed by Traefik to the
-# shared-proxy Nginx at tools.structa.cloud/adminer/ (see
+# tools-proxy Nginx at tools.structa.cloud/adminer/ (see
 # application/proxy/configs/traefik/dynamic/tools.yml and the `tools`
 # server block in application/tools/nginx/default.conf.template);
 # no host port is published. Connects to `postgres:5432` on the `common` network.

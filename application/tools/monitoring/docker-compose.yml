@@ -3,7 +3,7 @@
 # =============================================================================
 # Prometheus scrapes configured product targets (django-prometheus /metrics)
 # and stores TSDB under ./data (gitignored). Grafana is the operator UI,
-# routed by Traefik → shared-proxy Nginx at tools.structa.cloud/grafana/ (see
+# routed by Traefik → tools-proxy Nginx at tools.structa.cloud/grafana/ (see
 # application/proxy/configs/traefik/dynamic/tools.yml). SERVE_FROM_SUB_PATH
 # keeps Grafana's assets under the /grafana/ prefix.
 # =============================================================================

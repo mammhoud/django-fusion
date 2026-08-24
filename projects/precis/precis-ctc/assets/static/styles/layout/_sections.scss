@@ -36,29 +36,22 @@
     --shadow-nav: var(--theme-shadow-md);
 
     /* Gradient overlays */
-    --gradient-overlay-primary: linear-gradient(135deg,
-            rgba(var(--theme-primary-rgb), 0.85) 0%,
-            rgba(var(--theme-primary-dark-rgb), 0.9) 100%);
-    --gradient-overlay-dark: linear-gradient(135deg,
-            rgba(15, 23, 42, 0.85) 0%,
-            rgba(26, 29, 35, 0.9) 100%);
-    --gradient-overlay-light: linear-gradient(135deg,
-            rgba(255, 255, 255, 0.85) 0%,
-            rgba(245, 247, 250, 0.9) 100%);
+    --gradient-overlay-primary: none;
+
+    --gradient-overlay-dark: none;
+
+    --gradient-overlay-light: none;
+
 
     /* Text gradients */
-    --gradient-text-primary: linear-gradient(45deg,
-            var(--theme-primary) 0%,
-            var(--theme-accent) 100%);
-    --gradient-text-accent: linear-gradient(45deg,
-            var(--theme-accent) 0%,
-            var(--theme-accent-alt) 100%);
-    --gradient-text-success: linear-gradient(45deg,
-            var(--color-success) 0%,
-            var(--color-success-light) 100%);
-    --gradient-text-warning: linear-gradient(45deg,
-            var(--color-warning) 0%,
-            var(--color-warning-light) 100%);
+    --gradient-text-primary: none;
+
+    --gradient-text-accent: none;
+
+    --gradient-text-success: none;
+
+    --gradient-text-warning: none;
+
 
     /* Component specific */
     --card-border: 1px solid var(--theme-border-primary);
@@ -350,10 +343,8 @@
 }
 
 .text-gradient-1 {
-    background: linear-gradient(90deg,
-            var(--color-accent-6) 0%,
-            var(--color-accent-5) 50%,
-            var(--color-warning) 100%);
+    background: var(--theme-bg-secondary);
+
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -460,13 +451,13 @@
 
 /* ============ LANGUAGE SELECTOR ENHANCEMENT ============ */
 .btn-language {
-    border-radius: var(--radius-full);
+    
     background: var(--gradient-button-primary);
     color: var(--color-text-on-primary);
     font-weight: 500;
     padding: 0.5rem 1.25rem;
     transition: var(--transition-standard);
-    border: var(--button-border);
+    border: 2px solid #0A0A0A;
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-button);
@@ -478,7 +469,7 @@
     color: var(--color-text-on-primary);
     transform: translateY(-2px);
     box-shadow: var(--shadow-button-hover);
-    border: var(--button-border-hover);
+    border: 2px solid #E61919;
 }
 
 .btn-language::before {
@@ -488,10 +479,8 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            var(--color-white-opacity-20) 50%,
-            transparent 100%);
+    background: var(--theme-bg-secondary);
+
     transition: left 0.6s ease;
 }
 
@@ -505,7 +494,7 @@
 }
 
 .dropdown-menu-language {
-    border-radius: var(--radius-lg);
+    
     padding: 0.5rem 0;
     border: 1px solid var(--theme-border-primary);
     background: var(--theme-surface);
@@ -549,9 +538,8 @@
 }
 
 .dropdown-item-language.active {
-    background: linear-gradient(135deg,
-            var(--theme-primary) 0%,
-            var(--theme-primary-dark) 100%);
+    background: var(--theme-bg-secondary);
+
     color: var(--color-text-on-primary);
     font-weight: 600;
 }
@@ -560,7 +548,7 @@
     width: 20px;
     height: 15px;
     margin-right: 10px;
-    border-radius: 2px;
+    
     transition: transform 0.2s ease;
     object-fit: cover;
 }
@@ -622,7 +610,7 @@
     background: var(--color-overlay-medium) !important;
     width: 60px;
     height: 60px;
-    border-radius: var(--radius-full) !important;
+    
     display: flex !important;
     align-items: center;
     justify-content: center;
@@ -659,7 +647,7 @@
     width: 12px;
     height: 12px;
     background: var(--color-white-opacity-50) !important;
-    border-radius: var(--radius-full);
+    
     transition: var(--transition-standard);
 }
 
@@ -712,7 +700,7 @@
     width: 50px;
     height: 50px;
     background-color: var(--theme-surface);
-    border-radius: var(--radius-full);
+    
     box-shadow: var(--shadow-card);
     color: var(--theme-primary);
     transition: var(--transition-standard);
@@ -800,14 +788,14 @@
     background: var(--color-overlay-darker);
     color: var(--color-named-white);
     padding: 20px;
-    border-radius: var(--radius-md);
+    
 }
 
 .glightbox-clean .gclose {
     width: 40px;
     height: 40px;
     background: var(--color-overlay-dark);
-    border-radius: var(--radius-full);
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -848,8 +836,6 @@
 
 /* Backdrop Blur Effect */
 .backdrop-blur {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     background: var(--color-overlay-light);
 }
 
@@ -867,7 +853,7 @@
 .floating-element {
     position: absolute;
     background: var(--color-white-opacity-10);
-    border-radius: var(--radius-full);
+    
     animation: float 20s infinite linear;
 }
 
@@ -918,7 +904,7 @@
 /* ============ BUTTON ENHANCEMENTS ============ */
 .btn-primary {
     background: var(--gradient-button-primary);
-    border: var(--button-border);
+    border: 2px solid #0A0A0A;
     position: relative;
     overflow: hidden;
     transition: var(--transition-standard);
@@ -930,7 +916,7 @@
 .btn-primary:focus {
     transform: translateY(-3px);
     box-shadow: var(--shadow-button-hover);
-    border: var(--button-border-hover);
+    border: 2px solid #E61919;
 }
 
 .btn-primary::after {
@@ -940,10 +926,8 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            var(--color-white-opacity-20) 50%,
-            transparent 100%);
+    background: var(--theme-bg-secondary);
+
     transition: left 0.5s ease;
 }
 
@@ -968,7 +952,7 @@
 
 .btn-accent {
     background: var(--gradient-button-accent);
-    border: var(--button-border);
+    border: 2px solid #0A0A0A;
     color: var(--color-text-on-accent);
     transition: var(--transition-standard);
 }
@@ -985,7 +969,7 @@
 .testimonial-card,
 .client-logo {
     transition: var(--transition-smooth);
-    border-radius: var(--radius-lg) !important;
+    
     border: var(--card-border);
     background: var(--theme-surface);
     position: relative;
@@ -1045,7 +1029,7 @@
 /* ============ PROGRESS BAR ENHANCEMENTS ============ */
 .progress {
     background-color: var(--color-rating-inactive);
-    border-radius: var(--radius-sm);
+    
     overflow: hidden;
     height: 8px;
 }
@@ -1058,7 +1042,7 @@
 .progress-box {
     padding: 1rem;
     background: var(--theme-surface);
-    border-radius: var(--radius-md);
+    
     box-shadow: var(--shadow-card);
     border: var(--card-border);
 }
@@ -1082,9 +1066,8 @@
 
 /* ============ FEATURED COURSES ENHANCEMENTS ============ */
 .featured-courses {
-    background: linear-gradient(135deg,
-            var(--theme-bg-secondary) 0%,
-            var(--theme-bg-primary) 100%);
+    background: var(--theme-bg-secondary);
+
     position: relative;
     overflow: hidden;
 }
@@ -1096,12 +1079,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 30% 20%,
-            rgba(var(--theme-primary-rgb), 0.08) 0%,
-            transparent 50%),
-        radial-gradient(circle at 70% 80%,
-            rgba(var(--theme-accent-rgb), 0.05) 0%,
-            transparent 50%);
+    background: var(--theme-bg-secondary);
+
     pointer-events: none;
 }
 
@@ -1119,10 +1098,8 @@
 
 /* Course Card Overlay */
 .course-card__overlay {
-    background: linear-gradient(to bottom,
-            transparent 0%,
-            var(--color-overlay-dark) 50%,
-            var(--color-overlay-darker) 100%);
+    background: var(--theme-bg-secondary);
+
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -1137,7 +1114,7 @@
     font-weight: 600;
     letter-spacing: 0.5px;
     padding: 0.375rem 0.75rem;
-    border-radius: var(--radius-full);
+    
 }
 
 .badge-primary {
@@ -1197,15 +1174,15 @@
 
 /* Image Styling */
 .rounded-4 {
-    border-radius: var(--radius-xl) !important;
+    
 }
 
 .rounded-end-4 {
-    border-radius: 0 var(--radius-xl) var(--radius-xl) 0 !important;
+    
 }
 
 .rounded-start-4 {
-    border-radius: var(--radius-xl) 0 0 var(--radius-xl) !important;
+    
 }
 
 /* Feature Card Styling */
@@ -1225,11 +1202,11 @@
 }
 
 .rounded-3 {
-    border-radius: 1rem !important;
+    
 }
 
 .rounded-4 {
-    border-radius: 1.5rem !important;
+    
 }
 
 /* Animation */
@@ -1329,11 +1306,11 @@
 
 /* Image styling */
 .rounded-4 {
-    border-radius: 1.5rem !important;
+    
 }
 
 .rounded-end-4 {
-    border-radius: 0 1.5rem 1.5rem 0 !important;
+    
 }
 
 /* Card hover effect */
@@ -1414,7 +1391,8 @@
 
 /* Gradient text for headings if needed */
 .text-gradient-1 {
-    background: linear-gradient(45deg, var(--bs-primary), #6c63ff);
+    background: var(--theme-bg-secondary);
+
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -1436,7 +1414,7 @@
 
 /* Border radius for stats */
 .rounded-3 {
-    border-radius: 1rem !important;
+    
 }
 
 /* Grid layout improvements */
@@ -1517,9 +1495,8 @@
 
 /* Testimonial Card */
 .testimonial-card {
-    background: linear-gradient(135deg,
-            var(--theme-bg-secondary) 0%,
-            var(--theme-bg-primary) 100%);
+    background: var(--theme-bg-secondary);
+
     border: var(--card-border);
 }
 
@@ -1689,9 +1666,8 @@
     }
 
     .featured-courses {
-        background: linear-gradient(135deg,
-                var(--theme-bg-secondary) 0%,
-                var(--theme-bg-tertiary) 100%);
+        background: var(--theme-bg-secondary);
+
     }
 
     /* Cards */
@@ -1773,10 +1749,8 @@
 }
 
 .course-card.loading .course-card__image {
-    background: linear-gradient(90deg,
-            var(--theme-border-primary) 25%,
-            var(--theme-border-secondary) 50%,
-            var(--theme-border-primary) 75%);
+    background: var(--theme-bg-secondary);
+
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
 }
@@ -1818,15 +1792,15 @@
 
 /* Border Radius */
 .rounded-3 {
-    border-radius: var(--radius-md) !important;
+    
 }
 
 .rounded-4 {
-    border-radius: var(--radius-lg) !important;
+    
 }
 
 .rounded-5 {
-    border-radius: var(--radius-xl) !important;
+    
 }
 
 /* Text Opacity */

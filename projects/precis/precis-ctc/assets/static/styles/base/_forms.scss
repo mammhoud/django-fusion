@@ -116,7 +116,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background-color: var(--form-control-bg);
   color: var(--form-control-text);
-  border-radius: 0.5rem;
+  
   font-size: 1rem;
   line-height: 1.5;
   font-family: inherit;
@@ -326,7 +326,7 @@ textarea.form-control,
   background: var(--form-invalid-border);
   color: var(--color-text-on-primary);
   padding: 0.75rem 1rem;
-  border-radius: 0.375rem;
+  
   font-size: 0.875rem;
   max-width: 250px;
   box-shadow: var(--theme-shadow-lg);
@@ -375,7 +375,7 @@ textarea.form-control,
   font-size: 0.75rem;
   height: 4px;
   background: var(--color-bg-text-tertiary);
-  border-radius: 2px;
+  
   overflow: hidden;
 }
 
@@ -419,7 +419,7 @@ textarea.form-control,
   background-size: contain;
   border: 1px solid var(--form-check-border);
   appearance: none;
-  border-radius: 0.25em;
+  
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -463,7 +463,7 @@ textarea.form-control,
   background-color: var(--form-select-bg);
   color: var(--form-select-text);
   padding: 0.875rem 2.25rem 0.875rem 1rem;
-  border-radius: 0.5rem;
+  
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23718096' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 0.75rem center;
@@ -514,7 +514,7 @@ textarea.form-control,
   padding: 0.875rem 1rem;
   background-color: var(--form-file-bg);
   border: 1px solid var(--form-file-border);
-  border-radius: 0.5rem;
+  
   color: var(--form-file-text);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -570,13 +570,13 @@ textarea.form-control::-webkit-scrollbar,
 textarea.form-control::-webkit-scrollbar-track,
 .contact-form__textarea::-webkit-scrollbar-track {
   background: var(--textarea-scroll-track);
-  border-radius: 4px;
+  
 }
 
 textarea.form-control::-webkit-scrollbar-thumb,
 .contact-form__textarea::-webkit-scrollbar-thumb {
   background: var(--textarea-scroll-thumb);
-  border-radius: 4px;
+  
 }
 
 textarea.form-control::-webkit-scrollbar-thumb:hover,
@@ -608,7 +608,7 @@ select:-webkit-autofill:focus {
   vertical-align: -0.125em;
   border: 0.15em solid var(--form-spinner-border);
   border-right-color: var(--form-spinner-border-transparent);
-  border-radius: 50%;
+  
   animation: form-spin 0.75s linear infinite;
 }
 
@@ -622,7 +622,7 @@ select:-webkit-autofill:focus {
 /* Contact Form Block Container */
 .contact-form-block {
   background: var(--contact-form-bg);
-  border-radius: 1rem;
+  
   box-shadow: var(--theme-shadow-md);
   padding: 2rem;
   margin-bottom: 2rem;
@@ -766,7 +766,7 @@ select:-webkit-autofill:focus {
 .contact-form__privacy {
   padding: 1rem;
   background: var(--contact-form-privacy-bg);
-  border-radius: 0.5rem;
+  
   border-left: 4px solid var(--contact-form-focus-border);
   margin: 1.5rem 0;
 }
@@ -787,7 +787,7 @@ select:-webkit-autofill:focus {
   font-size: 1rem;
   font-weight: 600;
   border: none;
-  border-radius: 0.5rem;
+  
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
@@ -830,13 +830,15 @@ select:-webkit-autofill:focus {
 }
 
 .btn-gradient {
-  background: linear-gradient(135deg, var(--theme-accent) 0%, var(--theme-accent-alt) 100%);
+  background: none;
+
   color: var(--color-text-on-primary);
   border: none;
 }
 
 .btn-gradient:hover {
-  background: linear-gradient(135deg, var(--theme-accent-dark) 0%, var(--theme-accent-alt-dark) 100%);
+  background: var(--theme-bg-secondary);
+
   transform: translateY(-2px);
   box-shadow: var(--theme-shadow);
 }
@@ -852,7 +854,7 @@ select:-webkit-autofill:focus {
   padding: 2rem;
   background: var(--contact-form-success-bg);
   border: 1px solid var(--contact-form-success-border);
-  border-radius: 0.5rem;
+  
   color: var(--contact-form-success-text);
 }
 
@@ -867,7 +869,7 @@ select:-webkit-autofill:focus {
   padding: 2rem;
   background: var(--contact-form-error-bg);
   border: 1px solid var(--contact-form-error-border);
-  border-radius: 0.5rem;
+  
   color: var(--contact-form-error-text);
 }
 
@@ -1308,7 +1310,7 @@ select:-webkit-autofill:focus {
 .contact-form--minimal .contact-form__select {
   border: none;
   border-bottom: 2px solid var(--theme-border-primary);
-  border-radius: 0;
+  
   padding-left: 0;
   padding-right: 0;
   background: transparent;
@@ -1325,7 +1327,7 @@ select:-webkit-autofill:focus {
 /* Card Style */
 .contact-form--card {
   background: var(--theme-surface);
-  border-radius: 1rem;
+  
   padding: 2rem;
   box-shadow: var(--theme-shadow-lg);
   border: 1px solid var(--theme-border-primary);
@@ -1368,27 +1370,27 @@ select:-webkit-autofill:focus {
 .contact-form--radius-none .contact-form__textarea,
 .contact-form--radius-none .contact-form__select,
 .contact-form--radius-none .contact-form__button {
-  border-radius: 0;
+  
 }
 
 .contact-form--radius-small .contact-form__input,
 .contact-form--radius-small .contact-form__textarea,
 .contact-form--radius-small .contact-form__select,
 .contact-form--radius-small .contact-form__button {
-  border-radius: 0.25rem;
+  
 }
 
 .contact-form--radius-large .contact-form__input,
 .contact-form--radius-large .contact-form__textarea,
 .contact-form--radius-large .contact-form__select,
 .contact-form--radius-large .contact-form__button {
-  border-radius: 1rem;
+  
 }
 
 .contact-form--radius-pill .contact-form__input,
 .contact-form--radius-pill .contact-form__select,
 .contact-form--radius-pill .contact-form__button {
-  border-radius: 9999px;
+  
 }
 
 /* Field Width Classes */
@@ -1458,7 +1460,7 @@ select:-webkit-autofill:focus {
   transform: translateY(-50%);
   background: var(--theme-surface);
   padding: 0.25rem;
-  border-radius: 50%;
+  
   box-shadow: var(--theme-shadow-sm);
 }
 
@@ -1491,7 +1493,7 @@ select:-webkit-autofill:focus {
 .contact-form__step {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 50%;
+  
   display: flex;
   align-items: center;
   justify-content: center;

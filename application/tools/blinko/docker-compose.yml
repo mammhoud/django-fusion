@@ -2,7 +2,7 @@
 # Blinko — self-hosted personal AI note tool
 # =============================================================================
 # Open-source, self-hosted personal AI note tool prioritizing privacy.
-# Served at tools.structa.cloud/notes/ via the shared-proxy Nginx.
+# Served at tools.structa.cloud/notes/ via the tools-proxy Nginx.
 #
 # Database: Blinko connects to the **shared** PostgreSQL cluster (`postgres` on
 # the `common` network) using its dedicated `blinko` role and database, both
@@ -26,9 +26,9 @@ services:
       - "${BLINKO_PORT:-1111}:1111"
     environment:
       # Connects to the shared postgres cluster on the common network.
-      DATABASE_URL: postgresql://${BLINKO_DB_USER:-blinko}:${BLINKO_DB_PASSWORD:?BLINKO_DB_PASSWORD must be set}@postgres:5432/${BLINKO_DB_NAME:-blinko}
-      NEXTAUTH_SECRET: ${BLINKO_NEXTAUTH_SECRET:?BLINKO_NEXTAUTH_SECRET must be set}
-      # Blinko is mounted below /notes/ by shared-proxy; both URL settings
+      DATABASE_URL: postgresql://${BLINKO_DB_USER:-blinko}:${BLINKO_DB_PASSWORD:-}@postgres:5432/${BLINKO_DB_NAME:-blinko}
+      NEXTAUTH_SECRET: ${BLINKO_NEXTAUTH_SECRET:-blinko-secret-change-me}
+      # Blinko is mounted below /notes/ by tools-proxy; both URL settings
       # must use the public prefix while Nginx strips it upstream.
       NEXTAUTH_URL: ${BLINKO_PUBLIC_URL:-https://tools.structa.cloud/notes}
       NEXT_PUBLIC_BASE_URL: ${BLINKO_PUBLIC_URL:-https://tools.structa.cloud/notes}
@@ -43,7 +43,7 @@ services:
     # Blinko retries its database connection on startup while postgres becomes
     # ready, so the start order is safe.
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:1111/ || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:1111/ >/dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5

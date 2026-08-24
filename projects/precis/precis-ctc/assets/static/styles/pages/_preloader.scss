@@ -73,7 +73,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(2px);
 }
 
 #loading-center {
@@ -99,7 +98,7 @@
   float: left;
   margin-right: 20px;
   margin-top: 65px;
-  border-radius: 50%;
+  
   animation-duration: 1.5s;
   animation-iteration-count: infinite;
 }
@@ -144,7 +143,6 @@
   width: 100%;
   height: 100%;
   background: var(--preloader-bg);
-  backdrop-filter: var(--preloader-backdrop);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -211,12 +209,11 @@
   width: 100%;
   height: 100%;
   background-color: var(--loading-overlay-bg-light);
-  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
-  border-radius: inherit;
+  
 }
 
 /* Loading spinner wrapper */
@@ -250,7 +247,6 @@
   width: 100%;
   height: 100%;
   background-color: var(--global-loading-overlay-bg-light);
-  backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -261,7 +257,7 @@
   text-align: center;
   padding: 2rem;
   background: var(--loading-spinner-bg);
-  border-radius: 0.5rem;
+  
   box-shadow: var(--loading-spinner-shadow);
 }
 
@@ -278,12 +274,8 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    var(--loading-shimmer-start-light),
-    var(--loading-shimmer-mid-light),
-    var(--loading-shimmer-end-light)
-  );
+  background: var(--theme-bg-secondary);
+
   animation: loading-shimmer 1.5s infinite;
   z-index: 1;
 }
@@ -313,7 +305,7 @@
   height: 1rem;
   border: 2px solid var(--button-loading-border);
   border-top-color: var(--button-loading-border-transparent);
-  border-radius: 50%;
+  
   animation: button-spin 0.75s linear infinite;
 }
 
@@ -341,15 +333,11 @@
 
 /* Skeleton loading */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--skeleton-gradient-start) 25%,
-    var(--skeleton-gradient-mid) 50%,
-    var(--skeleton-gradient-end) 75%
-  );
+  background: var(--theme-bg-secondary);
+
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
-  border-radius: var(--skeleton-border-radius);
+  
 }
 
 .skeleton-text {
@@ -360,7 +348,7 @@
 .skeleton-circle {
   width: var(--skeleton-circle-size);
   height: var(--skeleton-circle-size);
-  border-radius: 50%;
+  
 }
 
 @keyframes skeleton-loading {
@@ -425,12 +413,8 @@
 }
 
 .dark-theme .is-loading::before {
-  background: linear-gradient(
-    90deg,
-    var(--loading-shimmer-start-dark),
-    var(--loading-shimmer-mid-dark),
-    var(--loading-shimmer-end-dark)
-  );
+  background: var(--theme-bg-secondary);
+
 }
 
 .dark-theme #loading {
@@ -493,7 +477,6 @@
   #loading,
   .loading-overlay {
     background-color: var(--color-overlay-dark) !important;
-    backdrop-filter: none !important;
   }
 
   .dark-theme #loading,
@@ -504,7 +487,6 @@
   .global-loading-overlay,
   .preloader {
     background-color: var(--color-overlay-darker) !important;
-    backdrop-filter: none !important;
   }
 
   .dark-theme .global-loading-overlay,
@@ -522,21 +504,13 @@
   }
 
   .is-loading::before {
-    background: linear-gradient(
-      90deg,
-      transparent,
-      var(--color-white-opacity-30),
-      transparent
-    ) !important;
+    background: var(--theme-bg-secondary);
+
   }
 
   .skeleton {
-    background: linear-gradient(
-      90deg,
-      var(--color-gray-200),
-      var(--color-gray-300),
-      var(--color-gray-200)
-    ) !important;
+    background: var(--theme-bg-secondary);
+
   }
 }
 
@@ -705,7 +679,7 @@
   width: 100%;
   height: 4px;
   background-color: var(--theme-bg-tertiary);
-  border-radius: 2px;
+  
   overflow: hidden;
   margin: 10px 0;
 }
@@ -715,7 +689,7 @@
   background-color: var(--theme-primary);
   width: 0%;
   transition: width 0.3s ease;
-  border-radius: 2px;
+  
 }
 
 /* ============ RESPONSIVE ADJUSTMENTS ============ */

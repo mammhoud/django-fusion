@@ -1,0 +1,468 @@
+# Assets-proxy Nginx — static/media file server with per-host access control.
+# =============================================================================
+# Server blocks (matched in order by Nginx):
+#   1. media.structa.cloud         → path-based: /ctc-research/, /lms/, /vresume/, /precis-lms/
+#   2. media.ctc-research.com      → ctc-research files only
+#   3. media.vresume.structa.cloud → vresume files only
+#   4. default _ (catch-all)       → host-mapped static/media for main site domains
+#                                     (ctc-research.com, lms.structa.cloud, etc.)
+# =============================================================================
+resolver 127.0.0.11 valid=30s ipv6=off;
+
+# ── Host → site dir mapping for main-domain catch-all ─────────────────────
+map $host $static_root {
+    default /var/www/static;
+    ctc-research.com /var/www/sites/ctc-research/static;
+    www.ctc-research.com /var/www/sites/ctc-research/static;
+    arch.ctc-research.com /var/www/sites/ctc-research/static;
+    lms.structa.cloud /var/www/sites/lms/static;
+    www.lms.structa.cloud /var/www/sites/lms/static;
+    lms-fusion.com /var/www/sites/precis-lms/static;
+    www.lms-fusion.com /var/www/sites/precis-lms/static;
+    cms-fusion.com /var/www/sites/cms-fusion/static;
+    www.cms-fusion.com /var/www/sites/cms-fusion/static;
+    precis-lms.localhost /var/www/sites/precis-lms/static;
+    cms-fusion.localhost /var/www/sites/cms-fusion/static;
+}
+
+map $host $media_root {
+    default /var/www/media;
+    ctc-research.com /var/www/media/ctc-research;
+    www.ctc-research.com /var/www/media/ctc-research;
+    arch.ctc-research.com /var/www/media/ctc-research;
+    lms.structa.cloud /var/www/media/lms;
+    www.lms.structa.cloud /var/www/media/lms;
+    lms-fusion.com /var/www/media/precis-lms;
+    www.lms-fusion.com /var/www/media/precis-lms;
+    cms-fusion.com /var/www/media/cms-fusion;
+    www.cms-fusion.com /var/www/media/cms-fusion;
+    precis-lms.localhost /var/www/media/precis-lms;
+    cms-fusion.localhost /var/www/media/cms-fusion;
+}
+
+types {
+    text/html html htm shtml;
+    text/css  css;
+    text/xml  xml;
+    text/markdown md;
+    image/gif gif;
+    image/jpeg jpeg jpg;
+    image/png png;
+    image/svg+xml svg svgz;
+    image/webp webp;
+    application/javascript js;
+    application/json json;
+    application/font-woff woff;
+    application/font-woff2 woff2;
+    font/ttf ttf;
+    font/otf otf;
+}
+
+# =============================================================================
+# 1. media.structa.cloud — path-based multi-site access
+# =============================================================================
+# Serves every site under /<site_name>/static/ and /<site_name>/media/.
+server {
+    listen 80;
+    server_name media.structa.cloud;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml text/markdown text/javascript application/javascript application/xml application/json image/svg+xml;
+
+    location /health/ {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    location = / {
+        root /var/www/html;
+        try_files /index.html =404;
+        add_header Cache-Control "no-cache";
+    }
+
+    # ── ctc-research ─────────────────────────────────────────────────────
+    location /ctc-research/static/ {
+        alias /var/www/sites/ctc-research/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+    location /ctc-research/media/ {
+        alias /var/www/media/ctc-research/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    # ── lms ──────────────────────────────────────────────────────────────
+    location /lms/static/ {
+        alias /var/www/sites/lms/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+    location /lms/media/ {
+        alias /var/www/media/lms/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    # ── vresume ──────────────────────────────────────────────────────────
+    location /vresume/static/ {
+        alias /var/www/sites/vresume/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+    location /vresume/media/ {
+        alias /var/www/media/vresume/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    # ── precis-lms ───────────────────────────────────────────────────────
+    location /precis-lms/static/ {
+        alias /var/www/sites/precis-lms/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+    location /precis-lms/media/ {
+        alias /var/www/media/precis-lms/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    # ── Shared /static/ (legacy) ─────────────────────────────────────────
+    location /static/ {
+        alias /var/www/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ ^/(ctc-research|lms|vresume|precis-lms)/?$ {
+        return 404;
+    }
+
+    location / {
+        return 404;
+    }
+}
+
+# =============================================================================
+# 2. media.ctc-research.com — ctc-research files only
+# =============================================================================
+server {
+    listen 80;
+    server_name media.ctc-research.com;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml text/markdown text/javascript application/javascript application/xml application/json image/svg+xml;
+
+    location /health/ {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    location = / {
+        root /var/www/html;
+        try_files /index.html =404;
+        add_header Cache-Control "no-cache";
+    }
+
+    location /bundles/ctc-research/ {
+        alias /var/www/sites/ctc-research/static/bundles/ctc-research/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /static/ {
+        alias /var/www/sites/ctc-research/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /media/ {
+        alias /var/www/media/ctc-research/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /sites/ctc-research/ {
+        alias /var/www/sites/ctc-research/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        return 404;
+    }
+}
+
+# =============================================================================
+# 3. media.vresume.structa.cloud — vresume files only
+# =============================================================================
+server {
+    listen 80;
+    server_name media.vresume.structa.cloud;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml text/markdown text/javascript application/javascript application/xml application/json image/svg+xml;
+
+    location /health/ {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    location = / {
+        root /var/www/html;
+        try_files /index.html =404;
+        add_header Cache-Control "no-cache";
+    }
+
+    location /bundles/vresume/ {
+        alias /var/www/sites/vresume/static/bundles/vresume/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /static/ {
+        alias /var/www/sites/vresume/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /media/ {
+        alias /var/www/media/vresume/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /sites/vresume/ {
+        alias /var/www/sites/vresume/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        return 404;
+    }
+}
+
+# =============================================================================
+# 4a. ctc-research.com / www.ctc-research.com — main-domain static/media
+# =============================================================================
+server {
+    listen 80;
+    server_name ctc-research.com www.ctc-research.com arch.ctc-research.com;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml text/markdown text/javascript application/javascript application/xml application/json image/svg+xml;
+
+    location /health/ { access_log off; return 200 "healthy\n"; add_header Content-Type text/plain; }
+
+    location /bundles/ {
+        alias /var/www/sites/ctc-research/static/bundles/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /static/ {
+        alias /var/www/sites/ctc-research/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /media/ {
+        alias /var/www/media/ctc-research/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /sites/ {
+        root /var/www;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location / { return 404; }
+}
+
+# =============================================================================
+# 4b. lms.structa.cloud — main-domain static/media
+# =============================================================================
+server {
+    listen 80;
+    server_name lms.structa.cloud www.lms.structa.cloud;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml text/markdown text/javascript application/javascript application/xml application/json image/svg+xml;
+
+    location /health/ { access_log off; return 200 "healthy\n"; add_header Content-Type text/plain; }
+
+    location /bundles/ {
+        alias /var/www/sites/lms/static/bundles/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /static/ {
+        alias /var/www/sites/lms/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /media/ {
+        alias /var/www/media/lms/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /sites/ {
+        root /var/www;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location / { return 404; }
+}
+
+# =============================================================================
+# 4c. lms-fusion.com / cms-fusion.com — legacy static/media
+# =============================================================================
+server {
+    listen 80;
+    server_name lms-fusion.com www.lms-fusion.com cms-fusion.com www.cms-fusion.com;
+
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_types text/plain text/css text/xml text/markdown text/javascript application/javascript application/xml application/json image/svg+xml;
+
+    location /health/ { access_log off; return 200 "healthy\n"; add_header Content-Type text/plain; }
+
+    location /static/ {
+        alias /var/www/sites/precis-lms/static/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location /media/ {
+        alias /var/www/media/precis-lms/;
+        expires 30d;
+        add_header Cache-Control "public";
+        add_header X-Content-Type-Options "nosniff";
+        access_log off;
+        try_files $uri $uri/ =404;
+    }
+
+    location / { return 404; }
+}
+
+# =============================================================================
+# 4d. Final catch-all — deny all unclaimed hosts
+# =============================================================================
+server {
+    listen 80;
+    server_name _;
+
+    location /health/ {
+        access_log off;
+        return 200 "healthy\n";
+        add_header Content-Type text/plain;
+    }
+
+    location / { return 404; }
+}

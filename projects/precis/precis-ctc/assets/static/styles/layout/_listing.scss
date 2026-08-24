@@ -12,8 +12,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 30% 20%, rgba(var(--theme-primary-rgb), 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 70% 80%, rgba(var(--theme-accent-rgb), 0.05) 0%, transparent 50%);
+    background: var(--theme-bg-secondary);
+
     pointer-events: none;
 }
 
@@ -52,7 +52,7 @@
 .course-card {
     background: var(--theme-surface);
     border: 1px solid var(--theme-border-primary);
-    border-radius: var(--radius-lg) !important;
+    
     transition: var(--transition-standard);
     height: 100%;
 }
@@ -65,7 +65,7 @@
 
 /* Card Image Container */
 .course-card__image-container {
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    
     overflow: hidden;
 }
 
@@ -90,15 +90,12 @@
 .course-card__badge--level .badge {
     font-weight: 600;
     letter-spacing: 0.5px;
-    backdrop-filter: blur(4px);
 }
 
 /* Card Overlay */
 .course-card__overlay {
-    background: linear-gradient(to bottom,
-            transparent 0%,
-            var(--color-overlay-dark) 50%,
-            var(--color-overlay-darker) 100%);
+    background: var(--theme-bg-secondary);
+
     transition: opacity 0.3s ease;
     z-index: 1;
 }
@@ -118,7 +115,7 @@
 }
 
 .course-card__action-button {
-    background: var(--gradient-button-primary);
+    background: #E61919;
     border: none;
     font-weight: 600;
     transition: var(--transition-standard);
@@ -367,10 +364,8 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(var(--theme-primary-rgb), 0.1) 50%,
-            transparent 100%);
+    background: var(--theme-bg-secondary);
+
     transition: left 0.6s ease;
 }
 
@@ -409,9 +404,8 @@
 /* Dark Theme Adjustments */
 [data-theme="dark"] .featured-courses,
 .dark-theme .featured-courses {
-    background: linear-gradient(135deg,
-            var(--theme-bg-secondary) 0%,
-            var(--theme-bg-tertiary) 100%);
+    background: var(--theme-bg-secondary);
+
 }
 
 [data-theme="dark"] .course-card,

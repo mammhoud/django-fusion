@@ -1,7 +1,7 @@
 # Proxy Infrastructure
 
-`application/proxy/` owns Traefik TLS termination and the shared-proxy Nginx
-front door. Self-hosted tools (Coder, Blinko, Mailpit) and the shared-proxy
+`application/proxy/` owns Traefik TLS termination and the tools-proxy and assets-proxy Nginx pair
+front door. Self-hosted tools (Coder, Blinko, Mailpit) and the tools-proxy / assets-proxy
 (Nginx) now live under `application/tools/` — see `application/tools/README.md`.
 
 ## Public routes
@@ -11,7 +11,7 @@ front door. Self-hosted tools (Coder, Blinko, Mailpit) and the shared-proxy
 | `space.structa.cloud/` | Coder control plane | `coder:7080` |
 | `docs.structa.cloud/` | Docus | `docus:3000` |
 | `tools.structa.cloud/notes/` | Blinko | `blinko:1111` (path-based) |
-| `tools.structa.cloud/` | Tools navigation + proxy | `shared-proxy:80` |
+| `tools.structa.cloud/` | Tools navigation + proxy | `tools-proxy:80` |
 | `structa.cloud/`, `www.structa.cloud/` | Precis Main | `precis-main-backend:8074` + `precis-main-frontend:3000` |
 | `dev.structa.cloud/` | Precis Dev (development) | `precis-dev-backend:8074` + `precis-dev-frontend:3000` |
 | `lms.structa.cloud/` | Precis Main (compatibility) | `precis-main-backend:8074` + `precis-main-frontend:3000` |
@@ -30,7 +30,7 @@ identities for the unified Precis product. Their load-balancer targets are:
 
 ## Shared services
 
-`docker-compose.nginx.yml` (under `application/tools/`) runs the `shared-proxy`
+`docker-compose.nginx.yml` (under `application/tools/`) runs the `tools-proxy`
 which serves static/media content and proxies tools.structa.cloud subpaths.
 
 PostgreSQL and Redis are managed by `application/databases/`. Every service

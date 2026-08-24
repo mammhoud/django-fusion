@@ -88,7 +88,7 @@
 .filter ul li {
   display: inline-block;
   background: var(--filter-base-bg);
-  border-radius: 30px;
+  
   margin: 0 5px;
   padding: 7px 15px;
   font: 500 0.9em "Poppins", sans-serif;
@@ -171,7 +171,7 @@
 /* ============ ENHANCED FILTER SECTION ============ */
 .filter-section {
   background: var(--filter-section-bg);
-  border-radius: 0.5rem;
+  
   padding: 1.5rem;
   box-shadow: var(--filter-section-shadow);
   margin-bottom: 1.5rem;
@@ -200,7 +200,7 @@
   border: 1px solid var(--search-border);
   color: var(--search-text);
   padding: 0.75rem 3rem 0.75rem 1rem;
-  border-radius: 2rem;
+  
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-size: 0.95rem;
   width: 100%;
@@ -227,7 +227,7 @@
   transform: translateY(-50%);
   padding: 0.5rem;
   border: none;
-  border-radius: 50%;
+  
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   width: 36px;
   height: 36px;
@@ -250,7 +250,7 @@
   transform: translateY(-50%);
   padding: 0.5rem;
   border: none;
-  border-radius: 50%;
+  
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   width: 36px;
   height: 36px;
@@ -278,7 +278,7 @@
 }
 
 .view-switcher .btn-group {
-  border-radius: 0.375rem;
+  
   overflow: hidden;
   border: 1px solid var(--view-switcher-border);
 }
@@ -336,7 +336,7 @@
   border: 1px solid transparent;
   color: var(--filter-section-text);
   padding: 0.625rem 1.25rem;
-  border-radius: 2rem;
+  
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -363,7 +363,7 @@
   padding: 0.125rem 0.5rem;
   background-color: var(--filter-tab-badge-bg);
   color: var(--filter-tab-badge-text);
-  border-radius: 1rem;
+  
   margin-left: 0.375rem;
   font-weight: 600;
 }
@@ -373,7 +373,7 @@
   background-color: var(--search-bg);
   border: 1px solid var(--search-border);
   color: var(--search-text);
-  border-radius: 2rem;
+  
   padding: 0.625rem 1rem;
   font-size: 0.875rem;
   width: 100%;
@@ -397,7 +397,7 @@
   background-color: var(--view-switcher-bg);
   color: var(--view-switcher-text);
   border: 1px solid var(--view-switcher-border);
-  border-radius: 0.375rem;
+  
   font-size: 0.875rem;
   display: flex;
   align-items: center;
@@ -415,7 +415,7 @@
 .sort-options .dropdown-menu {
   background-color: var(--sort-dropdown-bg);
   border: 1px solid var(--sort-dropdown-border);
-  border-radius: 0.5rem;
+  
   box-shadow: var(--theme-shadow-md);
   min-width: 200px;
   padding: 0.5rem 0;
@@ -426,7 +426,7 @@
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 0.25rem;
+  
   margin: 0.125rem 0.5rem;
   width: auto;
 }
@@ -453,7 +453,7 @@
   background-color: var(--active-filter-bg);
   color: var(--active-filter-text);
   padding: 0.375rem 0.75rem;
-  border-radius: 2rem;
+  
   font-weight: 500;
   display: flex;
   align-items: center;
@@ -478,7 +478,7 @@
   background-color: var(--results-summary-bg);
   border: 1px solid var(--results-summary-border);
   color: var(--results-summary-text);
-  border-radius: 0.5rem;
+  
   padding: 0.875rem 1rem;
   display: flex;
   align-items: center;
@@ -506,7 +506,7 @@
   background-color: transparent;
   color: var(--results-summary-text);
   border: 1px solid var(--clear-filter-btn-border);
-  border-radius: 2rem;
+  
   padding: 0.375rem 0.875rem;
   font-size: 0.8125rem;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -763,7 +763,7 @@
     border: 1px solid var(--theme-border-primary);
     display: block;
     margin-bottom: 0.25rem;
-    border-radius: 0.25rem;
+    
     color: #000;
     background: none;
   }

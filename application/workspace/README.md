@@ -55,7 +55,7 @@ The following infrastructure must already be running:
 - Coder control plane
 - PostgreSQL and Redis for the platform's shared services
 - Blinko's dedicated `blinko-db` PostgreSQL service
-- Traefik and shared-proxy Nginx
+- Traefik and tools-proxy + assets-proxy Nginx
 - External Docker networks `common`, `traefik-net`, and `warehouse-net`
 - Proxy credentials `BLINKO_DB_PASSWORD` supplied through
   `application/proxy/.env` or the deployment environment
@@ -134,7 +134,7 @@ specified.
 |---|---|
 | PostgreSQL + Redis | `application/databases/docker-compose.yml` |
 | Coder control plane | `application/docker-compose.yml` |
-| Blinko + shared-proxy | `application/tools/docker-compose.yml` |
+| Blinko + tools-proxy | `application/tools/docker-compose.yml` |
 | Docus | `docs/docker-compose.yml` |
 | Blinko routing | `application/proxy/configs/traefik/dynamic/tools.yml` |
 | Code/Coder routing | `application/proxy/configs/traefik/dynamic/code.yml` and `coder.yml` |
@@ -176,7 +176,7 @@ application/workspace/
 └── devcontainer.json
 
 application/tools/
-├── docker-compose.yml       # shared-proxy + Docus + Blinko
+├── docker-compose.yml       # tools-proxy + Docus + Blinko
 ├── blinko/                  # Blinko service + data
 └── nginx/default.conf.template
 ```

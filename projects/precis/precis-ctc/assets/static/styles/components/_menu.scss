@@ -77,7 +77,7 @@ a.meanmenu-reveal {
   text-decoration: none;
   top: -37px;
   width: 22px;
-  border-radius: 3px;
+  
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -91,7 +91,7 @@ a.meanmenu-reveal {
   display: block;
   height: 2px;
   margin-top: 4px;
-  border-radius: 1px;
+  
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -103,7 +103,7 @@ a.meanmenu-reveal {
   background: var(--meanmenu-nav-bg);
   float: left;
   width: 100%;
-  border-radius: 4px;
+  
   box-shadow: var(--theme-shadow-lg);
   margin-top: 8px;
 }
@@ -208,7 +208,7 @@ a.meanmenu-reveal {
   top: 0;
   width: 26px;
   z-index: 2;
-  border-radius: 0 4px 0 0;
+  
   font-size: 16px;
   display: flex;
   align-items: center;
@@ -590,7 +590,7 @@ a.meanmenu-reveal {
     left: 0;
     border-style: none solid solid none;
     border-width: medium 1px 1px medium;
-    border-radius: 4px 0 0 0;
+    
   }
   
   .mean-container .mean-nav ul li a:hover {

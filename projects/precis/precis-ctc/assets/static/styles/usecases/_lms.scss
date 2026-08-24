@@ -1,12 +1,12 @@
 .lms-shell,
 [data-usecase~='lms'] {
   --lms-surface: var(--color-surface, #fff);
-  --lms-accent: var(--color-primary, #2f57ef);
+  --lms-accent: #E61919;
 
   .lms-shell__course-card,
   .course-card,
   .rbt-card {
-    border-radius: var(--radius-lg, 1rem);
+    
   }
 
   .lms-shell__lesson-list,

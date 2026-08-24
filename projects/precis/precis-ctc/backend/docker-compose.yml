@@ -71,6 +71,13 @@ services:
       ALLOWED_HOSTS: localhost,127.0.0.1,ctc-research.localhost,ctc-research.com,www.ctc-research.com,arch.ctc-research.com,precis-ctc-website
       CSRF_TRUSTED_ORIGINS: http://localhost:5070,http://ctc-research.localhost,https://ctc-research.com,https://www.ctc-research.com,https://arch.ctc-research.com
       FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.course_tasks,plugins.workers.content_tasks,plugins.workers.legacy_email_tasks,plugins.workers.campaign_tasks
+      # Mailpit SMTP catcher — all outbound mail lands at tools.structa.cloud/mailpit/
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: "1025"
+      EMAIL_USE_TLS: "false"
+      EMAIL_HOST_USER: ""
+      EMAIL_HOST_PASSWORD: ""
+      DEFAULT_FROM_EMAIL: "CTC Research <noreply@ctc-research.com>"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:5070/health/"]
       interval: 30s
@@ -89,7 +96,7 @@ services:
       # files the backend writes (it mounts projects/assets/media/ctc-research
       # → /var/www/media/ctc-research and assets/staticfiles →
       # /var/www/sites/ctc-research/static).
-      - ./assets/staticfiles:/app/precis-ctc/assets/staticfiles:rw
+      - ../assets/staticfiles:/app/precis-ctc/assets/staticfiles:rw
       # Mount the monorepo-shared media tree (projects/assets/media/ctc-research
       # — source files under media/, Wagtail renditions under images/) so the
       # media manifest resolves the archive pack and the shared Nginx proxy

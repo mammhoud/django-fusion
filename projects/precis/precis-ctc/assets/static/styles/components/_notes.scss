@@ -5,7 +5,7 @@
 .notes {
   background-color: var(--color-profile-section-bg);
   border: 1px solid var(--color-profile-border);
-  border-radius: 0.5rem;
+  
   padding: 1.5rem;
 
   &__header {
@@ -60,7 +60,7 @@
 .note-card {
   background-color: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
-  border-radius: 0.5rem;
+  
   padding: 1.25rem;
   box-shadow: var(--color-card-shadow);
   transition: all 0.3s ease;
@@ -149,7 +149,7 @@
     padding: 0.25rem 0.5rem;
     background-color: rgba(var(--theme-primary-rgb), 0.1);
     color: var(--theme-primary);
-    border-radius: 0.25rem;
+    
     font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -157,7 +157,8 @@
 
   &--pinned {
     border-color: var(--theme-primary);
-    background: linear-gradient(135deg, rgba(var(--theme-primary-rgb), 0.02) 0%, transparent 100%);
+    background: var(--theme-bg-secondary);
+
 
     .note-card__badge {
       background-color: rgba(var(--theme-primary-rgb), 0.15);
@@ -178,7 +179,7 @@
 .note-editor {
   background-color: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
-  border-radius: 0.5rem;
+  
   padding: 1.5rem;
   box-shadow: var(--color-card-shadow);
 
@@ -203,7 +204,7 @@
   &__input {
     padding: 0.75rem;
     border: 1px solid var(--color-input-border);
-    border-radius: 0.375rem;
+    
     background-color: var(--color-input-bg);
     color: var(--color-input-text);
     font-size: 0.95rem;
@@ -276,7 +277,7 @@
     align-items: center;
     padding: 1rem;
     background-color: var(--color-bg-secondary);
-    border-radius: 0.375rem;
+    
     font-size: 0.875rem;
     color: var(--color-text-secondary);
     margin-bottom: 1.5rem;
@@ -301,7 +302,7 @@
     flex: 1;
     padding: 0.75rem;
     border: 1px solid var(--color-input-border);
-    border-radius: 0.375rem;
+    
     background-color: var(--color-input-bg);
     color: var(--color-input-text);
     font-size: 0.95rem;
@@ -323,7 +324,7 @@
     background-color: var(--color-button-primary-bg);
     color: var(--color-button-primary-text);
     border: 1px solid var(--color-button-primary-border);
-    border-radius: 0.375rem;
+    
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
@@ -352,7 +353,7 @@
     padding: 0.375rem 0.75rem;
     background-color: rgba(var(--theme-primary-rgb), 0.1);
     color: var(--theme-primary);
-    border-radius: 9999px;
+    
     font-size: 0.75rem;
     font-weight: 600;
 

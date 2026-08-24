@@ -31,7 +31,7 @@ $legal-accent-border:    #3A7CA5;
         max-width: $legal-max-width;
         margin: 0 auto;
         background: $legal-bg;
-        border-radius: $legal-radius;
+        
         box-shadow: $legal-shadow;
         overflow: hidden;
     }
@@ -67,7 +67,7 @@ $legal-accent-border:    #3A7CA5;
         gap: 10px;
         margin: 24px 48px 0;
         padding: 12px 16px;
-        border-radius: $legal-radius-sm;
+        
         font-size: 0.9rem;
         font-weight: 500;
 
@@ -138,7 +138,7 @@ $legal-accent-border:    #3A7CA5;
     max-width: $legal-modal-max-width;
     max-height: 85vh;
     background: $legal-bg;
-    border-radius: $legal-radius;
+    
     box-shadow: $legal-shadow;
     overflow: hidden;
 
@@ -193,7 +193,7 @@ $legal-accent-border:    #3A7CA5;
         align-items: center;
         gap: 8px;
         padding: 10px 14px;
-        border-radius: $legal-radius-sm;
+        
         font-size: 0.875rem;
         font-weight: 500;
         margin-bottom: 12px;
@@ -241,7 +241,7 @@ $legal-accent-border:    #3A7CA5;
 
     @media (max-width: 640px) {
         max-height: 95vh;
-        border-radius: $legal-radius-sm;
+        
 
         &__header,
         &__body,
@@ -308,7 +308,7 @@ $legal-accent-border:    #3A7CA5;
         gap: 20px;
         background: $legal-bg;
         border: 1px solid $legal-border;
-        border-radius: $legal-radius;
+        
         padding: 24px;
         transition: border-color 0.2s;
 
@@ -322,7 +322,7 @@ $legal-accent-border:    #3A7CA5;
         flex-shrink: 0;
         width: 36px;
         height: 36px;
-        border-radius: 50%;
+        
         background: $legal-primary;
         color: #fff;
         display: flex;
@@ -369,10 +369,12 @@ $legal-accent-border:    #3A7CA5;
             left: 0;
             right: 0;
             height: 40px;
-            background: linear-gradient(transparent, $legal-bg);
+            background: var(--theme-bg-secondary);
+
 
             .legal-gate__item--done & {
-                background: linear-gradient(transparent, $legal-success-bg);
+                background: var(--theme-bg-secondary);
+
             }
         }
     }
@@ -432,7 +434,7 @@ $legal-accent-border:    #3A7CA5;
 .legal-consent-banner {
     background: $legal-accent;
     border-left: 4px solid $legal-accent-border;
-    border-radius: $legal-radius-sm;
+    
     padding: 16px 20px;
     margin: 16px 0;
 

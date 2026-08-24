@@ -1,19 +1,13 @@
 # =============================================================================
-# Shared-proxy Nginx — static/media server + reverse proxy for Docus and Blinko
+# Tools-proxy Nginx — reverse proxy for self-hosted tools and docs
 # =============================================================================
-# Docus now lives at the root of docs/ (docs/docker-compose.yml); Blinko lives
-# under application/tools/blinko. This file owns only the shared-proxy Nginx
-# server, which:
-#   - serves per-site static/media volumes;
-#   - proxies /docs/ and docs.structa.cloud to `docus:3000`;
-#   - proxies tools.structa.cloud/notes/ (and origin paths) to `blinko:1111`.
-# Both upstreams resolve by container_name on the external `common` network, so
-# they can be started/stopped independently of the proxy.
+# Routes path-based from tools.structa.cloud/<tool>/ to each tool container.
+# Proxies docs.structa.cloud to Docus. Static/media file serving now lives on
+# the separate assets-proxy (docker-compose.assets.yml).
 #
-# Moved under application/tools/ (with the nginx config at
-# application/tools/nginx/) so the tools proxy lives with the services it
-# fronts. Deploy with: make deploy-media (root) or
-# docker compose -f application/tools/docker-compose.nginx.yml up -d.
+# Included by: application/tools/docker-compose.yml
+#
+# Deploy with: make deploy-tools (root)
 # =============================================================================
 
 networks:
@@ -22,7 +16,7 @@ networks:
   common:
     external: true
 
-x-media-base: &media-base
+x-tools-proxy-base: &tools-proxy-base
   build:
     context: ../..
     dockerfile: application/tools/nginx/Dockerfile
@@ -38,29 +32,15 @@ x-media-base: &media-base
     start_period: 30s
 
 services:
-  shared-proxy:
-    <<: *media-base
-    container_name: shared-proxy
+  tools-proxy:
+    <<: *tools-proxy-base
+    container_name: tools-proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.shared-proxy.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.vresume.structa.cloud`)"
-      - "traefik.http.services.shared-proxy.loadbalancer.server.port=80"
-    volumes:
-      - ../../projects/precis/precis-ctc/assets/staticfiles:/var/www/sites/ctc-research/static:ro
-      - ../../projects/precis/precis-main/assets/staticfiles:/var/www/sites/lms/static:ro
-      - ../../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
-      - precis-lms-static:/var/www/sites/precis-lms/static:ro
-      - ../../projects/assets/static:/var/www/static:ro
-      - ../../projects/assets/media/ctc-research:/var/www/media/ctc-research:ro
-      - ../../projects/precis/precis-main/assets/media:/var/www/media/lms:ro
-      - ../../projects/portfolio/assets/media:/var/www/media/vresume:ro
-      - precis-lms-media:/var/www/media/precis-lms:ro
-      # The nginx config template and tools navigation page (www/) are baked
-      # into the image via Dockerfile COPY (repo file bind mounts are unreliable
-      # in this environment). Rebuild the image after editing either.
-    networks:
-      - traefik-net
-      - common
+      - "traefik.http.routers.tools-proxy.rule=Host(`docs.structa.cloud`) || Host(`tools.structa.cloud`)"
+      - "traefik.http.services.tools-proxy.loadbalancer.server.port=80"
+    # No static/media volume mounts — assets-proxy owns those.
+    # The nginx config and tools www/ content are baked into the image.
     deploy:
       resources:
         limits:
@@ -69,11 +49,3 @@ services:
         reservations:
           cpus: '0.5'
           memory: 256M
-
-volumes:
-  precis-lms-static:
-    name: precis-lms-static
-    external: true
-  precis-lms-media:
-    name: precis-lms-media
-    external: true

@@ -1,19 +1,36 @@
-// CTC Research backend theme tokens.
-// Archived reference: .archives/ctc-research.bak/assets/static/styles/colors/_palette.scss
-// Keep semantic tokens here so backend-rendered fragments use the same clinical
-// Blue/Teal vocabulary as the Astro shell.
+// CTC Research — Design Token Bridge
+// Swiss Industrial Print (Structa Cloud system)
+// Maps fu-* tokens to both :root and ctc-* namespace for backend fragment compatibility.
 
 :root {
-  --ctc-primary: #00a1b3;
-  --ctc-primary-dark: #007a88;
-  --ctc-secondary: #008080;
-  --ctc-accent: #6c63ff;
-  --ctc-paper: #f5f7fa;
-  --ctc-surface: #ffffff;
-  --ctc-ink: #1a1d23;
-  --ctc-muted: #5c6675;
-  --ctc-line: #d0d7de;
-  --ctc-shadow: 4px 4px 0 #1a1d23;
+  --fu-paper: 60 17% 95%;
+  --fu-ink: 0 0% 4%;
+  --fu-muted: 45 5% 38%;
+  --fu-line: 42 8% 62%;
+  --fu-card: 55 13% 91%;
+  --fu-link: 0 82% 50%;
+  --fu-link-dark: 0 86% 42%;
+  --fu-frame: 2px;
+  --fu-offset: 4px;
+  --fu-transition: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+
+  --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+  --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+}
+
+:root,
+.ctc-theme {
+  --ctc-primary: hsl(var(--fu-link));
+  --ctc-primary-dark: hsl(var(--fu-link-dark));
+  --ctc-secondary: hsl(var(--fu-ink));
+  --ctc-accent: hsl(var(--fu-link));
+  --ctc-paper: hsl(var(--fu-paper));
+  --ctc-surface: hsl(var(--fu-card));
+  --ctc-ink: hsl(var(--fu-ink));
+  --ctc-muted: hsl(var(--fu-muted));
+  --ctc-line: hsl(var(--fu-line));
+  --ctc-shadow: 4px 4px 0 0 hsl(var(--fu-ink));
 }
 
 .ctc-theme {
@@ -22,10 +39,6 @@
 }
 
 .ctc-theme__link {
-  color: var(--ctc-primary-dark);
-
-  &:hover,
-  &:focus-visible {
-    color: var(--ctc-primary);
-  }
+  color: hsl(var(--fu-link));
+  &:hover, &:focus-visible { color: hsl(var(--fu-link-dark)); }
 }

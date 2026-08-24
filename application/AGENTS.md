@@ -16,8 +16,8 @@ application/
 │   ├── configs/traefik/      # static/dynamic routers and middleware
 │   └── scripts/              # certificate validation/backup/restore
 ├── tools/                   # self-hosted auxiliary services
-│   ├── nginx/                # shared-proxy Nginx (tools + docs + media front door)
-│   ├── docker-compose.nginx.yml  # shared-proxy compose
+│   ├── nginx/                # tools-proxy + assets-proxy Nginx pair (tools/docs + static/media)
+│   ├── docker-compose.nginx.yml  # tools-proxy compose
 │   ├── blinko/  docus/  adminer/  mailpit/  monitoring/
 ├── docker-compose.yml       # Coder control-plane Compose stack
 ├── docker-compose.tasks.yml # shared-worker + shared-scheduler compose
@@ -34,7 +34,7 @@ Traefik / TLS
   ├── product web services
   ├── landing/frontend and backend routes
   ├── Coder and auxiliary services
-  └── shared-proxy (Nginx)
+  └── tools-proxy + assets-proxy (Nginx)
 
 PostgreSQL ── product databases, Coder, application persistence
 Redis ─────── cache, Celery/Dramatiq broker/result databases
@@ -54,7 +54,7 @@ probe, documentation, and CI path filters as applicable.
 - Auxiliary self-hosted services (Blinko, Docus, Adminer, Mailpit,
   Prometheus/Grafana) belong in `application/tools/<name>/`, each with its
   own `docker-compose.yml` + `Makefile`, and are path-routed at
-  `tools.structa.cloud/<tool>/` through the shared-proxy Nginx.
+  `tools.structa.cloud/<tool>/` through the tools-proxy Nginx.
 - Cross-service dependency order belongs in the root deployment Makefile, not
   in a product's application code.
 - Product-specific environment defaults belong in the product Compose file or

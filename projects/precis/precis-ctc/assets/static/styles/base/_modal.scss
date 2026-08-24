@@ -67,7 +67,7 @@
   background-color: var(--modal-content-bg);
   background-clip: padding-box;
   border: 1px solid var(--modal-content-border-color);
-  border-radius: var(--modal-content-border-radius);
+  
   box-shadow: var(--modal-content-box-shadow);
   outline: 0;
 }
@@ -98,7 +98,7 @@
   margin: -0.5rem -0.5rem -0.5rem auto;
   background-color: transparent;
   border: 0;
-  border-radius: 0.25rem;
+  
   opacity: 0.7;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
@@ -177,7 +177,7 @@
 .modal-fullscreen .modal-content {
   height: 100%;
   border: 0;
-  border-radius: 0;
+  
 }
 
 /* Centered Modal */
@@ -233,7 +233,7 @@ body.modal-open {
   .modal-fullscreen-sm-down .modal-content {
     height: 100%;
     border: 0;
-    border-radius: 0;
+    
   }
   
   .modal-header,
@@ -254,7 +254,7 @@ body.modal-open {
   .modal-fullscreen-md-down .modal-content {
     height: 100%;
     border: 0;
-    border-radius: 0;
+    
   }
 }
 

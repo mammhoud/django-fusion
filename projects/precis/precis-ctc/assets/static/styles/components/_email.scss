@@ -38,7 +38,7 @@ $email-padding-sm: 20px;
     max-width: $email-max-width;
     margin: 0 auto;
     background-color: $email-body-bg;
-    border-radius: $email-border-radius;
+    
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -76,7 +76,7 @@ $email-padding-sm: 20px;
     background-color: $email-primary;
     color: #ffffff;
     text-decoration: none;
-    border-radius: 4px;
+    
     margin: 20px 0;
 
     &:hover {
@@ -89,7 +89,7 @@ $email-padding-sm: 20px;
 .role-badge {
     display: inline-block;
     padding: 4px 12px;
-    border-radius: 20px;
+    
     font-size: 12px;
     font-weight: bold;
     margin-left: 10px;
@@ -117,13 +117,13 @@ $email-padding-sm: 20px;
     border-left: 4px solid $email-primary;
     padding: 16px;
     margin: 24px 0;
-    border-radius: 4px;
+    
 }
 
 .warning-box {
     background-color: $email-warning-bg;
     border: 1px solid $email-warning-border;
-    border-radius: 4px;
+    
     padding: 15px;
     margin: 20px 0;
     color: $email-warning-text;
@@ -143,7 +143,7 @@ $email-padding-sm: 20px;
 .metric-item {
     background: $email-highlight;
     padding: 15px;
-    border-radius: $email-border-radius;
+    
     text-align: center;
     border: 1px solid $email-border;
 }
@@ -167,7 +167,7 @@ $email-padding-sm: 20px;
 .alert {
     padding: 10px 15px;
     margin: 10px 0;
-    border-radius: 4px;
+    
     border-left: 4px solid;
 
     &.alert-info {
@@ -223,7 +223,7 @@ $email-padding-sm: 20px;
 @media (max-width: 600px) {
     .email-container {
         margin: 10px;
-        border-radius: 0;
+        
     }
 
     .email-body {

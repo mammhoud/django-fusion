@@ -5,7 +5,7 @@
 .profile {
   background-color: var(--color-profile-section-bg);
   border: 1px solid var(--color-profile-border);
-  border-radius: 0.5rem;
+  
   padding: 1.5rem;
 
   &__header {
@@ -23,7 +23,7 @@
     img {
       width: 100px;
       height: 100px;
-      border-radius: 50%;
+      
       border: 4px solid var(--color-avatar-border);
       box-shadow: 0 2px 8px var(--color-avatar-shadow);
       object-fit: cover;
@@ -32,9 +32,10 @@
     .avatar-placeholder {
       width: 100px;
       height: 100px;
-      border-radius: 50%;
+      
       background-color: var(--color-bg-primary);
-      background: linear-gradient(135deg, var(--theme-primary-lighter) 0%, var(--theme-primary-light) 100%);
+      background: var(--theme-bg-secondary);
+
       display: flex;
       align-items: center;
       justify-content: center;
@@ -53,7 +54,7 @@
       right: 0;
       width: 32px;
       height: 32px;
-      border-radius: 50%;
+      
       background-color: var(--color-button-secondary-bg);
       border: 1px solid var(--color-button-secondary-border);
       display: flex;
@@ -127,7 +128,7 @@
       flex: 1;
       height: 6px;
       background-color: var(--color-course-progress-bg);
-      border-radius: 3px;
+      
       overflow: hidden;
 
       .progress-bar {
@@ -170,7 +171,7 @@
   &__content {
     background-color: var(--color-profile-card-bg);
     border: 1px solid var(--color-profile-border);
-    border-radius: 0.5rem;
+    
     padding: 1.5rem;
   }
 }
@@ -179,7 +180,7 @@
 .profile-card {
   background-color: var(--color-card-bg);
   border: 1px solid var(--color-card-border);
-  border-radius: 0.5rem;
+  
   padding: 1.5rem;
   box-shadow: var(--color-card-shadow);
   transition: all 0.3s ease;
@@ -256,7 +257,7 @@
     width: 100%;
     padding: 0.75rem;
     border: 1px solid var(--color-input-border);
-    border-radius: 0.375rem;
+    
     background-color: var(--color-input-bg);
     color: var(--color-input-text);
     font-size: 0.95rem;
@@ -379,7 +380,7 @@
 .profile-badge {
   display: inline-block;
   padding: 0.375rem 0.75rem;
-  border-radius: 9999px;
+  
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -416,35 +417,35 @@
   &-xs {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    
     object-fit: cover;
   }
 
   &-sm {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    
     object-fit: cover;
   }
 
   &-md {
     width: 60px;
     height: 60px;
-    border-radius: 50%;
+    
     object-fit: cover;
   }
 
   &-lg {
     width: 100px;
     height: 100px;
-    border-radius: 50%;
+    
     object-fit: cover;
   }
 
   &-xl {
     width: 150px;
     height: 150px;
-    border-radius: 50%;
+    
     object-fit: cover;
   }
 }
@@ -460,7 +461,7 @@
     right: 0;
     width: 12px;
     height: 12px;
-    border-radius: 50%;
+    
     border: 2px solid var(--color-avatar-border);
 
     &--online {

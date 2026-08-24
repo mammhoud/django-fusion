@@ -1,10 +1,10 @@
 .crm-shell,
 [data-usecase~='crm'] {
-  --crm-accent: var(--color-info, #0ea5e9);
+  --crm-accent: #E61919;
 
   .crm-shell__metric,
   .dashboard-card,
   .metric-card {
-    border-radius: var(--radius-md, .75rem);
+    
   }
 }

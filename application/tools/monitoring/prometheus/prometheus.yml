@@ -14,6 +14,21 @@ scrape_configs:
     static_configs:
       - targets: ['grafana:3000']
 
+  # xyOps — operations automation platform at ops.structa.cloud.
+  # xyOps is itself a monitoring system (collects via xySat agents) and does
+  # NOT expose a native Prometheus /metrics endpoint. This job scrapes the
+  # health ping for basic uptime/latency monitoring via the prometheus
+  # blackbox-exporter-like `metrics_path`. Revisit if xyOps adds a metrics
+  # endpoint; meantime, use xyOps's own built-in dashboards for job/server
+  # metrics.  Added to `common` network in xyops/docker-compose.yml.
+  - job_name: xyops
+    metrics_path: /api/app/ping
+    static_configs:
+      - targets: ['xyops:5522']
+        labels:
+          service: 'xyops'
+          host: 'ops.structa.cloud'
+
   # Django product metrics (django-prometheus). Uncomment and add the
   # container names of each site backend once it exposes /metrics.
   # - job_name: django-sites

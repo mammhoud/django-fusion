@@ -3,8 +3,8 @@
  * "static" webpack entry — produces static-[hash].css via MiniCssExtractPlugin.
  *
  * This is the CSS/vendor-CSS entry point referenced by every skeleton template via:
- *   {% render_bundle 'static' 'css' %}
- *   {% render_bundle 'static' 'js' %}
+ *   {% render_bundle 'main' 'css' %}
+ *   {% render_bundle 'app' 'js' %}
  *
  * Vendor CSS libraries are imported from node_modules (no ~ required in webpack 5).
  * Site-specific SCSS is imported via path relative to this file.

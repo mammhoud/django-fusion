@@ -1,0 +1,772 @@
+/* ==================================================================
+   COURSE PAGE — Swiss Industrial Print (CTC Research)
+   Substrate: matte paper + carbon ink + aviation red accent
+   Zero radius, hard offset shadows, no gradients/translucency
+   BEM blocks, mono uppercase telemetry, document chapter sections
+   ================================================================== */
+
+/* ═══════════════════════════════════════════════════════════════════
+   COURSE HERO — short hero with carbon image overlay
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-course-hero {
+  position: relative;
+  min-height: min(65dvh, 640px);
+  display: flex;
+  align-items: flex-end;
+  background-size: cover;
+  background-position: center 30%;
+  background-color: hsl(var(--fu-ink));
+  overflow: hidden;
+  border-bottom: 2px solid hsl(var(--fu-link));
+}
+
+.ctc-course-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: hsl(var(--fu-ink) / 0.65);
+  z-index: 1;
+}
+
+.ctc-course-hero__inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 5rem 2rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.ctc-course-hero__content {
+  max-width: 680px;
+}
+
+.ctc-course-hero__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-link));
+}
+
+.ctc-course-hero__eyebrow::before { content: '[ '; color: hsl(var(--fu-paper) / 0.35); }
+.ctc-course-hero__eyebrow::after  { content: ' ]'; color: hsl(var(--fu-paper) / 0.35); }
+
+.ctc-course-hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-paper));
+  margin: 0 0 1rem;
+  text-wrap: balance;
+}
+
+.ctc-course-hero__subtitle {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: hsl(var(--fu-paper) / 0.7);
+  max-width: 520px;
+  margin: 0 0 1.5rem;
+}
+
+.ctc-course-hero__actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.ctc-course-hero__stats {
+  display: flex;
+  gap: 2rem;
+  padding: 1rem 1.5rem;
+  background: hsl(var(--fu-ink));
+  border: 2px solid hsl(var(--fu-paper) / 0.2);
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-link));
+  width: fit-content;
+}
+
+.ctc-course-hero__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.ctc-course-hero__stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: hsl(var(--fu-paper));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ctc-course-hero__stat-label {
+  font-size: 0.625rem;
+  font-family: var(--font-mono);
+  color: hsl(var(--fu-paper) / 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BUTTONS — industrial plates
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid hsl(var(--fu-ink));
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-ink));
+  transition: box-shadow var(--fu-transition),
+              transform var(--fu-transition),
+              background var(--fu-transition);
+  user-select: none;
+}
+
+.ctc-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0 0 hsl(var(--fu-ink));
+}
+
+.ctc-btn--primary {
+  background: hsl(var(--fu-link));
+  color: hsl(var(--fu-paper));
+  border-color: hsl(var(--fu-ink));
+}
+
+.ctc-btn--primary:hover {
+  background: hsl(var(--fu-link-dark));
+  box-shadow: 2px 2px 0 0 hsl(var(--fu-ink));
+}
+
+.ctc-btn--secondary {
+  background: hsl(var(--fu-paper));
+  color: hsl(var(--fu-ink));
+}
+
+.ctc-btn--secondary:hover {
+  background: hsl(var(--fu-ink));
+  color: hsl(var(--fu-paper));
+  box-shadow: 2px 2px 0 0 hsl(var(--fu-link));
+}
+
+.ctc-btn--ghost {
+  background: transparent;
+  color: hsl(var(--fu-paper));
+  border-color: hsl(var(--fu-paper) / 0.3);
+  box-shadow: none;
+}
+
+.ctc-btn--ghost:hover {
+  background: hsl(var(--fu-paper) / 0.1);
+  border-color: hsl(var(--fu-paper) / 0.6);
+  box-shadow: none;
+}
+
+.ctc-btn--full {
+  width: 100%;
+  justify-content: center;
+}
+
+.ctc-btn__arrow {
+  display: inline-flex;
+  transition: transform var(--fu-transition);
+}
+
+.ctc-btn:hover .ctc-btn__arrow {
+  transform: translateX(3px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   MAIN GRID — document chapter layout
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-course-main {
+  padding: 3rem 2rem 2rem;
+  background: hsl(var(--fu-paper));
+  border-top: 2px solid hsl(var(--fu-ink));
+}
+
+.ctc-course-main__grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+  align-items: start;
+}
+
+.ctc-course-main__content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ctc-course-main__sidebar {
+  position: sticky;
+  top: 1.5rem;
+}
+
+@media (max-width: 960px) {
+  .ctc-course-main__grid { grid-template-columns: 1fr; }
+  .ctc-course-main__sidebar { position: static; order: -1; }
+}
+
+@media (max-width: 640px) {
+  .ctc-course-hero__inner { padding: 3rem 1rem 2rem; }
+  .ctc-course-hero__stats { flex-wrap: wrap; gap: 1.25rem; }
+  .ctc-course-main { padding: 2rem 1rem 1rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CARDS — industrial plate + double-bezel
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-card {
+  background: hsl(var(--fu-card));
+  border: 2px solid hsl(var(--fu-ink));
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-ink));
+  padding: 1.75rem;
+  transition: box-shadow var(--fu-transition),
+              transform var(--fu-transition);
+}
+
+.ctc-card:hover {
+  box-shadow: 6px 6px 0 0 hsl(var(--fu-ink));
+  transform: translate(-1px, -1px);
+}
+
+.ctc-card--sticky {
+  box-shadow: 6px 6px 0 0 hsl(var(--fu-link));
+  border-color: hsl(var(--fu-link));
+}
+
+.ctc-card__title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-ink));
+  margin: 0 0 0.75rem;
+}
+
+.ctc-card__section-title {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-ink));
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid hsl(var(--fu-ink));
+}
+
+.ctc-card__body {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: hsl(var(--fu-muted));
+  margin: 0;
+}
+
+.ctc-card__hero-image {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  border: 2px solid hsl(var(--fu-ink));
+  margin-top: 1.25rem;
+}
+
+/* Objectives grid */
+.ctc-objectives {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.625rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ctc-objectives__item {
+  display: flex;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: hsl(var(--fu-muted));
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+.ctc-objectives__check {
+  color: hsl(var(--fu-link));
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .ctc-objectives { grid-template-columns: 1fr; }
+}
+
+.ctc-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ctc-list__item {
+  display: flex;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: hsl(var(--fu-muted));
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+}
+
+.ctc-list__marker {
+  color: hsl(var(--fu-link));
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SIDEBAR — pricing card
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-sidebar-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ctc-sidebar-price__value {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: hsl(var(--fu-ink));
+}
+
+.ctc-sidebar-price__original {
+  font-size: 0.9375rem;
+  color: hsl(var(--fu-muted));
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.ctc-sidebar-price__discount {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-paper));
+  background: hsl(var(--fu-link));
+  padding: 0.2rem 0.5rem;
+  border: 1px solid hsl(var(--fu-ink));
+}
+
+.ctc-sidebar-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 0;
+  border-top: 2px solid hsl(var(--fu-ink));
+  border-bottom: 2px solid hsl(var(--fu-ink));
+  margin-bottom: 0.5rem;
+}
+
+.ctc-sidebar-facts__row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ctc-sidebar-facts__row dt {
+  color: hsl(var(--fu-muted));
+  font-weight: 400;
+}
+
+.ctc-sidebar-facts__row dd {
+  color: hsl(var(--fu-ink));
+  font-weight: 600;
+}
+
+.ctc-sidebar-facts__rating {
+  color: hsl(var(--fu-link));
+}
+
+.ctc-sidebar-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: hsl(var(--fu-link) / 0.1);
+  border: 2px solid hsl(var(--fu-link));
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-link));
+}
+
+.ctc-sidebar-badge__icon {
+  font-size: 1rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SYLLABUS — accordion section (document chapter)
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-syllabus {
+  padding: 3rem 2rem;
+  background: hsl(var(--fu-paper));
+  border-top: 2px solid hsl(var(--fu-ink));
+}
+
+.ctc-syllabus__inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.ctc-syllabus__header {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.ctc-syllabus__title {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-ink));
+  margin: 0 0 0.5rem;
+}
+
+.ctc-syllabus__subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: hsl(var(--fu-muted));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.ctc-syllabus__accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ctc-syllabus__item {
+  background: hsl(var(--fu-card));
+  border: 2px solid hsl(var(--fu-ink));
+  overflow: hidden;
+  transition: box-shadow var(--fu-transition);
+}
+
+.ctc-syllabus__item:hover {
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-ink));
+}
+
+.ctc-syllabus__item[open] {
+  border-color: hsl(var(--fu-link));
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-link));
+}
+
+.ctc-syllabus__trigger {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-mono);
+}
+
+.ctc-syllabus__trigger::-webkit-details-marker {
+  display: none;
+}
+
+.ctc-syllabus__index {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: hsl(var(--fu-link));
+  min-width: 2rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+}
+
+.ctc-syllabus__label {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.ctc-syllabus__module-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: hsl(var(--fu-ink));
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ctc-syllabus__module-desc {
+  font-size: 0.6875rem;
+  color: hsl(var(--fu-muted));
+  letter-spacing: 0.04em;
+}
+
+.ctc-syllabus__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: hsl(var(--fu-muted));
+}
+
+.ctc-syllabus__chevron {
+  transition: transform var(--fu-transition);
+  font-size: 0.75rem;
+  color: hsl(var(--fu-muted));
+}
+
+.ctc-syllabus__item[open] .ctc-syllabus__chevron {
+  transform: rotate(180deg);
+}
+
+.ctc-syllabus__lessons {
+  list-style: none;
+  padding: 0 1.25rem 1rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.ctc-syllabus__lesson {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  transition: background var(--fu-transition);
+}
+
+.ctc-syllabus__lesson:hover {
+  background: hsl(var(--fu-paper));
+}
+
+.ctc-syllabus__lesson-icon {
+  flex-shrink: 0;
+  color: hsl(var(--fu-muted) / 0.4);
+  font-size: 0.75rem;
+}
+
+.ctc-syllabus__lesson-title {
+  flex: 1;
+  color: hsl(var(--fu-ink));
+  font-weight: 450;
+}
+
+.ctc-syllabus__lesson-duration {
+  font-size: 0.6875rem;
+  color: hsl(var(--fu-muted));
+  white-space: nowrap;
+}
+
+.ctc-syllabus__lesson-badge {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-link));
+  background: hsl(var(--fu-link) / 0.1);
+  padding: 0.15rem 0.4rem;
+  border: 1px solid hsl(var(--fu-link));
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INSTRUCTOR SECTION
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-instructor {
+  padding: 3rem 2rem;
+  background: hsl(var(--fu-card));
+  border-top: 2px solid hsl(var(--fu-ink));
+}
+
+.ctc-instructor__inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.ctc-instructor__card {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.ctc-instructor__avatar {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid hsl(var(--fu-ink));
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-ink));
+}
+
+.ctc-instructor__avatar-placeholder {
+  width: 96px;
+  height: 96px;
+  background: hsl(var(--fu-link) / 0.1);
+  border: 2px solid hsl(var(--fu-ink));
+  color: hsl(var(--fu-link));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-ink));
+}
+
+.ctc-instructor__info {
+  flex: 1;
+}
+
+.ctc-instructor__name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-ink));
+  margin: 0 0 0.25rem;
+}
+
+.ctc-instructor__title {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-muted));
+  margin: 0 0 0.75rem;
+}
+
+.ctc-instructor__bio {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: hsl(var(--fu-muted));
+  margin: 0 0 1rem;
+}
+
+.ctc-instructor__links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .ctc-instructor__card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .ctc-instructor__links {
+    justify-content: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REVEAL ANIMATIONS — mechanical, opacity + translateY only
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ctc-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ctc-reveal {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .ctc-btn {
+    transition: none;
+  }
+
+  .ctc-btn:active {
+    transform: none;
+  }
+
+  .ctc-card:hover {
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TAG MARKER — mono uppercase industrial label
+   ═══════════════════════════════════════════════════════════════════ */
+.ctc-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-link));
+  background: hsl(var(--fu-link) / 0.1);
+  border: 1px solid hsl(var(--fu-link));
+}
+
+.ctc-tag--ink {
+  color: hsl(var(--fu-ink));
+  background: hsl(var(--fu-ink) / 0.05);
+  border-color: hsl(var(--fu-ink));
+}
+
+/* Spacing utilities */
+.mt-6 { margin-top: 1.5rem; }
+.mb-4 { margin-bottom: 1rem; }

@@ -35,7 +35,7 @@ http:
         servers:
           # Shared-proxy Nginx selects its Docus virtual host from the original
           # Host header and proxies the resulting request to `docus:3000`.
-          - url: http://shared-proxy:80
+          - url: http://tools-proxy:80
         healthCheck:
           path: /
           hostname: docs.structa.cloud

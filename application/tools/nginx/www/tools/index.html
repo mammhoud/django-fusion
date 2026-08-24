@@ -30,7 +30,7 @@
     }
     main {
       width: 100%;
-      max-width: 48rem;
+      max-width: 52rem;
     }
     .tag {
       font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -51,14 +51,14 @@
     h1 em { font-style: normal; color: var(--accent-ink); }
     .sub {
       color: var(--muted);
-      max-width: 36rem;
+      max-width: 40rem;
       line-height: 1.6;
       font-size: 0.98rem;
       margin-bottom: 2.5rem;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
       gap: 0.9rem;
     }
     a.card {
@@ -78,6 +78,8 @@
       transform: translateY(-2px);
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
     }
+    .card.soon { cursor: default; opacity: 0.5; }
+    .card.soon:hover { border-color: var(--line); transform: none; box-shadow: none; }
     .card code {
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.72em;
@@ -127,10 +129,20 @@
         <span class="t">Space (Coder)</span>
         <span class="d">Cloud development environment — VS Code, terminals, AI agents.</span>
       </a>
+      <a class="card" href="https://tools.structa.cloud" target="_blank">
+        <span class="k">workspace</span>
+        <span class="t">AFFiNE</span>
+        <span class="d">Permanent shared workspace — real-time docs, whiteboards, databases.</span>
+      </a>
       <a class="card" href="/notes/">
         <span class="k">notes</span>
         <span class="t">Blinko</span>
-        <span class="d">Self-hosted personal AI note tool with privacy focus.</span>
+        <span class="d">Self-hosted personal AI note tool. Sign up on first visit — no defaults.</span>
+      </a>
+      <a class="card" href="https://ops.structa.cloud" target="_blank">
+        <span class="k">automation</span>
+        <span class="t">xyOps</span>
+        <span class="d">Job scheduling, workflows, server monitoring, alerts, and incident tickets.</span>
       </a>
       <a class="card" href="/adminer/">
         <span class="k">database</span>

@@ -72,7 +72,7 @@
   cursor: pointer;
   background: var(--color-white-opacity-10);
   border: 1px solid var(--color-white-opacity-20);
-  border-radius: 8px;
+  
   font-size: 1.5rem;
   color: var(--color-text-on-primary);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -130,7 +130,7 @@
   letter-spacing: -0.2px;
   color: var(--color-text-on-primary);
   text-decoration: none;
-  border-radius: 8px;
+  
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -194,7 +194,7 @@
   border: 1px solid var(--theme-border-primary);
   width: 240px;
   box-shadow: var(--theme-shadow-lg);
-  border-radius: 0.4em;
+  
   padding: 15px 0;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -238,7 +238,7 @@
   position: relative;
   display: block;
   color: var(--theme-text-primary);
-  border-radius: 0.4em;
+  
   padding: 7px 15px;
   transition: all 0.2s ease;
 }
@@ -275,7 +275,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  border-radius: 8px;
+  
   transition: all 0.3s ease;
 }
 
@@ -304,7 +304,7 @@
   gap: 1rem;
   padding: 1.5rem;
   background: var(--theme-bg-secondary);
-  border-radius: 0.4em;
+  
   border: 1px solid var(--theme-border-primary);
 }
 
@@ -315,7 +315,7 @@
   right: 20px;
   background: var(--theme-surface);
   border: 1px solid var(--theme-border-primary);
-  border-radius: 8px;
+  
   font-size: 1.5rem;
   color: var(--theme-text-primary);
   cursor: pointer;
@@ -344,7 +344,6 @@
 .header.header-boxed .container,
 .header.header-boxed .container-fluid {
   background: var(--theme-surface);
-  backdrop-filter: blur(8px);
   border-bottom-right-radius: 1.5em;
   border-bottom-left-radius: 1.5em;
   box-shadow: var(--theme-shadow-lg);
@@ -620,7 +619,6 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(4px);
     z-index: 994;
     opacity: 0;
     visibility: hidden;
@@ -651,7 +649,7 @@
 @media (max-width: 575.98px) {
   .header .header-menu {
     width: 100%;
-    border-radius: 0;
+    
     padding: 60px 20px 20px;
   }
 
@@ -801,7 +799,8 @@
 }
 
 .header.loading {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background: var(--theme-bg-secondary);
+
   background-size: 1000px 100%;
   animation: shimmer 2s infinite linear;
 }
@@ -837,7 +836,7 @@
   border: 1px solid var(--theme-border-primary);
   width: auto;
   box-shadow: var(--theme-shadow-lg);
-  border-radius: 0.4em;
+  
   padding: 1em;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

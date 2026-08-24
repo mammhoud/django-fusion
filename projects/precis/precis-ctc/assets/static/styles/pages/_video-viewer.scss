@@ -23,8 +23,9 @@
 .play-btn {
   width: 100px;
   height: 100px;
-  background: radial-gradient(rgba(255, 0, 35, 0.8) 60%, rgba(255, 255, 255, 1) 62%);
-  border-radius: 50%;
+  background: var(--theme-bg-secondary);
+
+  
   position: relative;
   display: block;
   margin: 40px 0px;
@@ -69,7 +70,7 @@
   -webkit-animation-timing-function: steps;
   animation-timing-function: steps;
   opacity: 1;
-  border-radius: 50%;
+  
   border: 5px solid #830C0F;
   top: -25%;
   left: -25%;

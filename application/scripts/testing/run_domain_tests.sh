@@ -318,7 +318,7 @@ test_acme_setup() {
 test_media_server() {
   section "TEST 9: Media Server Integration"
 
-  if docker ps --format '{{.Names}}' | grep -q "^shared-proxy$"; then
+  if docker ps --format '{{.Names}}' | grep -q "^tools-proxy$"; then
     log_success "Shared media container running"
   else
     log_failure "Shared media container not running"

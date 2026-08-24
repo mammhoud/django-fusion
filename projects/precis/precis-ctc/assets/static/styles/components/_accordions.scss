@@ -23,7 +23,7 @@
 .accordion__item {
   position: relative;
   border: 1px solid var(--theme-border-primary);
-  border-radius: var(--accordion-border-radius);
+  
   background-color: var(--theme-surface);
   transition: all var(--accordion-transition-duration) var(--accordion-transition-timing);
   overflow: hidden;
@@ -72,7 +72,7 @@
   font-weight: var(--font-weight-semibold, 600);
   line-height: 1.5;
   transition: all var(--accordion-transition-duration) var(--accordion-transition-timing);
-  border-radius: calc(var(--accordion-border-radius) - 1px);
+  
 }
 
 .accordion__button:hover {
@@ -205,7 +205,7 @@
 /* Borderless Variant */
 .accordion.accordion--borderless .accordion__item {
   border: none;
-  border-radius: 0;
+  
   box-shadow: none;
   background: transparent;
 }
@@ -230,11 +230,11 @@
 
 /* Rounded Variant */
 .accordion.accordion--rounded .accordion__item {
-  border-radius: 1rem;
+  
 }
 
 .accordion.accordion--rounded .accordion__button {
-  border-radius: calc(1rem - 1px);
+  
 }
 
 /* Primary Variant */
@@ -290,9 +290,8 @@
 /* Gradient Variant */
 .accordion.accordion--gradient .accordion__item.active {
   border-image: var(--gradient-primary) 1;
-  background: linear-gradient(135deg, 
-    rgba(var(--theme-primary-rgb), 0.05) 0%, 
-    rgba(var(--theme-secondary-rgb), 0.05) 100%);
+  background: none;
+
 }
 
 /* ============ SINGLE OPEN MODE ============ */
@@ -420,7 +419,7 @@
 .faq-accordion .accordion__item {
   background-color: var(--color-accordion-bg, var(--theme-surface));
   border: 1px solid var(--color-accordion-border, var(--theme-border-primary));
-  border-radius: 0.75rem;
+  
   margin-bottom: 0.75rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -462,7 +461,7 @@
 .faq-accordion .accordion__indicator {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
+  
   background-color: var(--theme-bg-tertiary);
   display: flex;
   align-items: center;
@@ -537,7 +536,7 @@
 .faq-category-tab {
   padding: 0.625rem 1.25rem;
   border: 1px solid var(--theme-border-primary);
-  border-radius: 2rem;
+  
   background-color: var(--theme-surface);
   color: var(--theme-text-secondary);
   font-size: 0.875rem;
@@ -564,7 +563,7 @@
   padding: 2rem;
   margin-top: 2rem;
   background: var(--gradient-subtle);
-  border-radius: 1rem;
+  
   border: 1px solid var(--theme-border-primary);
 }
 
@@ -588,7 +587,7 @@
   background: var(--gradient-primary);
   color: var(--color-text-on-primary);
   border: none;
-  border-radius: 0.5rem;
+  
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
