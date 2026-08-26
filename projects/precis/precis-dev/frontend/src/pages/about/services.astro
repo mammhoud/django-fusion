@@ -77,7 +77,7 @@ const phaseDetails = await Promise.all(
     eyebrow={pageHero?.badge || 'about · services'}
     heading={pageHero?.title || 'Services'}
     accent='built as you go'
-    intro={pageHero?.subtitle || 'Server-rendered sites, HTMX integrations, and Alpine-powered UX. From brief to shipped in four steps, each one delivering working HTML.'}
+    intro={pageHero?.subtitle || 'A focused path from customer need to a dependable digital service. We help teams across the Gulf, Levant, and North Africa launch clear, bilingual experiences without unnecessary complexity.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See our products', href: '/products' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }}
     status='200 OK · text/html · the offering, in one response'
@@ -89,8 +89,8 @@ const phaseDetails = await Promise.all(
   <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
     <div class='container-fusion'>
       <div class='mb-14 max-w-2xl'>
-        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>From marketing sites to full products</h2>
-        <p class='text-fu-muted'>Three service lines, one promise: finished, server-rendered deliverables. Websites, custom products, and enhancements built on the AHA stack.</p>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Build for the market you serve</h2>
+        <p class='text-fu-muted'>A focused path from customer need to a dependable digital service. We help teams across the Gulf, Levant, and North Africa launch clear, bilingual experiences without unnecessary complexity.</p>
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
         {serviceItems.map((service, i) => (
@@ -151,8 +151,8 @@ const phaseDetails = await Promise.all(
 
   {processSteps?.length ? (
     <Timeline
-      title='From brief to shipped, in four steps'
-      description='No big-bang rewrite. We ship incrementally, and each step delivers working HTML you can put in front of users.'
+      title='A measured path to launch'
+      description='We keep the work visible and incremental. Each phase leaves your team with a clearer decision, a working slice, or a useful handoff.'
       events={processSteps}
     />
   ) : <ContentError label="Process data unavailable" />}
