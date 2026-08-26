@@ -73,6 +73,14 @@
 
 The `precis-lms-e2e` job spins up the Django backend (with `DB_TYPE=sqlite` for fast CI) before running Astro smoke tests. The backend is started via `docker compose up -d backend` and health-checked via `curl /health/`.
 
+### Disk reclaim after image builds
+
+Both `precis-lms-e2e` (every push) and `deploy-staging` (manual deploy) end
+with a `make clean-unused` step (root Makefile clean family) to reclaim disk
+on the runner after Docker image builds: it prunes build caches, dangling
+images and generated files while keeping volumes and the images the running
+containers reference.
+
 ---
 
 ## `pytest-core.yml` — Python Tests

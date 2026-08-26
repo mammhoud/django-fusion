@@ -198,6 +198,12 @@ jobs:
           E2E_FRONTEND_URL: http://127.0.0.1:3001
         run: npm run test:e2e
 
+      # Reclaim disk after the image build: prunes build caches, dangling
+      # images and generated files while keeping volumes and the images the
+      # running containers reference. See the root Makefile clean family.
+      - name: Clean up Docker disk after build (make clean-unused)
+        working-directory: ${{ github.workspace }}
+        run: make clean-unused
 
   # ── Domain Drift Check ─────────────────────────────────────────────
 
@@ -279,3 +285,9 @@ jobs:
           echo ""
           echo "=== Health Checks ==="
           curl -s http://127.0.0.1:5074/health/ && echo " — LMS-Fusion"
+
+      # Post-deploy disk reclaim: prunes build caches and unused images while
+      # keeping volumes and the images the running staging containers
+      # reference. Uses the root Makefile's clean-unused (clean + clean-docker).
+      - name: Clean up Docker disk after deploy (make clean-unused)
+        run: make clean-unused
