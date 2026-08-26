@@ -234,7 +234,7 @@ test('contact shows seeded contact methods + topic choices', () => {
 });
 
 test('faq page shows seeded FAQ items', () => {
-  assert.match(faq, /Frequently asked questions/);
+  assert.match(faq, /Frequently Asked Questions/);
   assert.match(faq, /What is structa\.cloud\?/);
   assert.match(faq, /How do I get started\?/);
 });
@@ -242,17 +242,16 @@ test('faq page shows seeded FAQ items', () => {
 test('privacy page renders its legal document', () => {
   // The Astro privacy page ships its own full legal policy (8 sections); the
   // backend seeds a short RichText body used by the backend render only.
-  assert.match(privacy, /Information we collect/);
+  assert.match(privacy, /What we collect/);
   // The restructured policy has a dedicated cookies/consent section (section 3)
   // covering what data is collected and what accepting consent enables.
   assert.match(privacy, /Cookies and consent/);
-  assert.match(privacy, /What accepting consent does/);
+  assert.match(privacy, /When you accept, no additional data is collected/);
   assert.match(privacy, /Your rights/);
 });
 
 test('blog page shows the seeded post grid', () => {
   assert.match(blog, /Ideas from real launches/);
-  assert.match(blog, /From the blog/);
   // Grid cards carry the current seeded titles (seed_pages.py renamed the
   // posts while keeping their stable slugs).
   assert.match(blog, /A fast first visit is a product decision/);
@@ -279,17 +278,18 @@ test('pricing page shows per-product tabs + faq', () => {
 });
 
 test('services page shows the three service lines + build-as-you-go process', () => {
-  assert.match(services, /From marketing sites to full products/);
+  // Mirrors the backend contract in apps/pages/tests.py::test_services_carries_offering_and_process.
+  assert.match(services, /Build for the market you serve/);
   for (const line of ['Market-ready websites', 'Digital product delivery', 'Improve what already works']) {
     assert.ok(services.includes(line), `services should contain: ${line}`);
   }
-  assert.match(services, /From brief to shipped, in four steps/);
+  assert.match(services, /A measured path to launch/);
   assert.match(services, /Discover/);
   assert.match(services, /Ship &amp; grow/);  // `&` is HTML-escaped in the build
 });
 
 test('brand page renders the identity system: one board per product with its constructed mark', () => {
-  assert.match(brand, /One family, five marks/);
+  assert.match(brand, /five constructed marks, one family/);
   // Each brand's essence line + its own data-brand mark chip.
   for (const essence of ['The till, made trustworthy.', 'Learning, precisely.', 'From impression to deal.', 'Your career, on the record.', 'Evidence, carried forward.']) {
     assert.ok(brand.includes(essence), `brand should contain essence: ${essence}`);
@@ -397,13 +397,20 @@ test('edition cards link to flexible preview subpages (both roads)', () => {
   assert.ok(pricing.includes('Preview this edition'), 'pricing should show preview links');
 });
 
-test('loop lists applications built with it, including vResume', () => {
-  assert.match(cms, /Sites and apps running on Loop/);
-  assert.ok(cms.includes('vResume'), 'cms should list vResume as a Loop build');
-  assert.ok(
-    cms.includes('/products/vresume/preview/community/'),
-    'cms vResume card should link the community preview',
-  );
+test('loop is a coming-soon CRM placeholder (CMS content lives in Precis)', () => {
+  // Loop was repositioned as the coming-soon CRM; the old Loop CMS
+  // applications grid was removed. Mirrors the backend contract in
+  // apps/pages/tests.py::test_loop_crm_placeholder.
+  assert.match(cms, /Loop CRM/);
+  assert.match(cms, /Join the waitlist/);
+  assert.match(cms, /under development/);
+  assert.match(cms, /Twenty/);
+  assert.match(cms, /Postiz/);
+  assert.match(cms, /django-fusion/);
+  // The placeholder links out to Precis (where the CMS now lives).
+  assert.ok(cms.includes('/products/lms/'), 'cms placeholder should link to Precis LMS');
+  // The old Loop CMS applications grid is gone.
+  assert.doesNotMatch(cms, /Sites and apps running on Loop/);
 });
 
 test('edition preview subpages render the live product mock', () => {
