@@ -108,7 +108,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: install install-python install-js install-formints install-docs
 .PHONY: check test check-docs build-docs docs-validate docs-dev
 .PHONY: nx nx-graph nx-deploy nx-build nx-check nx-test
-.PHONY: dev run-dev run-local server dev-ctc dev-precis dev-loop-crm dev-syntara
+.PHONY: dev run-dev run-local server dev-ctc dev-precis dev-loop-crm dev-syntara check-site test-site
 .PHONY: docker-up docker-down docker-build docker-rebuild docker-logs docker-status docker-restart docker-stop docker-start docker-health docker-prune docker-prune-data
 .PHONY: deploy-tool backend-check-precis backend-test-precis backend-migrate-precis backend-check-ctc
 .PHONY: backend-check-pro backend-test-pro backend-check-cloud backend-test-cloud check-formints test-formints
@@ -1473,8 +1473,14 @@ test-site: ## Django tests for WEBSITE=<site>
 # -----------------------------------------------------------------
 # Docker delegation — per-site compose operations via projects/Makefile.
 # -----------------------------------------------------------------
-docker-up docker-down docker-build docker-rebuild docker-logs docker-status docker-health docker-prune:
+docker-up docker-down docker-build docker-rebuild docker-logs docker-status:
 	@$(MAKE) --no-print-directory -C $(CORE_DIR) $@ WEBSITE=$(WEBSITE)
+
+docker-health:
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) docker-health-check WEBSITE=$(WEBSITE)
+
+docker-prune:
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) docker-prune-containers WEBSITE=$(WEBSITE)
 
 docker-restart:
 	@$(MAKE) --no-print-directory -C $(CORE_DIR) docker-restart-all WEBSITE=$(WEBSITE)

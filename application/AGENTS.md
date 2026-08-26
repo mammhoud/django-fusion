@@ -69,7 +69,7 @@ intent before running them:
 
 ```text
 docker compose down --volumes
-make prune-volumes / make clean / docker system prune
+make prune-volumes / make clean-all / make clean-docker / docker system prune
 restore/upgrade database scripts
 certificate restore/rotation scripts
 make deploy / make deploy-all / production scripts
