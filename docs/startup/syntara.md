@@ -23,10 +23,10 @@ tags:
   - saas
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Syntara product docs"
-    to: "/docs/en/syntara"
+    to: "/syntara"
     icon: "i-lucide-bot"
 ---
 

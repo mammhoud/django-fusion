@@ -1,17 +1,17 @@
 {% extends "emails/base_email.html" %}
 
-{% block title %}Enrollment Confirmed - {{ course.title }}{% endblock %}
-{% block header %}Welcome to {{ course.title }}!{% endblock %}
+{% block title %}Enrollment Confirmed - {% if course %}{{ course.title }}{% endif %}{% endblock %}
+{% block header %}Welcome to {% if course %}{{ course.title }}{% endif %}!{% endblock %}
 
 {% block content %}
-<h2>Hello {{ user.first_name|default:user.username }}!</h2>
+<h2>Hello {% if user %}{{ user.first_name|default:user.username }}{% endif %}!</h2>
 
 <p>Congratulations! Your enrollment in <strong>{{ course.title }}</strong> has been successfully confirmed.</p>
 
 <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
     <h3 style="margin-top: 0; color: #3A7CA5;">Course Details</h3>
     <p><strong>Course:</strong> {{ course.title }}</p>
-    <p><strong>Instructor:</strong> {{ course.instructor.get_full_name|default:course.instructor.username }}</p>
+    <p><strong>Instructor:</strong> {% if course and course.instructor %}{{ course.instructor.get_full_name|default:course.instructor.username }}{% endif %}</p>
     <p><strong>Duration:</strong> {{ course.duration }} hours</p>
     <p><strong>Difficulty:</strong> {{ course.get_difficulty_level_display }}</p>
     {% if course.has_certificate %}

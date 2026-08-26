@@ -22,10 +22,10 @@ tags:
   - competitive
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Full strategy 🔒"
-    to: "/docs/en/startup/strategy"
+    to: "/startup/strategy"
     icon: "i-lucide-rocket"
 ---
 

@@ -29,8 +29,14 @@ class InvitationService:
         inviter: Any = None,
         invitation_type: str = "join",
         message: str = "",
+        role: str = "",
     ) -> dict[str, Any]:
-        """Send an invitation and return its token or a structured error."""
+        """Send an invitation and return its token or a structured error.
+
+        ``role`` is the raw CSV-style role (e.g. ``instructor/manager``,
+        ``content_manager``).  It is persisted on the EmailLog so the
+        registration flow can assign the recipient to the right groups.
+        """
         try:
             person = Person.objects.get(id=person_id)
             recipient = person.email or person.user.email
@@ -49,6 +55,7 @@ class InvitationService:
                 "invitation_type": invitation_type,
                 "message": message,
                 "subject": subject,
+                "role": role,
             }
 
             email_log = EmailService().send_invitation(

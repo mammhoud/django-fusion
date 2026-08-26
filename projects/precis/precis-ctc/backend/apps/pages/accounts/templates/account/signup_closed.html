@@ -1,0 +1,20 @@
+{% extends 'layout/auth/skeleton.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Registration Closed" %} — CTC Research{% endblock %}
+
+{% block content %}
+<div class="auth__card">
+  <header class="auth__form-header" style="text-align:center;">
+    <span class="auth__form-eyebrow">Registration</span>
+    <h1 class="auth__form-title">{% trans "Registration Closed" %}</h1>
+    <p class="auth__form-subtitle">
+      {% trans "We are sorry, but sign-up is currently closed. Please check back later or contact the administrator." %}
+    </p>
+  </header>
+
+  <a href="{% url 'accounts:login' %}" class="btn">
+    {% trans "Sign In" %}
+  </a>
+</div>
+{% endblock content %}

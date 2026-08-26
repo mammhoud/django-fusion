@@ -21,13 +21,13 @@ tags:
   - devops
 links:
   - label: "Documentation home"
-    to: "/docs/en/"
+    to: "/"
     icon: "i-lucide-house"
   - label: "Reference map"
-    to: "/docs/en/reference"
+    to: "/reference"
     icon: "i-lucide-map"
   - label: "Architecture"
-    to: "/docs/en/architecture"
+    to: "/architecture"
     icon: "i-lucide-landmark"
 ---
 

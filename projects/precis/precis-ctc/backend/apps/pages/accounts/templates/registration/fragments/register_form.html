@@ -4,8 +4,8 @@
 {% if success %}
 {# ===== SUCCESS CONFIRMATION STATE ===== #}
 <div class="auth__success" role="status" aria-live="polite" style="text-align:center;padding:2rem 0;">
-  <div style="font-size:3rem;margin-bottom:1rem;">✓</div>
-  <h2 class="auth__form-title">{% trans "Account Created!" %}</h2>
+  <div class="auth__success-mark" style="font-family:var(--font-mono);font-size:3rem;line-height:1;color:hsl(var(--fu-link));margin-bottom:1rem;">[ OK ]</div>
+  <h2 class="auth__form-title">{% trans "Account Created" %}</h2>
   <p class="auth__form-subtitle" style="margin-top:0.5rem;">
     {% trans "We've sent a confirmation email to" %}
     <strong>{{ email }}</strong>.
@@ -15,8 +15,7 @@
 {% else %}
 
 {% if error %}
-<div class="form__validation-message form__validation-message--error" role="alert" aria-live="assertive"
-     style="opacity:1;transform:none;margin-bottom:1rem;">
+<div class="alert alert-danger" role="alert" aria-live="assertive">
   {{ error }}
 </div>
 {% endif %}
@@ -30,64 +29,55 @@
       novalidate>
   {% csrf_token %}
 
-  <div class="form__group {% if form.full_name.errors %}form__group--error{% endif %}">
-    <label class="form__label form__label--required" for="id_full_name">{% trans "Full Name" %}</label>
-    <div class="form__input-wrapper {% if form.full_name.errors %}form__input-wrapper--error{% endif %}">
-      <input type="text"
-             name="full_name"
-             id="id_full_name"
-             class="form__input"
-             placeholder="{% trans 'Enter your full name' %}"
-             value="{{ form.full_name.value|default:'' }}"
-             autocomplete="name"
-             required>
-    </div>
+  <div class="form__group {% if form.full_name.errors %}is-invalid{% endif %}">
+    <label class="form__label" for="id_full_name">{% trans "Full Name" %}</label>
+    <input type="text"
+           name="full_name"
+           id="id_full_name"
+           class="form__input {% if form.full_name.errors %}is-invalid{% endif %}"
+           placeholder="{% trans 'Enter your full name' %}"
+           value="{{ form.full_name.value|default:'' }}"
+           autocomplete="name"
+           required>
     {% if form.full_name.errors %}
-    <span class="form__validation-message form__validation-message--error" role="alert"
-          style="opacity:1;transform:none;">{{ form.full_name.errors.0 }}</span>
+    <p class="invalid-feedback">{{ form.full_name.errors.0 }}</p>
     {% endif %}
   </div>
 
-  <div class="form__group {% if form.email.errors %}form__group--error{% endif %}">
-    <label class="form__label form__label--required" for="id_email">{% trans "Email Address" %}</label>
-    <div class="form__input-wrapper {% if form.email.errors %}form__input-wrapper--error{% endif %}">
-      <input type="email"
-             name="email"
-             id="id_email"
-             class="form__input"
-             placeholder="you@example.com"
-             value="{{ form.email.value|default:'' }}"
-             autocomplete="email"
-             required>
-    </div>
+  <div class="form__group {% if form.email.errors %}is-invalid{% endif %}">
+    <label class="form__label" for="id_email">{% trans "Email Address" %}</label>
+    <input type="email"
+           name="email"
+           id="id_email"
+           class="form__input {% if form.email.errors %}is-invalid{% endif %}"
+           placeholder="you@example.com"
+           value="{{ form.email.value|default:'' }}"
+           autocomplete="email"
+           required>
     {% if form.email.errors %}
-    <span class="form__validation-message form__validation-message--error" role="alert"
-          style="opacity:1;transform:none;">{{ form.email.errors.0 }}</span>
+    <p class="invalid-feedback">{{ form.email.errors.0 }}</p>
     {% endif %}
   </div>
 
-  <button type="submit" class="btn btn--primary" id="submit-btn">
-    {% trans "Create Account" %}
+  <button type="submit" class="btn" id="submit-btn">
+    <span class="btn__text">{% trans "Create Account" %}</span>
   </button>
 
-  <!-- Privacy Policy Link -->
-  <div class="form__group mt-3">
-    <p class="text-center" style="font-size: 0.875rem; color: var(--auth-text-secondary);">
-      {% trans "By creating an account, you agree to our" %}
-      <a href="#"
-         class="auth__link"
-         hx-get="{% url 'handlers:policy_modal' %}"
-         hx-target="body"
-         hx-swap="beforeend"
-         onclick="return false;">{% trans "privacy policy & terms" %}</a>
-    </p>
+  <div class="auth__footer" style="margin-top:1rem;">
+    {% trans "By creating an account, you agree to our" %}
+    <a href="#"
+       class="auth__link"
+       hx-get="{% url 'handlers:policy_modal' %}"
+       hx-target="body"
+       hx-swap="beforeend"
+       onclick="return false;">{% trans "privacy policy & terms" %}</a>
   </div>
 
 </form>
 
-<p class="auth__form-footer" style="text-align:center;margin-top:1.5rem;font-size:0.875rem;color:var(--auth-text-secondary);">
+<p class="auth__footer">
   {% trans "Already have an account?" %}
-  <a href="{% url 'plugins:login' %}" style="color:var(--auth-link-color);font-weight:600;text-decoration:none;">{% trans "Sign In" %}</a>
+  <a href="{% url 'accounts:login' %}" class="auth__link">{% trans "Sign In" %}</a>
 </p>
 
 {% endif %}

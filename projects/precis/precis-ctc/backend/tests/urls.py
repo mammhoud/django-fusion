@@ -9,6 +9,7 @@ from __future__ import annotations
 from django.urls import include, path
 
 from django_fusion.core.assets import urls as assets_urls
+from apps.pages.accounts.site.views.registration import InviteAcceptView
 from apps.pages.blog import api as blog_api
 from apps.pages.pages import landing_api
 
@@ -32,5 +33,17 @@ urlpatterns = [
     # partials/auth_buttons.html → plugins:* / plugins:profile:*).
     path("i18n/setlang/", landing_api.set_language_api, name="set_language"),
     path("i18n/", include("django.conf.urls.i18n")),
+    # Auth/accounts — templates use {% url 'accounts:…' %} and
+    # {% url 'handlers:…' %}.  Both namespaces must be present so
+    # template renders in test context don't NoReverseMatch.
+    path("accounts/", include("apps.pages.accounts.urls", namespace="accounts")),
+    # Invitation landing — mirrors the root-level route in apps/urls.py so
+    # the invite-accept regression tests exercise the real view.
+    path(
+        "invite/<str:token>/",
+        InviteAcceptView.as_view(),
+        name="invite-accept",
+    ),
+    path("", include("apps.handlers.legacy_urls")),
     path("", include("apps.pages.urls", namespace="plugins")),
 ]

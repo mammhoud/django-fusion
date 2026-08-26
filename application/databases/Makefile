@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
-CODER_COMPOSE_FILE := ../docker-compose.yml
+CODER_COMPOSE_FILE := ../tools/coder/docker-compose.yml
 
 .PHONY: help up down deploy build logs status restart ps clean setup deploy-db deploy-db-force
 

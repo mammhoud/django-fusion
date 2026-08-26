@@ -25,16 +25,16 @@ tags:
   - publishing
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "CTC product docs"
-    to: "/docs/en/precis-ctc"
+    to: "/precis-ctc"
     icon: "i-lucide-heart-pulse"
   - label: "Content strategy"
-    to: "/docs/en/precis-ctc/content-strategy"
+    to: "/precis-ctc/content-strategy"
     icon: "i-lucide-pen-tool"
   - label: "Publishing workflow"
-    to: "/docs/en/precis-ctc/publishing-and-production"
+    to: "/precis-ctc/publishing-and-production"
     icon: "i-lucide-send"
 ---
 

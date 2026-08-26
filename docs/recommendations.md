@@ -1,3 +1,37 @@
+---
+title: Recommendations
+description: The shortest path from the current repository state to the next safe, valuable work — priorities and sequencing.
+navigation:
+  title: Recommendations
+  icon: i-lucide-star
+object:
+  type: "reference"
+  id: "recommendations.index"
+attributes:
+  source_path: "recommendations.md"
+  canonical_route: "/docs/en/recommendations"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - recommendations
+  - priorities
+  - sequencing
+  - planning
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Project Awareness"
+    to: "/guides/00-project-awareness"
+    icon: "i-lucide-compass"
+  - label: "Plans"
+    to: "/plans"
+    icon: "i-lucide-file-text"
+---
+
 # ⭐ Recommendations First
 
 > **Purpose:** the shortest path from the current repository state to the next safe, valuable work.

@@ -22,10 +22,10 @@ tags:
   - saas
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Loop-CRM product docs"
-    to: "/docs/en/loop-crm"
+    to: "/loop-crm"
     icon: "i-lucide-handshake"
 ---
 

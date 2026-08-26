@@ -23,13 +23,13 @@ tags:
   - project-awareness
 links:
   - label: "Architecture reference"
-    to: "/docs/en/architecture"
+    to: "/architecture"
     icon: "i-lucide-landmark"
   - label: "Canonical project structure"
-    to: "/docs/en/project-structure"
+    to: "/project-structure"
     icon: "i-lucide-folder-tree"
   - label: "Documentation build"
-    to: "/docs/en/guides/09-docus"
+    to: "/guides/09-docus"
     icon: "i-lucide-book-open"
 ---
 

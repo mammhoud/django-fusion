@@ -32,6 +32,9 @@ interface Props {
   gallery?: GalleryItem[];
   /** Optional evidence points shown when no gallery is provided. */
   evidence?: { value: string; label: string }[];
+  /** CMS evidence panel copy (HomePage.home_chrome → evidence_panel). */
+  evidenceTitle?: string;
+  evidenceText?: string;
   /** Page-specific visual treatment for the shared hero component. */
   variant?: 'home' | 'research' | 'learning' | 'archive' | 'legal' | 'network' | 'contact' | 'product';
   /** Optional breadcrumb override; defaults to Home / <heading>. */
@@ -39,19 +42,22 @@ interface Props {
 }
 
 const {
-  eyebrow = 'server-rendered · zero heavy SPA',
-  heading = 'Your website, delivered as',
-  accent = 'plain HTML',
+  eyebrow = 'ctc research · medical research center',
+  heading = 'Clear evidence for',
+  accent = 'better health decisions',
   intro =
-    'CTC Research advances health through interdisciplinary innovation — medical AI, clinical evidence, and high-impact research, delivered as fast, server-rendered documents.',
-  primaryCta = { label: 'Start building', href: '/#cta' },
-  secondaryCta = { label: 'Read the docs', href: '/about' },
+    'A medical research center that helps clinicians, researchers, and medical writers ask better questions, design sound studies, and publish results people can trust.',
+  primaryCta = { label: 'Browse courses', href: '/courses/' },
+  secondaryCta = { label: 'About the center', href: '/about/' },
   gallery = [],
   evidence = [
     { value: '17+', label: 'years of research' },
     { value: '6', label: 'course programs' },
     { value: '7', label: 'languages' },
   ],
+  evidenceTitle = 'Evidence you can rely on',
+  evidenceText =
+    'The center supports clinical studies, evidence reviews, medical writing, and responsible use of AI — so health decisions rest on a solid foundation.',
   variant = 'research',
   breadcrumbs = [{ label: 'Home', href: '/' }, { label: heading }],
 } = Astro.props;
@@ -69,7 +75,7 @@ const showBreadcrumb = breadcrumbs.length > 1;
   <div class="hero__inner">
     <!-- ghost Protocol Mark watermark -->
     <svg class="hero__ghost" viewBox="0 0 200 200" fill="none" aria-hidden="true">
-      <circle cx="98" cy="92" r="9" stroke="#00a1b3" stroke-width="3"/>
+      <circle cx="98" cy="92" r="9" stroke="#E61919" stroke-width="3"/>
       <rect x="60" y="40" width="16" height="128" fill="currentColor"/>
       <rect x="76" y="40" width="56" height="16" fill="currentColor"/>
       <rect x="76" y="84" width="44" height="16" fill="currentColor"/>
@@ -93,11 +99,10 @@ const showBreadcrumb = breadcrumbs.length > 1;
       <h1
         class="hero__heading"
         x-data x-intersect="$el.classList.add('reveal-visible')"
-        data-l10n="hero.title"
       >
-        {heading}{' '}
+        <span data-l10n="hero.title">{heading}</span>{' '}
         <span class="hero__accent">
-          <span class="relative z-10">{accent}</span>
+          <span class="relative z-10" data-l10n="hero.accent">{accent}</span>
           <span class="hero__accent-mark" aria-hidden="true"></span>
         </span>
       </h1>
@@ -148,16 +153,15 @@ const showBreadcrumb = breadcrumbs.length > 1;
           ) : (
             <div class="hero__evidence">
               <p class="tag-marker !text-fu-teal">evidence · ctc research</p>
-              <p class="hero__evidence-title">A center built on method</p>
-              <p class="hero__evidence-text">
-                Clinical trial design, biostatistics, evidence synthesis, and
-                responsible medical AI — protocols reduced to reproducible method.
+              <p class="hero__evidence-title" data-l10n="home_chrome.evidence_panel.title">{evidenceTitle}</p>
+              <p class="hero__evidence-text" data-l10n="home_chrome.evidence_panel.text">
+                {evidenceText}
               </p>
               <div class="hero__evidence-grid">
-                {evidence.map((point) => (
+                {evidence.map((point, index) => (
                   <div class="hero__evidence-item">
                     <span class="hero__evidence-value">{point.value}</span>
-                    <span class="hero__evidence-label">{point.label}</span>
+                    <span class="hero__evidence-label" data-l10n={`home_chrome.evidence_panel.stats.${index}.label`}>{point.label}</span>
                   </div>
                 ))}
               </div>

@@ -1,0 +1,51 @@
+# =============================================================================
+# xyOps — self-hosted operations automation platform
+# =============================================================================
+# Job scheduling, visual workflows, server monitoring, alerting, tickets, and
+# incident management. Served at its own subdomain ops.structa.cloud via
+# Traefik (application/proxy/configs/traefik/dynamic/xyops.yml).
+# xyOps has no native sub-path support, so it gets a dedicated subdomain.
+#
+# Networks: `common` for Prometheus scrape access, `traefik-net` for routing.
+# Data: ./xyops-data/ ./xyops-conf/ ./xyops-logs/ (gitignored).
+#
+# Default credentials: admin / admin — change immediately after first login.
+# =============================================================================
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+services:
+  xyops:
+    image: ghcr.io/pixlcore/xyops:${XYOPS_VERSION:-latest}
+    container_name: xyops
+    hostname: ${XYOPS_HOSTNAME:-xyops}
+    init: true
+    restart: unless-stopped
+    environment:
+      XYOPS_xysat_local: "${XYOPS_XYSAT_LOCAL:-true}"
+      XYOPS_masters: "${XYOPS_HOSTNAME:-xyops}"
+      XYOPS_base_app_url: ${XYOPS_BASE_URL:-https://ops.structa.cloud}
+      TZ: ${TZ:-America/Los_Angeles}
+    ports:
+      - "${XYOPS_HTTP_PORT:-5522}:5522"
+      - "${XYOPS_HTTPS_PORT:-5523}:5523"
+    volumes:
+      - ./xyops-data:/opt/xyops/data
+      - ./xyops-conf:/opt/xyops/conf
+      - ./xyops-logs:/opt/xyops/logs
+      # Bind the Docker socket only when xyOps needs to launch containers
+      # or use container-based Marketplace plugins. Remove for tighter security.
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - common
+      - traefik-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:5522/api/app/ping >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s

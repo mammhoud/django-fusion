@@ -157,7 +157,7 @@ FUSION_TASK_MODULES = [
 FUSION_SITE_NAME = cfg("FUSION_SITE_NAME", "CTC Research")
 FUSION_COMPANY_NAME = cfg("FUSION_COMPANY_NAME", "CTC Research")
 FUSION_CREATOR_NAME = cfg("FUSION_CREATOR_NAME", "CTC Research Team")
-FUSION_PRIMARY_COLOR = cfg("FUSION_PRIMARY_COLOR", "#00a1b3")
+FUSION_PRIMARY_COLOR = cfg("FUSION_PRIMARY_COLOR", "#E61919")
 FUSION_SECONDARY_COLOR = cfg("FUSION_SECONDARY_COLOR", "#008080")
 
 
@@ -223,3 +223,6 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].append(
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "apps.pages.context_processors.seo_context_processor"
 )
+
+
+

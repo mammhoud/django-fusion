@@ -21,10 +21,10 @@ tags:
   - docus
 links:
   - label: "AI & Agents home"
-    to: "/docs/en/ai"
+    to: "/ai"
     icon: "i-lucide-bot"
   - label: "Docus implementation"
-    to: "/docs/en/guides/09-docus"
+    to: "/guides/09-docus"
     icon: "i-lucide-book-marked"
   - label: "Skill: structa-doc-authoring"
     to: "https://github.com/mammhoud/structa.cloud/tree/generic/.agents/skills/structa-doc-authoring"

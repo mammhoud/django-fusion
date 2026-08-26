@@ -1,4 +1,38 @@
-# Libraries — Overview
+---
+title: Libraries
+description: Reusable Python packages powering every Structa Cloud project — django-fusion and more.
+navigation:
+  title: Libraries
+  icon: i-lucide-package
+object:
+  type: "reference"
+  id: "libs.index"
+attributes:
+  source_path: "libs/README.md"
+  canonical_route: "/docs/en/libs"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - libraries
+  - django-fusion
+  - reusable
+  - packages
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "django-fusion"
+    to: "/libs/django-fusion"
+    icon: "i-lucide-puzzle"
+  - label: "Auth Customization"
+    to: "/libs/auth-customization"
+    icon: "i-lucide-shield"
+---
+
+# 📦 Libraries — Reusable Packages
 
 > Reusable Python packages powering every Structa Cloud project.
 

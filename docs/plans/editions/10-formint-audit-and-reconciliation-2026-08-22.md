@@ -23,13 +23,13 @@ tags:
   - design-system
 links:
   - label: "Formint edition plans"
-    to: "/docs/en/plans/editions"
+    to: "/plans/editions"
     icon: "i-lucide-layers"
   - label: "Feature comparison"
-    to: "/docs/en/plans/editions/comparison"
+    to: "/plans/editions/comparison"
     icon: "i-lucide-table-2"
   - label: "Formint product docs"
-    to: "/docs/en/pos"
+    to: "/pos"
     icon: "i-lucide-store"
 ---
 

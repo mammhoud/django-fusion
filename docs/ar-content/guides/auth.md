@@ -75,7 +75,7 @@ SMTP_RECIPIENT='Support <support@site.com>'
 
 ---
 
-## مصادقة مواقع Django (precis-ctc, lms, VResume)
+## مصادقة مواقع Django (CTC Research, LMS, VResume)
 
 ### الإطار
 
@@ -131,7 +131,7 @@ FACEBOOK_OAUTH_SECRET=...
 | MFA | غير متاح | TOTP (الملف الشخصي) + WebAuthn اختياري |
 | إعادة تعيين كلمة المرور | غير متاح | عبر البريد (يتطلب SMTP) |
 
-## Remarks & Notes
+## ملاحظات وإرشادات
 
-- النسخة الإنجليزية الكاملة: [`/docs/en/guides/02-auth`](/docs/en/guides/02-auth).
-- راجع دليل WebAuthn/Passkeys: [`/docs/en/guides/auth-webauthn-passkeys`](/docs/en/guides/auth-webauthn-passkeys).
+- النسخة الإنجليزية الكاملة: [`/docs/en/guides/03-auth`](/docs/en/guides/03-auth).
+- راجع دليل WebAuthn/Passkeys: [`/docs/en/guides/auth/webauthn-passkeys`](/docs/en/guides/auth/webauthn-passkeys).

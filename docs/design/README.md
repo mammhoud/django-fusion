@@ -27,10 +27,10 @@ tags:
   - templates
 links:
   - label: "Theme library"
-    to: "/docs/en/design/architecture-guide"
+    to: "/design/architecture-guide"
     icon: "i-lucide-palette"
   - label: "Design system spec"
-    to: "/docs/en/design/developer-guide"
+    to: "/design/developer-guide"
     icon: "i-lucide-wrench"
 ---
 

@@ -20,10 +20,10 @@ tags:
   - docus
 links:
   - label: "Project awareness"
-    to: "/docs/en/guides/00-project-awareness"
+    to: "/guides/00-project-awareness"
     icon: "i-lucide-compass"
   - label: "Architecture"
-    to: "/docs/en/architecture"
+    to: "/architecture"
     icon: "i-lucide-landmark"
 ---
 
@@ -105,7 +105,7 @@ structa.cloud/
 │   │   └── previews/formints/        # Formint product preview images
 │   ├── guides/                       # Step-by-step numbered walkthroughs
 │   ├── plans/                        # Single active plan registry + legacy archive
-│   ├── precis/  loop-crm/  syntara/  pos/  precis-ctc/   # Per-product references
+│   ├── precis/  loop-crm/  syntara/  pos/  precis/client/ctc-research/   # Per-product references
 │   ├── libs/                         # Shared library docs (django-fusion)
 │   ├── startup/                      # Private market strategy per product
 │   ├── ai/                           # Agents, prompts, MCP
@@ -122,7 +122,7 @@ structa.cloud/
 
 - [🧭 Project awareness and computation guide](guides/00-project-awareness.md)
 - [⭐ Recommendations first](recommendations.md)
-- [🛠️ Project Setup & Build Guides](setup-guides.md) — per-project setup/build indexes
+- [🔧 Setup & Build](guides/02-setup.md) — per-project setup/build indexes + CI workflows
 - [📚 Guides](guides/) — step-by-step tutorials
 - [🗺️ Reference map](REFERENCE.md) — every docs dir/subdir, its owning project, and what each file references
 - [🛠️ Commands & delegation](COMMANDS.md) — unified verb naming, delegation chain, and the deploy cascade
@@ -141,8 +141,8 @@ structa.cloud/
 - [🤖 AI & Agents](ai/) — agent instructions, prompts, and skills
 - [✍️ Documentation authoring prompt](ai/documentation-authoring.md) — the powerful doc-generation prompt (emoji, diagrams, ERD, previews, EN/AR)
 - [🚀 Startup & Market Strategy](startup/README.md) — 🔒 private: commercial ICP, MVP canvas, TAM/SAM/SOM, and offers; [full portfolio master](startup/STRATEGY.md)
-- [🏥 CTC content strategy](precis-ctc/content-strategy.md) — editorial ICP, market research, topic clusters, and measurement
-- [📝 CTC publishing workflow](precis-ctc/publishing-and-production.md) — review gates, localization, release verification, and rollback
+- [🏥 CTC content strategy](precis/client/ctc-research/content-strategy.md) — editorial ICP, market research, topic clusters, and measurement
+- [📝 CTC publishing workflow](precis/client/ctc-research/publishing-and-production.md) — review gates, localization, release verification, and rollback
 - [📚 Docus implementation](guides/09-docus.md) — source generation, metadata, locales, build, and deployment
 
 ## Project Documentation
@@ -150,7 +150,7 @@ structa.cloud/
 | Product | Directory | Key Docs |
 |---|---|---|
 | **Precis** (LMS + landing) | [`precis/`](precis/README.md) | Architecture, Configuration, Courses, Landing (frontend/API/deployment) |
-| **CTC Research** | [`precis-ctc/`](precis-ctc/) | Content strategy, editorial ICP, market research, publishing workflow, production notes, and client case study |
+| **CTC Research** | [`precis/client/ctc-research/`](precis/client/ctc-research/) | Content strategy, editorial ICP, market research, publishing workflow, production notes, and client case study |
 | **Syntara** (Cypercloud) | [`syntara/`](syntara/) | Configuration, Features, Infrastructure |
 | **Loop-CRM** | [`loop-crm/`](loop-crm/) | Design system, Setup & build |
 | **Formint POS** | [`pos/`](pos/) | Editions, Backend (Rust), Sidecar, Cloud edition |

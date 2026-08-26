@@ -23,13 +23,13 @@ tags:
   - collectstatic
 links:
   - label: "Documentation home"
-    to: "/docs/en/"
+    to: "/"
     icon: "i-lucide-house"
   - label: "Commands reference"
-    to: "/docs/en/commands"
+    to: "/commands"
     icon: "i-lucide-terminal"
   - label: "Settings reference"
-    to: "/docs/en/dev/back-env/settings-reference"
+    to: "/dev/back-env/settings-reference"
     icon: "i-lucide-sliders-horizontal"
 ---
 
@@ -195,7 +195,7 @@ variables always win. Precis sites on the shared stack
 (`projects/precis/configs/settings/conf.py`) load the same project YAMLs
 before `Env/_site.yml` and resolve via `cfg()`.
 - **Frontend** — Astro consumes the same identity via the generated
-  `frontend/src/config/project.json` (created by `make config-front` and read
+  `frontend/src/config/site-config.json` (created by `make config-front` and read
   by `frontend/src/config/project.ts`); the YAML files are the single source
   of truth for the defaults those `PUBLIC_*` env vars override.
 - **Tooling** — `make config-show` / `make config-check` render the merged

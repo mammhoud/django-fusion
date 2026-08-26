@@ -1,4 +1,39 @@
-# Loop-CRM
+---
+title: Loop-CRM
+description: Unified sales + marketing CRM (Twenty + Postiz lineage) on Django + django-fusion.
+navigation:
+  title: Loop-CRM
+  icon: i-lucide-users
+object:
+  type: "product"
+  id: "loop-crm.index"
+attributes:
+  source_path: "loop-crm/README.md"
+  canonical_route: "/docs/en/loop-crm"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "loop-crm"
+tags:
+  - structa-cloud
+  - loop-crm
+  - crm
+  - sales
+  - marketing
+  - django-fusion
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Design System"
+    to: "/loop-crm/design-system"
+    icon: "i-lucide-palette"
+  - label: "Setup & Build"
+    to: "/loop-crm/setup-and-build"
+    icon: "i-lucide-wrench"
+---
+
+# 🤝 Loop-CRM — Unified Sales & Marketing CRM
 
 > Unified sales + marketing platform (Twenty DNA + Postiz DNA) on
 > Django + django-fusion. Canonical product location:

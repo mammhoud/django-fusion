@@ -194,7 +194,7 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
         help_text="CTA button link in header")
 
     # ── Brand / theme ──
-    primary_color = models.CharField(max_length=7, blank=True, default="#00a1b3",
+    primary_color = models.CharField(max_length=7, blank=True, default="#E61919",
         help_text="Primary brand color (hex)")
     accent_color = models.CharField(max_length=7, blank=True, default="#008080",
         help_text="Accent color for highlights (hex)")

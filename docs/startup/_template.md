@@ -21,7 +21,7 @@ tags:
   - strategy
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
 ---
 

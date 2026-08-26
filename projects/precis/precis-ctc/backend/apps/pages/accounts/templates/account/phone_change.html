@@ -1,30 +1,84 @@
-{% extends "base_auth.html" %}
-{% load i18n static %}
+{% extends 'layout/auth/skeleton.html' %}
+{% load i18n %}
 
-{% block auth_content %}
-<section class="fragment--form">
-  <section class="auth__card card card--form">
-    <header class="auth__form-header"><h2 class="auth__form-title">{% trans "Phone Numbers" %}</h2></header>
-    {% comp "account/snippets/messages.html" / %}
-    {% if phone_numbers %}
-      <div class="mb-4"><h3>{% trans "Your phone numbers" %}</h3>
-        {% for phone in phone_numbers %}
-          <div class="border p-2 mb-2 d-flex justify-content-between">
-            <span>{{ phone.number }} {% if phone.primary %}(Primary){% endif %} {% if phone.verified %}(Verified){% endif %}</span>
-            <div class="btn-group">{% if not phone.primary %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="phone" value="{{ phone.id }}"><input type="hidden" name="action_primary" value=""><button class="btn btn-sm btn-outline-primary">Make Primary</button></form>{% endif %}{% if not phone.verified %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="phone" value="{{ phone.id }}"><input type="hidden" name="action_send" value=""><button class="btn btn-sm btn-outline-secondary">Verify</button></form>{% endif %}{% if not phone.primary %}<form method="post" style="display:inline" onsubmit="return confirm('Remove?')">{% csrf_token %}<input type="hidden" name="phone" value="{{ phone.id }}"><input type="hidden" name="action_remove" value=""><button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button></form>{% endif %}</div>
-          </div>
-        {% endfor %}
+{% block title %}{% trans "Phone Numbers" %} — CTC Research{% endblock %}
+
+{% block content %}
+<div class="auth__card">
+  <header class="auth__form-header">
+    <span class="auth__form-eyebrow">Account</span>
+    <h1 class="auth__form-title">{% trans "Phone Numbers" %}</h1>
+    <p class="auth__form-subtitle">
+      {% trans "Manage the phone numbers associated with your account." %}
+    </p>
+  </header>
+
+  {% comp "account/snippets/messages.html" /%}
+
+  {% if phone_numbers %}
+  <div style="margin-bottom:1.5rem;">
+    <p class="form__label">{% trans "Your phone numbers" %}</p>
+    {% for phone in phone_numbers %}
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:2px solid hsl(var(--fu-ink) / 0.12);">
+      <span style="font-family:var(--font-mono);font-size:0.8125rem;font-weight:600;color:hsl(var(--fu-ink));">
+        {{ phone.number }}
+        {% if phone.primary %}<span class="auth__link">({% trans "Primary" %})</span>{% endif %}
+        {% if phone.verified %}<span style="color:hsl(var(--fu-ink) / 0.6);">({% trans "Verified" %})</span>{% endif %}
+      </span>
+      <div style="display:flex;gap:0.5rem;">
+        {% if not phone.primary %}
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="phone" value="{{ phone.id }}">
+          <input type="hidden" name="action_primary" value="">
+          <button class="btn btn--secondary" style="height:auto;padding:0.375rem 0.75rem;font-size:0.625rem;width:auto;box-shadow:2px 2px 0 0 hsl(var(--fu-ink));">
+            {% trans "Make Primary" %}
+          </button>
+        </form>
+        {% endif %}
+        {% if not phone.verified %}
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="phone" value="{{ phone.id }}">
+          <input type="hidden" name="action_send" value="">
+          <button class="btn btn--secondary" style="height:auto;padding:0.375rem 0.75rem;font-size:0.625rem;width:auto;box-shadow:2px 2px 0 0 hsl(var(--fu-ink));">
+            {% trans "Verify" %}
+          </button>
+        </form>
+        {% endif %}
+        {% if not phone.primary %}
+        <form method="post" style="display:inline;" onsubmit="return confirm('Remove?')">
+          {% csrf_token %}
+          <input type="hidden" name="phone" value="{{ phone.id }}">
+          <input type="hidden" name="action_remove" value="">
+          <button class="btn" style="height:auto;padding:0.375rem 0.75rem;font-size:0.625rem;width:auto;box-shadow:2px 2px 0 0 hsl(var(--fu-ink));" aria-label="{% trans 'Remove' %}">
+            {% trans "Remove" %}
+          </button>
+        </form>
+        {% endif %}
       </div>
-    {% else %}
-      <div class="alert alert-info">{% trans "No phone numbers associated." %}</div>
-    {% endif %}
-    <div><h3>{% trans "Add phone number" %}</h3>
-      <form method="post" action="{% url 'account_phone_change' %}" hx-post="{% url 'account_phone_change' %}" hx-target=".fragment--form" hx-swap="innerHTML">
-        {% csrf_token %}<input type="hidden" name="action_add" value="">
-        <div class="mb-3"><label for="id_number">{% trans "Phone number" %}</label><input id="id_number" name="number" type="tel" class="form-control" required></div>
-        <button class="btn btn-gradient w-100" type="submit">{% trans "Add Phone" %}</button>
-      </form>
     </div>
-  </section>
-</section>
-{% endblock auth_content %}
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="alert alert-warning">{% trans "No phone numbers associated." %}</div>
+  {% endif %}
+
+  <div>
+    <p class="form__label">{% trans "Add phone number" %}</p>
+    <form method="post"
+          action="{% url 'account_phone_change' %}"
+          hx-post="{% url 'account_phone_change' %}"
+          hx-target=".auth__panel--form"
+          hx-swap="innerHTML">
+      {% csrf_token %}
+      <input type="hidden" name="action_add" value="">
+      <div class="form__group">
+        <label class="form__label" for="id_number">{% trans "Phone number" %}</label>
+        <input id="id_number" name="number" type="tel" class="form__input" required>
+      </div>
+      <button class="btn" type="submit">{% trans "Add Phone" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock content %}

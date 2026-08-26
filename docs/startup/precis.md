@@ -24,13 +24,13 @@ tags:
   - saas
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Precis product docs"
-    to: "/docs/en/precis"
+    to: "/precis"
     icon: "i-lucide-graduation-cap"
   - label: "CMS / Builder profile"
-    to: "/docs/en/precis/cms-builder"
+    to: "/precis/cms-builder"
     icon: "i-lucide-blocks"
 ---
 

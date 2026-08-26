@@ -38,7 +38,7 @@ section is deep-merged on top of `default:`.
   cascade via `django_fusion.config.project.load_config(...)`, and resolves
   identity per origin with `ProjectConfig.resolve(base_url, side)`.
   Environment variables always win; YAML only supplies fallbacks.
-- **Frontend** — `make config-front` generates `frontend/src/config/project.json`
+- **Frontend** — `make config-front` generates `frontend/src/config/site-config.json`
   from these YAML files; `frontend/src/config/project.ts` reads it so
   identity/domains never drift between roads.
 - **Tooling** — `make config-show` / `make config-check` print the merged
@@ -51,7 +51,7 @@ section is deep-merged on top of `default:`.
 ```bash
 make config-show    # merged cascade + resolved front/back views + static plan
 make config-check   # validate required identity keys are resolvable
-make config-front   # regenerate frontend/src/config/project.json (Astro wire)
+make config-front   # regenerate frontend/src/config/site-config.json (Astro wire)
 ```
 
 ## Remarks & Notes

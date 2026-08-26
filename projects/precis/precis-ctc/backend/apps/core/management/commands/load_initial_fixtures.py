@@ -12,41 +12,16 @@ from pathlib import Path
 class Command(BaseCommand):
     help = "Load initial fixture data in the correct order"
     
-    # Define fixture loading order and dependencies
+    # Single merged fixture: all pages, translations, images, locales and the
+    # site record in one file (assets/fixtures/dump-data.json).
     FIXTURE_SEQUENCE = [
         {
-            "name": "locales",
-            "description": "Load language locales",
+            "name": "dump-data",
+            "description": "Load merged translated site data (pages, images, locales, site)",
             "paths": [
-                "assets/fixtures/production/just-locales.json",
-                "assets/fixtures/test/locales.json",
+                "assets/fixtures/dump-data.json",
             ],
             "required": True,
-        },
-        {
-            "name": "users",
-            "description": "Load user accounts",
-            "paths": [
-                "assets/fixtures/test/users.json",
-            ],
-            "required": False,
-        },
-        {
-            "name": "pages",
-            "description": "Load page data",
-            "paths": [
-                "assets/fixtures/test/pages.json",
-                "assets/fixtures/production/cleaned-dump-data.json",
-            ],
-            "required": False,
-        },
-        {
-            "name": "homepage_content",
-            "description": "Load HomePage demo content (slider, features, about, CTA)",
-            "paths": [
-                "assets/fixtures/seed/homepage_content.json",
-            ],
-            "required": False,
         },
     ]
     
@@ -119,6 +94,8 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("DRY RUN - Not actually loading"))
             return
         
+        self._remove_migration_welcome_page()
+        
         try:
             call_command(
                 "loaddata",
@@ -171,13 +148,14 @@ class Command(BaseCommand):
         for fpath_str in step["paths"]:
             fpath = Path(fpath_str)
             
-            # Handle relative paths from project root
+            # Handle relative paths from the site root (precis-ctc/), where
+            # the assets/ directory lives. BASE_DIR points at the site root
+            # (settings.base sets it to the precis-ctc project directory).
             if not fpath.is_absolute():
                 import django
                 from django.conf import settings
                 
-                # Try relative to settings module
-                project_root = Path(settings.BASE_DIR).parent.parent
+                project_root = Path(settings.BASE_DIR)
                 fpath = project_root / fpath_str
             
             if not fpath.exists():
@@ -188,6 +166,8 @@ class Command(BaseCommand):
                 size = fpath.stat().st_size / 1024
                 self.stdout.write(f"  📄 Would load: {fpath.name} ({size:.1f}KB)")
                 return False
+            
+            self._remove_migration_welcome_page()
             
             try:
                 self.stdout.write(f"  📥 Loading: {fpath.name}...", ending="")
@@ -204,6 +184,26 @@ class Command(BaseCommand):
         
         return False
     
+    def _remove_migration_welcome_page(self):
+        """Delete the Wagtail migration-created 'Welcome' homepage.
+
+        Wagtail's initial migration seeds a 'Welcome' page at /home/ which
+        collides with the dump's own Home Page (same url_path, ambiguous
+        natural-key FK resolution). Remove it before loading the fixture.
+        """
+        try:
+            from wagtail.models import Page
+
+            welcome = (
+                Page.objects.filter(depth=2, url_path="/home/", title__startswith="Welcome")
+                .first()
+            )
+            if welcome is not None:
+                welcome.delete()
+                self.stdout.write(self.style.WARNING("  🧹 Removed migration-created 'Welcome' homepage"))
+        except Exception:
+            pass  # Best-effort; loading proceeds even if deletion fails
+
     @staticmethod
     def _format_size(size_bytes):
         """Format bytes as human readable"""

@@ -21,7 +21,7 @@ tags:
   - django-fusion
 links:
   - label: "Design suite home"
-    to: "/docs/en/design"
+    to: "/design"
     icon: "i-lucide-palette"
 ---
 

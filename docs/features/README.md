@@ -1,4 +1,40 @@
-# 🎯 Features
+---
+title: Features
+description: Feature inventory across all Structa Cloud projects — LMS, Portfolio, Syntara, POS, CTC Research.
+navigation:
+  title: Features
+  icon: i-lucide-star
+object:
+  type: "reference"
+  id: "features.index"
+attributes:
+  source_path: "features/README.md"
+  canonical_route: "/docs/en/features"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - features
+  - inventory
+  - lms
+  - pos
+  - syntara
+  - precis
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Feature Roadmap"
+    to: "/features/feature-roadmap"
+    icon: "i-lucide-map"
+  - label: "Template Fields"
+    to: "/features/template-fields"
+    icon: "i-lucide-layout"
+---
+
+# 🎯 Features — Feature Inventory
 
 > Feature inventory across all Structa Cloud projects. Use this as a reference for what exists and where to find it.
 

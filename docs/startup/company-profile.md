@@ -23,13 +23,13 @@ tags:
   - private
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Product profiles 🔒"
-    to: "/docs/en/startup/product-profiles"
+    to: "/startup/product-profiles"
     icon: "i-lucide-boxes"
   - label: "Revenue model 🔒"
-    to: "/docs/en/startup/revenue-model"
+    to: "/startup/revenue-model"
     icon: "i-lucide-chart-line"
 ---
 

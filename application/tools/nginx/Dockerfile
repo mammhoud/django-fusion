@@ -12,4 +12,4 @@ FROM nginx:1.27-alpine
 RUN rm /etc/nginx/conf.d/default.conf
 
 COPY application/tools/nginx/default.conf.template /etc/nginx/templates/default.conf.template
-COPY application/tools/nginx/www /var/www/html
+COPY application/tools/nginx/www/tools /var/www/html/tools

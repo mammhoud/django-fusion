@@ -50,6 +50,20 @@ configure_site_environment("precis-ctc", module="FUSION", default_port=5070)
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Email defaults — set env vars BEFORE the shared config import so
+# configs/base/emails.py picks up the Mailpit strategy in dev.
+# ═══════════════════════════════════════════════════════════════════
+_IS_DOCKER = os.environ.get("DOCKER_ENV", "") == "1" or os.path.exists("/.dockerenv")
+os.environ.setdefault("EMAIL_STRATEGY", "mailpit" if not os.environ.get("SERVER_ENV") == "production" else "smtp")
+os.environ.setdefault("EMAIL_HOST", "mailpit" if _IS_DOCKER else "localhost")
+os.environ.setdefault("EMAIL_PORT", "1025")
+os.environ.setdefault("MAILPIT_HOST", "mailpit" if _IS_DOCKER else "localhost")
+os.environ.setdefault("MAILPIT_PORT", "1025")
+os.environ.setdefault("EMAIL_USE_SSL", "false")
+os.environ.setdefault("EMAIL_USE_TLS", "false")
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Shared Fusion Settings — CD layer, base Django, common FUSION_*
 # Also provides the ``cfg()`` helper for resolving site settings
 # from env vars, Dynaconf YAML (Env/_site.yml), or Python fallback.

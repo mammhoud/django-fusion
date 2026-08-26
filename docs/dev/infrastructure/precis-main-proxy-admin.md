@@ -21,10 +21,10 @@ tags:
   - lms
 links:
   - label: "Precis documentation"
-    to: "/docs/en/precis"
+    to: "/precis"
     icon: "i-lucide-graduation-cap"
   - label: "Proxy guide"
-    to: "/docs/en/dev/infrastructure/proxy"
+    to: "/dev/infrastructure/proxy"
     icon: "i-lucide-network"
 ---
 

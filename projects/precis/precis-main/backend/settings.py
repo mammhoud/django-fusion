@@ -547,6 +547,13 @@ WAGTAILADMIN_BASE_URL = os.environ.get(
     "WAGTAILADMIN_BASE_URL",
     _cfg("ADMIN.wagtailadmin_base_url", "http://localhost:8074"),
 )
+# SITE_URL is consumed by the invitation / newsletter / profile link builders
+# to produce absolute URLs in outbound email (InvitationService, newsletter
+# confirm/unsubscribe, Person.profile_url). Derive it from the admin base URL
+# unless explicitly overridden — env always wins, matching the cascade
+# contract. Without this the invitation links render as relative ``/invite/…``
+# paths that break for email recipients.
+SITE_URL = os.environ.get("SITE_URL", WAGTAILADMIN_BASE_URL)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

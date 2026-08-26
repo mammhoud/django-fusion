@@ -3,7 +3,6 @@
 
 {% block extra_head %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'styles/course-premium.css' %}">
 {% endblock extra_head %}
 
 {% block content %}
@@ -18,6 +17,7 @@
       </span>
       <h1 class="course-hero__title">{{ course.title }}</h1>
       <p class="course-hero__subtitle">{{ course.short_description }}</p>
+      <p class="course-hero__tagline">{% trans "CTC Research courses help clinicians, researchers, and medical writers make stronger decisions — from protocol to publication." %}</p>
       <div class="course-hero__actions">
         <a href="#enroll" class="btn-primary-pill">{% trans "Enroll now" %} <span class="btn-arrow">↗</span></a>
         <a href="/all-courses/" class="btn-ghost-pill">← {% trans "Back to catalog" %}</a>
@@ -57,7 +57,7 @@
         <div class="card-premium__shell">
           <div class="card-premium__core">
             <p class="tag-marker">{% trans "course overview" %}</p>
-            <h2 class="card-premium__title">{% trans "Why this course matters" %}</h2>
+            <h2 class="card-premium__title">{% trans "From protocol to publication" %}</h2>
             <p class="card-premium__body">{{ course.description }}</p>
             {% if course.header_image %}<img src="{{ bg.url }}" alt="{{ course.title }}" class="card-premium__hero-image" loading="lazy">{% endif %}
           </div>
@@ -82,7 +82,7 @@
       <article class="card-premium reveal">
         <div class="card-premium__shell">
           <div class="card-premium__core">
-            <h3 class="card-premium__section-title">{% trans "What you'll learn" %}</h3>
+            <h3 class="card-premium__section-title">{% trans "What you will learn" %}</h3>
             <ul class="card-premium__objectives-grid">
               {% for obj in course.objectives_list %}
               <li><span class="check-icon">✓</span><span>{{ obj }}</span></li>

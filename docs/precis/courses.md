@@ -23,7 +23,7 @@ tags:
   - enrollment
 links:
   - label: "Precis home"
-    to: "/docs/en/precis"
+    to: "/precis"
     icon: "i-lucide-graduation-cap"
 ---
 

@@ -24,10 +24,10 @@ tags:
   - astro
 links:
   - label: "Precis home"
-    to: "/docs/en/precis"
+    to: "/precis"
     icon: "i-lucide-graduation-cap"
   - label: "CMS / Builder profile"
-    to: "/docs/en/precis/cms-builder"
+    to: "/precis/cms-builder"
     icon: "i-lucide-blocks"
 ---
 

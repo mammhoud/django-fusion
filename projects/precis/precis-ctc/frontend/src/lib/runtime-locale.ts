@@ -58,6 +58,25 @@ interface LocalizedPagePayload {
   [key: string]: unknown;
 }
 
+/** Payload of GET /apis/contact/?lang=X (see ContactData in api.ts). */
+export interface ContactPagePayload {
+  language?: string;
+  title?: string;
+  description?: string;
+  form_title?: string;
+  form_description?: string;
+  button_text?: string;
+  success_message?: string;
+  error_message?: string;
+  fields?: Array<{
+    name?: string;
+    label?: string;
+    placeholder?: string;
+    [key: string]: unknown;
+  }>;
+  [key: string]: unknown;
+}
+
 /**
  * Fetch the localized page payload with bounded retry + no-store. Returns null
  * when the backend is unreachable so callers keep the static English shell
@@ -76,6 +95,32 @@ export async function fetchLocalizedPage(
       );
       if (response.ok) {
         const candidate = (await response.json()) as LocalizedPagePayload;
+        if (candidate.language === language) return candidate;
+      }
+    } catch {
+      // transient network failure — retry below
+    }
+    if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+  }
+  return null;
+}
+
+/**
+ * Fetch the localized contact payload (`/apis/contact/?lang=X`). The contact
+ * page renders from this endpoint (form fields, messages, contact info) so
+ * the runtime swap must use it instead of the generic page payload.
+ * Same bounded retry + no-store contract as fetchLocalizedPage.
+ */
+export async function fetchLocalizedContact(language: LanguageCode): Promise<ContactPagePayload | null> {
+  if (typeof window === 'undefined') return null;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      const response: Response = await window.fetch(
+        `/apis/contact/?lang=${encodeURIComponent(language)}&locale_refresh=1&_=${Date.now()}`,
+        { cache: 'no-store', headers: { Accept: 'application/json' } },
+      );
+      if (response.ok) {
+        const candidate = (await response.json()) as ContactPagePayload;
         if (candidate.language === language) return candidate;
       }
     } catch {
@@ -564,12 +609,45 @@ export function applyLocalizedPayload(payload: LocalizedPagePayload | null): voi
   if (!nodes.length) return;
 
   const getValue = (key: string): unknown => {
-    const [section, field] = key.split('.');
+    // Key sections are 2-part (`hero.title`) or 3+ part for CMS chrome
+    // (`home_chrome.slider_head.title`, `home_chrome.evidence_panel.stats.0.label`).
+    // Destructure the full remainder — `[section, ...rest]` — so nested
+    // chrome paths keep every segment after the section token.
+    const [section, ...rest] = key.split('.');
+    const field = rest.join('.');
+    // CMS section chrome (HomePage.home_chrome → slider_head.title, …).
+    // Paths like `home_chrome.evidence_panel.stats.0.label` walk nested
+    // objects/lists via numeric indices.
+    if (section === 'home_chrome') {
+      const chrome = (payload.home_chrome ?? {}) as Record<string, unknown>;
+      let node: unknown = chrome;
+      for (const segment of field.split('.')) {
+        if (!segment) return '';
+        if (node && typeof node === 'object') {
+          const obj = node as Record<string, unknown>;
+          node = obj[segment];
+        } else if (Array.isArray(node) && /^\d+$/.test(segment)) {
+          node = node[Number(segment)];
+        } else {
+          return '';
+        }
+      }
+      return typeof node === 'string' ? node : '';
+    }
+    if (section === 'contact' && payload.contact) {
+      const contact = payload.contact as Record<string, unknown>;
+      if (field === 'description') return contact.description ?? '';
+      if (field === 'form_title') return contact.form_title ?? '';
+      if (field === 'form_description') return contact.form_description ?? '';
+      if (field === 'button_text') return contact.button_text ?? '';
+      return '';
+    }
     if (section === 'hero' && payload.hero) {
       const hero = payload.hero as Record<string, unknown>;
       if (field === 'title' && hero.title) return hero.title;
       if (field === 'subtitle') return hero.subtitle ?? '';
       if (field === 'badge') return hero.badge ?? '';
+      if (field === 'accent' && hero.accent) return hero.accent;
       if (field === 'cta1') {
         const cta = (hero.primary_cta ?? {}) as { label?: string };
         return cta.label ?? '';
@@ -598,6 +676,57 @@ export function applyLocalizedPayload(payload: LocalizedPagePayload | null): voi
     const value = getValue(key);
     if (typeof value === 'string' && value.trim()) node.textContent = value.trim();
   });
+}
+
+/**
+ * Localize the contact page from the dedicated /apis/contact/ payload.
+ *
+ * The contact road is a static Astro artifact like every other page, but its
+ * copy comes from the dedicated contact endpoint (form fields, button,
+ * success/error messages, heading). This applies:
+ *
+ *   - `[data-l10n="contact.title"]`, `contact.description`, `contact.form_title`,
+ *     `contact.form_description`, `contact.button_text` → textContent
+ *   - `[data-l10n="contact.fields.<name>.label"]` / `.placeholder` → text /
+ *     placeholder (each form field carries its own name in the selector)
+ */
+export function applyContactPayload(payload: ContactPagePayload | null): void {
+  if (!payload) return;
+  const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-l10n]'));
+  if (!nodes.length) return;
+
+  const setText = (node: HTMLElement, key: string) => {
+    const [section, ...rest] = key.split('.');
+    if (section !== 'contact') return;
+    const field = rest.join('.');
+    if (field === 'title') return node.textContent = payload.title ?? '';
+    if (field === 'description') return node.textContent = payload.description ?? '';
+    if (field === 'form_title') return node.textContent = payload.form_title ?? '';
+    if (field === 'form_description') return node.textContent = payload.form_description ?? '';
+    if (field === 'button_text') return node.textContent = payload.button_text ?? '';
+    if (field.startsWith('field.')) {
+      // contact.field.<name>.label / .placeholder
+      const [, name, attr] = field.split('.');
+      const entry = (payload.fields ?? []).find((f) => f.name === name);
+      if (!entry) return;
+      if (attr === 'label') node.textContent = entry.label ?? '';
+      if (attr === 'placeholder') {
+        (node as HTMLInputElement | HTMLTextAreaElement).placeholder = entry.placeholder ?? '';
+      }
+    }
+  };
+
+  nodes.forEach((node) => setText(node, node.getAttribute('data-l10n') || ''));
+}
+
+/** Set document lang/dir + title for the contact page (no meta description here). */
+export function applyContactMetadata(payload: ContactPagePayload | null, language: LanguageCode): void {
+  const root = document.documentElement;
+  root.setAttribute('lang', language);
+  root.setAttribute('dir', language === 'ar' ? 'rtl' : 'ltr');
+  root.dataset.language = language;
+  root.dataset.localizedReady = language;
+  if (payload?.title) document.title = String(payload.title);
 }
 
 /** Apply the shared document-level metadata for the active locale. */
@@ -644,6 +773,19 @@ export async function syncRuntimeLocale(slug: string, buildLang: LanguageCode = 
   const payload = await fetchLocalizedPage(backendSlugFor(slug), language);
   applyLocalizedPayload(payload);
   applyDocumentMetadata(payload, language);
+  applyUiCopy(language);
+}
+
+export async function syncContactLocale(buildLang: LanguageCode = 'en'): Promise<void> {
+  const language = resolveRequestedLanguage(buildLang);
+  if (language === buildLang) {
+    applyContactMetadata(null, language);
+    applyUiCopy(language);
+    return;
+  }
+  const payload = await fetchLocalizedContact(language);
+  applyContactPayload(payload);
+  applyContactMetadata(payload, language);
   applyUiCopy(language);
 }
 

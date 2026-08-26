@@ -47,6 +47,21 @@ def _cfg_list(key: str, default: str) -> str:
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "precis-dev-key")
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
+
+# ── Multi-tenancy (django-tenants — schema-per-tenant) ──────────────────────
+# Schema-based multi-tenancy is PostgreSQL-only. The full django-tenants stack
+# (SHARED/TENANT app split, tenant router, PathTenantMiddleware, Postgres
+# backend, public URLconf) activates ONLY when DB_ENGINE is set to the
+# django_tenants backend. Under SQLite (dev default) everything runs exactly
+# as before — the tenant middleware and router are simply absent.
+#
+# TENANT_MODEL / TENANT_DOMAIN_MODEL must be set BEFORE INSTALLED_APPS because
+# django-tenants' DomainMixin references settings.TENANT_MODEL at class
+# definition time (module load), not lazily at runtime.
+TENANCY_ENABLED = os.environ.get("DB_ENGINE", "").startswith("django_tenants")
+TENANT_MODEL = "tenants.CourseCenter"
+TENANT_DOMAIN_MODEL = "tenants.CourseDomain"
+TENANT_BASE_URL = os.environ.get("TENANT_BASE_URL", "https://dev.structa.cloud")
 # Default to backend + localhost only (secure fallback). Production
 # docker-compose.yml sets DJANGO_ALLOWED_HOSTS explicitly with the public
 # domains appended, so this default never tightens a deployed site.
@@ -123,6 +138,101 @@ INSTALLED_APPS = [
     # the shared domain model layer (contacts, locations, newsletter, teams).
     "apps.components",
     "apps.domain",
+    "apps.tenants",  # Multi-tenant registry (Plan, Tenant, Domain, TenantRegistration)
+]
+
+# ── Multi-tenancy: shared vs tenant app split ────────────────────────────────
+# When TENANCY_ENABLED is True (PostgreSQL), django-tenants splits the database
+# into a shared ``public`` schema (SHARED_APPS) and per-center schemas
+# (TENANT_APPS).  Under SQLite every app stays in the flat list; the split is
+# purely declarative until the tenancy backend activates.
+#
+# Rules:
+#   SHARED_APPS  — one copy in public schema (admin, Wagtail UI, tenant registry)
+#   TENANT_APPS  — replicated into each CourseCenter's schema (users, pages, courses)
+#   INSTALLED_APPS = SHARED_APPS + (TENANT_APPS - SHARED_APPS) — deduped, order preserved
+#
+# Pattern lifted from Formint Cloud (formint-cloud/backend/configs/__init__.py).
+
+SHARED_APPS = [
+    # Django core (admin stays in public — one Django admin for all staff)
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.sites",
+    "django.contrib.staticfiles",
+    "django.contrib.humanize",
+    # HTMX
+    "django_htmx",
+    # Allauth — headless API + social providers (public schema)
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.google",
+    "allauth.mfa",
+    "allauth.headless",
+    # Wagtail admin + contrib (shared admin UI; page models are per-tenant)
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.contrib.settings",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail",
+    "modelcluster",
+    "taggit",
+    # django-fusion + task infra
+    "django_fusion",
+    "django_dramatiq",
+    "webpack_loader",
+    # Shared-app modules (no per-tenant data)
+    "apps.tenants",       # CourseCenter registry + plans (public schema)
+    "apps.handlers",      # PageHandler views + middleware (routing)
+    "apps.auth",          # Allauth adapters (one adapter, tenant-aware)
+    "apps.components",    # Templatetag helpers (no models)
+    "apps.tasks",         # Background task tracking
+]
+
+TENANT_APPS = [
+    # Django core (duplicated per schema → isolated users, sessions, content)
+    "django.contrib.contenttypes",
+    "django.contrib.auth",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    # HTMX
+    "django_htmx",
+    # Allauth (per-tenant users, social connections, MFA devices)
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.mfa",
+    # django-fusion (per-tenant component trees)
+    "django_fusion",
+    # Per-center data apps
+    "apps.pages",         # Wagtail page trees + site config
+    "apps.content",       # StreamField blocks
+    "apps.learning",      # Courses, enrollments, progress, certificates
+    "apps.domain",        # Shared domain models (contacts, newsletter, teams)
+]
+
+if TENANCY_ENABLED:
+    SHARED_APPS.insert(0, "django_tenants")
+
+# Build the effective app list: shared first, then tenant-only apps.
+# Under SQLite this is identical to the old flat INSTALLED_APPS because
+# every entry is already in SHARED_APPS.  Under PostgreSQL the router
+# splits shared → public, tenant → per-center schemas.
+INSTALLED_APPS = list(SHARED_APPS) + [
+    a for a in TENANT_APPS if a not in SHARED_APPS
 ]
 
 # ── Dramatiq worker broker ───────────────────────────────────────────────────
@@ -628,3 +738,15 @@ FUSION_TASK_MODULES = [
     "plugins.workers.legacy_email_tasks",
     "plugins.workers.content_tasks",
 ]
+
+if TENANCY_ENABLED:
+    # Switch to the django-tenants PostgreSQL backend (schema-aware)
+    DATABASES["default"]["ENGINE"] = "django_tenants.postgresql_backend"
+    DATABASE_ROUTERS = ["django_tenants.routers.TenantSyncRouter"]
+    # Path-based center middleware (replaces host-based TenantMainMiddleware)
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.contrib.sessions.middleware.SessionMiddleware") + 1,
+        "apps.tenants.middleware.PathCenterMiddleware",
+    )
+    PUBLIC_SCHEMA_URLCONF = "configs.urls_public"
+    SHOW_PUBLIC_IF_NO_TENANT_FOUND = True

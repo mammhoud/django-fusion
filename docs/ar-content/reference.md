@@ -23,7 +23,7 @@ navigation:
 | [`project-structure.md`](/docs/en/project-structure) | workspace | خريطة الدليل، قواعد الملكية والموضع |
 | [`overview.md`](/docs/en/overview) | workspace | نظرة عامة عالية المستوى |
 | [`recommendations.md`](/docs/en/recommendations) | workspace | الأولويات والتسلسل الموصى به |
-| [`setup-guides.md`](/docs/en/setup-guides) | workspace | فهارس الإعداد/البناء لكل مشروع |
+| [`guides/02-setup.md`](/docs/en/guides/02-setup) | workspace | فهارس الإعداد/البناء لكل مشروع + سير عمل CI |
 | [`recent-changes.md`](/docs/en/recent-changes) | workspace | سجل التغييرات الأخيرة |
 | [`REFERENCE.md`](/docs/en/reference) | workspace | هذه الخريطة المرجعية |
 | [`COMMANDS.md`](/docs/en/commands) | workspace | تسمية الأفعال الموحدة، سلسلة التفويض، تسلسل النشر |
@@ -34,7 +34,7 @@ navigation:
 |--------|----------------|------------------------|
 | [`precis/`](/docs/en/precis) | `precis-main` | README (فهرس) · ARCHITECTURE (بنية LMS + Landing) · configuration · courses · deployment |
 | [`precis/precis-landing/`](/docs/en/precis) | `precis-landing` (قديم) | backend-api · deployment · frontend |
-| [`precis-ctc/`](/docs/en/precis-ctc) | `precis-ctc` | README (فهرس) · content-strategy · publishing-and-production · client-production |
+| [`precis/client/ctc-research/`](/docs/en/precis/client/ctc-research) | `precis-ctc` | README (فهرس) · content-strategy · publishing-and-production · client-production |
 | [`syntara/`](/docs/en/syntara) | `syntara` | README (فهرس) · configuration · features · infrastructure · use-cases |
 | [`pos/`](/docs/en/pos) | `formints` | README (فهرس) · editions (مؤشر → `plans/editions/`) · cloud-edition — الوثائق المعيارية في `projects/formints/docs/` |
 | [`loop-crm/`](/docs/en/loop-crm) | `loop-crm` | README (فهرس) · design-system · setup-and-build |
@@ -50,7 +50,7 @@ navigation:
 
 | المجلد | المشروع المالك | الملفات ← ما تشير إليه |
 |--------|----------------|------------------------|
-| [`guides/`](/docs/en/guides) | workspace | README (فهرس) · 00-quickstart → 09-fusion-assets-health · auth-webauthn-passkeys · fixture-loading |
+| [`guides/`](/docs/en/guides) | workspace | README (فهرس) · 01-quickstart → 10-fusion-assets-health · auth/webauthn-passkeys · fixture-loading |
 | [`dev/`](/docs/en/dev) | workspace | README (فهرس) — مواضيع التطوير |
 | [`dev/infrastructure/`](/docs/en/dev/infrastructure) | infrastructure | README · deployment · proxy · routing-proxy · shared-worker · worker-stack |
 | [`features/`](/docs/en/features) | workspace | README · data-token-sync-tagging · feature-roadmap |
@@ -76,7 +76,7 @@ navigation:
 
 | المجلد | المشروع المالك | الملفات ← ما تشير إليه |
 |--------|----------------|------------------------|
-| [`ar-content/`](/docs/ar/) | workspace | index (الرئيسية) · overview · architecture · project-structure · guides (quickstart, deployment, config-cascade, setup, auth, dev, customize, clone-site, best-practices, docus) · libs/django-fusion · startup · precis-ctc · المنتجات (precis, pos, syntara, loop-crm, libs, shared) |
+| [`ar-content/`](/docs/ar/) | workspace | index (الرئيسية) · overview · architecture · project-structure · guides (quickstart, deploy, config-cascade, setup, auth, dev, customize, clone-site, best-practices, docus) · libs/django-fusion · startup · precis/client/ctc-research · المنتجات (precis, pos, syntara, loop-crm, libs, shared) |
 
 ## Remarks & Notes
 

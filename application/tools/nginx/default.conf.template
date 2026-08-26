@@ -48,28 +48,77 @@ server {
 # ------------------------------------------------------------
 # Tools — tools.structa.cloud (self-hosted utilities, path-based)
 # ------------------------------------------------------------
-# One navigation door for every utility under application/tools/. The root
-# serves a small landing page; each /<tool>/ prefix is proxied to its own
-# container by name on the external `common` network (Start/stop independent
-# of this proxy). Apps that support a base-path setting (Mailpit MP_WEBROOT,
-# Grafana serve_from_sub_path) are configured in their docker-compose so the
-# browser sees the subpath consistently.
-#
-#   /             → tools navigation page (nginx/www/tools/index.html)
+# One navigation door for every utility under application/tools/.
+# The root (/) and /login are served by tools-web (vanilla Node.js).
+# Each /<tool>/ prefix is proxied to its own container by name on the
+# external `common` network (Start/stop independent of this proxy).
+# Apps that support a base-path setting (Mailpit MP_WEBROOT,
+# Grafana serve_from_sub_path) are configured in their docker-compose
+# so the browser sees the subpath consistently.
+#    #   /             → tools-web:4321 (tools dashboard; sign-in via modal)
+    #   /login        → tools-web:4321 (redirects to /)
+#   /api/*        → tools-web:4321 (auth + unlock API endpoints)
 #   /adminer/     → adminer:8080
 #   /mailpit/     → mailpit:8025   (MP_WEBROOT=/mailpit/)
 #   /grafana/     → grafana:3000   (serve_from_sub_path=true)
 #   /docs/        → docus:3000
-#   /notes/       → blinko:1111
+#   /notes/       → blinko:1111   (the ONLY Blinko route; catch-all is 404)
 server {
     listen 80;
     server_name tools.structa.cloud tools.localhost;
 
-    # Tools navigation page at the root.
-    location = / {
+    # Brand mark / favicon.
+    location = /logo.svg {
         root /var/www/html/tools;
-        try_files /index.html =404;
-        add_header Cache-Control "no-cache";
+        add_header Cache-Control "public, max-age=86400";
+        types { image/svg+xml svg; }
+    }
+
+    # tools-web — dashboard (root) and API
+    location / {
+        set $tools_web_upstream tools-web:4321;
+        proxy_pass http://$tools_web_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+        proxy_set_header X-Forwarded-Prefix "";
+    }
+
+    location /login {
+        set $tools_web_upstream tools-web:4321;
+        proxy_pass http://$tools_web_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+        proxy_set_header X-Forwarded-Prefix "";
+    }
+
+    location /api/ {
+        set $tools_web_upstream tools-web:4321;
+        proxy_pass http://$tools_web_upstream;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+        proxy_set_header X-Forwarded-Prefix "";
     }
 
     # Health check endpoint (Traefik tools-service healthCheck).
@@ -134,6 +183,14 @@ server {
         proxy_buffering off;
     }
 
+    # `docs.structa.cloud` serves the Docus app at its root on a separate
+    # vhost; here on tools.structa.cloud the same app lives under /docs/.
+    # Redirect the no-slash form so it never falls through to the catch-all.
+    location = /docs {
+        absolute_redirect off;
+        return 301 /docs/;
+    }
+
     # Blinko serves its Next.js application from `/`, while the public
     # contract is `/notes/`. Strip the public prefix before proxying so the
     # upstream does not return a route-level 404 for `/notes/`.
@@ -159,19 +216,8 @@ server {
         client_max_body_size 128m;
     }
 
-    # Catch-all → Blinko SPA routing.
-    location / {
-        set $blinko_upstream blinko:1111;
-        proxy_pass http://$blinko_upstream;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_read_timeout 3600s;
-        client_max_body_size 128m;
-    }
+    # No catch-all here: the first `location /` above routes every
+    # unmatched path to tools-web, which serves its own 404 page.
+    # (A second `location /` returning 404 is illegal in nginx —
+    # "duplicate location \"/\"" — and crash-looped tools-proxy.)
 }

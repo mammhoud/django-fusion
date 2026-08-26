@@ -1,0 +1,58 @@
+{% extends 'layout/auth/skeleton.html' %}
+{% load i18n socialaccount %}
+
+{% block title %}{% trans "Social Connections" %} — CTC Research{% endblock %}
+
+{% block content %}
+<div class="auth__card">
+  <header class="auth__form-header">
+    <span class="auth__form-eyebrow">Account</span>
+    <h1 class="auth__form-title">{% trans "Connected Accounts" %}</h1>
+    <p class="auth__form-subtitle">
+      {% trans "Manage your connected third-party accounts." %}
+    </p>
+  </header>
+
+  {% if form.accounts %}
+  <div class="auth__social-accounts" style="margin-bottom:1.5rem;">
+    <form method="post"
+          action="{% url 'socialaccount_connections' %}"
+          hx-post="{% url 'socialaccount_connections' %}"
+          hx-target=".auth__panel--form"
+          hx-swap="innerHTML">
+      {% csrf_token %}
+      {% for base_account in form.accounts %}
+      {% with base_account.get_provider_account as account %}
+      <div style="display:flex;align-items:center;padding:0.75rem 0;border-bottom:2px solid hsl(var(--fu-ink) / 0.12);">
+        <label style="cursor:pointer;display:flex;align-items:center;gap:0.5rem;font-family:var(--font-mono);font-size:0.8125rem;font-weight:600;color:hsl(var(--fu-ink));">
+          <input type="radio" name="account" value="{{ base_account.id }}" style="accent-color:hsl(var(--fu-link));">
+          {{ account.get_brand.name }}
+          <span style="color:hsl(var(--fu-muted));font-weight:400;">— {{ account }}</span>
+        </label>
+      </div>
+      {% endwith %}
+      {% endfor %}
+      <button type="submit" class="btn btn--secondary" style="margin-top:1rem;">
+        {% trans "Remove Selected" %}
+      </button>
+    </form>
+  </div>
+  {% else %}
+  <div class="alert alert-warning">{% trans "You have no connected third-party accounts." %}</div>
+  {% endif %}
+
+  {% get_providers as socialaccount_providers %}
+  {% if socialaccount_providers %}
+  <div class="auth__divider">
+    <span class="auth__divider-text">{% trans "Connect an account" %}</span>
+  </div>
+  <div class="auth__social" style="flex-direction:column;align-items:stretch;margin-top:1rem;">
+    {% for provider in socialaccount_providers %}
+    <a href="{% provider_login_url provider.id process='connect' %}" class="btn btn--secondary">
+      {% trans "Connect" %} {{ provider.name }}
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}

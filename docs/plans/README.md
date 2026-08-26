@@ -29,6 +29,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Theme directory strategy | [`THEME_DIRECTORY_STRATEGY.md`](THEME_DIRECTORY_STRATEGY.md) | Repo-wide `theme/` layout + named design-variation contract |
 | Deletion register | [`deletion-manifest.md`](deletion-manifest.md) | Approval and rollback record for removals |
 | External library plan | [`../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md`](../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md) | Maintained in the django-fusion submodule |
+| Blinko Prisma → SurrealDB | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) | Incremental backend migration of the vendored blinko checkout (`application/tools/blinko/blinko/`) — Surreal client + accounts adapter, auth-first milestone, idempotent data-migration script |
 
 ## Current recommendations
 
@@ -47,7 +48,10 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Formint cross-edition audit & reconciliation | Proposed — audit dated 2026-08-22 | [`editions/10-formint-audit-and-reconciliation-2026-08-22.md`](editions/10-formint-audit-and-reconciliation-2026-08-22.md) |
 | Precis Landing | Active | [`precis-landing.md`](precis-landing.md) |
 | Loop-CRM merge | Foundation + tenancy/auth + tenant-scoped CRUD + channels + allauth + real screens shipped; AI hub & remaining adapters next | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) |
+| Precis Dev multi-tenant platform | Proposed | [`repository/precis-dev-multitenant.md`](repository/precis-dev-multitenant.md) |
 | CTC Research publish | Active | [`repository/ctc-research-publish-2026-08-18.md`](repository/ctc-research-publish-2026-08-18.md) |
+| Precis Dev multi-tenant | [`repository/precis-dev-multitenant.md`](repository/precis-dev-multitenant.md) | Schema-per-tenant via django-tenants, role-based auth (LMS/CRM manager), per-tenant Wagtail CMS landing pages, Dramatiq lifecycle workflows |
+| CTC Research MCP + django-fusion Integration | Proposed | [`repository/precis-ctc-mcp-django-fusion-integration.md`](repository/precis-ctc-mcp-django-fusion-integration.md) |
 | CTC Research cross-module workflows | Proposed | [`repository/precis-ctc-workflows.md`](repository/precis-ctc-workflows.md) |
 | Active project closeout | Audit complete | [`repository/active-project-closeout-2026-08-11.md`](repository/active-project-closeout-2026-08-11.md) |
 | Repository migration cleanup | Partial / gate-based | [`repository/migration-cleanup-master.md`](repository/migration-cleanup-master.md) |
@@ -58,6 +62,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | django-fusion Analyzer + Skeleton + Asset APIs | Planned | [`django-fusion/django-fusion-analyzer-skeleton-assets-plan.md`](django-fusion/django-fusion-analyzer-skeleton-assets-plan.md) |
 | Config cascade + project configs dirs | Active — baseline implemented | [`django-fusion/config-cascade-plan.md`](django-fusion/config-cascade-plan.md) |
 | Startup docs enhancement | Active — P1–P3 landed | [`repository/startup-docs-enhancement-plan.md`](repository/startup-docs-enhancement-plan.md) |
+| Blinko Prisma → SurrealDB (auth-first) | Proposed | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) |
 
 ## Recent renames & updates
 
@@ -101,7 +106,7 @@ See [`document-lifecycle.md`](document-lifecycle.md) for the full policy. Record
 docs/plans/
 ├── README.md                 # This canonical registry
 ├── ../recommendations.md     # Recommended priorities
-├── repository/               # Cross-repository plans (incl. Precis LMS + Syntara merge)
+├── repository/               # Cross-repository plans
 ├── editions/                 # Formint edition execution chain
 ├── loop-crm/                 # Loop-CRM merge plan (Twenty + Postiz)
 ├── django-fusion/            # Shared framework plans

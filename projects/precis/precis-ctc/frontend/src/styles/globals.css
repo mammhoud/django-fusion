@@ -1462,6 +1462,13 @@
   .team__avatar {
     @apply mx-auto mb-3 sm:mb-4 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center border-2 border-fu-ink bg-fu-paper text-fu-link transition-colors;
   }
+  /* Missing member photo → initials avatar (photo file absent on disk). */
+  .team__avatar--initials::after {
+    content: attr(data-initials);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
   .team__name {
     @apply font-display text-[0.95rem] sm:text-[1.05rem] font-semibold uppercase tracking-tight text-fu-ink;
   }

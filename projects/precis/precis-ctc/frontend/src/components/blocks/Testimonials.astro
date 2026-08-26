@@ -19,7 +19,7 @@ interface Props {
 const defaultTestimonials: Testimonial[] = [
   {
     quote:
-      'The evidence-synthesis training changed how our group writes protocols. Every study now starts with a reproducible method, not a blank page.',
+      'The evidence-synthesis training changed how our group writes protocols. Every study now starts with a clear, well-documented plan — not a blank page.',
     author: 'Dr. Laurens van Kleef',
     role: 'Postdoctoral Researcher',
     company: 'Erasmus MC',
@@ -145,7 +145,7 @@ const initials = (name: string) =>
               class="h-1.5 rounded-full transition-all duration-300"
               :class={`active === ${i} ? 'w-7 bg-fu-link' : 'w-4 bg-fu-line hover:bg-fu-link/50'`}
               @click={`active = ${i}`}
-              :aria-label={`Go to testimonial ${i + 1}`}
+              :aria-label={`'Go to testimonial ${i + 1}'`}
               title={testimonial.author}
             ></button>
           ))}

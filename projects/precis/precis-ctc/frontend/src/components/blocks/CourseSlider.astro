@@ -3,6 +3,7 @@ import type { CourseCard } from '@/lib/api';
 
 interface Props {
   courses: CourseCard[];
+  eyebrow?: string;
   heading?: string;
   intro?: string;
 }
@@ -21,8 +22,9 @@ interface Props {
  */
 const {
   courses = [],
+  eyebrow = 'the catalog',
   heading = 'Featured courses',
-  intro = 'Short, applied learning paths — protocols, evidence synthesis, and responsible medical AI, each reduced to method.',
+  intro = 'Short, practical learning paths that connect study design, evidence reviews, medical writing, and responsible use of AI in medicine.',
 } = Astro.props;
 
 // Deterministic strip: dedupe by base slug (drop -en/-sv/-fr/-de/-es/-ar/-ptbr
@@ -125,9 +127,9 @@ const ART = [
     <div class="container-fusion">
       <div class="course-slider__head">
         <div class="course-slider__title-group reveal-up">
-          <p class="tag-marker mb-3">the catalog</p>
-          <h2 id="course-slider-title" class="page-section__title mb-0">{heading}</h2>
-          <p class="mt-3 max-w-xl text-sm leading-relaxed text-fu-muted">{intro}</p>
+          <p class="tag-marker mb-3" data-l10n="home_chrome.course_head.eyebrow">{eyebrow}</p>
+          <h2 id="course-slider-title" class="page-section__title mb-0" data-l10n="home_chrome.course_head.title">{heading}</h2>
+          <p class="mt-3 max-w-xl text-sm leading-relaxed text-fu-muted" data-l10n="home_chrome.course_head.intro">{intro}</p>
         </div>
         <div class="course-slider__nav reveal-up" style="--reveal-delay: 0.08s">
           <span class="course-slider__counter" aria-hidden="true">

@@ -1,4 +1,39 @@
-# 🤖 AI — Agents, Prompts & MCP Integration
+---
+title: AI & Agents
+description: AI agent instructions, prompt engineering, MCP integration, and skills catalog for the Structa Cloud monorepo.
+navigation:
+  title: AI & Agents
+  icon: i-lucide-brain
+object:
+  type: "guide"
+  id: "ai.index"
+attributes:
+  source_path: "ai/README.md"
+  canonical_route: "/docs/en/ai"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - ai
+  - agents
+  - mcp
+  - prompts
+  - skills
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "MCP Integration"
+    to: "/ai/mcp-integration"
+    icon: "i-lucide-server"
+  - label: "Skills Catalog"
+    to: "/ai/skills-catalog"
+    icon: "i-lucide-cpu"
+---
+
+# 🤖 AI & Agents — Agents, Prompts & MCP Integration
 
 > Covers AI agent instructions, prompt engineering, and MCP server integration across the Structa Cloud monorepo.
 

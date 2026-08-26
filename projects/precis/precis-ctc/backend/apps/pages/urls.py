@@ -1,56 +1,15 @@
-"""Root URL patterns for precis-lms — served from apps/pages/."""
+"""Root URL patterns for precis-lms — served from apps/pages/.
+
+All authentication/accounts routes live in the single group defined by
+``apps/pages/accounts/urls.py`` (mounted at /accounts/, namespace
+``accounts``). This module only wires app includes and public routes.
+"""
 from importlib.util import find_spec
 
-from allauth.account.views import LoginView, LogoutView, PasswordResetView, SignupView
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import include, path
 from django.views import View
-from django.views.generic import TemplateView
-
-
-class NewsletterSubscribeView(View):
-    """Newsletter subscription — creates a pending Subscriber and triggers confirmation email."""
-
-    def post(self, request, *args, **kwargs):
-        email = request.POST.get("email", "").strip()
-        if not email:
-            return JsonResponse({"status": "error", "message": "Email is required."}, status=400)
-
-        from apps.domain.models.newsletter.subscriber import Subscriber
-
-        subscriber, created = Subscriber.objects.get_or_create(
-            email=email,
-            defaults={
-                "name": request.POST.get("name", "").strip(),
-                "status": "pending",
-                "source": "website_footer",
-            },
-        )
-
-        if not created and subscriber.status == "confirmed":
-            return JsonResponse({
-                "status": "ok",
-                "message": "You are already subscribed!",
-            })
-
-        # If previously unsubscribed, reactivate
-        if not created and subscriber.status == "unsubscribed":
-            subscriber.regenerate_tokens()
-            subscriber.status = "pending"
-            subscriber.save(update_fields=["status", "confirmation_token", "unsubscribe_token", "updated_at"])
-
-        # Send confirmation email (best-effort)
-        try:
-            from apps.domain.services.communication.newsletter import send_confirmation_email
-            send_confirmation_email(subscriber.id)
-        except Exception:
-            pass  # Non-blocking — subscription is still saved
-
-        return JsonResponse({
-            "status": "ok",
-            "message": "Thank you! Please check your email to confirm your subscription.",
-        })
 
 
 class NewsletterConfirmView(View):
@@ -108,29 +67,12 @@ class NewsletterUnsubscribeView(View):
         })
 
 
-app_name = "apps_pages"  # The effective namespace is "plugins" — set by namespace= in www/urls.py
+app_name = "apps_pages"  # The effective namespace is "plugins" — set by namespace= in apps/urls.py
 
 urlpatterns = [
-    # accounts plugin — explicit namespace so {% url 'accounts:...' %} resolves
-    path("accounts/", include("apps.pages.accounts.urls", namespace="accounts")),
     path("profile/", include("apps.pages.profile.urls", namespace="profile")),
     # LMS (courses, learning, enrollments)
     path("learning/", include("apps.learning.urls", namespace="lms")),
-    # Auth URL aliases
-    path("auth/login/", LoginView.as_view(), name="login"),
-    path("auth/logout/", LogoutView.as_view(), name="logout"),
-    path("auth/register/", SignupView.as_view(), name="register"),
-    path("auth/password/forgot/", PasswordResetView.as_view(), name="password_forgot"),
-    path(
-        "auth/privacy-modal/",
-        TemplateView.as_view(template_name="auth/privacy_modal_content.html"),
-        name="privacy_modal",
-    ),
-    path(
-        "auth/newsletter/subscribe/",
-        NewsletterSubscribeView.as_view(),
-        name="subscribe_newsletter",
-    ),
     # Newsletter confirmation & unsubscription (public, no auth required)
     path(
         "newsletter/confirm/<str:token>/",

@@ -1,3 +1,33 @@
+---
+title: Changelogs
+description: Version history and release notes across all Structa Cloud projects.
+navigation:
+  title: Changelogs
+  icon: i-lucide-git-commit
+object:
+  type: "reference"
+  id: "changelogs.index"
+attributes:
+  source_path: "changelogs/README.md"
+  canonical_route: "/docs/en/changelogs"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - changelogs
+  - releases
+  - version-history
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Recent Changes"
+    to: "/recent-changes"
+    icon: "i-lucide-history"
+---
+
 # 📝 Changelogs
 
 > Version history and release notes across all Structa Cloud projects — extracted from the real `CHANGELOG.md` at repo root.

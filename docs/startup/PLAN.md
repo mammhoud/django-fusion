@@ -24,13 +24,13 @@ tags:
   - private
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Pricing & offers"
-    to: "/docs/en/startup/pricing"
+    to: "/startup/pricing"
     icon: "i-lucide-tags"
   - label: "Sales playbook"
-    to: "/docs/en/startup/sales"
+    to: "/startup/sales"
     icon: "i-lucide-handshake"
 ---
 

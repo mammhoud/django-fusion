@@ -13,13 +13,13 @@
 http:
   routers:
     precis-landing-backend-http:
-      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`) || PathPrefix(`/i18n`))'
+      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`) || PathPrefix(`/i18n`) || PathPrefix(`/invite`))'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: precis-landing-backend
       priority: 200
     precis-landing-backend-https:
-      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`) || PathPrefix(`/i18n`))'
+      rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/documents`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/learning`) || PathPrefix(`/i18n`) || PathPrefix(`/invite`))'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: precis-landing-backend

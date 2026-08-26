@@ -1,14 +1,15 @@
 """Management command to send invite emails from emails.csv."""
 import csv
 import logging
+import secrets
+from datetime import timedelta
 from pathlib import Path
 
-from django.core.mail import send_mail
-from django.core.management.base import BaseCommand, CommandError
-from django.template.loader import render_to_string
-from django.urls import reverse
-from django.utils.crypto import get_random_string
+from django.conf import settings
+from django.utils import timezone
 from django_fusion.management.commands.base import BaseCommand
+
+from apps.domain.services.email.email_service import EmailService
 
 logger = logging.getLogger(__name__)
 
@@ -47,78 +48,96 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Reading emails from: {csv_path}")
 
-        # Read emails from CSV
-        emails = []
+        # Read email + role pairs from the CSV
+        invites = []
         try:
             with open(csv_path, "r") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
                     email = row.get("email", "").strip()
+                    role = row.get("role", "").strip()
                     if email:
-                        emails.append(email)
+                        invites.append({"email": email, "role": role})
         except Exception as e:
             raise CommandError(f"Error reading CSV file: {e}")
 
-        if not emails:
+        if not invites:
             raise CommandError("No emails found in CSV file")
 
-        self.stdout.write(f"Found {len(emails)} email(s) to invite")
+        self.stdout.write(f"Found {len(invites)} email(s) to invite")
+
+        site_name = getattr(settings, "WAGTAIL_SITE_NAME", "CTC Research")
+        site_url = getattr(settings, "SITE_URL", "").rstrip("/")
+        if not site_url:
+            try:
+                from wagtail.models import Site
+
+                site_url = f"http://{Site.objects.get(is_default_site=True).hostname}"
+            except Exception:
+                site_url = "http://localhost:8000"
 
         # Send invites
         sent_count = 0
         failed_count = 0
         sent_invites = []
 
-        for email in emails:
+        for invite in invites:
+            email = invite["email"]
+            role = invite["role"]
             try:
-                # Generate unique invite token
-                token = get_random_string(32)
-
-                # Prepare email
-                subject = "You're invited to precis-lms.com"
-                invite_url = f"http://localhost:8270/invite/{token}/"
-
-                # Try to render email template
-                try:
-                    html_message = render_to_string(
-                        "emails/invitation.html",
-                        {
-                            "email": email,
-                            "invite_url": invite_url,
-                            "token": token,
-                        },
-                    )
-                except:
-                    # Fallback to plain text
-                    html_message = f"""
-                    <h1>You're invited to precis-lms.com</h1>
-                    <p>Click the link below to accept your invitation:</p>
-                    <p><a href="{invite_url}">{invite_url}</a></p>
-                    <p>Or use this code: {token}</p>
-                    """
+                # Generate the token up front so the email goes out with a
+                # working /invite/<token>/ link.
+                token = secrets.token_urlsafe(32)
+                invite_url = f"{site_url}/invite/{token}/"
+                subject = f"You're invited to {site_name}"
 
                 if dry_run:
                     self.stdout.write(
-                        f"[DRY RUN] Would send invite to: {email} (token: {token})"
+                        f"[DRY RUN] Would send invite to: {email} "
+                        f"(role: {role or 'default'})"
                     )
-                else:
-                    # Send email
-                    send_mail(
-                        subject,
-                        f"Visit {invite_url} to accept your invitation",
-                        "noreply@precis-lms.com",
-                        [email],
-                        html_message=html_message,
-                        fail_silently=False,
+                    sent_invites.append(
+                        {"email": email, "role": role, "status": "dry-run"}
                     )
+                    sent_count += 1
+                    continue
 
-                    self.stdout.write(
-                        self.style.SUCCESS(f"✓ Sent invite to: {email}")
-                    )
+                # Route through EmailService so the invitation is persisted on
+                # an EmailLog (token + role) and the accept flow works. The
+                # service renders emails/invitation.html and stores the raw
+                # role in EmailLog.group_name for registration-time group
+                # assignment.
+                email_log = EmailService().send_invitation(
+                    recipient=email,
+                    context={
+                        "email": email,
+                        "recipient_email": email,
+                        "role": role,
+                        "site_name": site_name,
+                        "subject": subject,
+                        "token": token,
+                        "invite_url": invite_url,
+                    },
+                    queue=False,
+                )
 
+                # Persist the invite token so /invite/<token>/ can validate it
+                # and the registration flow can consume it exactly once.
+                email_log.invitation_token = token
+                email_log.token_expires_at = timezone.now() + timedelta(days=7)
+                email_log.save(
+                    update_fields=["invitation_token", "token_expires_at", "updated_at"]
+                )
+
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        f"✓ Sent invite to: {email} (role: {role or 'default'})"
+                    )
+                )
                 sent_invites.append(
                     {
                         "email": email,
+                        "role": role,
                         "token": token,
                         "status": "sent",
                     }
@@ -136,7 +155,7 @@ class Command(BaseCommand):
         self.stdout.write("\n" + "=" * 60)
         self.stdout.write("INVITE SUMMARY")
         self.stdout.write("=" * 60)
-        self.stdout.write(f"Total emails: {len(emails)}")
+        self.stdout.write(f"Total emails: {len(invites)}")
         self.stdout.write(self.style.SUCCESS(f"Sent: {sent_count}"))
         if failed_count > 0:
             self.stdout.write(self.style.ERROR(f"Failed: {failed_count}"))
@@ -145,7 +164,10 @@ class Command(BaseCommand):
         if sent_invites:
             self.stdout.write("\nSent invites:")
             for invite in sent_invites:
-                self.stdout.write(f"  - {invite['email']} (token: {invite['token']})")
+                self.stdout.write(
+                    f"  - {invite['email']} (role: {invite.get('role') or 'default'}"
+                    f"{', token: ' + invite['token'] if invite.get('token') else ''})"
+                )
 
         if dry_run:
             self.stdout.write(

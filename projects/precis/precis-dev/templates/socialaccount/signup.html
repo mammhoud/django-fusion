@@ -1,0 +1,34 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n allauth socialaccount %}
+{% block head_title %}{% trans "Almost There" %} · Structa Cloud{% endblock %}
+{% block auth_inner %}
+<p class="tag-marker" style="margin:0 0 .25rem;">account</p>
+<h2 style="margin:0 0 .25rem;font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem;font-weight:700;color:hsl(var(--fu-ink));">Almost There</h2>
+<p style="margin:0 0 1.5rem;font-size:.8rem;color:hsl(var(--fu-muted));">
+  {% blocktrans with provider_name=socialaccount.get_provider.name %}
+  You are about to sign in using {{ provider_name }}. Just one more step.
+  {% endblocktrans %}
+</p>
+
+<form method="post" action="{% url 'socialaccount_signup' %}">
+  {% csrf_token %}
+  {% for field in form %}
+    {% if field.is_hidden %}{{ field }}{% else %}
+    <div style="margin-bottom:1rem;">
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+      {{ field }}
+      {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+      {% if field.errors %}<ul class="errorlist">{% for error in field.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+  {% endif %}
+  <button type="submit" class="btn btn-primary" style="width:100%;padding:.7rem 1rem;">{% trans "Complete Sign Up" %}</button>
+</form>
+
+<p style="margin:1.25rem 0 0;text-align:center;font-size:.75rem;color:hsl(var(--fu-muted));">
+  <a href="{% url 'account_login' %}" style="font-weight:500;color:hsl(var(--fu-link));">← Back to sign in</a>
+</p>
+{% endblock %}

@@ -24,10 +24,10 @@ tags:
   - private
 links:
   - label: "Documentation home"
-    to: "/docs/en/"
+    to: "/"
     icon: "i-lucide-house"
   - label: "Project awareness"
-    to: "/docs/en/guides/00-project-awareness"
+    to: "/guides/00-project-awareness"
     icon: "i-lucide-compass"
 ---
 

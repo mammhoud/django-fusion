@@ -73,11 +73,11 @@ config-check: ## Validate required identity + database keys resolve from the con
 	@$(UV_RUN) python -c "from django_fusion.config.project import load_config; c = load_config('.'); req = {'SITE.name': 'precis-dev', 'SITE.primary_domain': 'dev.structa.cloud', 'SITE.domains': 'dev.structa.cloud', 'ADMIN.panel_path': '/admin/', 'DATABASE.type': 'sqlite|postgres', 'DATABASE.sqlite.name': 'db path or name', 'DATABASE.postgres.name': 'db name (from .env)'}; missing = [k for k, _ in req.items() if not c.get(k)]; print('CONFIG CHECK — OK ✅' if not missing else f'CONFIG CHECK — MISSING: {missing}'); raise SystemExit(1 if missing else 0)"
 
 # Wires the project config cascade into the Astro frontend: dumps the merged
-# identity/admin/css-panel sections to frontend/src/config/project.json, which
+# identity/admin/css-panel sections to frontend/src/config/site-config.json, which
 # the Astro module frontend/src/config/project.ts reads. Regenerate after any
 # edit to configs/*.yml or .env (env vars are NOT baked — they stay runtime).
-config-front: ## Generate frontend/src/config/project.json from the config cascade
-	@$(UV_RUN) python -c "from pathlib import Path; import json; from django_fusion.config.project import load_config; c = load_config('.'); data = {k: c.section(k) for k in ('SITE', 'ADMIN', 'CSS_PANEL', 'STATIC') if c.section(k)}; data.update({k: c.get(k) for k in ('DEBUG', 'FUSION_RENDER_FIRST', 'FRONTEND_PORT') if c.get(k) is not None}); out = Path('frontend/src/config/project.json'); out.parent.mkdir(parents=True, exist_ok=True); out.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n'); print('✅ wrote', out)"
+config-front: ## Generate frontend/src/config/site-config.json from the config cascade
+	@$(UV_RUN) python -c "from pathlib import Path; import json; from django_fusion.config.project import load_config; c = load_config('.'); data = {k: c.section(k) for k in ('SITE', 'ADMIN', 'CSS_PANEL', 'STATIC') if c.section(k)}; data.update({k: c.get(k) for k in ('DEBUG', 'FUSION_RENDER_FIRST', 'FRONTEND_PORT') if c.get(k) is not None}); out = Path('frontend/src/config/site-config.json'); out.parent.mkdir(parents=True, exist_ok=True); out.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n'); print('✅ wrote', out)"
 
 # Delegation alias — front/back config targets.
 front-config: config-front ## Alias for config-front

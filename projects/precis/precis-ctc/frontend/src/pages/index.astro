@@ -7,9 +7,8 @@ import HomeSlider from '@/components/blocks/HomeSlider.astro';
 import CourseSlider from '@/components/blocks/CourseSlider.astro';
 import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
 import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
-import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedMediaManifest, cachedCourseList, CONTENT_LANGUAGE } from '@/lib/api';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedMediaManifest, cachedCourseList } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
-import { teaserCopy } from '@/lib/teaser-translations';
 
 // ── Fetch from backend (SSG build-time), fall back to static content ──
 let siteSettings: SiteSettings | undefined;
@@ -35,6 +34,18 @@ const pageCta = pageData?.cta;
 const hasEditorialHero = Boolean(pageHero?.title && pageHero?.subtitle && pageHero?.primary_cta?.href);
 const pageStats = (pageData?.stats as any[] | undefined);
 const methods = pageData?.methods as string[] | undefined;
+
+// CMS-owned home section chrome (HomePage.home_chrome, localized per locale):
+// slider head, course slider head, hero evidence panel, learning teaser,
+// and the methods/programs section heads. Fallbacks are English-only so the
+// static shell still renders when the backend is unreachable at build time.
+const homeChrome = (pageData?.home_chrome ?? {}) as Record<string, any>;
+const sliderHead = homeChrome.slider_head ?? {};
+const courseHead = homeChrome.course_head ?? {};
+const evidencePanel = homeChrome.evidence_panel ?? {};
+const learningTeaser = homeChrome.learning_teaser ?? {};
+const methodsHead = homeChrome.methods_head ?? {};
+const programsHead = homeChrome.programs_head ?? {};
 
 // Media gallery items for the hero panel — from the seeded AboutPage gallery
 // (media_items), localized. Rendered only when the backend provides them.
@@ -145,23 +156,35 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
 >
   <Hero
     eyebrow={pageHero?.badge || 'ctc research · medical research center'}
-    heading={hasEditorialHero ? pageHero?.title : 'Turn clinical data into'}
+    heading={hasEditorialHero ? pageHero?.title : 'Health decisions, grounded in'}
     accent={hasEditorialHero && pageHero?.accent ? pageHero.accent : 'trusted evidence'}
-    intro={hasEditorialHero && pageHero?.subtitle ? pageHero.subtitle : 'A research center for clinicians, biostatisticians, and medical writers — protocols, evidence synthesis, and responsible AI, reduced to method.'}
+    intro={hasEditorialHero && pageHero?.subtitle ? pageHero.subtitle : 'A medical research center that helps clinicians, researchers, and medical writers design sound studies, read evidence carefully, and publish findings people can trust — from the first question to the final paper.'}
     primaryCta={hasEditorialHero && pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Start your learning path', href: '/courses/' }}
     secondaryCta={hasEditorialHero && pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
     gallery={heroGallery}
+    evidence={evidencePanel.stats ?? [
+      { value: '17+', label: 'years of research' },
+      { value: '6', label: 'course programs' },
+      { value: '7', label: 'languages' },
+    ]}
+    evidenceTitle={evidencePanel.title || 'Evidence you can rely on'}
+    evidenceText={evidencePanel.text || 'The center supports clinical studies, evidence reviews, medical writing, and responsible use of AI — so health decisions rest on a solid foundation.'}
     variant="home"
   />
 
   <HomeSlider
     slides={homeSlides}
-    eyebrow='the research agenda'
-    heading='A center in motion'
-    intro='Move through the connected work: a clinical question, a defensible method, and the next useful learning step — from protocol to published evidence.'
+    eyebrow={sliderHead.eyebrow || 'our work'}
+    heading={sliderHead.title || 'The research agenda'}
+    intro={sliderHead.intro || 'From the first research question to the published result — a clear, defensible step at a time.'}
   />
 
-  <CourseSlider courses={courseList?.data || []} />
+  <CourseSlider
+    courses={courseList?.data || []}
+    eyebrow={courseHead.eyebrow || 'the catalog'}
+    heading={courseHead.title || 'Featured courses'}
+    intro={courseHead.intro || 'Short, practical learning paths for clinicians, researchers, and medical writers.'}
+  />
 
   <!-- Why-choose methods — seeded on HomePage.CTA (why_choose_section) and
        rendered from the localized page data, never hardcoded. -->
@@ -169,8 +192,8 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
   <section class='doc-sheet bg-fu-card py-20 md:py-24'>
     <div class='container-fusion'>
       <div class='mb-12 max-w-2xl'>
-        <p class='eyebrow-pill mb-5'>what we do</p>
-        <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl'>Our methods</h2>
+        <p class='eyebrow-pill mb-5' data-l10n='home_chrome.methods_head.eyebrow'>{methodsHead.eyebrow || 'what we do'}</p>
+        <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl' data-l10n='home_chrome.methods_head.title'>{methodsHead.title || 'Our methods'}</h2>
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-3'>
         {methods.map((method: string, i: number) => (
@@ -191,16 +214,16 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
     <div class='container-fusion'>
       <div class='mb-16 flex flex-col items-start justify-between gap-6 md:flex-row md:items-end'>
         <div class='max-w-2xl'>
-          <p class='eyebrow-pill mb-5'>{visionSubtitle || 'research programs'}</p>
-          <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl'>
-            {visionTitle || 'Three pillars, one research agenda'}
+          <p class='eyebrow-pill mb-5' data-l10n='home_chrome.programs_head.eyebrow'>{programsHead.eyebrow || visionSubtitle || 'research programs'}</p>
+          <h2 class='mb-4 font-display text-4xl font-light tracking-tight text-fu-ink md:text-5xl' data-l10n='home_chrome.programs_head.title'>
+            {programsHead.title || visionTitle || 'Three pillars, one research agenda'}
           </h2>
           <p class='text-fu-muted'>
-            {visionDescription || 'Every program at the center is organized around three pillars — mastery, capability, and impact — so education and research stay connected to measurable health outcomes.'}
+            {programsHead.intro || visionDescription || 'Every program at the center is organized around three pillars — mastery, capability, and impact — so education and research stay connected to measurable health outcomes.'}
           </p>
         </div>
-        <p class='hidden shrink-0 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-fu-muted md:block'>
-          mastery · capability · impact
+        <p class='hidden shrink-0 font-mono text-[0.62rem] uppercase tracking-[0.22em] text-fu-muted md:block' data-l10n='home_chrome.programs_head.side_note'>
+          {programsHead.side_note || 'mastery · capability · impact'}
         </p>
       </div>
 
@@ -244,20 +267,18 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
        backend page-fragment API returns a JSON Fusion pointer, not HTML, and
        swapping it here would replace valid content with a document/API error. -->
 
-  <!-- Single distinct learning entry (once-only contract — mirrors the
-       Django road teaser in home/main.html; the backend HTMX fragment does
-       NOT include it, so a swap can never double it). Copy follows the build
-       language (PUBLIC_CONTENT_LANGUAGE → CONTENT_LANGUAGE) like the Django
-       road's gettext catalogs. -->
-  <section class='doc-sheet bg-fu-paper py-20 md:py-24' data-learning-teaser>
+  <!-- Single distinct learning section (once-only contract). Copy comes from
+       HomePage.home_chrome → learning_teaser (Wagtail CMS, localized per
+       locale); falls back to English when the backend is unreachable. -->
+  <section class='study-sheet bg-fu-paper py-20 md:py-24' data-learning-teaser>
     <div class='container-fusion max-w-3xl text-center'>
-      <p class='tag-marker mb-4'>{teaserCopy(CONTENT_LANGUAGE).marker}</p>
-      <h2 class='mb-3 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{teaserCopy(CONTENT_LANGUAGE).title}</h2>
-      <p class='mx-auto mb-6 max-w-xl text-fu-muted'>
-        {teaserCopy(CONTENT_LANGUAGE).intro}
+      <p class='tag-marker mb-4' data-l10n='home_chrome.learning_teaser.marker'>{learningTeaser.marker || '[ LEARNING / PREVIEW ]'}</p>
+      <h2 class='mb-3 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl' data-l10n='home_chrome.learning_teaser.title'>{learningTeaser.title || 'Courses with visible progress'}</h2>
+      <p class='mx-auto mb-6 max-w-xl text-fu-muted' data-l10n='home_chrome.learning_teaser.intro'>
+        {learningTeaser.intro || 'Follow serious learning paths with clear content, progress, and a next useful action.'}
       </p>
-      <a href='/courses/' class='btn-primary group !px-7 !py-3 text-sm'>
-        {teaserCopy(CONTENT_LANGUAGE).cta}
+      <a href={learningTeaser.cta_url || '/courses/'} class='btn-primary group !px-7 !py-3 text-sm'>
+        <span data-l10n='home_chrome.learning_teaser.cta_label'>{learningTeaser.cta_label || 'Open the catalog'}</span>
         <span class='flex h-6 w-6 items-center justify-center rounded-full bg-fu-teal/10 text-fu-teal transition-transform duration-500 group-hover:translate-x-0.5' style='transition-timing-function: cubic-bezier(0.34,1.56,0.64,1)'>
           <svg class='h-3 w-3' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.4' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M9 5l7 7-7 7'/></svg>
         </span>

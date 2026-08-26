@@ -26,6 +26,7 @@ include:
   - mailpit/docker-compose.yml
   # - adminer/docker-compose.yml
   - monitoring/docker-compose.yml
+  - tools-web/docker-compose.yml
 
   - ./docker-compose.nginx.yml
   - ./docker-compose.assets.yml

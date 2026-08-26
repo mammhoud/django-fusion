@@ -4375,7 +4375,6 @@ msgid "About the Instructor"
 msgstr "Sobre el instructor"
 
 #: apps/templates/courses/details/instructor.html:32
-#, python-format
 msgid ""
 "\n"
 "\t\t\t\t\t\t%(bio|default:\"Experienced instructor with passion for teaching and sharing knowledge.\")s\n"
@@ -15078,3 +15077,39 @@ msgstr "Follow serious learning paths con clear content, progress, and a next us
 #: apps/templates/home/main.html
 msgid "Open the catalog"
 msgstr "Abrir el catálogo"
+
+#: apps/learning/templates/learning/course.html
+msgid "From protocol to publication"
+msgstr "Del protocolo a la publicación"
+
+#: apps/learning/templates/learning/course.html
+msgid "CTC Research courses help clinicians, researchers, and medical writers make stronger decisions — from protocol to publication."
+msgstr "Los cursos de CTC Research ayudan a clínicos, investigadores y escritores médicos a tomar decisiones más sólidas — del protocolo a la publicación."
+
+#: apps/learning/templates/learning/course.html
+msgid "What you will learn"
+msgstr "Lo que aprenderá"
+
+#: apps/pages/pages/landing_api.py
+msgid "ctc research · medical research learning"
+msgstr "ctc research · centro de aprendizaje en investigación médica"
+
+#: apps/pages/pages/landing_api.py
+msgid "Explore courses"
+msgstr "Explorar cursos"
+
+#: apps/pages/pages/landing_api.py
+msgid "Learn about CTC Research"
+msgstr "Conozca CTC Research"
+
+#: apps/pages/pages/landing_api.py
+msgid "Browse courses"
+msgstr "Examinar cursos"
+
+#: apps/pages/pages/landing_api.py
+msgid "Start learning with CTC Research"
+msgstr "Empiece a aprender con CTC Research"
+
+#: apps/pages/pages/landing_api.py
+msgid "A medical research center for clinical evidence, biostatistics, and responsible medical AI."
+msgstr "Un centro de investigación médica para la evidencia clínica, la bioestadística y la IA médica responsable."

@@ -1,7 +1,7 @@
 {% extends "emails/base_email.html" %}
 
 {% block content %}
-<h1>Welcome to {{ site_name }}, {{ user.first_name|default:user.username|default:"there" }}!</h1>
+<h1>Welcome to {{ site_name }}, {% if user %}{{ user.first_name|default:user.username|default:"there" }}{% else %}there{% endif %}!</h1>
 <p>Your account has been created successfully.</p>
 <p>Thank you for joining {{ site_name }}. We're excited to have you on board!</p>
 

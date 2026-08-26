@@ -20,10 +20,10 @@ tags:
   - docs
 links:
   - label: "Documentation home"
-    to: "/docs/en/"
+    to: "/"
     icon: "i-lucide-house"
   - label: "Project structure"
-    to: "/docs/en/project-structure"
+    to: "/project-structure"
     icon: "i-lucide-folder-tree"
 ---
 
@@ -44,7 +44,7 @@ links:
 | [`project-structure.md`](project-structure.md) | workspace | Directory map, ownership and placement rules |
 | [`overview.md`](overview.md) | workspace | High-level overview |
 | [`recommendations.md`](recommendations.md) | workspace | Recommended priorities and sequencing |
-| [`setup-guides.md`](setup-guides.md) | workspace | Per-project setup/build indexes |
+| [`guides/02-setup.md`](guides/02-setup.md) | workspace | Per-project setup/build indexes + CI workflows |
 | [`recent-changes.md`](recent-changes.md) | workspace | Recent change log |
 | [`REFERENCE.md`](REFERENCE.md) | workspace | This reference map |
 | [`COMMANDS.md`](COMMANDS.md) | workspace | Unified verb naming, delegation chain, deploy cascade |
@@ -55,7 +55,7 @@ links:
 |-----|----------------|-----------------------------|
 | [`precis/`](precis/README.md) | `precis-main` | README (index) · ARCHITECTURE (LMS + landing architecture) · configuration · courses · deployment |
 | [`precis/precis-landing/`](precis/precis-landing/) | `precis-landing` (legacy) | backend-api · deployment · frontend |
-| [`precis-ctc/`](precis-ctc/README.md) | `precis-ctc` | README (index) · content-strategy (editorial ICP/research) · publishing-and-production (release workflow) · client-production (case study) |
+| [`precis/client/ctc-research/`](precis/client/ctc-research/README.md) | `precis-ctc` | README (index) · content-strategy (editorial ICP/research) · publishing-and-production (release workflow) · client-production (case study) |
 | [`syntara/`](syntara/README.md) | `syntara` | README (index) · configuration · features · infrastructure · use-cases |
 | [`pos/`](pos/README.md) | `formints` | README (index) · editions (pointer → `plans/editions/`) · cloud-edition (pointer → `04-cloud.md`) · legacy topic pages — canonical product docs live in [`projects/formints/docs/`](../../projects/formints/docs/) |
 | [`pos/backend/`](pos/backend/README.md) | `formints` | rust-auth · rust-backend · rust-database · rust-data-flow · rust-operations · rust-seed-data (legacy reader-facing; canonical Rust docs in `projects/formints/docs/`) |
@@ -74,7 +74,7 @@ links:
 
 | Dir | Owning project | Files → what they reference |
 |-----|----------------|-----------------------------|
-| [`guides/`](guides/README.md) | workspace | README (index) · 00-quickstart → 09-fusion-assets-health (numbered walkthroughs) · auth-webauthn-passkeys · fixture-loading |
+| [`guides/`](guides/README.md) | workspace | README (index) · 01-quickstart → 10-fusion-assets-health (numbered walkthroughs) · auth/webauthn-passkeys · fixture-loading |
 | [`guides/auth/`](guides/auth/) | workspace | adapter · social-login · style-audit · templates · testing |
 | [`dev/`](dev/README.md) | workspace | README (index) — development topics |
 | [`dev/back-env/`](dev/back-env/README.md) | workspace | README (index) · settings-reference |

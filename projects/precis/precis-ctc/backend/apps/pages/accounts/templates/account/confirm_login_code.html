@@ -1,18 +1,30 @@
-{% extends "base_auth.html" %}
-{% load i18n static %}
+{% extends 'layout/auth/skeleton.html' %}
+{% load i18n %}
 
-{% block auth_content %}
-<section class="fragment--form">
-  <section class="auth__card card card--form">
-    <header class="auth__form-header text-center">
-      <h2 class="auth__form-title">{% trans "Enter Login Code" %}</h2>
-      <p>{% trans "We sent a code to your email/phone. Enter it below." %}</p>
-    </header>
-    <form method="post" action="{% url 'account_confirm_login_code' %}" hx-post="{% url 'account_confirm_login_code' %}" hx-target=".fragment--form" hx-swap="innerHTML">
-      {% csrf_token %}
-      <div class="form__group mb-4"><label for="id_code">{% trans "Code" %}</label><input id="id_code" name="code" type="text" class="form-control" required></div>
-      <button class="btn btn-gradient w-100" type="submit">{% trans "Verify" %}</button>
-    </form>
-  </section>
-</section>
-{% endblock auth_content %}
+{% block title %}{% trans "Enter Login Code" %} — CTC Research{% endblock %}
+
+{% block content %}
+<div class="auth__card">
+  <header class="auth__form-header">
+    <span class="auth__form-eyebrow">Sign In</span>
+    <h1 class="auth__form-title">{% trans "Enter Login Code" %}</h1>
+    <p class="auth__form-subtitle">
+      {% trans "We sent a code to your email/phone. Enter it below." %}
+    </p>
+  </header>
+
+  <form method="post"
+        action="{% url 'account_confirm_login_code' %}"
+        hx-post="{% url 'account_confirm_login_code' %}"
+        hx-target=".auth__panel--form"
+        hx-swap="innerHTML"
+        novalidate>
+    {% csrf_token %}
+    <div class="form__group">
+      <label class="form__label" for="id_code">{% trans "Code" %}</label>
+      <input id="id_code" name="code" type="text" class="form__input" required>
+    </div>
+    <button class="btn" type="submit">{% trans "Verify" %}</button>
+  </form>
+</div>
+{% endblock content %}

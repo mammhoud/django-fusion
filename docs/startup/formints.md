@@ -23,10 +23,10 @@ tags:
   - retail
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Formint POS product docs"
-    to: "/docs/en/pos"
+    to: "/pos"
     icon: "i-lucide-store"
 ---
 

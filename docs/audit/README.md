@@ -26,10 +26,10 @@ tags:
   - landing-builder
 links:
   - label: "Full audit report"
-    to: "/docs/en/audit/product-audit"
+    to: "/audit/product-audit"
     icon: "i-lucide-file-search"
   - label: "Plan registry"
-    to: "/docs/en/plans"
+    to: "/plans"
     icon: "i-lucide-map"
 ---
 

@@ -23,7 +23,6 @@ class Command(BaseCommand):
     fixture_names = (
         "specializations.json",
         "course_tags.json",
-        "courses.json",
         "medical_research_catalog.json",
         "medical_research_curriculum.json",
         "events.json",

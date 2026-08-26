@@ -1,3 +1,35 @@
+---
+title: Fixture Loading
+description: How to load Wagtail page content and seed data into fusion site databases — JSON fixtures, migrations, and dev/prod workflows.
+navigation:
+  title: Fixture Loading
+  icon: i-lucide-database
+object:
+  type: "guide"
+  id: "guide.fixture-loading"
+attributes:
+  source_path: "guides/fixture-loading.md"
+  canonical_route: "/docs/en/guides/fixture-loading"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - onboarding
+  - fixtures
+  - wagtail
+  - seed
+  - data-loading
+links:
+  - label: "Best Practices"
+    to: "/guides/08-best-practices"
+    icon: "i-lucide-check"
+  - label: "Databases"
+    to: "/dev/databases"
+    icon: "i-lucide-database"
+---
+
 # 📦 Fixture Loading Workflow
 
 How to load Wagtail page content and seed data into the fusion site databases.

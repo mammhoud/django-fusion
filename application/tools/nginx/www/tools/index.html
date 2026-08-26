@@ -3,170 +3,274 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Structa Cloud — Tools</title>
+  <title>Structa Cloud — Application Tools</title>
   <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
   <style>
+    /* ══════════════════════════════════════════════════════════════
+       Structa Cloud — Swiss Industrial Print (application/tools)
+       Matte paper + carbon ink + aviation red. Zero radius.
+       ══════════════════════════════════════════════════════════════ */
     :root {
-      --bg: #0b0e14;
-      --panel: #11151f;
-      --ink: #e8ecf4;
-      --muted: #8b93a7;
-      --line: #232938;
-      --accent: #2563eb;
-      --accent-ink: #93b4ff;
+      --paper: #F4F4F0;
+      --ink: #0A0A0A;
+      --muted: #5A5A52;
+      --line: #0A0A0A;
+      --card: #EAE8E3;
+      --card-ink: #FDFDFB;
+      --red: #E61919;
+      --red-dark: #B31212;
+      --offset: 4px;
+      --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+      --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+      --t: 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+    html, body { min-height: 100%; }
     body {
-      background: var(--bg);
+      background: var(--paper);
       color: var(--ink);
-      font-family: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
-      display: grid;
-      place-items: center;
-      padding: 2rem;
-      background-image:
-        radial-gradient(1200px 600px at 20% -10%, rgba(37, 99, 235, 0.10), transparent 60%),
-        radial-gradient(900px 500px at 100% 110%, rgba(37, 99, 235, 0.08), transparent 55%);
-    }
-    main {
-      width: 100%;
-      max-width: 52rem;
-    }
-    .tag {
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--muted);
-      margin-bottom: 1.25rem;
-    }
-    .tag::before { content: "● "; color: var(--accent); }
-    h1 {
-      font-size: clamp(2rem, 6vw, 3.25rem);
-      font-weight: 700;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin-bottom: 1rem;
-    }
-    h1 em { font-style: normal; color: var(--accent-ink); }
-    .sub {
-      color: var(--muted);
-      max-width: 40rem;
+      font-family: var(--font-sans);
+      font-size: 16px;
       line-height: 1.6;
-      font-size: 0.98rem;
-      margin-bottom: 2.5rem;
+      -webkit-font-smoothing: antialiased;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-      gap: 0.9rem;
-    }
-    a.card {
+    a { color: inherit; text-decoration: none; }
+
+    /* ── Shell: fixed sidebar + main ─────────────────────────────── */
+    .shell { display: grid; grid-template-columns: 280px 1fr; min-height: 100vh; }
+
+    /* ── Sidebar navigation ──────────────────────────────────────── */
+    .side {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 2rem 1.5rem 1.5rem;
       display: flex;
       flex-direction: column;
-      gap: 0.55rem;
-      padding: 1.15rem 1.2rem;
-      border: 1px solid var(--line);
-      border-radius: 0.85rem;
-      background: var(--panel);
-      text-decoration: none;
-      color: var(--ink);
-      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      gap: 2rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 2px solid var(--ink);
     }
-    a.card:hover {
-      border-color: rgba(37, 99, 235, 0.6);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+    .brand { display: flex; align-items: center; gap: 0.85rem; }
+    .brand__logo {
+      width: 44px; height: 44px; display: grid; place-items: center;
+      background: var(--paper); flex-shrink: 0;
     }
-    .card.soon { cursor: default; opacity: 0.5; }
-    .card.soon:hover { border-color: var(--line); transform: none; box-shadow: none; }
-    .card code {
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 0.72em;
-      color: var(--ink);
-      opacity: 0.85;
+    .brand__logo svg { width: 40px; height: 40px; display: block; }
+    .brand__name {
+      font-family: var(--font-display);
+      font-size: 0.95rem; letter-spacing: -0.01em; line-height: 1.15;
     }
-    a.card .k {
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 0.66rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent-ink);
+    .brand__name small {
+      display: block; font-family: var(--font-mono); font-size: 0.6rem;
+      text-transform: uppercase; letter-spacing: 0.22em; color: var(--paper); opacity: 0.55;
     }
-    a.card .t {
-      font-weight: 600;
-      font-size: 1.05rem;
+    .nav { display: flex; flex-direction: column; gap: 0.25rem; flex: 1; overflow-y: auto; }
+    .nav__label {
+      font-family: var(--font-mono); font-size: 0.6rem; font-weight: 400;
+      text-transform: uppercase; letter-spacing: 0.2em; color: var(--red);
+      margin: 1.1rem 0 0.35rem;
     }
-    a.card .d {
-      font-size: 0.8rem;
-      color: var(--muted);
-      line-height: 1.5;
+    .nav__label:first-child { margin-top: 0; }
+    .nav__link {
+      display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem;
+      padding: 0.42rem 0.55rem;
+      font-size: 0.86rem; font-weight: 500; color: var(--paper);
+      border-left: 2px solid transparent;
+      transition: background var(--t), color var(--t), border-color var(--t);
     }
-    footer {
-      margin-top: 2.75rem;
-      font-family: "JetBrains Mono", ui-monospace, monospace;
-      font-size: 0.66rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      opacity: 0.7;
+    .nav__link:hover { background: rgba(244, 244, 240, 0.09); color: #fff; }
+    .nav__link.is-active { border-left-color: var(--red); color: #fff; }
+    .nav__link code {
+      font-family: var(--font-mono); font-size: 0.62rem; color: var(--paper); opacity: 0.45;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .side__foot {
+      font-family: var(--font-mono); font-size: 0.58rem; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--paper); opacity: 0.4; line-height: 1.8;
+    }
+    .side__foot b { color: var(--red); font-weight: 400; }
+
+    /* ── Main ────────────────────────────────────────────────────── */
+    .main { padding: 3.5rem 3rem 3rem; max-width: 980px; }
+    .tag {
+      font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase;
+      letter-spacing: 0.18em; color: var(--red); margin-bottom: 1.4rem;
+    }
+    .tag::before { content: "■ "; }
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 400;
+      line-height: 1.02; letter-spacing: -0.02em; margin-bottom: 1rem;
+    }
+    h1 em { font-style: normal; color: var(--red); }
+    .sub {
+      color: var(--muted); max-width: 38rem; font-size: 1rem; line-height: 1.65; margin-bottom: 2.75rem;
+    }
+    .sub code {
+      font-family: var(--font-mono); font-size: 0.82em; background: var(--card); padding: 0.1em 0.35em;
+    }
+
+    /* ── Tool cards ──────────────────────────────────────────────── */
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.1rem; }
+    a.card {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      padding: 1.35rem 1.4rem 1.25rem;
+      background: var(--card); border: 2px solid var(--ink);
+      box-shadow: var(--offset) var(--offset) 0 var(--ink);
+      transition: transform var(--t), box-shadow var(--t), background var(--t);
+    }
+    a.card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); background: var(--card-ink); }
+    a.card:active { transform: translate(0, 0); box-shadow: 1px 1px 0 var(--ink); }
+    .card .k {
+      font-family: var(--font-mono); font-size: 0.62rem; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--red);
+    }
+    .card .t { font-family: var(--font-display); font-size: 1.12rem; font-weight: 400; letter-spacing: -0.01em; }
+    .card .d { font-size: 0.82rem; color: var(--muted); line-height: 1.55; }
+    .card .p {
+      margin-top: 0.6rem; font-family: var(--font-mono); font-size: 0.64rem;
+      text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink); opacity: 0.55;
+    }
+    .card .p b { color: var(--red); font-weight: 400; opacity: 1; }
+
+    .main__foot {
+      margin-top: 3rem; padding-top: 1.1rem; border-top: 1px solid var(--ink);
+      font-family: var(--font-mono); font-size: 0.6rem; text-transform: uppercase;
+      letter-spacing: 0.16em; color: var(--muted);
+      display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+    .main__foot b { color: var(--red); font-weight: 400; }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .shell { grid-template-columns: 1fr; }
+      .side {
+        position: static; height: auto; flex-direction: row; align-items: center;
+        flex-wrap: wrap; gap: 1rem; padding: 1rem 1.25rem; border-right: none; border-bottom: 2px solid var(--paper);
+      }
+      .nav { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.1rem; overflow: visible; }
+      .nav__label { margin: 0 0.35rem 0 0; }
+      .nav__link { padding: 0.3rem 0.45rem; border-left: none; border-bottom: 2px solid transparent; }
+      .nav__link.is-active { border-bottom-color: var(--red); }
+      .side__foot { display: none; }
+      .main { padding: 2.5rem 1.25rem 2rem; }
+      .grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <p class="tag">Structa Cloud · Self-Hosted Tools</p>
-    <h1>Tools <em>front door</em></h1>
-    <p class="sub">
-      One entry point for the utilities running on this server. Each tool is a
-      docker service under <code>application/tools/</code> and is proxied here
-      by path through the shared-proxy Nginx.
-    </p>
+  <div class="shell">
 
-    <div class="grid">
-      <a class="card" href="https://space.structa.cloud" target="_blank">
-        <span class="k">workspace</span>
-        <span class="t">Space (Coder)</span>
-        <span class="d">Cloud development environment — VS Code, terminals, AI agents.</span>
+    <!-- Sidebar navigation -->
+    <aside class="side">
+      <a class="brand" href="/" aria-label="Structa Cloud tools index">
+        <span class="brand__logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Structa Cloud">
+            <rect width="64" height="64" fill="#0a0a0a"/>
+            <path d="M23 17 13 27l10 10" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path d="M41 17 51 27 41 37" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path d="m36 14-8 36" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="square"/>
+          </svg>
+        </span>
+        <span class="brand__name">Structa Cloud<small>application tools</small></span>
       </a>
-      <a class="card" href="https://tools.structa.cloud" target="_blank">
-        <span class="k">workspace</span>
-        <span class="t">AFFiNE</span>
-        <span class="d">Permanent shared workspace — real-time docs, whiteboards, databases.</span>
-      </a>
-      <a class="card" href="/notes/">
-        <span class="k">notes</span>
-        <span class="t">Blinko</span>
-        <span class="d">Self-hosted personal AI note tool. Sign up on first visit — no defaults.</span>
-      </a>
-      <a class="card" href="https://ops.structa.cloud" target="_blank">
-        <span class="k">automation</span>
-        <span class="t">xyOps</span>
-        <span class="d">Job scheduling, workflows, server monitoring, alerts, and incident tickets.</span>
-      </a>
-      <a class="card" href="/adminer/">
-        <span class="k">database</span>
-        <span class="t">Adminer</span>
-        <span class="d">Lightweight database administration UI for PostgreSQL.</span>
-      </a>
-      <a class="card" href="/mailpit/">
-        <span class="k">email</span>
-        <span class="t">Mailpit</span>
-        <span class="d">Email catcher — inspect outbound mail from staging/dev.</span>
-      </a>
-      <a class="card" href="/grafana/">
-        <span class="k">observability</span>
-        <span class="t">Grafana</span>
-        <span class="d">Dashboards on top of Prometheus metrics.</span>
-      </a>
-      <a class="card" href="/docs/">
-        <span class="k">documentation</span>
-        <span class="t">Docs (Docus)</span>
-        <span class="d">Product and infrastructure guides, English + Arabic.</span>
-      </a>
-    </div>
 
-    <footer>tools.structa.cloud · proxied by shared-proxy nginx</footer>
-  </main>
+      <nav class="nav" aria-label="Tools navigation">
+        <p class="nav__label">Platform</p>
+        <a class="nav__link is-active" href="/">Tools index<code>/</code></a>
+        <a class="nav__link" href="/docs/">Documentation<code>/docs</code></a>
+        <a class="nav__link" href="/notes/">Notes · Blinko<code>/notes</code></a>
+
+        <p class="nav__label">Data</p>
+        <a class="nav__link" href="/adminer/">Adminer<code>/adminer</code></a>
+
+        <p class="nav__label">Operations</p>
+        <a class="nav__link" href="/grafana/">Grafana<code>/grafana</code></a>
+        <a class="nav__link" href="https://ops.structa.cloud" target="_blank" rel="noopener">xyOps<code>ops↗</code></a>
+        <a class="nav__link" href="https://space.structa.cloud" target="_blank" rel="noopener">Space<code>space↗</code></a>
+
+        <p class="nav__label">Email</p>
+        <a class="nav__link" href="/mailpit/">Mailpit<code>/mailpit</code></a>
+      </nav>
+
+      <footer class="side__foot">
+        application/tools · nginx<br>
+        Proxy <b>tools-proxy</b> · auth required<br>
+        Blinko on <b>/notes/</b> only
+      </footer>
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <p class="tag">Structa Cloud · Self-Hosted Tools</p>
+      <h1>Application <em>tools</em></h1>
+      <p class="sub">
+        One authenticated door for the utilities running on this server. Each
+        tool is a Docker service under <code>application/tools/</code>, proxied
+        here by path through <code>tools-proxy</code> (Nginx).
+      </p>
+
+      <div class="grid">
+        <a class="card" href="/notes/">
+          <span class="k">notes</span>
+          <span class="t">Blinko</span>
+          <span class="d">Self-hosted AI note tool. Sign up on first visit — no defaults.</span>
+          <span class="p"><b>path</b> /notes/</span>
+        </a>
+        <a class="card" href="/docs/">
+          <span class="k">documentation</span>
+          <span class="t">Docs · Docus</span>
+          <span class="d">Product and infrastructure guides, English + Arabic, full sidebar navigation.</span>
+          <span class="p"><b>path</b> /docs/</span>
+        </a>
+        <a class="card" href="/adminer/">
+          <span class="k">database</span>
+          <span class="t">Adminer</span>
+          <span class="d">Lightweight database administration UI for PostgreSQL and friends.</span>
+          <span class="p"><b>path</b> /adminer/</span>
+        </a>
+        <a class="card" href="/mailpit/">
+          <span class="k">email</span>
+          <span class="t">Mailpit</span>
+          <span class="d">Email catcher — inspect outbound mail from staging and dev.</span>
+          <span class="p"><b>path</b> /mailpit/</span>
+        </a>
+        <a class="card" href="/grafana/">
+          <span class="k">observability</span>
+          <span class="t">Grafana</span>
+          <span class="d">Dashboards on top of Prometheus metrics for the shared stack.</span>
+          <span class="p"><b>path</b> /grafana/</span>
+        </a>
+        <a class="card" href="https://ops.structa.cloud" target="_blank" rel="noopener">
+          <span class="k">automation</span>
+          <span class="t">xyOps</span>
+          <span class="d">Job scheduling, workflows, server monitoring, alerts, and incident tickets.</span>
+          <span class="p"><b>host</b> ops.structa.cloud</span>
+        </a>
+        <a class="card" href="https://space.structa.cloud" target="_blank" rel="noopener">
+          <span class="k">workspace</span>
+          <span class="t">Space</span>
+          <span class="d">Cloud development environment — VS Code, terminals, AI agents.</span>
+          <span class="p"><b>host</b> space.structa.cloud</span>
+        </a>
+        <a class="card" href="/health/">
+          <span class="k">proxy</span>
+          <span class="t">Proxy health</span>
+          <span class="d">tools-proxy liveness endpoint — plain-text 200, used by Traefik.</span>
+          <span class="p"><b>path</b> /health/</span>
+        </a>
+      </div>
+
+      <footer class="main__foot">
+        <span>tools.structa.cloud · <b>tools-proxy</b> nginx</span>
+        <span>media on <b>media.structa.cloud</b></span>
+        <span>docs on <b>docs.structa.cloud</b></span>
+      </footer>
+    </main>
+  </div>
 </body>
 </html>

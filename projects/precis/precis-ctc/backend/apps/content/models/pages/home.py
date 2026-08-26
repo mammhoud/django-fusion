@@ -1,3 +1,4 @@
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from apps.domain.blocks.contact.contact_card import ContactCardBlock
 from apps.domain.blocks.partials.button import PageLinkBlock
@@ -383,11 +384,134 @@ class HomePage(BaseFormPage):
         verbose_name=_("CTA Section"),
     )
 
+    # === HERO COPY (CMS-driven, localized per locale) ===
+    hero_heading = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        verbose_name=_("Hero Heading"),
+    )
+    hero_subheading = models.TextField(
+        blank=True,
+        default="",
+        verbose_name=_("Hero Subheading"),
+    )
+    hero_accent = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        verbose_name=_("Hero Accent"),
+        help_text=_("Accented word(s) rendered in the brand color inside the hero heading"),
+    )
+
+    # === HOME SECTION CHROME (CMS-driven, localized per locale) ===
+    # Section headings/intros the Astro shell previously baked into the
+    # frontend locale dictionary: the home slider head, the course slider
+    # head, the hero evidence panel (title/text/stats), the learning teaser,
+    # and the methods/programs section heads. Editors control every one of
+    # these per locale from Wagtail; the frontend only falls back to static
+    # copy when a block is empty.
+
+    class _SectionHeadBlock(blocks.StructBlock):
+        """Small editor block: eyebrow (label), title, optional intro."""
+
+        eyebrow = blocks.CharBlock(required=False, max_length=100, label=_("Eyebrow"), help_text=_("Small label above the title"))
+        title = blocks.CharBlock(required=True, max_length=200, label=_("Title"))
+        intro = blocks.TextBlock(required=False, max_length=400, label=_("Intro"), help_text=_("Optional supporting sentence"))
+
+        class Meta:
+            label = _("Section Head")
+
+    class _StatBlock(blocks.StructBlock):
+        """One evidence-panel metric: a number and its label."""
+
+        value = blocks.CharBlock(required=True, max_length=20, label=_("Value"), help_text=_("e.g. 17+"))
+        label = blocks.CharBlock(required=True, max_length=100, label=_("Label"))
+
+        class Meta:
+            label = _("Stat")
+
+    home_chrome = StreamField(
+        [
+            ("slider_head", _SectionHeadBlock(icon="slides", label=_("Research slider heading"))),
+            ("course_head", _SectionHeadBlock(icon="list-ul", label=_("Course slider heading"))),
+            (
+                "evidence_panel",
+                blocks.StructBlock(
+                    [
+                        ("title", blocks.CharBlock(required=False, max_length=200, label=_("Title"))),
+                        ("text", blocks.TextBlock(required=False, max_length=400, label=_("Text"))),
+                        (
+                            "stats",
+                            blocks.ListBlock(
+                                _StatBlock(),
+                                required=False,
+                                default=[
+                                    {"value": "17+", "label": "years of research"},
+                                    {"value": "6", "label": "course programs"},
+                                    {"value": "7", "label": "languages"},
+                                ],
+                                label=_("Stats"),
+                            ),
+                        ),
+                    ],
+                    icon="clipboard-list",
+                    label=_("Hero evidence panel"),
+                ),
+            ),
+            (
+                "learning_teaser",
+                blocks.StructBlock(
+                    [
+                        ("marker", blocks.CharBlock(required=False, max_length=60, label=_("Marker"))),
+                        ("title", blocks.CharBlock(required=True, max_length=200, label=_("Title"))),
+                        ("intro", blocks.TextBlock(required=False, max_length=400, label=_("Intro"))),
+                        ("cta_label", blocks.CharBlock(required=False, max_length=60, label=_("CTA Label"))),
+                        ("cta_url", blocks.URLBlock(required=False, label=_("CTA URL"))),
+                    ],
+                    icon="graduation-cap",
+                    label=_("Learning teaser"),
+                ),
+            ),
+            (
+                "methods_head",
+                blocks.StructBlock(
+                    [
+                        ("eyebrow", blocks.CharBlock(required=False, max_length=100, label=_("Eyebrow"))),
+                        ("title", blocks.CharBlock(required=True, max_length=200, label=_("Title"))),
+                    ],
+                    icon="list-ul",
+                    label=_("Methods section head"),
+                ),
+            ),
+            (
+                "programs_head",
+                blocks.StructBlock(
+                    [
+                        ("eyebrow", blocks.CharBlock(required=False, max_length=100, label=_("Eyebrow"))),
+                        ("title", blocks.CharBlock(required=True, max_length=200, label=_("Title"))),
+                        ("side_note", blocks.CharBlock(required=False, max_length=120, label=_("Side Note"))),
+                    ],
+                    icon="cogs",
+                    label=_("Programs heading"),
+                ),
+            ),
+        ],
+        use_json_field=True,
+        blank=True,
+        verbose_name=_("Home Section Headings (CMS)"),
+    )
+
     # === PANELS ===
     content_panels = BaseFormPage.content_panels + [
         FieldPanel("head"),
         FieldPanel("summary"),
         FieldPanel("CTA"),
+        MultiFieldPanel(
+            [FieldPanel("hero_heading"), FieldPanel("hero_subheading"), FieldPanel("hero_accent")],
+            heading=_("Hero"),
+        ),
+        FieldPanel("home_chrome"),
         MultiFieldPanel(
             [FieldPanel("contact_form")],
             heading=_("Contact Form"),

@@ -19,7 +19,7 @@ Cross-project repository-level implementation and migration plans.
 | [locale-fixture-audit-2026-07-31.md](locale-fixture-audit-2026-07-31.md) | Locale fixture audit |
 | [migration-cleanup-master.md](migration-cleanup-master.md) | Migration cleanup master |
 | [precis-ctc-workflows.md](precis-ctc-workflows.md) | CTC cross-module workflows |
-| [precis-syntara-merge.md](precis-syntara-merge.md) | Precis + Syntara merge |
+| [precis-dev-multitenant.md](precis-dev-multitenant.md) | Precis Dev multi-tenant platform |
 | [worker-consolidation.md](worker-consolidation.md) | Worker consolidation |
 
 ## Remarks & Notes

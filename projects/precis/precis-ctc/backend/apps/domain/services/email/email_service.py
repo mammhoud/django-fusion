@@ -49,12 +49,19 @@ class EmailService:
 
         subject = context.get('subject', 'You are invited!')
 
+        # Persist the invited role on the EmailLog so the registration flow
+        # can assign the recipient to the correct group after they accept.
+        # ``group_name`` is reused to carry the raw role string (e.g.
+        # "instructor/manager", "content_manager", "supervisor").
+        invite_role = context.get("role") or context.get("group") or ""
+
         if queue:
             return self.queue_manager.queue_email(
                 recipient=recipient,
                 subject=subject,
                 template_name=template_name,
-                context=context
+                context=context,
+                group_name=invite_role,
             )
         else:
             from apps.domain.services.email.models import EmailLog
@@ -62,7 +69,8 @@ class EmailService:
                 recipient=recipient,
                 subject=subject,
                 template_used=template_name,
-                status=EmailLog.Status.SENDING
+                status=EmailLog.Status.SENDING,
+                group_name=invite_role,
             )
             return self._send_now(recipient, subject, template_name, context, log)
 

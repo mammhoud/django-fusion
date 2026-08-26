@@ -1283,6 +1283,19 @@ wheels = [
 ]
 
 [[package]]
+name = "django-tenants"
+version = "3.14.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django", version = "5.2.16", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "django", version = "6.0.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a3/44/f78ed75c27e019be3ba915d88484bf57355cc7dd92745ff27d23431fe61c/django_tenants-3.14.0.tar.gz", hash = "sha256:55dc64bcd4293a03fab7108f4c4e1724c2f53ef09a1c7f9e5f75a136fccc3146", size = 168058, upload-time = "2026-08-05T15:19:37.753Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/7c/a2/c4d45511b0c1c3868fafa9e745b6089c0e0b30959b8191ac4a5643bac9ae/django_tenants-3.14.0-py3-none-any.whl", hash = "sha256:f2c17b05d03c8b8d79c8e190ca2da14fdc36d52553d216b1dbb09c4adbda2eb6", size = 127095, upload-time = "2026-08-05T15:19:36.478Z" },
+]
+
+[[package]]
 name = "django-treebeard"
 version = "5.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -4040,6 +4053,7 @@ dependencies = [
     { name = "django-stubs" },
     { name = "django-tables2" },
     { name = "django-taggit" },
+    { name = "django-tenants" },
     { name = "django-unfold", version = "0.91.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django-unfold", version = "0.101.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "django-webpack-loader" },
@@ -4132,6 +4146,7 @@ requires-dist = [
     { name = "django-stubs", marker = "extra == 'dev'" },
     { name = "django-tables2" },
     { name = "django-taggit", specifier = ">=6.1.0" },
+    { name = "django-tenants", specifier = ">=3.6" },
     { name = "django-unfold" },
     { name = "django-webpack-loader" },
     { name = "draftjs-exporter" },

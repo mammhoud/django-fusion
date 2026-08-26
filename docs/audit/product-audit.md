@@ -23,10 +23,10 @@ tags:
   - landing-builder
 links:
   - label: "Audit home"
-    to: "/docs/en/audit"
+    to: "/audit"
     icon: "i-lucide-clipboard-check"
   - label: "Plan registry"
-    to: "/docs/en/plans"
+    to: "/plans"
     icon: "i-lucide-map"
 ---
 
@@ -202,10 +202,6 @@ READMEs.
 
 ## Planned features
 
-- **Syntara → Precis Assistant merge** (`repository/precis-syntara-merge.md`,
-  status: Planned) — conversation persistence, provider-agnostic streaming
-  (`AIService`, Ollama + OpenAI-compatible), re-skinned assistant UI; then
-  decommission `projects/syntara/`.
 - **Full Playwright E2E** across learning + assistant flows.
 - **Docker/Traefik production rollout gates** — explicitly listed as "not yet
   ported".
@@ -230,9 +226,8 @@ READMEs.
   Wagtail landing: consolidation candidate.
 - **Dual CSS pipelines** — Tailwind `globals.css` + webpack/SCSS `fusion.css`
   (`make css` + `make build-assets`); two pipelines to keep in sync.
-- **Stale plan paths** — `precis-syntara-merge.md` targets
-  `projects/precis/precis-lms/`, the removed legacy path; canonical is
-  `projects/precis/precis-main/`.
+- **Stale plan paths** — resolved: Syntara merge plan deleted; Precis canonical
+  is `projects/precis/precis-main/`.
 - **Theme engine not adopted** — `projects/assets/theme/lms/` exists
   (fu-lms-* tokens/components) but precis-main still styles locally via
   Tailwind + Fusion tokens; migration pending.

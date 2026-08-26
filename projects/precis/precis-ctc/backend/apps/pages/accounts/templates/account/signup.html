@@ -1,96 +1,141 @@
-{% extends "base_auth.html" %}
-{% load i18n static socialaccount %}
+{% extends 'layout/auth/skeleton.html' %}
+{% load i18n allauth socialaccount static %}
 
-{% block auth_content %}
-<section class="fragment--form">
-  <section class="auth__card card card--form">
-    <header class="auth__form-header text-center">
-      <div class="auth__logo mb-4"><a href="/"><img src="{% static 'images/brand/precis-protocol-mark.svg' %}" style="max-height:60px" alt="Logo"></a></div>
-      <h2 class="auth__form-title">{% trans "Create Account" %}</h2>
-      <p class="auth__form-subtitle text-muted mb-4">{% trans "Join us today" %}</p>
-    </header>
+{% block title %}{% trans "Create Account" %} — CTC Research{% endblock %}
 
-    {% comp "account/snippets/messages.html" / %}
+{% block content %}
+<div class="auth__card" id="register-form-container"
+     x-data="registerPage()"
+     x-init="init()">
+  <header class="auth__form-header">
+    <span class="auth__form-eyebrow">Register</span>
+    <h2 class="auth__form-title">{% trans "Create Account" %}</h2>
+    <p class="auth__form-subtitle">
+      {% trans "Enter your details to get started." %}
+    </p>
+  </header>
 
-    <form id="register-form" class="auth__form" action="{% url 'account_signup' %}" method="post"
-          hx-post="{% url 'account_signup' %}" hx-target=".fragment--form" hx-swap="innerHTML" hx-trigger="submit"
-          hx-indicator="#register-spinner" hx-headers='{"X-Requested-With": "XMLHttpRequest"}'>
-      {% csrf_token %}
-      <input type="hidden" name="strategy" value="{% if request.htmx %}htmx{% else %}document{% endif %}">
-      {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+  {% comp "account/partials/register_form.html" /%}
 
-      <!-- Username -->
-      <div class="form__group mb-3">
-        <label class="form__label fw-semibold" for="id_username"><i class="fas fa-user me-2 text-primary"></i>{% trans "Username" %}</label>
-        <div class="input-group input-group-lg"><span class="input-group-text bg-light border-0"><i class="fas fa-user"></i></span>
-          <input id="id_username" name="username" type="text" maxlength="150" class="form-control {% if form.username.errors %}is-invalid{% endif %}" placeholder="Username" required value="{{ form.username.value|default:'' }}">
-        </div>
-        {% if form.username.errors %}<div class="invalid-feedback d-block">{% for e in form.username.errors %}{{ e }}{% endfor %}</div>{% endif %}
-      </div>
+  <footer class="auth__footer">
+    <p>
+      {% trans "Already have an account?" %}
+      <a href="{% url 'accounts:login' %}" class="auth__link"
+         {% if request.htmx %}
+         hx-get="{% url 'accounts:login' %}"
+         hx-target="#register-form-container"
+         hx-swap="outerHTML"
+         hx-push-url="{% url 'accounts:login' %}"
+         {% endif %}>
+        {% trans "Sign In" %}
+      </a>
+    </p>
+  </footer>
+</div>
+{% endblock content %}
 
-      <!-- Email -->
-      <div class="form__group mb-3">
-        <label class="form__label fw-semibold" for="id_email"><i class="fas fa-envelope me-2 text-primary"></i>{% trans "Email" %}</label>
-        <div class="input-group input-group-lg"><span class="input-group-text bg-light border-0"><i class="fas fa-envelope"></i></span>
-          <input id="id_email" name="email" type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" placeholder="you@example.com" required value="{{ form.email.value|default:'' }}">
-        </div>
-        {% if form.email.errors %}<div class="invalid-feedback d-block">{% for e in form.email.errors %}{{ e }}{% endfor %}</div>{% endif %}
-      </div>
-
-      <!-- Password -->
-      <div class="form__group mb-3">
-        <label class="form__label fw-semibold" for="id_password1"><i class="fas fa-lock me-2 text-primary"></i>{% trans "Password" %}</label>
-        <div class="input-group input-group-lg position-relative">
-          <span class="input-group-text bg-light border-0"><i class="fas fa-key"></i></span>
-          <input id="id_password1" name="password1" type="password" class="form-control" placeholder="Create password" required>
-          <button class="btn toggle-pwd" type="button" style="position:absolute; right:5px; top:50%; transform:translateY(-50%);"><i class="fas fa-eye"></i></button>
-        </div>
-        <div id="pwd-strength" class="small mt-1"></div>
-        <div class="small text-muted mt-2">
-          <div id="req-length">✗ 8+ characters</div><div id="req-number">✗ Number</div><div id="req-upper">✗ Uppercase</div><div id="req-special">✗ Special char</div>
-        </div>
-        {% if form.password1.errors %}<div class="invalid-feedback d-block">{% for e in form.password1.errors %}{{ e }}{% endfor %}</div>{% endif %}
-      </div>
-
-      <!-- Confirm Password -->
-      <div class="form__group mb-3">
-        <label class="form__label fw-semibold" for="id_password2"><i class="fas fa-check-circle me-2 text-primary"></i>{% trans "Confirm Password" %}</label>
-        <div class="input-group input-group-lg position-relative">
-          <span class="input-group-text bg-light border-0"><i class="fas fa-lock"></i></span>
-          <input id="id_password2" name="password2" type="password" class="form-control" placeholder="Confirm password" required>
-          <button class="btn toggle-pwd2" type="button" style="position:absolute; right:5px; top:50%; transform:translateY(-50%);"><i class="fas fa-eye"></i></button>
-        </div>
-        <div id="pwd-match" class="small mt-1"></div>
-        {% if form.password2.errors %}<div class="invalid-feedback d-block">{% for e in form.password2.errors %}{{ e }}{% endfor %}</div>{% endif %}
-      </div>
-
-      <!-- Terms -->
-      <div class="form-check mb-3"><input type="checkbox" name="terms" id="terms" class="form-check-input" required><label class="form-check-label" for="terms">{% trans "I agree to the" %} <a href="/terms/">Terms</a> & <a href="/privacy/">Privacy</a></label></div>
-
-      <div class="d-grid gap-2">
-        <button class="btn btn-gradient hover-icon-reverse radius-round w-100 py-2" type="submit">
-          <span class="icon-reverse-wrapper"><span class="btn-text">{% trans "Sign Up" %}</span><span class="btn-icon"><i class="fas fa-user-plus"></i></span><span class="btn-icon"><i class="fas fa-user-plus"></i></span></span>
-          <span id="register-spinner" class="spinner-border spinner-border-sm ms-2 htmx-indicator" style="display:none"></span>
-        </button>
-      </div>
-
-      {% get_providers as socialaccount_providers %}
-      {% if socialaccount_providers %}
-        <div class="auth__divider my-3"><hr><span class="px-3 bg-white small">{% trans "or" %}</span></div>
-        <div class="row g-2">{% for provider in socialaccount_providers %}{% if provider.id == "google" %}<div class="col-12 col-md-6 d-grid"><a href="{% provider_login_url 'google' %}" class="btn btn-outline-danger"><i class="fab fa-google me-2"></i> Google</a></div>{% endif %}{% endfor %}</div>
-      {% endif %}
-    </form>
-
-    <footer class="auth__footer mt-3 pt-2 border-top text-center"><p>{% trans "Already have an account?" %} <a href="{% url 'account_login' %}" class="fw-bold text-decoration-none" hx-get="{% url 'account_login' %}" hx-target=".fragment--form" hx-swap="innerHTML">{% trans "Sign in" %} <i class="fas fa-arrow-right ms-1"></i></a></p></footer>
-  </section>
-</section>
-
+{% block extra_body %}
+{{ block.super }}
 <script>
-document.querySelectorAll('.toggle-pwd, .toggle-pwd2').forEach(btn=>btn.addEventListener('click',function(){let inp=this.closest('.input-group').querySelector('input'),ico=this.querySelector('i');if(inp.type==='password'){inp.type='text';ico.classList.replace('fa-eye','fa-eye-slash');}else{inp.type='password';ico.classList.replace('fa-eye-slash','fa-eye');}}));
-const p1=document.getElementById('id_password1'),p2=document.getElementById('id_password2');
-function updateReq(id,ok){let el=document.getElementById(id);if(el){el.innerHTML=ok?el.innerHTML.replace('✗','✓'):el.innerHTML.replace('✓','✗');if(ok)el.classList.add('text-success');else el.classList.remove('text-success');}}
-function checkStrength(){if(!p1)return;let v=p1.value,l=v.length>=8,n=/\d/.test(v),u=/[A-Z]/.test(v),s=/[!@#$%^&*(),.?":{}|<>]/.test(v);updateReq('req-length',l);updateReq('req-number',n);updateReq('req-upper',u);updateReq('req-special',s);let sc=[l,n,u,s].filter(Boolean).length;let strDiv=document.getElementById('pwd-strength');if(strDiv){if(sc<=2)strDiv.innerHTML='<small class="text-danger">Weak</small>';else if(sc===3)strDiv.innerHTML='<small class="text-warning">Good</small>';else if(sc===4)strDiv.innerHTML='<small class="text-success">Strong</small>';else strDiv.innerHTML='';}}
-function checkMatch(){if(!p2||!p1)return;let matchDiv=document.getElementById('pwd-match');if(!p2.value){matchDiv.innerHTML='';return;}if(p1.value===p2.value&&p1.value.length>=8)matchDiv.innerHTML='<small class="text-success">✓ Passwords match</small>';else if(p2.value.length>0)matchDiv.innerHTML='<small class="text-danger">✗ Passwords do not match</small>';else matchDiv.innerHTML='';}
-if(p1){p1.addEventListener('input',checkStrength);p1.addEventListener('input',checkMatch);}if(p2)p2.addEventListener('input',checkMatch);
+  function registerPage() {
+    return {
+      password: '',
+      passwordConfirm: '',
+      showPassword: false,
+      showPasswordConfirm: false,
+      strength: 0,
+      strengthLabel: '',
+
+      init() {
+        this.$watch('password', function(val) { this.evaluateStrength(val); });
+      },
+
+      evaluateStrength(pw) {
+        var score = 0;
+        if (!pw) { this.strength = 0; this.strengthLabel = ''; return; }
+        if (pw.length >= 8) score++;
+        if (pw.length >= 12) score++;
+        if (/[A-Z]/.test(pw)) score++;
+        if (/[a-z]/.test(pw)) score++;
+        if (/[0-9]/.test(pw)) score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
+        this.strength = Math.min(score, 5);
+        var labels = ['', '{% trans "Very weak" %}', '{% trans "Weak" %}', '{% trans "Fair" %}', '{% trans "Good" %}', '{% trans "Strong" %}'];
+        this.strengthLabel = labels[this.strength];
+      },
+
+      get strengthPercent() { return (this.strength / 5) * 100; },
+
+      passwordsMatch() {
+        return this.passwordConfirm && this.password === this.passwordConfirm;
+      }
+    };
+  }
 </script>
-{% endblock auth_content %}
+
+<style>
+  .form__strength-wrap { margin-top: 0.375rem; }
+  .form__strength-meter {
+    height: 4px;
+    background: hsl(var(--fu-ink) / 0.12);
+    overflow: hidden;
+  }
+  .form__strength-bar {
+    height: 100%;
+    background: hsl(var(--fu-link));
+    transition: width 0.15s ease;
+  }
+  .form__strength-label {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 0.25rem;
+    color: hsl(var(--fu-muted));
+  }
+  .form__toggle-password {
+    background: transparent; border: 2px solid hsl(var(--fu-ink));
+    padding: 0 0.5rem; cursor: pointer;
+    color: hsl(var(--fu-muted)); font-family: var(--font-mono);
+    font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.15s ease;
+    height: 28px; display: inline-flex;
+    align-items: center; justify-content: center;
+    margin-top: 0.375rem;
+  }
+  .form__toggle-password:hover { color: hsl(var(--fu-link)); }
+  .form__match-indicator {
+    font-family: var(--font-mono);
+    font-size: 0.625rem; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 0.25rem; display: flex; align-items: center; gap: 0.25rem;
+  }
+  .form__match-indicator--match { color: hsl(var(--fu-ink)); }
+  .form__match-indicator--nomatch { color: hsl(var(--fu-link)); }
+  .htmx-request .btn__spinner { display: inline-block; }
+  .btn__spinner {
+    display: none; width: 18px; height: 18px; border: 2px solid transparent;
+    border-top-color: currentColor;
+    animation: btn-spin 0.8s linear infinite; margin-left: 0.5rem;
+  }
+  @keyframes btn-spin { to { transform: rotate(360deg); } }
+  .auth__social { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .auth__social .btn--social {
+    flex: 1; min-width: 160px;
+    background: hsl(var(--fu-paper));
+    border: 2px solid hsl(var(--fu-ink));
+    color: hsl(var(--fu-ink));
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.5rem; padding: 0.75rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .auth__social .btn--social:hover {
+    background: hsl(var(--fu-ink));
+    color: hsl(var(--fu-paper));
+  }
+</style>
+{% endblock extra_body %}

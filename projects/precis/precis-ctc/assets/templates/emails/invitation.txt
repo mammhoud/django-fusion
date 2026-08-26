@@ -11,9 +11,9 @@ You have been invited to join our platform.
 
 To complete your registration, visit the link below:
 
-{{ invitation_link }}
+{% if invitation_link %}{{ invitation_link }}{% elif invite_url %}{{ invite_url }}{% elif registration_url %}{{ registration_url }}{% endif %}
 
-This invitation was sent to {{ recipient_email }}.
+This invitation was sent to {% if recipient_email %}{{ recipient_email }}{% else %}{{ email }}{% endif %}.
 If you did not expect this email, you can safely ignore it.
 
 ---

@@ -690,8 +690,9 @@ msgstr "صفحة الدورات"
 msgid ""
 "Select which courses to display on this page. Only published courses will be "
 "shown."
-msgstr ""
-"حدد الدورات التي سيتم عرضها في هذه الصفحة. سيتم عرض الدورات المنشورة فقط."
+"Select which courses to display on this page. Only published courses will be "
+"shown."
+msgstr "اختر الدورات التي تريد عرضها في هذه الصفحة. ستظهر فقط الدورات المنشورة."
 
 #: apps/LMS/models/courses/index.py:67
 msgid "Text describing the page or highlighting available courses."
@@ -1217,7 +1218,7 @@ msgid "Description contains"
 msgstr "الوصف يحتوي على"
 
 #: apps/LMS/snippets/specialization.py:83
-#, fuzzy, python-format
+#, python-format
 #| msgid "Updated courses count for %(count)d specialization"
 msgid "Updated courses count for %(count)d specialization"
 msgid_plural "Updated courses count for %(count)d specializations"
@@ -3340,7 +3341,7 @@ msgid "Failed to cancel subscription: {}"
 msgstr "فشل في إلغاء الاشتراك: {}"
 
 #: apps/handlers/snippets/base.py:59 django_grep.pipelines/snippets/base.py:59
-#, fuzzy, python-format
+#, python-format
 #| msgid "Duplicated %(count)d record"
 msgid "Duplicated %(count)d record"
 msgid_plural "Duplicated %(count)d records"
@@ -3371,7 +3372,7 @@ msgid "This model does not have an 'is_active' field."
 msgstr "لا يحتوي هذا النموذج على حقل 'is_active'."
 
 #: apps/handlers/snippets/base.py:97 django_grep.pipelines/snippets/base.py:97
-#, fuzzy, python-format
+#, python-format
 #| msgid "Activated %(count)d record"
 msgid "Activated %(count)d record"
 msgid_plural "Activated %(count)d records"
@@ -3387,7 +3388,7 @@ msgid "Activate"
 msgstr "تنشيط"
 
 #: apps/handlers/snippets/base.py:112 django_grep.pipelines/snippets/base.py:112
-#, fuzzy, python-format
+#, python-format
 #| msgid "Deactivated %(count)d record"
 msgid "Deactivated %(count)d record"
 msgid_plural "Deactivated %(count)d records"
@@ -3981,6 +3982,9 @@ msgid ""
 "Pulvinar senectus morbi quisque nunc to towa faucibus netus etiam mone "
 "lestie nisi dis malesuada maecenas ora pretium ornare pharetra vestibulum "
 "mattis fringilla interdum cursus curae nisi pede laoreet placerat."
+"Pulvinar senectus morbi quisque nunc to towa faucibus netus etiam mone "
+"lestie nisi dis malesuada maecenas ora pretium ornare pharetra vestibulum "
+"mattis fringilla interdum cursus curae nisi pede laoreet placerat."
 msgstr ""
 "Pulvinar senectus morbi quisque nunc to towa faucibus netus etiam mone "
 "lestie nisi dis malesuada maecenas ora pretium ornare pharetra vestibulum "
@@ -4323,6 +4327,9 @@ msgid ""
 "\n"
 "                                                1 lesson\n"
 "                                            "
+"\n"
+"                                                1 lesson\n"
+"                                            "
 msgid_plural ""
 "\n"
 "                                                %(counter)s lessons\n"
@@ -4365,7 +4372,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\tModule %(num)s: %(title)s\n"
 "\t\t\t\t\t\t\t\t"
-msgstr ""
+msgstr "\n\t\t\t\t\t\t\t\t\tالوحدة %(num)s: %(title)s\n\t\t\t\t\t\t\t\t"
 
 #: apps/templates/courses/details/curriculum.html:37
 #, python-format
@@ -4373,7 +4380,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\t%(count)s lessons • %(duration)s min\n"
 "\t\t\t\t\t\t\t\t"
-msgstr ""
+msgstr "\n\t\t\t\t\t\t\t\t\t%(count)s دروس • %(duration)s دقيقة\n\t\t\t\t\t\t\t\t"
 
 #: apps/templates/courses/details/curriculum.html:77
 #, python-format
@@ -4381,7 +4388,7 @@ msgid ""
 "\n"
 "\t\t\t\t\t\t\t\t\t\t\t%(minutes)s min\n"
 "\t\t\t\t\t\t\t\t\t\t"
-msgstr ""
+msgstr "\n\t\t\t\t\t\t\t\t\t\t\t%(minutes)s دقيقة\n\t\t\t\t\t\t\t\t\t\t"
 
 #: apps/templates/courses/details/curriculum.html:84
 msgid "Preview"
@@ -4393,15 +4400,17 @@ msgid ""
 "\n"
 "                        %(hours)s hours\n"
 "                    "
-msgstr ""
+msgstr "\n                        %(hours)s ساعات\n                    "
 
 #: apps/templates/courses/details/instructor.html:21
 msgid "About the Instructor"
 msgstr "عن المدرب"
 
 #: apps/templates/courses/details/instructor.html:32
-#, python-format
 msgid ""
+"\n"
+"\t\t\t\t\t\t%(bio|default:\"Experienced instructor with passion for teaching and sharing knowledge.\")s\n"
+"\t\t\t\t\t"
 "\n"
 "\t\t\t\t\t\t%(bio|default:\"Experienced instructor with passion for teaching and sharing knowledge.\")s\n"
 "\t\t\t\t\t"
@@ -4425,7 +4434,7 @@ msgid ""
 "\n"
 "                                %(hours)s hours\n"
 "                            "
-msgstr ""
+msgstr "\n                                %(hours)s ساعات\n                            "
 
 #: apps/templates/courses/details/overview.html:35
 msgid "Level"
@@ -4581,7 +4590,7 @@ msgid ""
 "\n"
 "                Showing %(count)s results\n"
 "                "
-msgstr ""
+msgstr "\n                عرض %(count)s من النتائج\n                "
 
 #: apps/templates/courses/sections/search.html:141
 msgid "Clear all filters"
@@ -4880,7 +4889,7 @@ msgid ""
 "                <span class=\"auth__email fw-semibold text-"
 "primary\">%(email)s</span>\n"
 "                "
-msgstr ""
+msgstr "\n                سيتم إرسال رابط التحقق إلى:\n                <span class=\"auth__email fw-semibold text-primary\">%(email)s</span>\n                "
 
 #: components/auth/verification_link.html:34
 msgid "A verification link has been sent to your email address."
@@ -5084,9 +5093,9 @@ msgstr "اطلع على شهادتي:"
 msgid ""
 "Do you want to renew this certificate? This may require completing "
 "additional requirements or a renewal fee."
-msgstr ""
-"هل تريد تجديد هذه الشهادة؟ قد يتطلب ذلك إكمال متطلبات إضافية أو دفع رسوم "
-"التجديد."
+"Do you want to renew this certificate? This may require completing "
+"additional requirements or a renewal fee."
+msgstr "هل تريد تجديد هذه الشهادة؟ قد يتطلب ذلك استيفاء متطلبات إضافية أو دفع رسوم تجديد."
 
 #: components/profile/certifications.html:532
 msgid "Certificate renewal process started!"
@@ -5525,8 +5534,8 @@ msgstr "تم تحديث الملاحظة"
 #: components/profile/notes.html:593 components/profile/notes.html:622
 msgid ""
 "Are you sure you want to delete this note? This action cannot be undone."
-msgstr ""
-"هل أنت متأكد أنك تريد حذف هذه الملاحظة؟ لا يمكن التراجع عن هذا الإجراء."
+"Are you sure you want to delete this note? This action cannot be undone."
+msgstr "هل أنت متأكد أنك تريد حذف هذه الملاحظة؟ لا يمكن التراجع عن هذا الإجراء."
 
 #: components/profile/notes.html:603 components/profile/notes.html:632
 msgid "Note deleted successfully"
@@ -5626,9 +5635,9 @@ msgstr "معلومات مهمة"
 msgid ""
 "Blocked users will not be able to view your profile, send you messages, or "
 "interact with your content."
-msgstr ""
-"المستخدمون المحظورون لن يتمكنوا من عرض ملفك الشخصي أو إرسال رسائل إليك أو "
-"التفاعل مع محتواك."
+"Blocked users will not be able to view your profile, send you messages, or "
+"interact with your content."
+msgstr "لن يتمكن المستخدمون المحظورون من عرض ملفك الشخصي أو إرسال رسائل إليك أو التفاعل مع المحتوى الخاص بك."
 
 #: components/profile/partials/modals/profile_confirmation.html:28
 msgid "Are you sure you want to block"
@@ -5690,10 +5699,14 @@ msgstr "اختياري"
 msgid ""
 "Please provide any additional details that might help us understand your "
 "report..."
+"Please provide any additional details that might help us understand your "
+"report..."
 msgstr "يرجى تقديم أي تفاصيل إضافية قد تساعدنا في فهم تقريرك..."
 
 #: components/profile/partials/modals/profile_report.html:67
 msgid ""
+"Your report is confidential. We will review this report and take appropriate "
+"action if necessary."
 "Your report is confidential. We will review this report and take appropriate "
 "action if necessary."
 msgstr "تقريرك سري. سنراجع هذا التقرير ونتخذ الإجراءات المناسبة إذا لزم الأمر."
@@ -6220,8 +6233,9 @@ msgstr "ساعات الهدوء"
 msgid ""
 "During quiet hours, you won't receive push notifications. Urgent "
 "notifications will still be delivered."
-msgstr ""
-"خلال ساعات الهدوء، لن تتلقى إشعارات فورية. ستُرسل الإشعارات العاجلة فقط."
+"During quiet hours, you won't receive push notifications. Urgent "
+"notifications will still be delivered."
+msgstr "خلال ساعات الهدوء، لن تتلقى إشعارات فورية. سيستمر تسليم الإشعارات العاجلة."
 
 #: components/profile/settings/notifications.html:250
 msgid "Save Notification Settings"
@@ -6464,8 +6478,9 @@ msgstr "طلب حذف الحساب"
 msgid ""
 "Account deletion is permanent and cannot be undone. You will receive an "
 "email confirmation."
-msgstr ""
-"حذف الحساب دائم ولا يمكن التراجع عنه. ستتلقى تأكيدًا عبر البريد الإلكتروني."
+"Account deletion is permanent and cannot be undone. You will receive an "
+"email confirmation."
+msgstr "حذف الحساب نهائي ولا يمكن التراجع عنه. ستتلقى تأكيدًا عبر البريد الإلكتروني."
 
 #: components/profile/settings/privacy.html:176
 msgid "Save Privacy Settings"
@@ -6564,6 +6579,7 @@ msgstr "لم تقم بتغيير كلمة المرور الخاصة بك منذ 
 #, python-format
 msgid ""
 "Your password is %(days)s days old. Consider changing it for better security."
+"Your password is %(days)s days old. Consider changing it for better security."
 msgstr "عمر كلمة المرور الخاصة بك %(days)s يومًا. يُفضل تغييرها لأمان أفضل."
 
 #: components/profile/settings/security.html:134
@@ -6574,8 +6590,8 @@ msgstr "المصادقة الثنائية"
 #: components/profile/settings/security.html:154
 msgid ""
 "2FA is enabled. You'll need to enter a verification code when logging in."
-msgstr ""
-"تم تفعيل المصادقة الثنائية. ستحتاج إلى إدخال رمز التحقق عند تسجيل الدخول."
+"2FA is enabled. You'll need to enter a verification code when logging in."
+msgstr "المصادقة الثنائية مُفعَّلة. ستحتاج إلى إدخال رمز تحقق عند تسجيل الدخول."
 
 #: components/profile/settings/security.html:162
 msgid "Login Notifications"
@@ -6913,6 +6929,7 @@ msgstr "إشعار دفع"
 
 #: core/CI/models/interaction/notification.py:45
 msgid ""
+"The integration used to send this notification (e.g., Twilio, SendGrid)."
 "The integration used to send this notification (e.g., Twilio, SendGrid)."
 msgstr "التكامل المستخدم لإرسال هذا الإشعار (مثل Twilio، SendGrid)."
 
@@ -7689,8 +7706,9 @@ msgstr "رسالة النجاح"
 msgid ""
 "There was an error submitting your message. Please try again or contact us "
 "directly."
-msgstr ""
-"حدث خطأ أثناء إرسال رسالتك. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة."
+"There was an error submitting your message. Please try again or contact us "
+"directly."
+msgstr "حدث خطأ أثناء إرسال رسالتك. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة."
 
 #: django_grep.comp/blocks/contact/form.py:284
 msgid "Show Success Message on Page"
@@ -8674,6 +8692,7 @@ msgstr "قيمة لون CSS (مثل #f8f9fa, var(--primary-color), rgba(0,0,0,0.
 
 #: django_grep.comp/blocks/content/cta.py:207
 msgid ""
+"CSS gradient value (e.g., linear-gradient(135deg, #667eea 0%, #764ba2 100%))"
 "CSS gradient value (e.g., linear-gradient(135deg, #667eea 0%, #764ba2 100%))"
 msgstr "قيمة تدرج CSS (مثل linear-gradient(135deg, #667eea 0%, #764ba2 100%))"
 
@@ -9876,6 +9895,7 @@ msgstr "فيديو HTML5"
 #: django_grep.comp/blocks/media/video.py:43
 msgid ""
 "HTML5 video tag with sources. Example: <video><source src='...'></video>"
+"HTML5 video tag with sources. Example: <video><source src='...'></video>"
 msgstr "وسم فيديو HTML5 مع المصادر. مثال: <video><source src='...'></video>"
 
 #: django_grep.comp/blocks/media/video.py:50
@@ -9908,8 +9928,8 @@ msgstr "صورة مصغرة"
 #: django_grep.comp/blocks/media/video.py:72
 msgid ""
 "Custom thumbnail image. If not provided, will use video service thumbnail."
-msgstr ""
-"صورة مصغرة مخصصة. إذا لم تقدم، سيتم استخدام صورة مصغرة من خدمة الفيديو."
+"Custom thumbnail image. If not provided, will use video service thumbnail."
+msgstr "صورة مصغرة مخصصة. إذا لم يتم توفيرها، ستُستخدم الصورة المصغرة من خدمة الفيديو."
 
 #: django_grep.comp/blocks/media/video.py:78
 msgid "Show Thumbnail"
@@ -11699,6 +11719,8 @@ msgstr "حالة المدير الأعلى"
 msgid ""
 "Designates that this user has all permissions without explicitly assigning "
 "them."
+"Designates that this user has all permissions without explicitly assigning "
+"them."
 msgstr "يحدد أن هذا المستخدم لديه جميع الأذونات دون تعيينها صراحة."
 
 #: django_grep.pipelines/forms/admin.py:170
@@ -11767,9 +11789,9 @@ msgstr "رمز التحقق لتسجيل الدخول"
 msgid ""
 "Enter the 6-digit verification code sent to your email or phone to complete "
 "login."
-msgstr ""
-"أدخل رمز التحقق المكون من 6 أرقام المرسل إلى بريدك الإلكتروني أو هاتفك "
-"لإتمام تسجيل الدخول."
+"Enter the 6-digit verification code sent to your email or phone to complete "
+"login."
+msgstr "أدخل رمز التحقق المكوّن من 6 أرقام المرسل إلى بريدك الإلكتروني أو هاتفك لإكمال تسجيل الدخول."
 
 #: django_grep.pipelines/forms/authentication/confirm.py:96
 msgid "Email Verification Code"
@@ -11791,9 +11813,9 @@ msgstr "رمز إعادة تعيين كلمة المرور"
 msgid ""
 "Enter the 6-digit verification code sent to your email to reset your "
 "password."
-msgstr ""
-"أدخل رمز التحقق المكون من 6 أرقام المرسل إلى بريدك الإلكتروني لإعادة تعيين "
-"كلمة المرور."
+"Enter the 6-digit verification code sent to your email to reset your "
+"password."
+msgstr "أدخل رمز التحقق المكوّن من 6 أرقام المرسل إلى بريدك الإلكتروني لإعادة تعيين كلمة المرور."
 
 #: django_grep.pipelines/forms/authentication/login.py:41
 msgid "Keep me logged in for 30 days"
@@ -11891,6 +11913,7 @@ msgstr "رقم الهاتف الجديد"
 #: django_grep.pipelines/forms/authentication/phone.py:81
 msgid ""
 "Enter your new phone number including country code (e.g., +1 234 567 8900)."
+"Enter your new phone number including country code (e.g., +1 234 567 8900)."
 msgstr "أدخل رقم هاتفك الجديد متضمنًا رمز الدولة (مثلاً: +1 234 567 8900)."
 
 #: django_grep.pipelines/forms/authentication/phone.py:87
@@ -11911,6 +11934,7 @@ msgstr "+1 234 567 8900"
 
 #: django_grep.pipelines/forms/authentication/phone.py:165
 msgid ""
+"Enter your phone number with country code to receive a verification code."
 "Enter your phone number with country code to receive a verification code."
 msgstr "أدخل رقم هاتفك مع رمز البلد لاستلام رمز التحقق."
 
@@ -12061,6 +12085,8 @@ msgstr "قاعدة البيانات تعمل في وضع القراءة فقط. 
 #: django_grep.pipelines/models/contacts/base.py:17
 #: django_grep.pipelines/models/default.py:27 django_grep.pipelines/models/users/users.py:38
 msgid ""
+"Phone number must be entered in the format: '+999999999'. Up to 15 digits "
+"allowed."
 "Phone number must be entered in the format: '+999999999'. Up to 15 digits "
 "allowed."
 msgstr "يجب إدخال رقم الهاتف بالتنسيق: '+999999999'. مسموح حتى 15 رقمًا."
@@ -12665,9 +12691,9 @@ msgstr "رمز اللغة لهذه الإعدادات (مثلاً، 'en'، 'fr')
 msgid ""
 "Designates whether these settings are active for this language. Only one "
 "active per language."
-msgstr ""
-"يحدد ما إذا كانت هذه الإعدادات نشطة لهذه اللغة. يمكن أن تكون واحدة نشطة فقط "
-"لكل لغة."
+"Designates whether these settings are active for this language. Only one "
+"active per language."
+msgstr "يحدد ما إذا كانت هذه الإعدادات نشطة لهذه اللغة. إعداد نشط واحد فقط لكل لغة."
 
 #: django_grep.pipelines/models/settings/email.py:90
 #: django_grep.pipelines/models/settings/settings.py:121
@@ -13078,12 +13104,13 @@ msgstr "من أين يأتي محتوى القالب."
 msgid ""
 "Django template path (e.g., 'emails/newsletter.html'). Used when template "
 "source is 'path'."
-msgstr ""
-"مسار قالب Django (مثلاً 'emails/newsletter.html'). يستخدم عندما يكون مصدر "
-"القالب 'مسار'."
+"Django template path (e.g., 'emails/newsletter.html'). Used when template "
+"source is 'path'."
+msgstr "مسار قالب Django (مثل 'emails/newsletter.html'). يُستخدم عندما يكون مصدر القالب 'path'."
 
 #: django_grep.pipelines/models/settings/templates.py:89
 msgid ""
+"External URL to fetch template from. Used when template source is 'external'."
 "External URL to fetch template from. Used when template source is 'external'."
 msgstr "رابط خارجي لجلب القالب منه. يستخدم عندما يكون مصدر القالب 'خارجي'."
 
@@ -13095,8 +13122,9 @@ msgstr "قالب الموضوع"
 msgid ""
 "Subject line template. Use {{ title }}, {{ site_name }}, {{ user_name }}, "
 "etc."
-msgstr ""
-"نموذج سطر الموضوع. استخدم {{ title }}, {{ site_name }}, {{ user_name }}، إلخ."
+"Subject line template. Use {{ title }}, {{ site_name }}, {{ user_name }}, "
+"etc."
+msgstr "قالب سطر الموضوع. استخدم {{ title }} و {{ site_name }} و {{ user_name }} وغيرها."
 
 #: django_grep.pipelines/models/settings/templates.py:108
 msgid "Text preview shown in email clients (usually 85-100 characters)."
@@ -13127,10 +13155,10 @@ msgid ""
 "HTML markup with placeholders like {{ title }}, {{ content }}, "
 "{{ preview_text }}, {{ header_image_url }}, {{ unsubscribe_url }}, "
 "{{ site_url }}, {{ current_year }}."
-msgstr ""
-"وسم HTML مع عناصر نائب مثل {{ title }}, {{ content }}, {{ preview_text }}, "
-"{{ header_image_url }}, {{ unsubscribe_url }}, {{ site_url }}, "
-"{{ current_year }}."
+"HTML markup with placeholders like {{ title }}, {{ content }}, "
+"{{ preview_text }}, {{ header_image_url }}, {{ unsubscribe_url }}, "
+"{{ site_url }}, {{ current_year }}."
+msgstr "ترميز HTML مع عناصر نائبة مثل {{ title }} و {{ content }} و {{ preview_text }} و {{ header_image_url }} و {{ unsubscribe_url }} و {{ site_url }} و {{ current_year }}."
 
 #: django_grep.pipelines/models/settings/templates.py:142
 msgid "Inline CSS Styles"
@@ -13317,6 +13345,8 @@ msgstr "رابط إلغاء الاشتراك الافتراضي للنشرات �
 msgid ""
 "Optional category for grouping templates (e.g., 'Marketing', "
 "'Transactional')."
+"Optional category for grouping templates (e.g., 'Marketing', "
+"'Transactional')."
 msgstr "فئة اختيارية لتجميع القوالب (مثل 'تسويقي', 'تعاملي')."
 
 #: django_grep.pipelines/models/settings/templates.py:310
@@ -13383,8 +13413,9 @@ msgstr "نسبة معدل الارتداد التاريخي لهذا القال�
 msgid ""
 "Schedule when this template should be active. Leave empty for immediate/"
 "indefinite availability."
-msgstr ""
-"جدولة متى يجب أن يكون هذا القالب نشطًا. اتركه فارغًا للتوفر الفوري/غير المحدد."
+"Schedule when this template should be active. Leave empty for immediate/"
+"indefinite availability."
+msgstr "جدولة وقت نشاط هذا القالب. اتركه فارغًا للتوفر الفوري أو غير المحدود."
 
 #: django_grep.pipelines/models/settings/templates.py:394
 #: django_grep.pipelines/models/settings/templates.py:558
@@ -13393,6 +13424,10 @@ msgstr "الجدولة"
 
 #: django_grep.pipelines/models/settings/templates.py:410
 msgid ""
+"Choose template source: <b>Inline Content</b> - Edit HTML/CSS directly; "
+"<b>Uploaded Files</b> - Upload HTML/CSS files; <b>Template Path</b> - Use "
+"Django template from filesystem; <b>External URL</b> - Fetch template from "
+"external source."
 "Choose template source: <b>Inline Content</b> - Edit HTML/CSS directly; "
 "<b>Uploaded Files</b> - Upload HTML/CSS files; <b>Template Path</b> - Use "
 "Django template from filesystem; <b>External URL</b> - Fetch template from "
@@ -13415,10 +13450,10 @@ msgid ""
 "Use placeholders like {{ variable_name }} for dynamic content. Common "
 "variables: {{ title }}, {{ content }}, {{ user_name }}, {{ site_url }}, "
 "{{ unsubscribe_url }}, {{ current_year }}."
-msgstr ""
-"استخدم العناصر النائبة مثل {{ variable_name }} للمحتوى الديناميكي. المتغيرات "
-"الشائعة: {{ title }}, {{ content }}, {{ user_name }}, {{ site_url }}, "
+"Use placeholders like {{ variable_name }} for dynamic content. Common "
+"variables: {{ title }}, {{ content }}, {{ user_name }}, {{ site_url }}, "
 "{{ unsubscribe_url }}, {{ current_year }}."
+msgstr "استخدم عناصر نائبة مثل {{ variable_name }} للمحتوى الديناميكي. المتغيرات الشائعة:"
 
 #: django_grep.pipelines/models/settings/templates.py:458
 msgid "Subject & Preview"
@@ -13432,9 +13467,9 @@ msgstr "الأصول المرئية"
 msgid ""
 "Only one template per type can be set as default. System templates are "
 "protected. Draft templates are not available for use."
-msgstr ""
-"يمكن تعيين قالب واحد فقط لكل نوع كافتراضي. القوالب النظامية محمية. قوالب "
-"المسودات غير متاحة للاستخدام."
+"Only one template per type can be set as default. System templates are "
+"protected. Draft templates are not available for use."
+msgstr "يمكن تعيين قالب واحد فقط لكل نوع كافتراضي. قوالب النظام محمية، والقوالب المسودة غير متاحة للاستخدام."
 
 #: django_grep.pipelines/models/settings/templates.py:520
 msgid "Status & Behavior"
@@ -13444,9 +13479,9 @@ msgstr "الحالة والسلوك"
 msgid ""
 "Performance metrics are automatically updated based on email campaigns. "
 "These are read-only fields for monitoring template effectiveness."
-msgstr ""
-"يتم تحديث مؤشرات الأداء تلقائيًا بناءً على حملات البريد الإلكتروني. هذه الحقول "
-"للقراءة فقط لمراقبة فعالية القالب."
+"Performance metrics are automatically updated based on email campaigns. "
+"These are read-only fields for monitoring template effectiveness."
+msgstr "يتم تحديث مقاييس الأداء تلقائيًا بناءً على حملات البريد الإلكتروني. هذه حقول للقراءة فقط لمراقبة فعالية القالب."
 
 #: django_grep.pipelines/models/settings/templates.py:548
 msgid "Performance Metrics"
@@ -13642,9 +13677,9 @@ msgstr "أقصى عدد من الوسوم لكل عنصر"
 msgid ""
 "Maximum number of tags from this category that can be assigned to an item "
 "(leave blank for unlimited)"
-msgstr ""
-"العدد الأقصى من الوسوم من هذه الفئة التي يمكن تعيينها لعنصر (اتركه فارغًا "
-"لعدد غير محدود)"
+"Maximum number of tags from this category that can be assigned to an item "
+"(leave blank for unlimited)"
+msgstr "الحد الأقصى لعدد الوسوم من هذه الفئة التي يمكن تعيينها لعنصر (اتركه فارغًا لغير محدود)"
 
 #: django_grep.pipelines/models/tags.py:120
 msgid "Require Approval"
@@ -14443,9 +14478,8 @@ msgstr "البريد الإلكتروني للملف الشخصي"
 #: django_grep.pipelines/models/users/users.py:135
 msgid ""
 "Primary email for this profile (can be different from user account email)"
-msgstr ""
-"البريد الإلكتروني الأساسي لهذا الملف الشخصي (يمكن أن يختلف عن بريد حساب "
-"المستخدم)"
+"Primary email for this profile (can be different from user account email)"
+msgstr "البريد الإلكتروني الأساسي لهذا الملف الشخصي (قد يختلف عن بريد حساب المستخدم)"
 
 #: django_grep.pipelines/models/users/users.py:143
 msgid "Primary phone number for this profile"
@@ -14543,9 +14577,9 @@ msgstr "مسجل"
 msgid ""
 "Designates whether this profile has been registered/activated by a user. "
 "False = profile exists but user hasn't registered yet."
-msgstr ""
-"يشير إلى ما إذا تم تسجيل/تفعيل هذا الملف الشخصي بواسطة مستخدم. الخطأ = الملف "
-"الشخصي موجود لكن المستخدم لم يسجل بعد."
+"Designates whether this profile has been registered/activated by a user. "
+"False = profile exists but user hasn't registered yet."
+msgstr "يحدد ما إذا كان هذا الملف الشخصي قد تم تسجيله أو تنشيطه بواسطة مستخدم. خطأ = الملف موجود لكن المستخدم لم يسجّل بعد."
 
 #: django_grep.pipelines/models/users/users.py:319
 msgid "Registration Date"
@@ -14854,9 +14888,9 @@ msgstr "البريد الإلكتروني مطلوب"
 msgid ""
 "If your email is registered, you will receive password reset instructions "
 "shortly."
-msgstr ""
-"إذا كان بريدك الإلكتروني مسجلاً، فستتلقى تعليمات إعادة تعيين كلمة المرور "
-"قريباً."
+"If your email is registered, you will receive password reset instructions "
+"shortly."
+msgstr "إذا كان بريدك الإلكتروني مسجلاً، فستتلقى تعليمات إعادة تعيين كلمة المرور بعد قليل."
 
 #: django_grep.pipelines/site/auth/forget_password.py:120
 msgid "Check Your Email"
@@ -14962,6 +14996,7 @@ msgstr "يجب أن يكون طول كلمة المرور 8 أحرف على ال
 
 #: django_grep.pipelines/site/auth/register.py:261
 msgid ""
+"Account created successfully! Please check your email to verify your account."
 "Account created successfully! Please check your email to verify your account."
 msgstr "تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني لتأكيد الحساب."
 
@@ -15095,10 +15130,10 @@ msgid ""
 "Sign in to access curated tech tracks for medical research, publish and peer-"
 "review articles, and collaborate with colleagues through virtual courses. "
 "Let’s advance science together."
-msgstr ""
-"قم بتسجيل الدخول للوصول إلى مسارات تقنية مختارة للبحوث الطبية، نشر ومراجعة "
-"المقالات، والتعاون مع الزملاء من خلال الدورات الافتراضية. لنعمل معًا على تقدم "
-"العلم."
+"Sign in to access curated tech tracks for medical research, publish and peer-"
+"review articles, and collaborate with colleagues through virtual courses. "
+"Let’s advance science together."
+msgstr "سجّل الدخول للوصول إلى مسارات تقنية منسّقة لأبحاث الطب، ونشر المقالات ومراجعتها من الأقران، والتعاون مع الزملاء عبر الدورات الافتراضية. لنُقدِّم العلم معًا."
 
 #: core/templates/base_auth.html:32
 msgid "1k+ Students joined us, now it's your turn."
@@ -15149,3 +15184,39 @@ msgstr "اتبع مسارات تعلّم جادّة بمحتوى واضح وتق
 msgid "Open the catalog"
 msgstr "افتح الكتالوج"
 
+
+#: apps/learning/templates/learning/course.html
+msgid "From protocol to publication"
+msgstr "من البروتوكول إلى النشر"
+
+#: apps/learning/templates/learning/course.html
+msgid "CTC Research courses help clinicians, researchers, and medical writers make stronger decisions — from protocol to publication."
+msgstr "دورات CTC Research تساعد الأطباء والباحثين والكتّاب الطبيين على اتخاذ قرارات أقوى — من البروتوكول إلى النشر."
+
+#: apps/learning/templates/learning/course.html
+msgid "What you will learn"
+msgstr "ما ستتعلمه"
+
+#: apps/pages/pages/landing_api.py
+msgid "ctc research · medical research learning"
+msgstr "ctc research · تعليم الأبحاث الطبية"
+
+#: apps/pages/pages/landing_api.py
+msgid "Explore courses"
+msgstr "استكشف الدورات"
+
+#: apps/pages/pages/landing_api.py
+msgid "Learn about CTC Research"
+msgstr "تعرّف على CTC Research"
+
+#: apps/pages/pages/landing_api.py
+msgid "Start learning with CTC Research"
+msgstr "ابدأ التعلّم مع CTC Research"
+
+#: apps/pages/pages/landing_api.py
+msgid "A medical research center for clinical evidence, biostatistics, and responsible medical AI."
+msgstr "مركز أبحاث طبي للأدلة السريرية والإحصاء الحيوي والذكاء الاصطناعي الطبي المسؤول."
+
+#: apps/pages/pages/landing_api.py
+msgid "Browse courses"
+msgstr "تصفح الدورات"

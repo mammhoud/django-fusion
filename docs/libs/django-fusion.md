@@ -24,14 +24,14 @@ tags:
   - backend
 links:
   - label: "Libraries index"
-    to: "/docs/en/libs"
+    to: "/libs"
     icon: "i-lucide-library"
   - label: "Package source"
     to: "https://github.com/mammhoud/django-fusion"
     icon: "i-simple-icons-github"
     target: "_blank"
   - label: "Startup strategy 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
 ---
 

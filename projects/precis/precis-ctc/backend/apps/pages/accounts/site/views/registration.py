@@ -18,6 +18,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django_fusion.routes.pages.handler import PageHandler
@@ -97,6 +98,72 @@ def assign_default_group(user):
     logger.info(f"Assigned user {user.email} to group '{group.name}'")
 
 
+def _normalize_group_name(raw_role: str) -> str:
+    """Normalize a CSV role fragment into a Django group name.
+
+    ``content_manager`` → ``Content Manager``, ``instructor`` → ``Instructor``,
+    ``supervisor`` → ``Supervisor``.  Unknown/empty fragments are returned
+    unchanged so callers can decide whether to skip them.
+    """
+    return " ".join(part.capitalize() for part in raw_role.split("_") if part)
+
+
+def role_to_group_names(role: str) -> list[str]:
+    """Expand a CSV role string into Django group names.
+
+    Roles may be compound (``instructor/manager``) or single
+    (``content_manager``, ``supervisor``).  Each fragment becomes a group
+    name; empty fragments are dropped.
+    """
+    if not role:
+        return []
+    return [
+        _normalize_group_name(fragment)
+        for fragment in role.split("/")
+        if fragment.strip()
+    ]
+
+
+def assign_invited_role_groups(user, role: str) -> bool:
+    """
+    Assign the user to the Django groups implied by an invited role.
+
+    ``role`` is the raw CSV role string (e.g. ``instructor/manager``).  Each
+    fragment is normalized to a group name and the user is added to the
+    (created-if-missing) group.  Returns True when at least one group was
+    assigned, False when the role was empty/unmappable.
+    """
+    group_names = role_to_group_names(role)
+    if not group_names:
+        return False
+    for group_name in group_names:
+        group, _ = Group.objects.get_or_create(name=group_name)
+        user.groups.add(group)
+        logger.info(f"Assigned user {user.email} to invited group '{group.name}'")
+    return True
+
+
+def get_invited_role_for_email(email: str) -> str:
+    """Return the role stored on the most recent invitation EmailLog.
+
+    The invitation send path persists the raw role in ``EmailLog.group_name``
+    (see ``EmailService.send_invitation``).  Returns ``""`` when no invitation
+    was sent to this address.
+    """
+    from apps.domain.services.email.models import EmailLog
+
+    log = (
+        EmailLog.objects.filter(
+            recipient__iexact=email,
+            group_name__isnull=False,
+        )
+        .exclude(group_name="")
+        .order_by("-id")
+        .first()
+    )
+    return log.group_name if log else ""
+
+
 def get_site_url(request=None):
     """Get the base site URL for building confirmation links."""
     site_url = (
@@ -133,7 +200,13 @@ class RegisterView(PageHandler):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect("handlers:dashboard")
-        form = RegistrationForm()
+        # Prefill the email when the user arrived from an invitation link
+        # (/invite/<token>/ → /accounts/register/?email=…).
+        initial = {}
+        invited_email = request.GET.get("email", "").strip()
+        if invited_email:
+            initial["email"] = invited_email
+        form = RegistrationForm(initial=initial)
         context = self.get_context_data(request=request, form=form)
         if self.strategy == "fragment":
             return self.render_fragment(request, context)
@@ -199,8 +272,11 @@ class RegisterView(PageHandler):
 
             logger.info(f"User created (inactive): {email} from IP {get_client_ip(request)}")
 
-            # Assign to Content Manager group by default
-            assign_default_group(user)
+            # Assign the invited role's groups when the user arrived from an
+            # invitation email; fall back to the default Content Manager group.
+            invited_role = get_invited_role_for_email(email)
+            if not assign_invited_role_groups(user, invited_role):
+                assign_default_group(user)
 
             # Generate secure token
             token = registration_token_generator.make_token(user)
@@ -429,6 +505,46 @@ class CreatePasswordView(PageHandler):
             trigger_notification(response, "Password set. You are signed in.", "success")
             return response
         return HttpResponseRedirect(success_url)
+
+
+class InviteAcceptView(View):
+    """
+    Invitation landing — validates the invite token from the email link.
+
+    The invitation email links to ``/invite/<token>/`` (built by
+    ``InvitationService``). Valid tokens are consumed and the recipient is
+    sent to the registration form with their email pre-filled; expired or
+    unknown tokens render the shared ``token_error`` template.
+    """
+
+    def get(self, request, token):
+        from apps.domain.services.communication.invitation_service import (
+            InvitationService,
+        )
+
+        result = InvitationService.accept_invitation(token, user=request.user)
+        if result.get("success"):
+            email = result.get("email", "")
+            register_url = reverse("handlers:register-account")
+            from urllib.parse import urlencode
+
+            if email:
+                register_url = f"{register_url}?{urlencode({'email': email})}"
+            return HttpResponseRedirect(register_url)
+
+        error_type = "expired" if result.get("error") == "Token expired or invalid" else "invalid"
+        return render(
+            request,
+            "registration/token_error.html",
+            {
+                "error_type": error_type,
+                "message": _(
+                    "This invitation link is invalid or has expired. "
+                    "Please contact the sender for a new invitation."
+                ),
+            },
+            status=400,
+        )
 
 
 class RegistrationSuccessView(View):

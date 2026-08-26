@@ -22,10 +22,10 @@ tags:
   - docus
 links:
   - label: "Project awareness"
-    to: "/docs/en/guides/00-project-awareness"
+    to: "/guides/00-project-awareness"
     icon: "i-lucide-compass"
   - label: "Project structure"
-    to: "/docs/en/project-structure"
+    to: "/project-structure"
     icon: "i-lucide-folder-tree"
 ---
 

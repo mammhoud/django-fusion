@@ -19,7 +19,7 @@ class FusionBranding(models.Model):
                                      help_text="Legal company name for footer copyright")
     creator_name = models.CharField(max_length=100, default="Fusion Team",
                                      help_text="Creator/author name for meta tags and credits")
-    primary_color = models.CharField(max_length=7, default="#00a1b3",
+    primary_color = models.CharField(max_length=7, default="#E61919",
                                       help_text="Primary brand color (hex)")
     secondary_color = models.CharField(max_length=7, default="#5b21b6",
                                         help_text="Secondary accent color (hex)")

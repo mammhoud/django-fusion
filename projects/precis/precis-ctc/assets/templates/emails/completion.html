@@ -1,16 +1,16 @@
 {% extends "emails/base_email.html" %}
 
-{% block title %}Course Completed - {{ course.title|default:course_title }}{% endblock %}
+{% block title %}Course Completed - {% if course %}{{ course.title }}{% else %}{{ course_title }}{% endif %}{% endblock %}
 {% block header %}Congratulations! 🎉{% endblock %}
 
 {% block content %}
-<h2>Well done, {{ user.first_name|default:user.username|default:name|default:"there" }}!</h2>
+<h2>Well done, {% if user %}{{ user.first_name|default:user.username|default:name|default:"there" }}{% else %}{{ name|default:"there" }}{% endif %}!</h2>
 
-<p>You've successfully completed <strong>{{ course.title|default:course_title }}</strong>!</p>
+<p>You've successfully completed <strong>{% if course %}{{ course.title }}{% else %}{{ course_title }}{% endif %}</strong>!</p>
 
 <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
     <h3 style="margin-top: 0; color: #3A7CA5;">Completion Details</h3>
-    <p><strong>Course:</strong> {{ course.title|default:course_title }}</p>
+    <p><strong>Course:</strong> {% if course %}{{ course.title }}{% else %}{{ course_title }}{% endif %}</p>
     <p><strong>Completed on:</strong> {{ completion_date|date:"F j, Y" }}</p>
     {% if course.instructor %}
     <p><strong>Instructor:</strong> {{ course.instructor.get_full_name|default:course.instructor.username }}</p>

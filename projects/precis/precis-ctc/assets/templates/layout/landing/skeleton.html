@@ -7,7 +7,7 @@
 {% block html_attr %}
     data-usecase="landing" data-sidenav-view="{{ sidenav }}" {% endblock html_attr %}
 {% block styles %}
-    {% render_bundle 'static' 'css' %}
+    {% render_bundle 'main' 'css' %}
 {% endblock styles %}
 
 {% block extrastyle %}
@@ -62,7 +62,7 @@
 {% endblock body %}
 
 {% block scripts %}
-    {% render_bundle 'static' 'js' %}
+    {% render_bundle 'app' 'js' %}
 {% endblock scripts %}
 
 {% block extra_scripts %}

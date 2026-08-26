@@ -21,7 +21,7 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.html import strip_tags
 from django.utils.text import slugify
-from django.utils.translation import activate, check_for_language
+from django.utils.translation import activate, check_for_language, gettext as _
 from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from wagtail.blocks.list_block import ListValue
@@ -267,12 +267,14 @@ def _page_data(page, request=None, language: str | None = None) -> dict:
 
     hero_heading = getattr(specific, "hero_heading", "")
     hero_subheading = getattr(specific, "hero_subheading", "")
+    hero_accent = getattr(specific, "hero_accent", "")
     data["hero"] = {
-        "badge": "ctc research · medical research learning",
+        "badge": _("ctc research · medical research learning"),
         "title": hero_heading or page.title,
         "subtitle": hero_subheading or getattr(specific, "intro_text", "") or "",
-        "primary_cta": {"label": "Explore courses", "href": "/courses/", "style": "primary"},
-        "secondary_cta": {"label": "Learn about CTC Research", "href": "/about/", "style": "secondary"},
+        "accent": hero_accent or "",
+        "primary_cta": {"label": _("Explore courses"), "href": "/courses/", "style": "primary"},
+        "secondary_cta": {"label": _("Learn about CTC Research"), "href": "/about/", "style": "secondary"},
     }
 
     body = getattr(specific, "body", None) or getattr(specific, "intro_text", None)
@@ -328,12 +330,40 @@ def _page_data(page, request=None, language: str | None = None) -> dict:
     # hardcoded fallback. Values are localized via _live_page().
     _extract_seeded_blocks(specific, data, language)
 
+    # Home section chrome — the CMS-owned headings/intros for the research
+    # slider, course slider, hero evidence panel, learning teaser, and the
+    # methods/programs section heads (HomePage.home_chrome). Serialized as a
+    # flat dict keyed by block type so the Astro shell can render every one
+    # of them per locale without a frontend dictionary.
+    chrome = getattr(specific, "home_chrome", None)
+    if chrome is not None:
+        data["home_chrome"] = _home_chrome_data(chrome)
+
     data.setdefault("cta", {
-        "title": "Start learning with CTC Research",
-        "subtitle": "A medical research center built with Django, Wagtail, and Astro.",
-        "primary_cta": {"label": "Browse courses", "href": "/courses/", "style": "primary"},
+        "title": _("Start learning with CTC Research"),
+        "subtitle": _("A medical research center for clinical evidence, biostatistics, and responsible medical AI."),
+        "primary_cta": {"label": _("Browse courses"), "href": "/courses/", "style": "primary"},
     })
     return data
+
+
+def _home_chrome_data(stream) -> dict:
+    """Serialize HomePage.home_chrome into a flat {block_type: fields} dict.
+
+    Only the first block of each type wins (the editor is not expected to
+    repeat sections); list-valued blocks (evidence ``stats``) serialize as
+    plain JSON via ``_plain`` so the frontend renders them directly.
+    """
+    sections: dict[str, dict] = {}
+    for block in stream:
+        block_type = block.block_type
+        if block_type in sections:
+            continue
+        value = _plain(block.value)
+        if not isinstance(value, dict):
+            continue
+        sections[block_type] = {str(key): _plain(item) for key, item in value.items()}
+    return sections
 
 
 def _extract_seeded_blocks(specific, data: dict, language: str | None = None) -> None:
@@ -544,7 +574,7 @@ def site_settings_api(request: HttpRequest) -> JsonResponse:
         "site_tagline": getattr(settings_obj, "site_tagline", "Evidence you can build on."),
         "logo_url": logo_url,
         "favicon_url": favicon_url,
-        "primary_color": getattr(settings_obj, "primary_color", "") or "#00a1b3",
+        "primary_color": getattr(settings_obj, "primary_color", "") or "#E61919",
         "accent_color": getattr(settings_obj, "accent_color", "") or "#008080",
         "meta_description": seo.get("meta_description", "") or getattr(settings_obj, "footer_description", ""),
         "meta_keywords": seo.get("meta_keywords", ""),
@@ -852,13 +882,23 @@ def navigation_api(request: HttpRequest) -> JsonResponse:
 
 def page_data_api(request: HttpRequest, slug: str) -> JsonResponse:
     language = _requested_language(request)
-    page = _live_page(slug, language)
-    if page is None:
-        return JsonResponse({"error": "Page not found"}, status=404)
-    data = _page_data(page, request, language=language)
-    data["language"] = language
-    data["available_languages"] = [item["code"] for item in _language_catalog()]
-    return JsonResponse(data)
+    # Activate the requested locale so gettext'd API constants (hero badge,
+    # CTA labels, CTA fallback copy) resolve in the same language as the
+    # localized Wagtail page payload the client asked for.
+    from django.utils import translation
+
+    previous = translation.get_language()
+    activate(language)
+    try:
+        page = _live_page(slug, language)
+        if page is None:
+            return JsonResponse({"error": "Page not found"}, status=404)
+        data = _page_data(page, request, language=language)
+        data["language"] = language
+        data["available_languages"] = [item["code"] for item in _language_catalog()]
+        return JsonResponse(data)
+    finally:
+        activate(previous)
 
 
 def page_fragment_api(request: HttpRequest, slug: str = "home") -> HttpResponse:
@@ -932,6 +972,9 @@ def contact_api(request: HttpRequest) -> JsonResponse:
     description = "Questions about courses, content, or the platform? Send a message."
     form_title = "Send us a message"
     form_description = "We will get back to you within one business day."
+    button_text = "Send Message"
+    success_message = "Message sent successfully! We'll get back to you soon."
+    error_message = "Failed to send message. Please try again."
     fields: list[dict] = []
     methods: list[dict] = []
 
@@ -949,6 +992,12 @@ def contact_api(request: HttpRequest) -> JsonResponse:
             form_title = strip_tags(_plain(getattr(specific, "form_title")))
         if getattr(specific, "form_intro", ""):
             form_description = strip_tags(_plain(getattr(specific, "form_intro")))
+        if getattr(specific, "button_text", ""):
+            button_text = _plain(getattr(specific, "button_text"))
+        if getattr(specific, "success_message", ""):
+            success_message = strip_tags(_plain(getattr(specific, "success_message")))
+        if getattr(specific, "error_message", ""):
+            error_message = strip_tags(_plain(getattr(specific, "error_message")))
 
         # Contact info description (contact_info → contact_info → description).
         for block in getattr(specific, "contact_info", []) or []:
@@ -984,7 +1033,12 @@ def contact_api(request: HttpRequest) -> JsonResponse:
         "methods": methods,
         "form_title": form_title,
         "form_description": form_description,
+        "button_text": button_text,
+        "success_message": success_message,
+        "error_message": error_message,
         "fields": fields,
+        "language": language,
+        "available_languages": [item["code"] for item in _language_catalog()],
     })
 
 

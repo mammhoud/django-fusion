@@ -13,3 +13,9 @@ monitoring/grafana/
 
 # Local env overrides (copy from ../.env.example)
 **/.env
+
+# tools-web (vanilla dashboard)
+tools-web/node_modules/
+tools-web/test-results/
+tools-web/playwright-report/
+tools-web/package-lock.json

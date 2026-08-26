@@ -39,9 +39,15 @@ const { eyebrow, title = 'The team', description, members } = Astro.props;
             x-data x-intersect="$el.classList.add('reveal-visible')"
             style={`transition-delay: ${i * 75}ms`}
           >
-            <div class="team__avatar">
+            <div class="team__avatar" data-initials={member.initials}>
               {member.image ? (
-                <img src={member.image} alt={member.name} class="h-full w-full rounded-full object-cover" loading="lazy" />
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  class="h-full w-full rounded-full object-cover"
+                  loading="lazy"
+                  onerror="this.remove(); const a = this.closest('.team__avatar'); if (a) a.classList.add('team__avatar--initials');"
+                />
               ) : (
                 <span class="font-display text-lg sm:text-xl font-bold">{member.initials}</span>
               )}

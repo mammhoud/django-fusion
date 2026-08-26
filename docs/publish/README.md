@@ -1,4 +1,42 @@
-# 📦 Publishing
+---
+title: Publishing
+description: How to publish, deploy, and release Structa Cloud projects to production, GitHub, and package registries.
+navigation:
+  title: Publishing
+  icon: i-lucide-package
+object:
+  type: "reference"
+  id: "publish.index"
+attributes:
+  source_path: "publish/README.md"
+  canonical_route: "/docs/en/publish"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - publishing
+  - deploy
+  - release
+  - ci-cd
+  - docker
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "CI/CD"
+    to: "/publish/ci-cd"
+    icon: "i-lucide-git-branch"
+  - label: "Docker Deploy"
+    to: "/publish/docker-deploy"
+    icon: "i-lucide-docker"
+  - label: "POS Release"
+    to: "/publish/pos-release"
+    icon: "i-lucide-truck"
+---
+
+# 📦 Publishing — Deploy & Release
 
 > How to publish, deploy, and release Structa Cloud projects to production, GitHub, and package registries.
 

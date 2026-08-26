@@ -1,6 +1,7 @@
 # ====================================
 # 📧 Email Configuration
 # ====================================
+import os
 from enum import Enum
 
 from ..settings.conf import settings
@@ -43,8 +44,8 @@ EMAIL_SENDING_STRATEGY = get_email_strategy()
 # Email Timeout Configuration
 # -------------------------------
 EMAIL_TIMEOUT = settings.get("EMAIL_TIMEOUT", 30)
-EMAIL_USE_SSL = settings.get("EMAIL_USE_SSL", False)
-EMAIL_USE_TLS = settings.get("EMAIL_USE_TLS", True)
+EMAIL_USE_SSL = settings.get_bool("EMAIL_USE_SSL", False)
+EMAIL_USE_TLS = settings.get_bool("EMAIL_USE_TLS", True)
 
 # -------------------------------
 # Email Failure Simulation (for testing)
@@ -109,10 +110,21 @@ else:  # SMTP (default)
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = settings.get("EMAIL_HOST", "smtp.gmail.com")
     EMAIL_PORT = settings.get("EMAIL_PORT", 587)
-    EMAIL_HOST_USER = settings.get("EMAIL_USER", settings.get("EMAIL_USERNAME", ""))
-    EMAIL_HOST_PASSWORD = settings.get("EMAIL_PASSWORD", settings.get("EMAIL_PASSWORD", ""))
-    EMAIL_USE_TLS = settings.get("EMAIL_USE_TLS", True)
-    EMAIL_USE_SSL = settings.get("EMAIL_USE_SSL", False)
+    # Prefer the canonical Django SMTP credentials (EMAIL_HOST_USER/
+    # EMAIL_HOST_PASSWORD). They may be explicitly empty (e.g. Mailpit),
+    # so read them directly from the environment instead of settings.get,
+    # which skips empty values. Fall back to the legacy EMAIL_USER/EMAIL_PASSWORD
+    # names only when the canonical ones are not set at all.
+    if "EMAIL_HOST_USER" in os.environ:
+        EMAIL_HOST_USER = os.environ["EMAIL_HOST_USER"]
+    else:
+        EMAIL_HOST_USER = settings.get("EMAIL_USER", settings.get("EMAIL_USERNAME", ""))
+    if "EMAIL_HOST_PASSWORD" in os.environ:
+        EMAIL_HOST_PASSWORD = os.environ["EMAIL_HOST_PASSWORD"]
+    else:
+        EMAIL_HOST_PASSWORD = settings.get("EMAIL_PASSWORD", "")
+    EMAIL_USE_TLS = settings.get_bool("EMAIL_USE_TLS", True)
+    EMAIL_USE_SSL = settings.get_bool("EMAIL_USE_SSL", False)
 
 # -------------------------------
 # Email Content Configuration

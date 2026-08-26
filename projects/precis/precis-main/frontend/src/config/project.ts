@@ -1,7 +1,7 @@
 /**
  * Project config — frontend view of the config cascade.
  *
- * `project.json` is generated from the project configs (configs/*.yml + Env
+ * `site-config.json` is generated from the project configs (configs/*.yml + Env
  * overrides) by `make config-front`. Regenerate it after editing configs:
  *
  *     cd projects/precis/precis-main && make config-front
@@ -10,7 +10,7 @@
  * in the browser/server, matching the backend cascade contract.
  */
 
-import project from './project.json';
+import project from './site-config.json';
 
 export interface SiteIdentity {
   name: string;

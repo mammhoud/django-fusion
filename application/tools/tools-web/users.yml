@@ -1,0 +1,28 @@
+# Users configuration for Astro Tools Auth
+# Passwords are bcrypt hashed. Default passwords:
+#   admin: admin
+#   supervisor: supervisor
+# Generate new hashes with: node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
+
+users:
+  - username: "admin"
+    password_hash: "$2a$10$hMW.d74/ZdYNvWoMKW6iaOnx8/XWddKm9vllDKGLGFnMOfuklpkAe"
+    role: "admin"
+    name: "Administrator"
+    email: "admin@structa.cloud"
+    enabled: true
+
+  - username: "supervisor"
+    password_hash: "$2a$10$fRqjFhN8CHJKHzUwRSx1YeSbPDy9EsNlrSxZtdBB.gKoBdXXZI8U6"
+    role: "supervisor"
+    name: "Supervisor"
+    email: "supervisor@structa.cloud"
+    enabled: true
+
+# Example additional users (uncomment and update hash):
+#   - username: "developer"
+#     password_hash: "$2a$10$K7L1OJ45/4Y2xIh5oFQs5OqKQQQ5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y5Y"
+#     role: "developer"
+#     name: "Developer"
+#     email: "dev@structa.cloud"
+#     enabled: true

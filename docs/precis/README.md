@@ -23,13 +23,13 @@ tags:
   - django
 links:
   - label: "Project awareness"
-    to: "/docs/en/guides/00-project-awareness"
+    to: "/guides/00-project-awareness"
     icon: "i-lucide-compass"
   - label: "Architecture"
-    to: "/docs/en/architecture"
+    to: "/architecture"
     icon: "i-lucide-landmark"
   - label: "Startup strategy 🔒"
-    to: "/docs/en/startup/precis"
+    to: "/startup/precis"
     icon: "i-lucide-rocket"
 ---
 

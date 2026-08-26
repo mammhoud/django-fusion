@@ -44,8 +44,13 @@ module.exports = createConfig({
   projectRoot: PROJECT_ROOT,
 
   // ── Entry points ─────────────────────────────────────────────────────
+  // Replaces the CSS-only 'main' auto-entry from base.config.js with a
+  // combined SCSS + JS bundle.  Templates reference this as:
+  //   {% render_bundle 'main' 'css' %}   (SCSS → CSS output)
+  //   {% render_bundle 'main' 'js' %}    (JS output)
+  // The 'app' auto-entry (app.js only) is also available for JS-only pages.
   entries: {
-    precis: [
+    main: [
       'assets/static/styles/main.scss',
       'assets/static/js/app.js',
     ],
@@ -86,6 +91,6 @@ console.log(`
 ║  🏥 CTC Research Webpack                                    ║
 ║  Output: assets/bundles/ctc-research/                       ║
 ║  Public: /static/bundles/ctc-research/                      ║
-║  django-webpack-loader → {% render_bundle 'precis' %}      ║
+║  django-webpack-loader → {% render_bundle 'main' %}         ║
 ╚══════════════════════════════════════════════════════════════╝
 `);

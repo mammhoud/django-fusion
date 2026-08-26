@@ -144,7 +144,7 @@ class Command(BaseCommand):
                     "site_name": getattr(settings, "FUSION_SITE_NAME", "Fusion LMS"),
                     "company_name": getattr(settings, "FUSION_COMPANY_NAME", "Fusion Inc."),
                     "creator_name": getattr(settings, "FUSION_CREATOR_NAME", "Fusion Team"),
-                    "primary_color": getattr(settings, "FUSION_PRIMARY_COLOR", "#00a1b3"),
+                    "primary_color": getattr(settings, "FUSION_PRIMARY_COLOR", "#E61919"),
                     "secondary_color": getattr(settings, "FUSION_SECONDARY_COLOR", "#008080"),
                 },
             )

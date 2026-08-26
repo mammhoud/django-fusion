@@ -13,8 +13,8 @@ export default defineAppConfig({
   header: {
     title: 'Structa Cloud',
     logo: {
-      light: '/logo/logo-1.png',
-      dark: '/logo/logo-1.png',
+      light: '/logo/logo-1-enhanced.svg',
+      dark: '/logo/logo-1-enhanced.svg',
       alt: 'Structa Cloud',
       favicon: '/logo/structa-mark.svg',
     },

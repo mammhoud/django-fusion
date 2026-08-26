@@ -20,10 +20,10 @@ tags:
   - commands
 links:
   - label: "Project awareness"
-    to: "/docs/en/guides/00-project-awareness"
+    to: "/guides/00-project-awareness"
     icon: "i-lucide-compass"
   - label: "Full architecture"
-    to: "/docs/en/architecture"
+    to: "/architecture"
     icon: "i-lucide-landmark"
 ---
 

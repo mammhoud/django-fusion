@@ -204,6 +204,9 @@ export interface ContactData {
   methods: ContactMethod[];
   form_title: string;
   form_description: string;
+  button_text?: string;
+  success_message?: string;
+  error_message?: string;
   fields?: ContactFormField[];
 }
 
@@ -309,6 +312,8 @@ export interface PageData {
     primary_cta?: { label: string; href: string; style?: string } | null;
     secondary_cta?: { label: string; href: string; style?: string } | null;
   };
+  /** HomePage.home_chrome — CMS section heads/panels (localized per locale). */
+  home_chrome?: Record<string, any>;
   body?: string;
   stats?: Record<string, any>[];
   features?: Record<string, any>[];

@@ -37,6 +37,7 @@ from django_fusion.plugins.apis.openapi import openapi_docs, openapi_json
 
 from apps.core.openapi import spec as openapi_spec
 from apps.core.routes import module
+from apps.pages.accounts.site.views.registration import InviteAcceptView
 from apps.pages.blog import api as blog_api
 from apps.pages.pages import landing_api
 
@@ -159,11 +160,18 @@ urlpatterns = [
     # website the task backend stamps into each log (FUSION_TASK_SITE_NAME /
     # WEBSITE_NAME / WEBSITE env chain).
     path("tasks/", TaskCenterView.as_view(), name="tasks"),
-    path("accounts/", include("allauth.urls")),
     # ── Auth — django-allauth headless API (/api/auth/browser/v1/auth/*)
     # Consumed by the Alpine login modal (Astro frontend + Django templates).
     # Social provider redirects: /accounts/<provider>/login/?next=…
     path("api/auth/", include("allauth.headless.urls")),
+    # ── Invitation landing — /invite/<token>/ links in invitation emails.
+    # Built by InvitationService as ``{SITE_URL}/invite/{token}/``; validates
+    # the token and routes the recipient to registration with email pre-filled.
+    path(
+        "invite/<str:token>/",
+        InviteAcceptView.as_view(),
+        name="invite-accept",
+    ),
 ]
 
 if assets_urls is not None:
@@ -194,6 +202,25 @@ urlpatterns += [
 ]
 
 # ── App routing ────────────────────────────────────────────────────────────
+# Single auth/accounts group — mounted directly as a top-level namespace
+# so templates using {% url 'accounts:login' %} resolve.  Must come before
+# the plugins include (which also mounts accounts via apps/pages/urls.py).
+urlpatterns += i18n_patterns(
+    path("accounts/", include("apps.pages.accounts.urls", namespace="accounts")),
+    prefix_default_language=False,
+)
+
+# ── django-allauth stock accounts routes ─────────────────────────────────
+# Comes AFTER the custom accounts group so our branded login/signup/logout
+# views win.  Falls through for social providers (/accounts/<provider>/login/),
+# email management, password flows, and confirm-email — which our group
+# doesn't define.
+urlpatterns += i18n_patterns(
+    path("accounts/", include("allauth.urls")),
+    prefix_default_language=False,
+)
+
+# ── Plugin pages (profile, LMS, newsletter) ─────────────────────────────
 urlpatterns += i18n_patterns(
     path("", include("apps.pages.urls", namespace="plugins")),
     prefix_default_language=False,

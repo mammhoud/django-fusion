@@ -15,6 +15,9 @@ interface Props {
   formDescription?: string;
   sectionTitle?: string;
   sectionDescription?: string;
+  buttonText?: string;
+  successMessage?: string;
+  errorMessage?: string;
   fields?: ContactFormField[];
 }
 
@@ -23,7 +26,10 @@ const {
   formTitle = 'Send us a message',
   formDescription = 'Fill out the form and our team will get back to you.',
   sectionTitle = 'Get in touch',
-  sectionDescription = 'Have a question or want to work with us? Send a message and we\'ll reply within one business day.',
+  sectionDescription = 'Have a question or want to work with us? Send a message and we reply within one business day.',
+  buttonText = 'Send Message',
+  successMessage = 'Message sent successfully! We\u2019ll get back to you soon.',
+  errorMessage = 'Failed to send message. Please try again.',
   fields: propFields,
 } = Astro.props;
 
@@ -36,6 +42,10 @@ const methods: ContactMethod[] = propMethods && propMethods.length > 0 ? propMet
 const fields: ContactFormField[] = propFields && propFields.length > 0 ? propFields : [];
 
 const contactEndpoint = `${fusionApiUrl.replace(/\/+$/, '')}/fragment/contact/`;
+
+// Escape a string for embedding inside a single-quoted JS literal so message
+// copy that contains apostrophes ("We'll…") cannot break the Alpine expr.
+const jsString = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/\n/g, ' ');
 
 // Alpine form state built in frontmatter — Astro does NOT interpolate `${...}`
 // inside quoted attributes, so the endpoint is baked in at build time.
@@ -50,9 +60,9 @@ const formXData = `{ submitting: false, async submit() {
     });
     if (res.ok) {
       this.$el.reset();
-      $store.toast.show('Message sent successfully! We\u2019ll get back to you soon.');
+      $store.toast.show('${jsString(successMessage)}');
     } else {
-      $store.toast.show('Failed to send message. Please try again.', 'error');
+      $store.toast.show('${jsString(errorMessage)}', 'error');
     }
   } catch {
     $store.toast.show('Network error \u2014 please try again in a moment.', 'error');
@@ -98,8 +108,8 @@ const methodIcons: Record<string, string> = {
           novalidate
         >
           <div class="mb-7 border-b border-fu-line pb-5">
-            <h3 class="font-display text-2xl font-semibold tracking-tight text-fu-ink">{formTitle}</h3>
-            <p class="mt-2 text-sm leading-relaxed text-fu-muted">{formDescription}</p>
+            <h3 class="font-display text-2xl font-semibold tracking-tight text-fu-ink" data-l10n="contact.form_title">{formTitle}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-fu-muted" data-l10n="contact.form_description">{formDescription}</p>
           </div>
 
           <div class="contact-form__fields">
@@ -107,13 +117,13 @@ const methodIcons: Record<string, string> = {
               const isTextarea = field.field_type === 'textarea';
               return isTextarea ? (
                 <div class="mb-6">
-                  <label for={`cf-${field.name}`} class="form-label">{field.label}</label>
-                  <textarea id={`cf-${field.name}`} name={field.name} rows="5" class="input-field resize-none" placeholder={field.placeholder || ''} required={field.required ? true : undefined}></textarea>
+                  <label for={`cf-${field.name}`} class="form-label" data-l10n={`contact.field.${field.name}.label`}>{field.label}</label>
+                  <textarea id={`cf-${field.name}`} name={field.name} rows="5" class="input-field resize-none" placeholder={field.placeholder || ''} data-l10n={`contact.field.${field.name}.placeholder`} required={field.required ? true : undefined}></textarea>
                 </div>
               ) : (
                 <div>
-                  <label for={`cf-${field.name}`} class="form-label">{field.label}</label>
-                  <input id={`cf-${field.name}`} name={field.name} type={(field.field_type || 'text') as 'text' | 'email'} class="input-field" placeholder={field.placeholder || ''} required={field.required ? true : undefined} />
+                  <label for={`cf-${field.name}`} class="form-label" data-l10n={`contact.field.${field.name}.label`}>{field.label}</label>
+                  <input id={`cf-${field.name}`} name={field.name} type={(field.field_type || 'text') as 'text' | 'email'} class="input-field" placeholder={field.placeholder || ''} data-l10n={`contact.field.${field.name}.placeholder`} required={field.required ? true : undefined} />
                 </div>
               );
             })}
@@ -121,7 +131,7 @@ const methodIcons: Record<string, string> = {
 
           <button type="submit" class="btn-primary w-full" :disabled="submitting">
             <svg x-show="submitting" x-cloak class="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"></path></svg>
-            <span x-show="!submitting">Send Message</span><span x-show="submitting" x-cloak>Sending...</span>
+            <span x-show="!submitting" data-l10n="contact.button_text">{buttonText}</span><span x-show="submitting" x-cloak>Sending...</span>
           </button>
         </form>
       </div>

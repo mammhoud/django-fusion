@@ -33,6 +33,14 @@ This document summarizes all errors found during deployment and the fixes applie
 
 **Files Modified:**
 - `configs/base/apps.py` - Removed ceptor_ai from LOCAL_APPS
+
+> **✅ Root cause resolved (2026-08-26):** The underlying duplicate model
+> definition was in django-fusion itself — `django_fusion.site.auth.models.role.Role`
+> duplicated the canonical `django_fusion.models.auth.Role` (both `app_label='django_fusion'`).
+> The duplicate module was removed and `django_fusion.site.auth.models` now re-exports
+> the canonical model, so the `Conflicting 'role' models` RuntimeError no longer fires.
+> The `RuntimeError` handling in `plugins/lms/urls.py` is retained as harmless defensive
+> coding.
 - `precis-ctc/plugins/lms/urls.py` - Changed exception from `ImportError` to `(ImportError, RuntimeError)`
 - `lms/plugins/lms/urls.py` - Changed exception from `ImportError` to `(ImportError, RuntimeError)`
 

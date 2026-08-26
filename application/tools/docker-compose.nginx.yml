@@ -39,6 +39,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.tools-proxy.rule=Host(`docs.structa.cloud`) || Host(`tools.structa.cloud`)"
       - "traefik.http.services.tools-proxy.loadbalancer.server.port=80"
+    volumes:
+      - ./nginx/htpasswd:/etc/nginx/htpasswd:ro
     # No static/media volume mounts — assets-proxy owns those.
     # The nginx config and tools www/ content are baked into the image.
     deploy:

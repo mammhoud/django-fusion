@@ -1,4 +1,46 @@
-# Syntara — AI Chat Customizer
+---
+title: Syntara
+description: AI chat, template discovery, code customization, streaming responses — the Cypercloud runtime.
+navigation:
+  title: Syntara
+  icon: i-lucide-bot
+object:
+  type: "product"
+  id: "syntara.index"
+attributes:
+  source_path: "syntara/README.md"
+  canonical_route: "/docs/en/syntara"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "syntara"
+tags:
+  - structa-cloud
+  - syntara
+  - cypercloud
+  - ai
+  - chat
+  - customizer
+  - template
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Configuration"
+    to: "/syntara/configuration"
+    icon: "i-lucide-settings"
+  - label: "Features"
+    to: "/syntara/features"
+    icon: "i-lucide-star"
+  - label: "Infrastructure"
+    to: "/syntara/infrastructure"
+    icon: "i-lucide-server"
+  - label: "Use Cases"
+    to: "/syntara/use-cases"
+    icon: "i-lucide-list"
+---
+
+# 🤖 Syntara — AI Chat Customizer
 
 > **Related Names:** `cypercloud.localhost`, `AI chat`, `template customizer`, `ceptor-ai`, `Ollama`, `OpenAI`, `Claude`, `Gemini`
 > **Tags:** #site #cypercloud #ai #chat #customizer

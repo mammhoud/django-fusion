@@ -108,9 +108,7 @@ EXPECTED_HOME_TITLES = {
 # LMS app fixtures loaded on top of dump-data.json (courses/events)
 LMS_FIXTURES = [
     "specializations.json",
-    "course_tags.json",
-    "courses.json",
-    "medical_research_catalog.json",
+    "course_tags.json",        "medical_research_catalog.json",
     "medical_research_curriculum.json",
     "events.json",
 ]
@@ -123,10 +121,8 @@ RESEARCH_FIXTURE_PATH = (
     / "assets" / "fixtures" / "research_publications.json"
 )
 
-# Expected LMS fixture content (spot checks — actual titles in courses.json)
+# Expected LMS fixture content (the canonical medical research catalog).
 EXPECTED_COURSES = {
-    "Python Basics",
-    "Data Science with Python",
     "Clinical Trial Design & Protocol Development",
     "Biostatistics for Clinical Research",
     "Systematic Reviews & Evidence Synthesis",
@@ -918,7 +914,7 @@ class TestFixtureData(TestCase):
 
         # Data is reloaded, not accumulated.
         assert Course.objects.filter(title="Clinical Trial Design & Protocol Development").exists()
-        assert Course.objects.count() == 14
+        assert Course.objects.count() == 6
         assert Event.objects.count() == 5
         assert EventTranslation.objects.count() == 30
 

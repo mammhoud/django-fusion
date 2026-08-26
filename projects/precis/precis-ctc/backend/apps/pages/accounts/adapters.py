@@ -1,10 +1,11 @@
 """
 Custom allauth adapter for HTMX fragment rendering.
 
-Module: plugins.accounts.adapters (precis-lms.com)
+Module: plugins.accounts.adapters (precis-ctc)
 
 This adapter:
-- Maps allauth template names to auth/ fragment templates
+- Uses allauth's default template resolution (account/ and socialaccount/)
+- All account/ templates use split-layout styling with Alpine.js + HTMX
 - Detects HX-Request header for fragment vs full-page response
 - Wraps fragments in skeleton for non-HTMX requests
 - Adds logout success message via Django messages
@@ -31,22 +32,10 @@ class AuthHTMXAdapter(DefaultAccountAdapter):
     - Handles logout notification via Django messages
     """
 
-    # Template name mapping: allauth internal name → auth/ fragment path
-    TEMPLATE_MAP: dict[str, str] = {
-        "account/login.html": "auth/login.html",
-        "account/signup.html": "auth/register.html",
-        "account/password_reset.html": "auth/forgot_page.html",
-        "account/password_reset_from_key.html": "auth/reset_password.html",
-        "account/password_reset_from_key_done.html": "auth/password_reset_key_done.html",
-        "account/password_reset_done.html": "auth/password_reset_done.html",
-        "account/email_confirm.html": "auth/verification_link.html",
-        "account/password_change.html": "auth/password_change.html",
-        "account/password_set.html": "auth/password_set.html",
-        "account/email.html": "auth/email_manage.html",
-        "account/signup_closed.html": "auth/signup_closed.html",
-        "socialaccount/signup.html": "auth/social_signup.html",
-        "socialaccount/connections.html": "auth/social_connections.html",
-    }
+    # No custom template mapping — templates resolve through allauth's default
+    # paths (account/ and socialaccount/). All account/ templates use the same
+    # split-layout styling that was previously in the auth/ directory.
+    TEMPLATE_MAP: dict[str, str] = {}
 
     SKELETON_TEMPLATE = "layout/auth/skeleton.html"
 
@@ -73,38 +62,51 @@ class AuthHTMXAdapter(DefaultAccountAdapter):
         self, request: HttpRequest, template_name: str, context: dict, status=None
     ):
         """
-        Render the fragment. For non-HTMX requests, wrap in skeleton.
-        For HTMX requests, return the bare fragment.
+        Render the template. For fragment-only templates (no {% extends %}),
+        wrap in the auth skeleton. For self-extending templates that already
+        produce a full <html> page, return as-is.
+
+        Detects HTMX requests and returns bare fragments when appropriate.
+
+        Note: This method is only called when allauth views go through the
+        adapter pipeline (e.g., headless API views, internal flows). Direct
+        class-based views (LoginView, PasswordResetView, etc.) render through
+        Django's TemplateResponseMixin and do NOT call this method. Those
+        views are wrapped with PageHandler subclasses in apps/pages/urls.py.
         """
-        # Check if this is an HTMX request
+        from django.http import HttpResponse
+
         is_htmx = request.headers.get("HX-Request", False)
 
-        # Render the fragment
-        fragment = render_to_string(template_name, context, request)
+        # Render the template
+        rendered = render_to_string(template_name, context, request)
+
+        # If the template already produces a full HTML document (extends a
+        # layout skeleton), return it as-is — no double-wrapping.
+        if rendered.strip().startswith("<!DOCTYPE") or rendered.strip().startswith("<html"):
+            response = HttpResponse(rendered)
+            if status:
+                response.status_code = status
+            return response
 
         if is_htmx:
             # Return bare fragment for HTMX requests
-            from django.http import HttpResponse
-
-            response = HttpResponse(fragment)
+            response = HttpResponse(rendered)
             if status:
                 response.status_code = status
             return response
-        else:
-            # Wrap in skeleton for non-HTMX requests
-            skeleton_context = {
-                **context,
-                "fragment": fragment,
-                "template_name": template_name,
-            }
-            skeleton = render_to_string(self.SKELETON_TEMPLATE, skeleton_context, request)
 
-            from django.http import HttpResponse
-
-            response = HttpResponse(skeleton)
-            if status:
-                response.status_code = status
-            return response
+        # Wrap fragment in skeleton for non-HTMX requests
+        skeleton_context = {
+            **context,
+            "fragment": rendered,
+            "template_name": template_name,
+        }
+        skeleton = render_to_string(self.SKELETON_TEMPLATE, skeleton_context, request)
+        response = HttpResponse(skeleton)
+        if status:
+            response.status_code = status
+        return response
 
     def get_logout_redirect_url(self, request: HttpRequest) -> str:
         """Return the URL to redirect to after logout."""

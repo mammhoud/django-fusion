@@ -12,7 +12,7 @@
 #
 # Backend prefixes (Django URL map, grouped by app):
 #   Core API       /api/  /apis/
-#   Auth           /accounts/  /auth/  /api/auth/
+#   Auth           /accounts/  /auth/  /api/auth/  /invite/
 #   Admin          /admin/  /django-admin/
 #   Fusion         /fusion/  /fragment/  /components/
 #   Learning       /learning/
@@ -65,7 +65,7 @@ http:
     # trailing slash) are required so Django's APPEND_SLASH handles the 301
     # — otherwise the Astro catch-all serves its own 404 for /admin.
     ctc-backend:
-      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/api/`) || PathPrefix(`/apis/`) || PathPrefix(`/accounts/`) || PathPrefix(`/auth/`) || Path(`/admin`) || PathPrefix(`/admin/`) || Path(`/django-admin`) || PathPrefix(`/django-admin/`) || PathPrefix(`/fusion/`) || PathPrefix(`/fragment/`) || PathPrefix(`/components/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/settings`) || PathPrefix(`/cart/`) || PathPrefix(`/checkout/`) || PathPrefix(`/legal/`) || PathPrefix(`/newsletter/`) || PathPrefix(`/i18n/`) || PathPrefix(`/tasks/`) || PathPrefix(`/health/`) || PathPrefix(`/assets/health/`))'
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/api/`) || PathPrefix(`/apis/`) || PathPrefix(`/accounts/`) || PathPrefix(`/auth/`) || PathPrefix(`/invite/`) || Path(`/admin`) || PathPrefix(`/admin/`) || Path(`/django-admin`) || PathPrefix(`/django-admin/`) || PathPrefix(`/fusion/`) || PathPrefix(`/fragment/`) || PathPrefix(`/components/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/settings`) || PathPrefix(`/cart/`) || PathPrefix(`/checkout/`) || PathPrefix(`/legal/`) || PathPrefix(`/newsletter/`) || PathPrefix(`/i18n/`) || PathPrefix(`/tasks/`) || PathPrefix(`/health/`) || PathPrefix(`/assets/health/`))'
       entryPoints: [web, web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-backend-service

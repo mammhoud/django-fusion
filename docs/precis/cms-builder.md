@@ -26,13 +26,13 @@ tags:
   - client-work
 links:
   - label: "Precis home"
-    to: "/docs/en/precis"
+    to: "/precis"
     icon: "i-lucide-graduation-cap"
   - label: "Architecture"
-    to: "/docs/en/precis/architecture"
+    to: "/precis/architecture"
     icon: "i-lucide-landmark"
   - label: "Product profiles 🔒"
-    to: "/docs/en/startup/product-profiles"
+    to: "/startup/product-profiles"
     icon: "i-lucide-boxes"
 ---
 

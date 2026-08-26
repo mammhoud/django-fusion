@@ -31,7 +31,7 @@ const {
   showNavigation = true,
   showDots = true,
   eyebrow = 'the research agenda',
-  heading = 'A center in motion',
+  heading = 'The research agenda',
   intro = 'Move through the connected work: a clinical question, a defensible method, and the next useful learning step.',
 } = Astro.props;
 ---
@@ -40,6 +40,7 @@ const {
   <section class="home-slider" aria-labelledby="home-slider-title" data-testid="home-slider"  x-data={`{
     active: 0,
     total: ${slides.length},
+    interval: ${autoplayInterval},
     timer: null,
     playing: ${autoplay},
     touchStartX: 0,
@@ -112,16 +113,16 @@ const {
     <div class="container-fusion">
       <div class="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
-          <p class="tag-marker mb-3">{eyebrow}</p>
-          <h2 id="home-slider-title" class="page-section__title mb-0">{heading}</h2>
+          <p class="tag-marker mb-3" data-l10n="home_chrome.slider_head.eyebrow">{eyebrow}</p>
+          <h2 id="home-slider-title" class="page-section__title mb-0" data-l10n="home_chrome.slider_head.title">{heading}</h2>
         </div>
-        <p class="max-w-md text-sm leading-relaxed text-fu-muted">{intro}</p>
+        <p class="max-w-md text-sm leading-relaxed text-fu-muted" data-l10n="home_chrome.slider_head.intro">{intro}</p>
       </div>
 
       <div class="home-slider__frame" @mouseenter="stop()" @mouseleave="playing ? start() : null" @touchstart="onTouchStart($event)" @touchmove="onTouchMove($event)" @touchend="onTouchEnd()">
         <!-- Autoplay progress — a hairline that sweeps the slide's lifetime.
              Restarts on every slide change; removed while paused/hovered. -->
-        <div class="home-slider__progress" x-ref="progress" :style="`--home-slider-duration: ${autoplayInterval}ms`" aria-hidden="true"></div>
+        <div class="home-slider__progress" x-ref="progress" :style="'--home-slider-duration: ' + interval + 'ms'" aria-hidden="true"></div>
 
         <div class="home-slider__track" :style="`transform: translateX(-${active * 100}%)`">
           {slides.map((slide, index) => (

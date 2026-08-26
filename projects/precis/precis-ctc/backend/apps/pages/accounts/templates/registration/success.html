@@ -4,88 +4,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome! — Fusion Research</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Welcome — CTC Research</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: #F4F4F0;
+            color: #0A0A0A;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            -webkit-font-smoothing: antialiased;
         }
         .card {
             max-width: 520px;
             width: 100%;
-            background: #fff;
-            border-radius: 20px;
+            background: #EAE8E3;
+            border: 2px solid #0A0A0A;
+            box-shadow: 6px 6px 0 0 #0A0A0A;
             padding: 48px 40px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-            animation: slideUp 0.6s ease-out;
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .success-icon {
-            width: 88px;
-            height: 88px;
-            background: linear-gradient(135deg, #10b981, #34d399);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 24px;
-            font-size: 40px;
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-            animation: bounceIn 0.8s ease-out 0.3s both;
-        }
-        @keyframes bounceIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            50% { transform: scale(1.05); }
-            70% { transform: scale(0.9); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .confetti {
-            font-size: 28px;
+        .eyebrow {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #E61919;
             margin-bottom: 16px;
-            animation: float 2s ease-in-out infinite;
+            display: inline-block;
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+        .mark {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 40px;
+            line-height: 1;
+            color: #E61919;
+            margin-bottom: 16px;
         }
         h1 {
+            font-family: 'Archivo Black', sans-serif;
             font-size: 28px;
-            font-weight: 800;
-            color: #1a1a2e;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            line-height: 1.05;
+            color: #0A0A0A;
             margin-bottom: 12px;
         }
         .subtitle {
             font-size: 15px;
-            color: #6b7280;
+            color: #4a4a46;
             line-height: 1.7;
             margin-bottom: 32px;
         }
-        .user-name {
-            font-weight: 700;
-            color: #6C63FF;
-        }
+        .subtitle .user-name { font-weight: 700; color: #0A0A0A; }
         .next-steps {
-            background: #f8f9ff;
-            border-radius: 12px;
+            background: #F4F4F0;
+            border: 2px solid #0A0A0A;
             padding: 24px;
             margin-bottom: 28px;
             text-align: left;
         }
         .next-steps h3 {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1a1a2e;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #0A0A0A;
             margin-bottom: 12px;
         }
         .step {
@@ -94,55 +84,56 @@
             gap: 12px;
             padding: 8px 0;
             font-size: 14px;
-            color: #444;
+            color: #3c3c38;
         }
         .step-num {
             width: 28px;
             height: 28px;
-            background: linear-gradient(135deg, #6C63FF, #4ECDC4);
-            border-radius: 50%;
+            background: #0A0A0A;
+            color: #F4F4F0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
+            font-family: 'IBM Plex Mono', monospace;
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 600;
             flex-shrink: 0;
         }
         .action-btn {
             display: inline-block;
             padding: 14px 40px;
-            background: linear-gradient(135deg, #6C63FF, #5a52e0);
-            color: #fff;
-            border-radius: 50px;
+            background: #E61919;
+            color: #F4F4F0;
+            border: 2px solid #0A0A0A;
+            box-shadow: 4px 4px 0 0 #0A0A0A;
             text-decoration: none;
-            font-weight: 700;
-            font-size: 16px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 16px rgba(108,99,255,0.3);
+            font-family: 'IBM Plex Mono', monospace;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: box-shadow 0.15s ease, transform 0.15s ease;
         }
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(108,99,255,0.4);
-        }
+        .action-btn:hover { box-shadow: 2px 2px 0 0 #0A0A0A; }
+        .action-btn:active { transform: translate(2px, 2px); box-shadow: 0 0 0 0 #0A0A0A; }
     </style>
 </head>
 <body>
     <div class="card">
-        <div class="confetti">🎊</div>
-        <div class="success-icon">🎉</div>
+        <span class="eyebrow">Activation</span>
+        <div class="mark">[ OK ]</div>
 
-        <h1>{% trans "Account Activated!" %}</h1>
+        <h1>{% trans "Account Activated" %}</h1>
         <p class="subtitle">
             {% if user %}
-            Congratulations <span class="user-name">{{ user.get_full_name }}</span>!
+            {% blocktrans %}Congratulations {{ name }}!{% endblocktrans %}
             {% endif %}
-            Your account is now active and ready to use.
-            Welcome to Fusion Research!
+            {% trans "Your account is now active and ready to use." %}
+            {% trans "Welcome to CTC Research." %}
         </p>
 
         <div class="next-steps">
-            <h3>{% trans "🚀 What's Next?" %}</h3>
+            <h3>{% trans "What's Next" %}</h3>
             <div class="step">
                 <span class="step-num">1</span>
                 <span>{% trans "Complete your profile with your details" %}</span>
@@ -157,7 +148,7 @@
             </div>
         </div>
 
-        <a href="{% url 'handlers:dashboard' %}" class="action-btn">{% trans "Go to Dashboard →" %}</a>
+        <a href="{% url 'handlers:dashboard' %}" class="action-btn">{% trans "Go to Dashboard" %}</a>
     </div>
 </body>
 </html>

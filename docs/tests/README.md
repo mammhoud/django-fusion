@@ -1,4 +1,43 @@
-# 🧪 Testing
+---
+title: Testing
+description: Test architecture and coverage across all Structa Cloud projects — pytest, cargo test, vitest, Playwright.
+navigation:
+  title: Testing
+  icon: i-lucide-flask-conical
+object:
+  type: "reference"
+  id: "tests.index"
+attributes:
+  source_path: "tests/README.md"
+  canonical_route: "/docs/en/tests"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - testing
+  - pytest
+  - cargo
+  - vitest
+  - playwright
+  - e2e
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Testing Strategies"
+    to: "/tests/testing-strategies"
+    icon: "i-lucide-book"
+  - label: "E2E Report"
+    to: "/tests/e2e-test-report"
+    icon: "i-lucide-file-text"
+  - label: "POS Tests"
+    to: "/pos"
+    icon: "i-lucide-monitor"
+---
+
+# 🧪 Testing — Architecture & Coverage
 
 > Test architecture and coverage across all Structa Cloud projects.
 

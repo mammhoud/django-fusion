@@ -17,6 +17,7 @@ from apps.handlers.fusion import landing_pages_application
 from apps.learning.api import courses as courses_api
 from apps.learning.fusion import learning_application
 from apps.pages import api as pages_api
+from apps.pages.views import InviteAcceptView
 
 # ── Fusion introspection (plugin map + component usage + render tracker) ──
 try:
@@ -70,6 +71,12 @@ urlpatterns = [
     #    password reset, email management, email confirmation…). Mirrors the
     #    headless API flows with full pages for no-JS + management screens.
     path("accounts/", include("allauth.urls")),
+
+    # ── Invitation landing — /invite/<token>/ (links built by
+    #    InvitationService). Valid tokens are consumed and the recipient is
+    #    redirected to allauth signup with the email pre-filled; expired or
+    #    unknown tokens render the token_error page.
+    path("invite/<str:token>/", InviteAcceptView.as_view(), name="invite_accept"),
 
     # ── APIs — backend-driven content for the Astro frontend ──────────
     path("i18n/setlang/", set_language_api, name="set_language"),

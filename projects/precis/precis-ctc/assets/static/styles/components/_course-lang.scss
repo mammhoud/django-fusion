@@ -1,0 +1,188 @@
+/* ═══════════════════════════════════════════════════════════════════
+   COURSE LANGUAGE SWITCHER
+   Swiss Industrial Print base + optional --course-lang-rounded variant
+   ═══════════════════════════════════════════════════════════════════ */
+
+.course-lang {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+}
+
+/* ── Compact Tabs ─────────────────────────────────────────────────── */
+.course-lang--tabs {
+  gap: 0;
+  border: var(--fu-frame, 2px) solid hsl(var(--fu-line));
+  background: hsl(var(--fu-paper));
+}
+
+.course-lang__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  color: hsl(var(--fu-muted));
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  border-right: 1px solid hsl(var(--fu-line));
+  transition: all var(--fu-transition, 0.15s cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.course-lang__tab:last-child {
+  border-right: none;
+}
+
+.course-lang__tab:hover {
+  background: hsl(var(--fu-ink));
+  color: hsl(var(--fu-paper));
+}
+
+.course-lang__tab--active {
+  background: hsl(var(--fu-ink));
+  color: hsl(var(--fu-paper));
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 0 hsl(var(--fu-link));
+}
+
+.course-lang__flag {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.course-lang__label {
+  display: none;
+
+  @media (min-width: 480px) {
+    display: inline;
+  }
+}
+
+/* ── Dropdown ─────────────────────────────────────────────────────── */
+.course-lang--dropdown {
+  position: relative;
+}
+
+.course-lang__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border: var(--fu-frame, 2px) solid hsl(var(--fu-line));
+  background: hsl(var(--fu-paper));
+  color: hsl(var(--fu-ink));
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all var(--fu-transition, 0.15s cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.course-lang__trigger:hover {
+  background: hsl(var(--fu-ink));
+  color: hsl(var(--fu-paper));
+  border-color: hsl(var(--fu-ink));
+}
+
+.course-lang__chevron {
+  width: 10px;
+  height: 10px;
+  transition: transform var(--fu-transition, 0.15s cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.course-lang__chevron--open {
+  transform: rotate(180deg);
+}
+
+.course-lang__menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 60;
+  min-width: 200px;
+  background: hsl(var(--fu-paper));
+  border: var(--fu-frame, 2px) solid hsl(var(--fu-ink));
+  box-shadow: 4px 4px 0 0 hsl(var(--fu-ink));
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+}
+
+.course-lang__menu--enter {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.course-lang__menu--leave {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.course-lang__option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  color: hsl(var(--fu-ink));
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: all var(--fu-transition, 0.15s cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.course-lang__option:hover {
+  background: hsl(var(--fu-ink));
+  color: hsl(var(--fu-paper));
+}
+
+.course-lang__option--active {
+  font-weight: 700;
+  background: hsl(var(--fu-card));
+  color: hsl(var(--fu-link));
+}
+
+.course-lang__check {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  color: hsl(var(--fu-link));
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   OPTIONAL ROUNDED VARIANT
+   Add --course-lang-rounded class to introduce soft radius.
+   ═══════════════════════════════════════════════════════════════════ */
+.course-lang--rounded {
+  &.course-lang--tabs {
+    border-radius: 6px;
+  }
+
+  .course-lang__tab:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .course-lang__tab:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+
+  .course-lang__trigger {
+    border-radius: 4px;
+  }
+
+  .course-lang__menu {
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 0 0 1px hsl(var(--fu-line));
+  }
+
+  .course-lang__option:first-child {
+    border-radius: 2px 2px 0 0;
+  }
+
+  .course-lang__option:last-child {
+    border-radius: 0 0 2px 2px;
+  }
+}// Course language switcher — tabs + dropdown

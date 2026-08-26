@@ -86,7 +86,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
 .PHONY: deploy-databases deploy-coder
-.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-affine deploy-monitoring deploy-blinko deploy-tools
+.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-affine deploy-monitoring deploy-blinko deploy-xyops deploy-tools
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
@@ -356,8 +356,10 @@ help:
 	@echo "  make nx-run T=<target> - Run any target across all nx projects"
 	@echo ""
 	@echo "Self-hosted tools (application/tools/):"
-	@echo "  make deploy-tools      - Deploy all self-hosted tools (Blinko, monitoring, ollama, adminer, mailpit, affine)"
+	@echo "  make deploy-tools      - Deploy all self-hosted tools (Blinko, xyOps, monitoring, ollama, adminer, mailpit, affine)"
 	@echo "  make deploy-blinko     - Deploy Blinko notes at tools.structa.cloud/notes/"
+	@echo "  make deploy-xyops      - Deploy xyOps automation at ops.structa.cloud"
+	@echo "  make deploy-affine     - Deploy AFFiNE workspace at tools.structa.cloud"
 	@echo "  make deploy-utilities  - Deploy monitoring stack (Prometheus + Grafana, needs application/tools/monitoring/)"
 	@echo "  make deploy-ollama     - Deploy Ollama + Open WebUI (needs application/tools/ollama/)"
 	@echo "  make deploy-adminer    - Deploy Adminer DB UI (needs application/tools/adminer/)"
@@ -615,6 +617,7 @@ deploy-coder:
 # -----------------------------------------------------------------
 deploy-tools:
 	@$(MAKE) --no-print-directory deploy-blinko
+	@$(MAKE) --no-print-directory deploy-xyops
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
 	@$(MAKE) --no-print-directory deploy-adminer
@@ -633,6 +636,13 @@ deploy-affine:
 		$(MAKE) -C $(SERVICES_DIR)/affine up; \
 	else \
 		echo "  (skip) $(SERVICES_DIR)/affine not present"; \
+	fi
+
+deploy-xyops:
+	@if [ -d "$(SERVICES_DIR)/xyops" ]; then \
+		$(MAKE) -C $(SERVICES_DIR)/xyops up; \
+	else \
+		echo "  (skip) $(SERVICES_DIR)/xyops not present"; \
 	fi
 
 deploy-utilities:

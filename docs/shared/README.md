@@ -1,4 +1,43 @@
-# Shared — Shared Core & Workers
+---
+title: Shared Core & Workers
+description: Shared Django core, Dramatiq workers, APScheduler, and sentinel site for the Structa Cloud monorepo.
+navigation:
+  title: Shared
+  icon: i-lucide-cpu
+object:
+  type: "reference"
+  id: "shared.index"
+attributes:
+  source_path: "shared/README.md"
+  canonical_route: "/docs/en/shared"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - shared
+  - worker
+  - dramatiq
+  - apscheduler
+  - tasks
+  - celery
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Configuration"
+    to: "/shared/configuration"
+    icon: "i-lucide-settings"
+  - label: "Shared Methods"
+    to: "/shared/shared-methods"
+    icon: "i-lucide-code"
+  - label: "Use Cases"
+    to: "/shared/use-cases"
+    icon: "i-lucide-list"
+---
+
+# ⚙️ Shared Core & Workers
 
 > **Related Names:** `shared`, `shared-worker`, `shared-scheduler`, `tasks`, `sentinel site`, `background tasks`, `Dramatiq`, `Celery`
 > **Tags:** #project #shared #shared-core #worker #celery #dramatiq #tasks

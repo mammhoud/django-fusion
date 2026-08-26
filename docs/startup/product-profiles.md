@@ -28,13 +28,13 @@ tags:
   - private
 links:
   - label: "Startup home 🔒"
-    to: "/docs/en/startup"
+    to: "/startup"
     icon: "i-lucide-rocket"
   - label: "Company profile 🔒"
-    to: "/docs/en/startup/company-profile"
+    to: "/startup/company-profile"
     icon: "i-lucide-building-2"
   - label: "Pricing & offers 🔒"
-    to: "/docs/en/startup/pricing"
+    to: "/startup/pricing"
     icon: "i-lucide-tags"
 ---
 

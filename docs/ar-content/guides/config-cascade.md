@@ -100,7 +100,7 @@ STATIC_ROOT ← وحدة التخزين ← whitenoise /static/ ← Traefik
 ```bash
 make config-show     # السلسلة المدمجة + خطط الملفات الثابتة + رؤى front/back
 make config-check    # تحقق من وجود مفاتيح الهوية المطلوبة
-make config-front    # توليد frontend/src/config/project.json لـ Astro
+make config-front    # توليد frontend/src/config/site-config.json لـ Astro
 ```
 
 ## Remarks & Notes

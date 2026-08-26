@@ -1,4 +1,47 @@
-# POS — Restaurant Point of Sale Desktop App
+---
+title: Formint POS
+description: Multi-edition restaurant POS — Community, Standard, Pro, Cloud, Client. Tauri + React + Rust + Django.
+navigation:
+  title: Formint POS
+  icon: i-lucide-credit-card
+object:
+  type: "product"
+  id: "pos.index"
+attributes:
+  source_path: "pos/README.md"
+  canonical_route: "/docs/en/pos"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "formints"
+tags:
+  - structa-cloud
+  - pos
+  - formints
+  - tauri
+  - rust
+  - react
+  - desktop
+  - offline-first
+links:
+  - label: "Documentation home"
+    to: "/"
+    icon: "i-lucide-house"
+  - label: "Architecture"
+    to: "/pos/ARCHITECTURE"
+    icon: "i-lucide-layout"
+  - label: "Editions"
+    to: "/pos/editions"
+    icon: "i-lucide-package"
+  - label: "Backend"
+    to: "/pos/backend"
+    icon: "i-lucide-server"
+  - label: "Frontend"
+    to: "/pos/frontend"
+    icon: "i-lucide-monitor"
+---
+
+# 💳 Formint POS — Multi-Edition Restaurant POS
 
 > **Related Names:** `pos`, `POS system`, `desktop app`, `Tauri`, `React`, `Rust`, `SQLite`, `point-of-sale`, `offline-first`, `i18n`
 > **Tags:** #site #pos #desktop #tauri #rust #react #offline

@@ -33,7 +33,7 @@ const PRECIS_ROOT = process.env.FUSION_PROJECT_ROOT
 module.exports = {
   /** Additional entry points beyond the base "fusion" entry */
   entries: {
-    precis: [
+    main: [
       path.join(PRECIS_ROOT, "assets", "static", "styles", "main.scss"),
       path.join(PRECIS_ROOT, "assets", "static", "js", "app.js"),
     ],

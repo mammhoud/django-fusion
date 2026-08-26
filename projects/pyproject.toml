@@ -78,6 +78,7 @@ dependencies = [
     "watchfiles",
     "whitenoise",
     # DB
+    "django-tenants>=3.6",
     "psycopg",
     "psycopg-binary",
     # Utilities and tests

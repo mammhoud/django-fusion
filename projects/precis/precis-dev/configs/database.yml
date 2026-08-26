@@ -1,18 +1,18 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # precis-main — database.yml (project-level cascade layer)
 # ─────────────────────────────────────────────────────────────────────────────
-# Database configuration for the unified Precis product, wired by *type*.
+# Database configuration for the precis-dev development copy, wired by *type*.
 #
-#   DATABASE.type: sqlite   → local/dev default — precis-main/db.sqlite3
+#   DATABASE.type: sqlite   → local/dev default — precis-dev/db.sqlite3
 #   DATABASE.type: postgres → the shared ``postgres`` container
 #                             (application/databases) with this site's own
-#                             database (DB_NAME_LANDING → db_precis_landing)
+#                             database (DB_NAME_DEV → db_precis_dev)
 #
 # Secret rule: the password is NEVER inlined here — it resolves from the
 # environment (`@env POSTGRES_PASSWORD` / `@env DJANGO_DB_PASSWORD`), i.e. the
 # repo-root `.env`, the project `.env`, or Docker Compose `environment:`
-# (container truth). The database name defaults to `db_precis_landing` but the
-# deployed name comes from `DB_NAME_LANDING` in .env (see .env.example).
+# (container truth). The database name defaults to `db_precis_dev` but the
+# deployed name comes from `DB_NAME_DEV` in .env (see .env.example).
 #
 # Consumers:
 #   - backend/settings.py  → DATABASES["default"] (env vars still win)
@@ -31,7 +31,7 @@ default:
     sqlite:
       name: "@env DJANGO_DB_PATH db.sqlite3"
     postgres:
-      name: "@env DB_NAME_LANDING db_precis_landing"
+      name: "@env DB_NAME_DEV db_precis_dev"
       user: "@env POSTGRES_USER admin"
       host: "@env DJANGO_DB_HOST postgres"
       port: "@env DJANGO_DB_PORT 5432"

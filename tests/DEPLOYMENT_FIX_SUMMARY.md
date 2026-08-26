@@ -223,7 +223,10 @@ The lazy loading pattern implemented:
 ### Technical Debt
 
 These issues should be addressed in future sessions:
-1. Fix django_fusion library bug (duplicate Role model definitions)
+1. ~~Fix django_fusion library bug (duplicate Role model definitions)~~ ✅ **Resolved (2026-08-26):**
+   the duplicate `django_fusion.site.auth.models.role.Role` was removed; the `site.auth`
+   namespace now re-exports the canonical `django_fusion.models.auth.Role`, so the
+   `Conflicting 'role' models` RuntimeError no longer occurs.
 2. Consolidate duplicate certificate scripts
 3. SSL/HTTPS configuration with proper certificates
 4. Full integration testing across all sites

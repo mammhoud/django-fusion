@@ -101,7 +101,11 @@ COPY backend/prepare /prepare
 # The server helper lives inside the site dir (container /run is a system dir),
 # so the entrypoint can dispatch `server` directly to it.
 COPY backend/run    ${APP_HOME}/${PROJECT_PATH}/run
-RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/media ${APP_HOME}/${PROJECT_PATH}/assets/staticfiles \
+RUN mkdir -p ${APP_HOME}/logs ${APP_HOME}/media \
+    && if [ -L "${APP_HOME}/${PROJECT_PATH}/assets/staticfiles" ]; then \
+         rm "${APP_HOME}/${PROJECT_PATH}/assets/staticfiles"; \
+       fi \
+    && mkdir -p ${APP_HOME}/${PROJECT_PATH}/assets/staticfiles \
     && sed -i 's/\r$//g' /prepare ${APP_HOME}/${PROJECT_PATH}/run \
     && chmod +x /prepare ${APP_HOME}/${PROJECT_PATH}/run
 
