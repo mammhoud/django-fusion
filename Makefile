@@ -22,8 +22,13 @@ SOURCE_DIR        := source
 # Convenience vars
 # -----------------------------------------------------------------
 COMPOSE_CMD := docker compose -f docker-compose.yml
+# Default website for per-site delegations (dev / docker / check targets).
+# Override on the command line, e.g.:  make dev WEBSITE=precis-main
+WEBSITE ?= ctc
 # Networks that must exist before any service can come up.
 NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
+# Nx workspace runner used by the check/test/build/nx-* delegation targets.
+NX := npx nx
 
 # -----------------------------------------------------------------
 # Shared-task compose (Dramatiq worker + APScheduler process).
@@ -91,7 +96,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
 .PHONY: deploy-preflight deploy-ci preflight-network check-docker create-networks status logs logs-common stop restart
-.PHONY: prune prune-containers prune-volumes prune-images cleanup clean
+.PHONY: prune prune-containers prune-volumes prune-images cleanup clean clean-logs clean-docker clean-unused clean-all
 .PHONY: cert cert-generate cert-backup cert-restore cert-validate cert-check
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
@@ -100,6 +105,14 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: bump-app-patch bump-app-minor bump-app-major
 .PHONY: venv-setup venv-sync venv-lock venv-clean venv-info
 .PHONY: push push-libs push-lib pull sync require-github-token
+.PHONY: install install-python install-js install-formints install-docs
+.PHONY: check test check-docs build-docs docs-validate docs-dev
+.PHONY: nx nx-graph nx-deploy nx-build nx-check nx-test
+.PHONY: dev run-dev run-local server dev-ctc dev-precis dev-loop-crm dev-syntara
+.PHONY: docker-up docker-down docker-build docker-rebuild docker-logs docker-status docker-restart docker-stop docker-start docker-health docker-prune docker-prune-data
+.PHONY: deploy-tool backend-check-precis backend-test-precis backend-migrate-precis backend-check-ctc
+.PHONY: backend-check-pro backend-test-pro backend-check-cloud backend-test-cloud check-formints test-formints
+.PHONY: syntara loop-crm docs tests django-fusion application overview setup validate-proxy logs-service
 
 # -----------------------------------------------------------------
 # Git push with GitHub token authentication
@@ -303,15 +316,43 @@ help:
 	@echo "  make stop              - Stop all services"
 	@echo "  make restart           - Restart all services"
 	@echo ""
-	@echo "Maintenance:"
-	@echo "  make prune-containers  - Remove stopped containers"
-	@echo "  make prune-volumes     - Remove unused volumes"
-	@echo "  make prune-images      - Remove unused images"
-	@echo "  make cleanup           - Prune stopped containers, dangling images, and build cache (keeps volumes)"
-	@echo "  make clean             - Stop and remove all containers, volumes, and images"
+	@echo "Maintenance — clean family (safe by default, destructive variants are explicit):"
+	@echo "  make clean             - Generated files only: caches, dist, old build artifacts + logs, and root compose teardown (volumes KEPT)"
+	@echo "  make clean-logs        - Remove generated logs only (preserves .gitkeep)"
+	@echo "  make clean-docker      - Stop known stacks + prune unused containers/images/build cache (volumes KEPT)"
+	@echo "  make clean-unused      - clean + clean-docker: everything unused, volumes preserved"
+	@echo "  make clean-all         - clean-unused + unused volumes (full teardown, destructive)"
+	@echo "  make cleanup           - Legacy: prune stopped containers, dangling images, build cache (keeps volumes)"
+	@echo "  make prune-containers / prune-volumes / prune-images - legacy scoped prunes"
 	@echo "  make verify-release    - Sanity-check a published Composite Action tag (default v1.0.0) end-to-end"
 	@echo "  make bump-action-{patch|minor|major} - Bump the deploy-preflight Composite Action version (uvx bumpver)"
 	@echo "  make bump-app-{patch|minor|major}    - Bump the core workspace version (uvx bumpver)"
+	@echo ""
+	@echo "Install / workspace checks (formerly just-* recipes, now native make):"
+	@echo "  make install           - Full workspace install (uv sync + JS frontends + Formints + docs)"
+	@echo "  make install-python / install-js / install-formints / install-docs"
+	@echo "  make check             - Workspace checks (nx run-many check --all)"
+	@echo "  make test              - Workspace tests (nx run-many test --all)"
+	@echo "  make check-docs / build-docs / docs-validate / docs-dev"
+	@echo "  make nx NX_ARGS=...    - Delegate to nx (e.g. make nx NX_ARGS=\"run docs:build\")"
+	@echo "  make nx-graph          - Nx dependency graph"
+	@echo "  make nx-deploy         - Deploy Docker-machine projects through nx (docs + any nx deploy target)"
+	@echo ""
+	@echo "Local development & server entry points (WEBSITE=ctc|precis-main|precis-dev|loop-crm|...):"
+	@echo "  make dev / run-dev / run-local  - Run the Django dev server for the selected website"
+	@echo "  make dev-ctc / dev-precis / dev-loop-crm / dev-syntara - per-site dev shortcuts"
+	@echo "  make server            - Start the production server (container default)"
+	@echo ""
+	@echo "Docker delegation (WEBSITE=... selects the site):"
+	@echo "  make docker-up / docker-down / docker-build / docker-rebuild"
+	@echo "  make docker-logs / docker-status / docker-health"
+	@echo "  make docker-restart / docker-stop / docker-start / docker-prune"
+	@echo ""
+	@echo "Backend delegation:"
+	@echo "  make backend-check-precis / backend-test-precis / backend-migrate-precis"
+	@echo "  make backend-check-ctc · backend-check-pro / backend-test-pro · backend-check-cloud / backend-test-cloud"
+	@echo "  make check-formints / test-formints"
+	@echo "  make deploy-tool TOOL=<name> - Deploy one self-hosted tool (e.g. TOOL=affine)"
 	@echo ""
 	@echo "Certificate management (Proxy component):"
 	@echo "  make cert-generate     - Generate self-signed certificates"
@@ -336,9 +377,16 @@ help:
 	@echo "  make cms-fusion check  - Django system checks for Fusion CMS"
 	@echo "  make cms-fusion migrate - Run migrations for Fusion CMS"
 	@echo "  make test-fusion      - Run cms-fusion + precis-main tests sequentially"
+	@echo "  make syntara            - Delegate to projects/syntara/Makefile"
+	@echo "  make loop-crm           - Delegate to projects/loop-crm/Makefile"
+	@echo "  make docs               - Delegate to docs/Makefile (Docus)"
+	@echo "  make tests              - Delegate to tests/Makefile"
+	@echo "  make django-fusion      - Delegate to libs/django-fusion/Makefile"
+	@echo "  make application        - Delegate to application/Makefile (Coder)"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
+	@echo "  make overview          - Workspace command overview (mirrors just --list)"
 	@echo ""
 	@echo "Python venv (unified .venv at repo root via uv):"
 	@echo "  make venv-setup        - Create/update the unified .venv (uv sync)"
@@ -1001,6 +1049,25 @@ logs-common:
 	@echo "📝 Coolify logs (tail 200)..."
 	@docker logs coolify --tail 200 -f
 
+# Tail logs from an arbitrary container: make logs-service SERVICE=shared-proxy
+logs-service:
+	@test -n "$(SERVICE)" || (echo "Usage: make logs-service SERVICE=<container>"; exit 1)
+	@docker logs -f --tail=100 $(SERVICE)
+
+# Workspace command overview (port of the old `just overview`)
+overview:
+	@echo "structa.cloud — command layer"
+	@echo "  make install           → full workspace install"
+	@echo "  make check             → all workspace checks (nx)"
+	@echo "  make test              → all workspace tests (nx)"
+	@echo "  make deploy            → full stack deploy"
+	@echo "  make deploy-docs       → deploy Docus via nx"
+	@echo "  make deploy-tools      → deploy self-hosted tools"
+	@echo "  make dev WEBSITE=<site> → local Django dev server"
+	@echo "  make clean / clean-unused / clean-all → clean family (safe by default)"
+	@echo "  make nx NX_ARGS=<args> → delegate to Nx"
+	@echo "  make help              → full command catalog"
+
 stop:
 	@echo "🛑 Stopping all services..."
 	@cd $(PROXY_DIR) && $(MAKE) stop || true
@@ -1047,18 +1114,71 @@ cleanup:
 	@docker builder prune -f
 	@echo "✅ Cleanup complete"
 
-# Aggressive teardown — strips the project containers, volumes, and images.
-# Scoped to this compose project so it won't nuke other tenants on the host.
-clean:
-	@echo "🧹 Removing all containers, volumes, and images for this project..."
+# -----------------------------------------------------------------
+# Clean family — safe by default; destructive variants are explicit.
+#
+#   make clean          # generated files: caches, dist, old build artifacts
+#                       #   + logs, and root compose teardown (volumes KEPT)
+#   make clean-logs     # generated logs only (preserves .gitkeep)
+#   make clean-docker   # stop known stacks + prune unused containers,
+#                       #   images and build cache (volumes KEPT)
+#   make clean-unused   # clean + clean-docker: everything unused
+#   make clean-all      # clean-unused + unused volumes (full teardown)
+# -----------------------------------------------------------------
+
+# File-level clean: delegates the per-project clean (caches/dist/build under
+# projects/), removes stray root-level caches and old build outputs, cleans
+# logs, then tears down the root compose stack WITHOUT volumes. Never removes
+# node_modules, .venv, or database data.
+clean: clean-logs
+	@echo "🧹 Cleaning generated files (caches, dist, old build artifacts)..."
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) clean
+	@find . \( -path ./.venv -o -path ./.git -o -path ./node_modules \) -prune -o -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+	@find . \( -path ./.venv -o -path ./.git -o -path ./node_modules \) -prune -o -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete 2>/dev/null || true
+	@rm -rf .pytest_cache .mypy_cache .ruff_cache .hypothesis .tox .nox htmlcov coverage.xml 2>/dev/null || true
+	@echo "  → Root compose teardown (volumes kept)..."
 	@if [ -f docker-compose.yml ]; then \
-		$(COMPOSE_CMD) down -v --rmi all --remove-orphans; \
-	else \
-		echo "  (no docker-compose.yml at root; refusing to do an unscoped system prune)"; \
-		echo "  Run \`make prune-containers prune-volumes prune-images\` for a scoped prune."; \
-		exit 1; \
+		$(COMPOSE_CMD) down --remove-orphans 2>/dev/null || true; \
 	fi
-	@echo "✅ Clean complete"
+	@echo "✅ Clean complete — generated files, logs and containers removed (volumes preserved)"
+
+# Logs only — root logs/ dir plus every project log tree (keeps .gitkeep).
+clean-logs:
+	@echo "🧹 Cleaning generated logs (preserving .gitkeep)..."
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) clean-logs
+	@mkdir -p logs
+	@find logs -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null || true
+	@touch logs/.gitkeep
+	@echo "✅ Logs cleaned"
+
+# Docker-only clean: brings every known compose stack down, then prunes ALL
+# unused containers, images and build cache. Volumes are deliberately kept —
+# they hold database/media data for services that are just stopped.
+clean-docker:
+	@echo "🧹 Stopping known stacks + pruning unused Docker data (volumes KEPT)..."
+	@docker compose -f docker-compose.yml down --remove-orphans 2>/dev/null || true
+	@docker compose -f $(DATABASES_DIR)/docker-compose.yml down 2>/dev/null || true
+	@docker compose -f $(PROXY_DIR)/docker-compose.traefik.yml down 2>/dev/null || true
+	@docker compose -f $(TOOLS_PROXY_COMPOSE) down 2>/dev/null || true
+	@docker compose -f $(SERVICES_DIR)/docker-compose.yml down 2>/dev/null || true
+	@docker compose -f docs/docker-compose.yml down 2>/dev/null || true
+	@docker compose -f $(TASKS_COMPOSE_FILE) down 2>/dev/null || true
+	@docker compose -f application/docker-compose.yml down 2>/dev/null || true
+	@docker container prune -f
+	@docker image prune -af
+	@docker builder prune -f
+	@echo "✅ Docker cleaned — unused containers/images/build cache removed (volumes preserved)"
+
+# Everything unused, short of volume data: file-level clean + Docker prune.
+clean-unused: clean clean-docker
+	@echo "✅ clean-unused complete — all unused files, logs and Docker resources removed (volumes preserved)"
+
+# Full teardown — adds unused volume removal on top of clean-unused.
+# Destructive: wipes database/media volumes that no container references.
+clean-all: clean-unused
+	@echo "💥 Full teardown — also removing unused Docker volumes..."
+	@docker volume prune -f
+	@echo "✅ clean-all complete"
 
 # -----------------------------------------------------------------
 # Certificate management (Proxy)
@@ -1299,6 +1419,114 @@ databases:
 	@$(MAKE) -C $(DATABASES_DIR)
 
 # -----------------------------------------------------------------
+# Per-project / per-component delegation aliases — each shows the
+# component's own help; append a target to run it, e.g. `make docs build`.
+# -----------------------------------------------------------------
+syntara:
+	@$(MAKE) -C projects/syntara
+
+loop-crm:
+	@$(MAKE) -C projects/loop-crm
+
+docs:
+	@$(MAKE) -C docs
+
+tests:
+	@$(MAKE) -C tests
+
+django-fusion libs:
+	@$(MAKE) -C libs/django-fusion
+
+application:
+	@$(MAKE) -C application
+
+# -----------------------------------------------------------------
+# Local development & server entry points — select the site with
+# WEBSITE=ctc (default) | precis-main | precis-dev | loop-crm | ...
+# -----------------------------------------------------------------
+run-dev dev run-local: ## Run the Django dev server for the selected website
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) run-dev WEBSITE=$(WEBSITE)
+
+server: ## Start the production server (container default)
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) server WEBSITE=$(WEBSITE)
+
+dev-ctc:
+	@$(MAKE) run-dev WEBSITE=precis-ctc
+
+dev-precis:
+	@$(MAKE) run-dev WEBSITE=precis-main
+
+dev-loop-crm:
+	@$(MAKE) run-dev WEBSITE=loop-crm
+
+dev-syntara:
+	@$(MAKE) -C projects/syntara run
+
+# Per-site Django check/test (root `check`/`test` are workspace-wide nx
+# aggregates; use these for a single site's Django checks/tests).
+check-site: ## Django system checks for WEBSITE=<site>
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) check WEBSITE=$(WEBSITE)
+
+test-site: ## Django tests for WEBSITE=<site>
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) test WEBSITE=$(WEBSITE)
+
+# -----------------------------------------------------------------
+# Docker delegation — per-site compose operations via projects/Makefile.
+# -----------------------------------------------------------------
+docker-up docker-down docker-build docker-rebuild docker-logs docker-status docker-health docker-prune:
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) $@ WEBSITE=$(WEBSITE)
+
+docker-restart:
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) docker-restart-all WEBSITE=$(WEBSITE)
+
+docker-stop:
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) docker-stop-all WEBSITE=$(WEBSITE)
+
+docker-start:
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) docker-start-all WEBSITE=$(WEBSITE)
+
+docker-prune-data:
+	@$(MAKE) --no-print-directory -C $(CORE_DIR) docker-prune-data WEBSITE=$(WEBSITE)
+
+# Deploy a single self-hosted tool by name: make deploy-tool TOOL=affine
+deploy-tool:
+	@test -n "$(TOOL)" || (echo "Usage: make deploy-tool TOOL=<name> (e.g. TOOL=affine)"; exit 1)
+	@$(MAKE) -C $(SERVICES_DIR)/$(TOOL) up
+
+# -----------------------------------------------------------------
+# Backend delegation (from the Justfile command layer, now native make)
+# -----------------------------------------------------------------
+backend-check-precis:
+	@$(MAKE) -C projects/precis/precis-main/backend check
+
+backend-test-precis:
+	@$(MAKE) -C projects/precis/precis-main/backend test
+
+backend-migrate-precis:
+	@$(MAKE) -C projects/precis/precis-main/backend migrate
+
+backend-check-ctc:
+	@$(MAKE) -C projects/precis/precis-ctc/backend check
+
+check-formints:
+	@$(MAKE) -C projects/formints check-all
+
+test-formints:
+	@$(MAKE) -C projects/formints test-all
+
+backend-check-pro:
+	@$(MAKE) -C projects/formints/formint-pro check
+
+backend-test-pro:
+	@$(MAKE) -C projects/formints/formint-pro test
+
+backend-check-cloud:
+	@$(MAKE) -C projects/formints/formint-cloud check
+
+backend-test-cloud:
+	@$(MAKE) -C projects/formints/formint-cloud test
+
+# -----------------------------------------------------------------
 # Python venv management (unified .venv at repo root via uv)
 # -----------------------------------------------------------------
 
@@ -1344,13 +1572,65 @@ venv-info:           ## Show venv status and paths
 	@echo ""
 
 # -----------------------------------------------------------------
+# Install — full workspace dependency setup (port of the Justfile
+# install recipes; the Justfile now delegates here).
+# -----------------------------------------------------------------
+install: ## Full workspace install: uv sync + JS frontends + Formints + docs
+	@echo "🧪 Syncing Python workspace deps..."
+	@uv sync
+	@echo "📦 Installing JS frontends..."
+	@npm run install:projects
+	@echo "📦 Installing Formints editions..."
+	@$(MAKE) --no-print-directory -C projects/formints install-all
+	@echo "📦 Installing docs (Docus)..."
+	@cd docs && npm install --no-audit --no-fund
+	@echo "✅ Install complete"
+
+install-python: ## Sync Python workspace deps only (uv sync)
+	@uv sync
+
+install-js: ## Install JS frontends only
+	@npm run install:projects
+
+install-formints: ## Install all Formints editions + SDK
+	@$(MAKE) --no-print-directory -C projects/formints install-all
+
+install-docs: ## Install Docus (docs/) dependencies
+	@cd docs && npm install --no-audit --no-fund
+
+setup: install ## Alias — `make setup` ≡ `make install`
+
+# -----------------------------------------------------------------
+# Workspace check / test / docs (port of the Justfile recipes; these are
+# the workspace-wide aggregates — use `make check-site` for a single
+# site's Django checks).
+# -----------------------------------------------------------------
+check: ## Workspace checks (nx run-many check --all)
+	@npm run check
+
+test: ## Workspace tests (nx run-many test --all)
+	@npm run test
+
+check-docs: ## Check the Docus docs project
+	@$(NX) run docs:check
+
+build-docs: ## Build the Docus docs project
+	@$(NX) run docs:build
+
+docs-validate: ## Validate docs content (prepare + validate)
+	@$(MAKE) -C docs check
+
+docs-dev: ## Run the Docus dev server (localhost)
+	@cd docs && npm run dev
+
+# -----------------------------------------------------------------
 # Nx workspace aggregates — run a target across every nx project via
 # `nx run-many`. `make check-all` / `make test-all` at the root drive
 # the nx graph (dependency-aware + cached) instead of the make-only
 # per-project loop. The make-only variants remain available through
 # `make -C projects check-all` and `make -C formints test-all`.
 # -----------------------------------------------------------------
-.PHONY: nx-check-all nx-test-all nx-build-all nx-run
+.PHONY: nx-check-all nx-test-all nx-build-all nx-run nx nx-graph nx-deploy nx-build nx-check nx-test
 .PHONY: check-all test-all
 
 NX := npx nx
@@ -1371,9 +1651,34 @@ nx-run:  ## Run any target across all nx projects: make nx-run T=<target>
 	@test -n "$(T)" || (echo "Usage: make nx-run T=<target> (e.g. T=build)"; exit 1)
 	@$(NX) run-many -t "$(T)" --all
 
+# Generic nx passthrough (port of `just nx <args>`):
+#   make nx NX_ARGS="run docs:build"   make nx NX_ARGS="graph"
+nx:
+	@test -n "$(NX_ARGS)" || (echo "Usage: make nx NX_ARGS=\"<args>\" (e.g. NX_ARGS=\"run docs:build\"); also: make nx-run T=<target>"; exit 1)
+	@$(NX) $(NX_ARGS)
+
+nx-graph: ## Nx dependency graph (browser)
+	@$(NX) graph
+
+# Short aliases for the run-many aggregates (identical to nx-*-all)
+nx-build:
+	@$(NX) run-many -t build --all
+
+nx-check:
+	@$(NX) run-many -t check --all
+
+nx-test:
+	@$(NX) run-many -t test --all
+
+# Docker-machine deploys routed through nx — docs builds its own image via
+# the docs:deploy nx target. The full stack deploy stays `make deploy`.
+nx-deploy:
+	@$(NX) run docs:deploy
+	@echo "✅ nx-deploy complete (docs via nx; full stack via 'make deploy')"
+
 # -----------------------------------------------------------------
 # Generic forwarder – any unknown target routes to projects/Makefile
-# (so `make check`, `make test-local`, `make runserver-local`, etc. work)
+# (so `make test-local`, `make runserver-local`, etc. work)
 # -----------------------------------------------------------------
 %:
 	@true 2>/dev/null; \

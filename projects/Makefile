@@ -188,7 +188,7 @@ export SERVER_TYPE
 # the MANAGE fallback (legacy aliases: vresume, cms-fusion, ...).
 BACKEND_MAKE := $(if $(filter $(SITE),precis-ctc),precis/precis-ctc/backend,$(if $(filter $(SITE),precis-main),precis/precis-main/backend,$(if $(filter $(SITE),precis-dev),precis/precis-dev/backend,$(if $(filter $(SITE),loop-crm),loop-crm/backend,))))
 
-.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate superuser server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy redeploy-with-stack docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate superuser server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy redeploy-with-stack docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs clean-docker clean-unused docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -243,7 +243,10 @@ help:
 		'  docker-prune-containers - Remove stopped containers/orphans' \
 		'  docker-prune-data - Remove generated compose data (dangerous)' \
 		'  clean-site-logs - Remove logs for the selected website under $(LOG_DIR)/$(SITE)' \
-		'  clean-logs     - Remove generated logs under $(LOG_DIR), preserving .gitkeep'
+		'  clean-logs     - Remove generated logs under $(LOG_DIR), preserving .gitkeep' \
+		'  clean          - Remove Python caches, dist, old build artifacts and logs (safe)' \
+		'  clean-docker   - Safe Docker clean for the site (down + prune, volumes kept)' \
+		'  clean-unused   - clean + clean-docker (everything unused, volumes preserved)'
 
 assets:
 	@case '$(SITE)' in \
@@ -770,25 +773,44 @@ docs:
 	@echo "Documentation can be found in docs/ directory"
 	@ls -la docs/
 
-# Clean Python cache and build artifacts
+# Clean Python cache, build artifacts and generated logs.
 # SAFETY: These find commands only target well-known build artifact directories.
 # They NEVER delete source code files (.tsx, .py, .rs, .js, .css, .scss).
-# The patterns match only generated directories (__pycache__, dist, build, etc.)
+# The patterns match only generated directories (__pycache__, dist, build, logs, etc.)
 # that are universally recognized as build outputs across Python/JS/Rust projects.
-clean:
+clean: clean-logs
 	@echo "Cleaning Python cache and build artifacts..."
 	find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name '.pytest_cache' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name '.mypy_cache' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name '.ruff_cache' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name '.hypothesis' -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name '.cache' -not -path '*/node_modules/*' -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name '.astro' -not -path '*/node_modules/*' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name 'htmlcov' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name 'dist' -not -path '*/node_modules/*' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name 'build' -not -path '*/node_modules/*' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name '*.egg-info' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name '.tox' -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name '.nox' -exec rm -rf {} + 2>/dev/null || true
+	find . -type f \( -name '*.pyc' -o -name '*.pyo' \) -delete 2>/dev/null || true
+	rm -f .coverage coverage.xml 2>/dev/null || true
 	@echo "Clean completed"
+
+# Safe Docker clean for the selected website: compose down (volumes KEPT)
+# plus pruning of stopped containers / dangling images / build cache.
+clean-docker:
+	@echo "🧹 Cleaning Docker for $(SITE) (volumes kept)..."
+	$(DOCKER_COMPOSE) down --remove-orphans 2>/dev/null || true
+	docker container prune -f 2>/dev/null || true
+	docker image prune -f 2>/dev/null || true
+	docker builder prune -f 2>/dev/null || true
+	@echo "✅ Docker cleaned for $(SITE) (volumes preserved)"
+
+# Everything unused for the selected website: file-level clean + safe Docker
+# clean. Volumes are preserved — use docker-clean-all for a full teardown.
+clean-unused: clean clean-docker
+	@echo "✅ clean-unused complete — generated files, logs and unused Docker resources removed (volumes preserved)"
 
 # Show Makefile targets with descriptions
 show-targets:

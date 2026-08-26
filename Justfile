@@ -1,26 +1,29 @@
 # ============================================================
 # Structa Cloud — Justfile (user-facing command layer)
 # ============================================================
-# `just` is the friendly front-end for the monorepo. Complex deploy
-# and backend commands delegate to the canonical Makefile dispatchers
-# and the Nx workspace (single source of truth — no duplicated logic).
+# `just` is the friendly front-end for the monorepo. After the
+# Justfile→Make refactor, EVERY recipe below is a thin delegation
+# to the root Makefile — the Makefile is the single source of
+# truth for commands (no duplicated logic).
 #
 #   just install          # full workspace install (Python + JS + POS)
 #   just check            # run all workspace checks
 #   just deploy           # full stack deploy (postgres-first)
-#   just nx <target>      # delegate to nx (e.g. just nx run docs:build)
+#   just clean            # generated files + logs + containers (volumes kept)
+#   just clean-unused     # + prune unused docker resources (volumes kept)
+#   just nx <args>        # delegate to nx (e.g. just nx run docs:build)
 #
-# Run `just --list` for the full command catalog.
+# Run `just --list` for the full command catalog. For everything
+# else use `make help` (or `just help`) — every `just <recipe>`
+# below is equivalent to `make <target>`.
 
 set shell := ["bash", "-uc"]
 
-# Directory layout — mirrors Makefile
+# Directory layout — mirrors the root Makefile
 WORKSPACE_ROOT := "."
-PROXY_DIR := "application/proxy"
-SERVICES_DIR := "application/tools"
-DATABASES_DIR := "application/databases"
-FORMINTS_DIR := "projects/formints"
-PRECIS_DIR := "projects/precis"
+# Default site for `just dev` / per-site delegations (ctc|precis-main|...)
+# Override with: just --set WEBSITE precis-main dev
+WEBSITE := "ctc"
 
 # ---------------------------------------------------------------
 # Meta
@@ -30,9 +33,13 @@ PRECIS_DIR := "projects/precis"
 default:
     @just --list
 
-# Show the underlying Makefile help (deploy/cert/infra detail)
+# Show the underlying Makefile help (full command catalog)
 help:
     @make help
+
+# Workspace command overview
+overview:
+    @make overview
 
 # ---------------------------------------------------------------
 # Install
@@ -40,53 +47,54 @@ help:
 
 # Full workspace install: uv sync + frontends + formints + docs
 install:
-    @echo "🧪 Syncing Python workspace deps..."
-    @uv sync
-    @echo "📦 Installing JS frontends..."
-    @npm run install:projects
-    @echo "📦 Installing Formints editions..."
-    @cd {{FORMINTS_DIR}} && make install-all
-    @echo "📦 Installing docs (Docus)..."
-    @cd docs && npm install --no-audit --no-fund
-    @echo "✅ Install complete"
+    @make install
 
 # Install only the Python workspace deps (uv sync)
 install-python:
-    @uv sync
+    @make install-python
 
-# Install only the JS frontends (npm run install:projects)
+# Install only the JS frontends
 install-js:
-    @npm run install:projects
+    @make install-js
 
 # Install only the Formints editions (all editions + SDK)
 install-formints install-formints-all:
-    @cd {{FORMINTS_DIR}} && make install-all
+    @make install-formints
 
 # Install docs (Docus) dependencies
 install-docs:
-    @cd docs && npm install --no-audit --no-fund
+    @make install-docs
+
+# Alias of install
+setup: install
 
 # ---------------------------------------------------------------
 # Check / test / build
 # ---------------------------------------------------------------
 
-# Run every workspace check (nx run-many check + Python checks)
+# Run every workspace check (nx run-many check)
 check:
-    @echo "🧪 Running workspace checks..."
-    @npm run check
+    @make check
 
-# Run every workspace test (nx run-many test + Python suites)
+# Run every workspace test (nx run-many test)
 test:
-    @echo "🧪 Running workspace tests..."
-    @npm run test
+    @make test
 
-# Check the docs project (Docus config + locale sources)
+# Check the docs project (Docus)
 check-docs:
-    @nx run docs:check
+    @make check-docs
 
-# Build the docs project (Docus Nuxt server, container builds internally)
+# Build the docs project (Docus)
 build-docs:
-    @nx run docs:build
+    @make build-docs
+
+# Validate docs content
+docs-validate:
+    @make docs-validate
+
+# Run the Docus dev server (localhost)
+docs-dev:
+    @make docs-dev
 
 # ---------------------------------------------------------------
 # Nx delegation
@@ -94,11 +102,11 @@ build-docs:
 
 # Delegate any target to nx: just nx <args...> (e.g. just nx run docs:build)
 nx *args:
-    @node_modules/.bin/nx {{args}}
+    @make nx NX_ARGS="{{args}}"
 
 # Nx graph visualization
 nx-graph:
-    @node_modules/.bin/nx graph
+    @make nx-graph
 
 # ---------------------------------------------------------------
 # Deploy (complex commands — delegate to root Makefile)
@@ -114,7 +122,7 @@ deploy-proxy:
 
 # Deploy the docs service (Docus) — uses nx check + docker compose
 deploy-docs:
-    @nx run docs:deploy
+    @make deploy-docs
 
 # Deploy all self-hosted tools (affine, adminer, mailpit, monitoring, ollama)
 deploy-tools:
@@ -136,9 +144,9 @@ deploy-coder:
 deploy-app:
     @make deploy-app
 
-# Deploy a single tool by name: just deploy-tool <name>
+# Deploy a single tool by name: just deploy-tool affine
 deploy-tool name:
-    @make -C {{SERVICES_DIR}}/{{name}} up
+    @make deploy-tool TOOL={{name}}
 
 # ---------------------------------------------------------------
 # Backend commands (product-scoped, delegate to project Makefiles)
@@ -146,75 +154,134 @@ deploy-tool name:
 
 # Precis (unified) backend check
 backend-check-precis:
-    @cd {{PRECIS_DIR}}/precis-main/backend && make check
+    @make backend-check-precis
 
 # Precis (unified) backend test
 backend-test-precis:
-    @cd {{PRECIS_DIR}}/precis-main/backend && make test
+    @make backend-test-precis
 
 # Precis (unified) backend migrate
 backend-migrate-precis:
-    @cd {{PRECIS_DIR}}/precis-main/backend && make migrate
-
-# Formints: check all editions
-check-formints:
-    @cd {{FORMINTS_DIR}} && make check-all
-
-# Formints: test all editions
-test-formints:
-    @cd {{FORMINTS_DIR}} && make test-all
-
-# Formints professional backend check
-backend-check-pro:
-    @cd {{FORMINTS_DIR}}/formint-pro && make check
-
-# Formints professional backend test
-backend-test-pro:
-    @cd {{FORMINTS_DIR}}/formint-pro && make test
-
-# Formints cloud backend check
-backend-check-cloud:
-    @cd {{FORMINTS_DIR}}/formint-cloud && make check
-
-# Formints cloud backend test
-backend-test-cloud:
-    @cd {{FORMINTS_DIR}}/formint-cloud && make test
+    @make backend-migrate-precis
 
 # CTC backend check
 backend-check-ctc:
-    @cd {{PRECIS_DIR}}/precis-ctc/backend && make check
+    @make backend-check-ctc
+
+# Formints: check all editions
+check-formints:
+    @make check-formints
+
+# Formints: test all editions
+test-formints:
+    @make test-formints
+
+# Formints professional backend check
+backend-check-pro:
+    @make backend-check-pro
+
+# Formints professional backend test
+backend-test-pro:
+    @make backend-test-pro
+
+# Formints cloud backend check
+backend-check-cloud:
+    @make backend-check-cloud
+
+# Formints cloud backend test
+backend-test-cloud:
+    @make backend-test-cloud
 
 # ---------------------------------------------------------------
-# Docs & tools
+# Local development & server entry points
 # ---------------------------------------------------------------
 
-# Validate the docs content (prepare + validate)
-docs-validate:
-    @cd docs && make check
+# Run the Django dev server for the selected website: just dev WEBSITE=precis-main
+dev:
+    @make run-dev WEBSITE={{WEBSITE}}
 
-# Run the Docus dev server (localhost)
-docs-dev:
-    @cd docs && npm run dev
+run-dev:
+    @make run-dev WEBSITE={{WEBSITE}}
 
-# Show status of all containers
-status:
-    @make status
+run-local:
+    @make run-local WEBSITE={{WEBSITE}}
 
-# Tail logs from a service: just logs <service>
-logs service:
-    @docker compose ps -q {{service}} >/dev/null 2>&1 && docker logs -f --tail=100 {{service}} || docker logs -f --tail=100 {{service}}
+# Per-site dev shortcuts
+dev-ctc:
+    @make dev-ctc
 
-# Probe every site's health endpoint
-probe-health:
-    @make probe-health
+dev-precis:
+    @make dev-precis
+
+dev-loop-crm:
+    @make dev-loop-crm
+
+# Start the production server (container default)
+server:
+    @make server
+
+# ---------------------------------------------------------------
+# Docker delegation (per-site compose operations)
+# ---------------------------------------------------------------
+
+docker-up:
+    @make docker-up
+
+docker-down:
+    @make docker-down
+
+docker-build:
+    @make docker-build
+
+docker-logs:
+    @make docker-logs
+
+docker-status:
+    @make docker-status
+
+docker-restart:
+    @make docker-restart
+
+docker-stop:
+    @make docker-stop
+
+docker-start:
+    @make docker-start
+
+docker-prune:
+    @make docker-prune
+
+# ---------------------------------------------------------------
+# Clean family (safe by default; destructive variants are explicit)
+# ---------------------------------------------------------------
+
+# Generated files only: caches, dist, old builds + logs + root compose teardown (volumes KEPT)
+clean:
+    @make clean
+
+# Generated logs only (preserves .gitkeep)
+clean-logs:
+    @make clean-logs
+
+# Stop known stacks + prune unused containers/images/build cache (volumes KEPT)
+clean-docker:
+    @make clean-docker
+
+# clean + clean-docker — everything unused, volumes preserved
+clean-unused:
+    @make clean-unused
+
+# Full teardown — also removes unused volumes (destructive)
+clean-all:
+    @make clean-all
+
+# Legacy: prune stopped containers + dangling images + build cache (keeps volumes)
+cleanup:
+    @make cleanup
 
 # ---------------------------------------------------------------
 # Utilities (safe — never touches volumes)
 # ---------------------------------------------------------------
-
-# Prune stopped containers + dangling images + build cache (keeps volumes)
-cleanup:
-    @make cleanup
 
 # Create the shared Docker networks
 create-networks:
@@ -222,22 +289,16 @@ create-networks:
 
 # Validate the Traefik config
 validate-proxy:
-    @python3 {{PROXY_DIR}}/scripts/validate-traefik-config.py
+    @make validate-proxy
 
-# Show the workspace status overview
-overview:
-    @echo "structa.cloud — command layer"
-    @echo "  just install        → full workspace install"
-    @echo "  just check          → all workspace checks"
-    @echo "  just deploy         → full stack deploy"
-    @echo "  just deploy-docs    → deploy Docus via nx"
-    @echo "  just deploy-tools   → deploy self-hosted tools"
-    @echo "  just nx <args>      → delegate to Nx"
-    @just --list
+# Show status of all containers
+status:
+    @make status
 
-# ---------------------------------------------------------------
-# Legacy/alias helpers
-# ---------------------------------------------------------------
+# Tail logs from a service: just logs <service>
+logs service:
+    @make logs-service SERVICE={{service}}
 
-# Alias of install — `just install` is canonical, `just setup` works too
-setup: install
+# Probe every site's health endpoint
+probe-health:
+    @make probe-health

@@ -201,6 +201,6 @@ The Structa Cloud stack is now running. Next steps:
 - **Port conflicts:** If 80/443 are busy, Traefik won't start. Stop other services or use `make -C application/proxy up` with custom ports via `.env`.
 - **Database migrations** run automatically on first deploy via `make deploy`. For manual control: `cd projects/precis/precis-main/backend && make migrate`.
 - **Submodule updates:** When `libs/django-fusion/` changes, run `git submodule update --remote libs/django-fusion` then `uv sync`.
-- **Cleanup:** `make cleanup` removes stopped containers, dangling images, and build cache (keeps volumes).
+- **Cleanup:** `make clean` removes generated files (caches, dist, logs) + root compose teardown; `make clean-unused` also prunes unused Docker resources (both keep volumes). `make clean-all` is the destructive full teardown. `make cleanup` is the legacy docker-only prune.
 
 <!-- AI-generated: review needed -->

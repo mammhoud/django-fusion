@@ -418,10 +418,17 @@ logs:
 # ============================================================
 # CLEANUP
 # ============================================================
-.PHONY: clean-all clean-pycache clean-db
+.PHONY: clean-all clean-pycache clean-db clean-unused
 
 clean-all: clean clean-pycache
 	@echo "🧹 Full cleanup complete"
+
+# Everything generated: bundles + caches + logs (source untouched).
+clean-unused: clean-all
+	@echo "🧹 Removing generated logs..."
+	@mkdir -p $(LOG_DIR)
+	@find $(LOG_DIR) -mindepth 1 -type f -delete 2>/dev/null || true
+	@echo "✅ clean-unused complete"
 
 clean-pycache:
 	@echo "🧹 Removing Python cache..."

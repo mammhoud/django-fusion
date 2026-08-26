@@ -141,8 +141,10 @@ Every command takes `WEBSITE=<site>` — see the site selection table below.
 | `make help` | Show top-level targets + website selection |
 | `make show-targets` | List every target in the Makefile |
 | `make show-vars` / `make show-config` | Print resolved variables (SITE, MANAGE, COMPOSE_FILE, …) |
-| `make clean` | Remove Python cache + build artifacts (safe, source untouched) |
+| `make clean` | Remove Python cache + build artifacts + logs (safe, source untouched) |
 | `make clean-logs` / `make clean-site-logs` | Clean generated logs (keeps `.gitkeep`) |
+| `make clean-docker` | Safe Docker clean for the selected site (down + prune, volumes kept) |
+| `make clean-unused` | `clean` + `clean-docker` — everything unused, volumes preserved |
 | `make lint` / `format` / `typecheck` | Pylint / Black / mypy over active products |
 | `make lint-all` | lint + typecheck |
 | `make docs` | List `docs/` contents |

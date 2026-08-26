@@ -2,7 +2,7 @@ SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
 CODER_COMPOSE_FILE := ../tools/coder/docker-compose.yml
 
-.PHONY: help up down deploy build logs status restart ps clean setup deploy-db deploy-db-force
+.PHONY: help up down deploy build logs status restart ps clean clean-docker clean-unused setup deploy-db deploy-db-force
 
 help: ## Show this help menu
 	@echo 'Databases commands: make up | down | deploy | build | logs | status | restart | setup | clean'
@@ -61,9 +61,22 @@ restart: down up
 ps: status
 
 clean:
-	@echo "🧹 Removing databases containers, volumes, and images..."
+	@echo "🧹 Removing databases containers, volumes, and images (DESTRUCTIVE)..."
 	@docker compose -f $(COMPOSE_FILE) down -v --rmi all
 	@echo "✅ Clean complete"
+
+# Safe variant — containers down + prune, volumes preserved.
+clean-docker:
+	@echo "🧹 Stopping databases + pruning unused Docker data (volumes KEPT)..."
+	@docker compose -f $(COMPOSE_FILE) down --remove-orphans 2>/dev/null || true
+	@docker container prune -f 2>/dev/null || true
+	@docker image prune -f 2>/dev/null || true
+	@docker builder prune -f 2>/dev/null || true
+	@echo "✅ Databases cleaned (volumes preserved)"
+
+clean-unused: clean-docker ## clean-docker + generated caches (volumes preserved)
+	@find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+	@echo "✅ clean-unused complete (volumes preserved)"
 
 deploy: deploy-db ## Build + start (standard verb alias)
 

@@ -10,7 +10,7 @@ UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo
 UV := $(UV_BIN) --project ../..
 UV_RUN := $(UV) run
 
-.PHONY: help install dev build preview check clean \
+.PHONY: help install dev build preview check clean clean-unused \
         backend-help backend-dev backend-check backend-migrate backend-test \
         backend-seed backend-seed-pages backend-lint backend-format backend-shell \
         configs validate-env env-example config-show config-check \
@@ -45,6 +45,15 @@ check:
 
 clean:
 	cd frontend && rm -rf dist .astro node_modules
+
+# Everything generated: frontend build outputs + caches (source untouched).
+clean-unused: clean
+	@echo "🧹 Removing caches and logs (source untouched)..."
+	@find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name '.pytest_cache' -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name '.ruff_cache' -exec rm -rf {} + 2>/dev/null || true
+	@rm -rf logs 2>/dev/null || true
+	@echo "✅ clean-unused complete"
 
 # ── Configs (env contract, dependency-free) ───────────────────────
 # The configs/ package is the canonical environment catalog; validate-env

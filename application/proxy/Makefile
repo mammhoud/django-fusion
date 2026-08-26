@@ -27,7 +27,7 @@ LOCAL_CERT_SANS      := DNS:fusion.localhost,DNS:cms-fusion.localhost,DNS:precis
 # Standard verb aliases (consumed by the root Makefile delegation)
 # ---------------------------------------------------------------------------
 
-.PHONY: deploy build up down status validate stop restart logs ps help
+.PHONY: deploy build up down status validate stop restart logs ps help clean clean-unused
 
 help: ## Show proxy commands
 	@echo "Proxy (Traefik) commands:"
@@ -57,6 +57,15 @@ restart: proxy-restart ## Restart the Traefik proxy
 logs: proxy-logs ## Tail proxy logs
 
 ps: proxy-status ## Alias for status
+
+clean: proxy-down ## Stop the proxy + prune its images/build cache (volumes kept)
+	@docker image prune -f 2>/dev/null || true
+	@echo "✅ Proxy clean complete"
+
+clean-unused: clean ## clean + prune stopped containers and build cache (volumes preserved)
+	@docker container prune -f 2>/dev/null || true
+	@docker builder prune -f 2>/dev/null || true
+	@echo "✅ clean-unused complete (volumes preserved)"
 
 # ---------------------------------------------------------------------------
 # Lifecycle

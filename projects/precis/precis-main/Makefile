@@ -12,7 +12,7 @@ UV_RUN := $(UV) run
         install-assets build-assets build-assets-dev skeleton-manifest \
         config-show config-check config-front front-config back-config \
         backend-help backend-dev backend-check backend-migrate backend-seed backend-test \
-        backend-superuser backend-shell backend-collectstatic superuser
+        backend-superuser backend-shell backend-collectstatic superuser clean-unused
 
 help:
 	@echo "precis-main — frontend (Astro) + backend (Django/Wagtail)"
@@ -61,6 +61,15 @@ e2e:
 clean:
 	cd frontend && rm -rf dist .astro node_modules
 	rm -rf backend/assets/static/bundles node_modules
+
+# Everything generated: frontend build outputs + caches (source untouched).
+clean-unused: clean
+	@echo "🧹 Removing caches and logs (source untouched)..."
+	@find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name '.pytest_cache' -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name '.ruff_cache' -exec rm -rf {} + 2>/dev/null || true
+	@rm -rf logs 2>/dev/null || true
+	@echo "✅ clean-unused complete"
 
 # ── Config Cascade (YAML defaults + .env) ──────────────────────────
 # Merges shared Env YAML (projects/precis/configs/Env) → configs/*.yml →

@@ -28,7 +28,7 @@ NC := \033[0m
 .PHONY: help check test run-dev migrate collectstatic shell \
         frontend-dev frontend-build frontend-check config-show config-check \
         build up down logs restart front-logs back-logs worker-logs status \
-        clean-docker rebuild-backend rebuild-frontend clean \
+        clean-docker rebuild-backend rebuild-frontend clean clean-unused \
         install-assets build-assets build-assets-dev assets-full skeleton-manifest redeploy
 
 help:
@@ -157,3 +157,14 @@ clean-docker:
 	@echo "$(CYAN)🧹 Cleaning Docker resources for $(PROJECT)...$(NC)"
 	-$(DC) down -v --remove-orphans 2>/dev/null || true
 	@echo "$(GREEN)✅ Clean complete$(NC)"
+
+# Safe clean-unused: generated files + compose down + prune, volumes KEPT.
+# (clean-docker above is the destructive variant — it drops volumes.)
+clean-unused: clean
+	@echo "$(CYAN)🧹 Cleaning unused resources for $(PROJECT) (volumes kept)...$(NC)"
+	-$(DC) down --remove-orphans 2>/dev/null || true
+	@find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+	@docker container prune -f 2>/dev/null || true
+	@docker image prune -f 2>/dev/null || true
+	@docker builder prune -f 2>/dev/null || true
+	@echo "$(GREEN)✅ clean-unused complete — files and unused Docker resources removed (volumes preserved)$(NC)"
