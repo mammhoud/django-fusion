@@ -67,6 +67,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Blinko Prisma → SurrealDB (auth-first) | Proposed — M1 implemented on `surrealdb/migration-auth-first` | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) |
 | Blinko Prisma → SurrealDB (content graph) | Implemented (M2 commits `b919d921`+`b8c3de01`) | [`repository/blinko-surrealdb-migration-m2.md`](repository/blinko-surrealdb-migration-m2.md) |
 | Blinko Prisma → SurrealDB (query engine) | Proposed — M3 plan | [`repository/blinko-surrealdb-migration-m3.md`](repository/blinko-surrealdb-migration-m3.md) |
+| Blinko Prisma → SurrealDB (final cutover) | Proposed — M4 plan | [`repository/blinko-surrealdb-migration-m4.md`](repository/blinko-surrealdb-migration-m4.md) |
 
 ## Recent renames & updates
 

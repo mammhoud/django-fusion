@@ -435,10 +435,14 @@ script to Surreal) so both stores hold identical content before each run.
 
 ## 9. Follow-up Milestones (M4+)
 
-1. **M4 — final Prisma removal:** drop the Prisma fallback for reads (parity
-   harness already proves equivalence), delete `prisma/`, drop
-   `prisma:*` scripts; retrofit deterministic `accounts:<id>` ids; switch
-   JWT `sub` semantics; remove `legacyPrismaId`.
+1. **M4 — final cutover** (plan:
+   [`blinko-surrealdb-migration-m4.md`](blinko-surrealdb-migration-m4.md)):
+   make Surreal the only datastore — retrofit deterministic `accounts:<id>`
+   ids (re-key + `_accountRef` becomes `accounts:${id}`), migrate the
+   remaining tables (config, chat, notifications, follows, fonts, AI/MCP,
+   jobs, plugin, cache), drop every Prisma fallback/mirror, switch JWT
+   `sub` plumbing, then delete `prisma/` + `prisma:*` scripts +
+   `@prisma/client`; parity harness becomes golden-fixture assertions.
 2. **M5 — engine/SDK upgrade (optional):** bump `surrealdb.js` + engine to
    v2/v3 for `FULLTEXT ANALYZER` indexes (replace `string::lowercase
    CONTAINS` with indexed FTS) and multi-doc transactions; add Surreal to
