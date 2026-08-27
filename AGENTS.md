@@ -207,7 +207,7 @@ make check WEBSITE=precis-landing
 make test WEBSITE=precis-landing   # workspace pytest target; use the project backend test below for focused coverage
 make run-dev WEBSITE=precis-ctc   # legacy site alias if present in checkout
 
-# Workspace command layer (root Justfile — delegates to make/nx)
+# Workspace command layer (root Justfile — thin delegator; every recipe calls make)
 just install                       # full workspace install (uv sync + JS + Formints + docs)
 just check                         # nx run-many check --all
 just test                          # nx run-many test --all
@@ -215,6 +215,15 @@ just deploy                        # full stack deploy (postgres-first)
 just deploy-docs                   # deploy Docus (nx run docs:deploy)
 just deploy-tools                  # deploy self-hosted tools (affine, adminer, …)
 just nx run docs:build             # delegate any target to Nx
+
+# Clean family (root Makefile) — safe by default, destructive variants are explicit.
+# Every target below preserves volumes (database/media data); only clean-all drops them.
+make clean             # generated files: caches, dist, old build artifacts + logs, and root compose teardown (volumes KEPT)
+make clean-logs        # generated logs only (preserves .gitkeep)
+make clean-docker      # stop known compose stacks + prune unused containers/images/build cache (volumes KEPT)
+make clean-unused      # clean + clean-docker: everything unused, volumes preserved
+make clean-all         # clean-unused + unused volumes (full teardown — DESTRUCTIVE)
+# Never removed by the clean family: node_modules, .venv, and database/media volumes.
 
 # Precis Landing direct workflows
 cd projects/precis/precis-landing
@@ -257,6 +266,11 @@ Use the narrowest relevant check first, then expand only when practical:
 - Treat `docker compose down --volumes`, `docker system prune`, fixture reloads,
   database restores, certificate operations, and deployment targets as
   effectful operations requiring confirmation.
+- The root clean family is volume-safe by design: `make clean`, `clean-docker`,
+  and `clean-unused` stop stacks and prune unused Docker resources but always
+  preserve volumes. Only `make clean-all` removes unused volumes (`docker
+  volume prune -f`) — treat it as destructive and confirm before running it
+  against a shared environment.
 - Never print secrets, tokens, passwords, private keys, or full environment
   files. Use `.env.example` names without values.
 - Preserve pre-existing user changes. Inspect `git status` before editing and
