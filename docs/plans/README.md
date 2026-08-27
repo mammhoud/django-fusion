@@ -31,6 +31,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | External library plan | [`../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md`](../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md) | Maintained in the django-fusion submodule |
 | Blinko Prisma → SurrealDB (M1 auth-first) | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) | Incremental backend migration of the vendored blinko checkout (`application/tools/blinko/blinko/`) — Surreal client + accounts adapter, auth-first milestone, idempotent data-migration script |
 | Blinko Prisma → SurrealDB (M2 content graph) | [`repository/blinko-surrealdb-migration-m2.md`](repository/blinko-surrealdb-migration-m2.md) | Extends the blinko migration to notes/attachments/tags/comments — adapters + router swaps (writes & point reads) and FK ints → Surreal record refs |
+| Blinko Prisma → SurrealDB (M3 query engine) | [`repository/blinko-surrealdb-migration-m3.md`](repository/blinko-surrealdb-migration-m3.md) | Ports list/search where-builders to SurrealQL with a Prisma↔Surreal parity harness; migrates noteHistory/noteInternalShare + reference-createdAt backfill |
 
 ## Current recommendations
 
@@ -64,7 +65,8 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Config cascade + project configs dirs | Active — baseline implemented | [`django-fusion/config-cascade-plan.md`](django-fusion/config-cascade-plan.md) |
 | Startup docs enhancement | Active — P1–P3 landed | [`repository/startup-docs-enhancement-plan.md`](repository/startup-docs-enhancement-plan.md) |
 | Blinko Prisma → SurrealDB (auth-first) | Proposed — M1 implemented on `surrealdb/migration-auth-first` | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) |
-| Blinko Prisma → SurrealDB (content graph) | Proposed | [`repository/blinko-surrealdb-migration-m2.md`](repository/blinko-surrealdb-migration-m2.md) |
+| Blinko Prisma → SurrealDB (content graph) | Implemented (M2 commits `b919d921`+`b8c3de01`) | [`repository/blinko-surrealdb-migration-m2.md`](repository/blinko-surrealdb-migration-m2.md) |
+| Blinko Prisma → SurrealDB (query engine) | Proposed — M3 plan | [`repository/blinko-surrealdb-migration-m3.md`](repository/blinko-surrealdb-migration-m3.md) |
 
 ## Recent renames & updates
 

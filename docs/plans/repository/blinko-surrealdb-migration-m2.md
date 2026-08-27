@@ -417,11 +417,14 @@ engine).
 
 ## 9. Follow-up Milestones (M3+)
 
-1. **M3 — query engine:** port `notes.list`/`publicList`/`listByIds` +
-   `attachments.list`/`tag.list`/`comments.list` where-builders to SurrealQL
-   (parameterized, paginated, deep-include normalization); move
-   `noteHistory`/`noteInternalShare`; switch point reads to Surreal-only
-   (drop Prisma fallback) once verified.
+1. **M3 — query engine** (plan: [`blinko-surrealdb-migration-m3.md`](blinko-surrealdb-migration-m3.md)):
+   port `notes.list`/`publicList`/`listByIds`/`detail`/`publicDetail`/
+   `dailyReviewNoteList`/`randomNoteList`/`noteReferenceList` +
+   `attachments.list`/`tag.list`/`comments.list` where-builders to
+   SurrealQL (parameterized, paginated, deep-include normalization) with a
+   Prisma↔Surreal parity harness; migrate `noteHistory`/`noteInternalShare`
+   and backfill `referenceCreatedAt`/`attachmentPaths`. Switch point reads
+   to Surreal-only (drop Prisma fallback) in M4, once the harness is green.
 2. **M4 — final Prisma removal:** delete `prisma/`, drop the client +
    `prisma:*` scripts; retrofit deterministic `accounts:<id>` ids; switch
    JWT `sub` semantics; remove `legacyPrismaId`.
