@@ -1,7 +1,9 @@
 # Blinko — Prisma → SurrealDB Migration, Milestone 3 (Query Engine)
 
 > **Tags:** #blinko #migration #surrealdb #prisma #m3 #query-engine
-> **Last updated:** 2026-08-27 | **Status:** Plan — not yet implemented
+> **Last updated:** 2026-08-27 | **Status:** Implemented — parity harness green
+>   (commit `586b5bf3` on `surrealdb/migration-auth-first`); router flips for
+>   the remaining list endpoints + `notes.list` cutover pending M4.
 > **Scope:** Port the **list/query where-builders** — `notes.list` first (the
 > hardest), then the other list endpoints — from Prisma to SurrealQL, with a
 > parity harness that proves both stores return identical results before any
@@ -304,6 +306,62 @@ Each router swap keeps the pattern: `if (isSurrealEnabled()) { try {
   note the `attachments.list` folder branch + jobs still on Prisma; new
   migration tables.
 - Update M2 plan §9 + this plan's status after merge.
+
+---
+
+## 5.6 Implementation status (2026-08-27, commit `586b5bf3`)
+
+**Done:**
+
+- `server/lib/repos/notes-query.ts` — SurrealQL where-builder + page-scoped
+  include normalization. Verified against the live v1.5.6 engine: no
+  closures in `WHERE` (use correlated `$parent` subqueries + `attachmentPaths`
+  join), `string::join` is broken in v1 (use `array::join`), `LIMIT $size
+  START $skip` is the v1 pagination form, bound record ids match via
+  `type::thing("tag", $tagId) IN tags`, datetime ranges need bound `Date`
+  objects.
+- Supporting mirrors: `internalShares`/`internalShareCanEdit` arrays,
+  `referencesAt`/`referencedByAt` maps, `attachmentPaths` index (maintained
+  by the attachment mirrors), `createNoteHistoryMirror` helper wired into
+  `upsert` + the `deleteNotes` cascade.
+- Migration script: `noteHistory` + `noteInternalShare` steps, plus backfill
+  passes for `referencesAt`/`referencedByAt`/`attachmentPaths`; note pass 2
+  now folds internal-share refs (with `canEdit`) into the note record.
+- Routers: internal-share write paths (`internalShareNote`,
+  `updateNoteInternalShare`) + account-delete cleanup mirror to Surreal.
+- `server/__tests__/unit/lib/query-parity.test.ts` — the gate. 19-test input
+  matrix (base/type/archived/isShare/isRecycle/searchText incl. attachment
+  path/tagId/withFile/withoutTag/withLink/hasTodo/date-range/pagination/
+  ordering/sharee-view/combined), deep-equal against the real Prisma
+  where-builder.
+
+**Engine quirks replicated for byte-parity (production note.ts):**
+
+- `withLink`/`hasTodo` **overwrite** `where.OR`, dropping account scoping —
+  reproduced in the builder via the OR-group replacement.
+- Tags join-row `id` (tagsToNote autoincrement) and internalShares join-row
+  `id`/`createdAt`/`updatedAt` are synthesized by the mirror and normalized
+  out of the parity comparison (documented deviations).
+
+**Parity harness hygiene:**
+
+- Re-mocks `../../../prisma` with the real client inside `beforeAll` to
+  defeat bun's cross-file `mock.module` leakage (oven-sh/bun#12823) from
+  `surrealdb-repos.test.ts`.
+- Wipes only the content tables (both stores), leaving accounts intact so
+  the E2E upload suite (which needs account 1) stays green.
+
+**Verification:** 62/62 server tests pass (E2E + integration + unit),
+`bun run build:web` (esbuild) clean. A live router smoke test through the
+server exercised `notes.upsert` create/update against Surreal with typed
+refs — see M2 commit history for the pre-engine wiring.
+
+**Not yet done (this milestone's remaining work):**
+
+- Flipping `notes.list` and the other list endpoints Surreal-first with
+  Prisma fallback (§5.4 order) — the parity gate is green, so the flips are
+  mechanical; they are batched with the M4 cutover to avoid churning both
+  stores while the fallback is still the production path.
 
 ---
 
