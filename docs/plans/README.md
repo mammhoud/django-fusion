@@ -1,7 +1,7 @@
 # 🗺️ Plans — Canonical Registry
 
 > **Status:** Active registry
-> **Last updated:** 2026-08-14
+> **Last updated:** 2026-08-27
 > **Branch:** `generic`
 
 ## Read this first
@@ -29,7 +29,8 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Theme directory strategy | [`THEME_DIRECTORY_STRATEGY.md`](THEME_DIRECTORY_STRATEGY.md) | Repo-wide `theme/` layout + named design-variation contract |
 | Deletion register | [`deletion-manifest.md`](deletion-manifest.md) | Approval and rollback record for removals |
 | External library plan | [`../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md`](../../libs/django-fusion/docs/ENHANCEMENT_PLAN.md) | Maintained in the django-fusion submodule |
-| Blinko Prisma → SurrealDB | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) | Incremental backend migration of the vendored blinko checkout (`application/tools/blinko/blinko/`) — Surreal client + accounts adapter, auth-first milestone, idempotent data-migration script |
+| Blinko Prisma → SurrealDB (M1 auth-first) | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) | Incremental backend migration of the vendored blinko checkout (`application/tools/blinko/blinko/`) — Surreal client + accounts adapter, auth-first milestone, idempotent data-migration script |
+| Blinko Prisma → SurrealDB (M2 content graph) | [`repository/blinko-surrealdb-migration-m2.md`](repository/blinko-surrealdb-migration-m2.md) | Extends the blinko migration to notes/attachments/tags/comments — adapters + router swaps (writes & point reads) and FK ints → Surreal record refs |
 
 ## Current recommendations
 
@@ -62,7 +63,8 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | django-fusion Analyzer + Skeleton + Asset APIs | Planned | [`django-fusion/django-fusion-analyzer-skeleton-assets-plan.md`](django-fusion/django-fusion-analyzer-skeleton-assets-plan.md) |
 | Config cascade + project configs dirs | Active — baseline implemented | [`django-fusion/config-cascade-plan.md`](django-fusion/config-cascade-plan.md) |
 | Startup docs enhancement | Active — P1–P3 landed | [`repository/startup-docs-enhancement-plan.md`](repository/startup-docs-enhancement-plan.md) |
-| Blinko Prisma → SurrealDB (auth-first) | Proposed | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) |
+| Blinko Prisma → SurrealDB (auth-first) | Proposed — M1 implemented on `surrealdb/migration-auth-first` | [`repository/blinko-surrealdb-migration.md`](repository/blinko-surrealdb-migration.md) |
+| Blinko Prisma → SurrealDB (content graph) | Proposed | [`repository/blinko-surrealdb-migration-m2.md`](repository/blinko-surrealdb-migration-m2.md) |
 
 ## Recent renames & updates
 

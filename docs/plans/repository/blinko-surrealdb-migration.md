@@ -34,7 +34,7 @@ tooling).
 | Auth — Express | `server/routerExpress/auth/config.ts` (passport local + JWT + OAuth strategies) and `server/routerExpress/auth/index.ts` (login, verify-2fa, profile, validate-token) |
 | Auth — tRPC | `server/routerTrpc/user.ts`: `register`, `canRegister`, `regenToken`, `genLowPermToken`, `upsertUser`, `upsertUserByAdmin` |
 | Other account writes | `server/jobs/dbjob.ts` (~line 281) creates an account (admin reset/demo job) |
-| Signup endpoint | **tRPC `user.register`** → `POST /api/trpc/user.register`, OpenAPI `POST /v1/user/register` (there is **no** `/api/auth/signup` route) |
+| Signup endpoint | **tRPC `users.register`** (router is mounted as `users:` in `_app.ts`) → `POST /api/trpc/users.register`, OpenAPI `POST /v1/user/register` (there is **no** `/api/auth/signup` route) |
 | Sessions | Prisma `session` model exists in schema but **no active session store** — auth is stateless JWT + Bearer apiToken; sessions are out of scope |
 | Env | `.env.tmpl` has `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `DATABASE_URL`; server runs `bun --env-file ../.env --watch index.ts` |
 | SurrealDB | not present anywhere in the repo |
@@ -152,9 +152,19 @@ bun add surrealdb.js
 
 Use the latest stable `surrealdb.js` (v1.x). Commit `server/package.json` +
 `bun.lock` changes. Match the installed SDK's API — v1 uses
-`await db.connect(url)`, `await db.signin({ username, password })`,
-`await db.use({ ns, db })`, `db.query()`, `db.create()`, `db.merge()`,
-`db.select()`, `db.delete()`.
+`await db.connect(url, { namespace, database })` (ns/db **must** be selected
+before `signin` — the engine rejects requests with no ns/db), `await
+`db.signin({ username, password })`, `db.query_raw()` (v1 `db.query()`
+unwraps result sets into bare arrays; `query_raw()` returns the
+`{ status, result }` shape), `db.create()`, `db.merge()`, `db.select()`,
+`db.delete()`.
+
+**Engine version caveat (verified 2026-08-27):** `surrealdb.js@1.0.0` only
+supports SurrealDB engines `>= 1.4.2 < 2.0.0`. The `surrealdb/surreal:latest`
+image is gone (renamed to `surrealdb/surrealdb`) and v2/v3 images throw
+`UnsupportedVersion` at `connect()`. Use a 1.x engine:
+`docker run --rm -p 8000:8000 surrealdb/surrealdb:v1.5.6 start --user root --pass root memory`
+(the image needs the explicit `start` subcommand).
 
 ### 6.3 Surreal client initializer — `server/lib/db/surreal.ts`
 
@@ -251,7 +261,7 @@ Manual smoke (auth against Surreal):
 
 1. Start Surreal: `docker run --rm -p 8000:8000 surrealdb/surreal:latest`.
 2. Start the server with `SURREALDB_URL` set.
-3. `curl -X POST http://localhost:1111/api/trpc/user.register -H 'content-type: application/json' -d '{"name":"admin","password":"admin123"}'` → first user becomes superadmin.
+3. `curl -X POST http://localhost:1111/api/trpc/users.register -H 'content-type: application/json' -d '{"json":{"name":"admin","password":"admin123"}}'` (tRPC v11 body format) → first user becomes superadmin.
 4. `curl -X POST http://localhost:1111/api/auth/login -H 'content-type: application/json' -d '{"username":"admin","password":"admin123"}'` → expect token.
 5. `curl http://localhost:1111/api/auth/profile -H "authorization: Bearer <token>"` → returns the user.
 6. Verify records landed in Surreal: `SELECT * FROM accounts` via the Surreal HTTP endpoint or a tiny `db.select('accounts')` script.
@@ -259,6 +269,16 @@ Manual smoke (auth against Surreal):
 
 Rollback check: unset `SURREALDB_URL`, restart — server boots Prisma-only and
 login/register work against Postgres again.
+
+**Smoke-test result (2026-08-27):** verified against a live stack
+(Postgres 14 + SurrealDB `v1.5.6` in docker, server via `bun`). Register
+(`users.register`) → first admin mirrored to Surreal with `legacyPrismaId`;
+login → JWT; profile → user. Surreal-read proven by changing the Surreal
+nickname and observing it in the profile response. Migration script runs
+idempotently (run 1 `created=1`, run 2 `skipped=1`). Fixes from this run are
+committed on the branch: ns/db-before-signin in `connect()` and
+`query_raw()` instead of `query()` in the adapter + script (v1 `query()`
+unwraps result sets; the old code silently fell back to Prisma).
 
 ---
 
@@ -294,6 +314,7 @@ login/register work against Postgres again.
 1. **M2 — content graph:** migrate `notes`, `attachments`, `tags`,
    `tagsToNote`, `comments`, `noteReference`; convert FK ints to Surreal
    record refs (`notes:<surreal-id>`).
+   → **Planned:** [`blinko-surrealdb-migration-m2.md`](blinko-surrealdb-migration-m2.md)
 2. **M3 — AI/conversation:** `conversation`, `message`, `aiScheduledTask`,
    `aiProviders`, `aiModels`, `mcpServers`, `cache`, `fonts`.
 3. **M4 — final Prisma removal:** delete `prisma/`, drop the client, remove
