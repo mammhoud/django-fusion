@@ -1,0 +1,23 @@
+<section class="fu-section--gap fu-builder__faq">
+  <div class="fu-builder__container">
+    <div class="fu-section-title">
+      {% if section.eyebrow %}<span class="fu-section-title__eyebrow">{{ section.eyebrow }}</span>{% endif %}
+      <h2 class="fu-section-title__title">{{ section.title }}</h2>
+      {% if section.description %}<p class="fu-section-title__subtitle">{{ section.description }}</p>{% endif %}
+    </div>
+    <div class="fu-builder__narrow">
+      {% for item in section.items %}
+      <div class="fu-accordion__item">
+        <div class="fu-accordion__header">
+          <button type="button" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="faq-{{ forloop.counter }}">
+            {{ item.question }}
+          </button>
+        </div>
+        <div class="fu-accordion__body" id="faq-{{ forloop.counter }}" {% if not forloop.first %}hidden{% endif %}>
+          {{ item.answer }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

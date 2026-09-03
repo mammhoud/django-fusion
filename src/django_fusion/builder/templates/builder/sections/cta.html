@@ -1,0 +1,18 @@
+<section class="fu-section--gap fu-builder__cta">
+  <div class="fu-builder__container">
+    <div class="fu-section-title">
+      <h2 class="fu-section-title__title">{{ section.title }}</h2>
+      {% if section.subtitle %}<p class="fu-section-title__subtitle">{{ section.subtitle }}</p>{% endif %}
+    </div>
+    {% if section.primary_cta or section.secondary_cta %}
+    <div class="fu-builder__actions fu-builder__actions--center">
+      {% if section.primary_cta %}
+      <a class="fu-btn fu-btn--primary" href="{{ section.primary_cta.href }}">{{ section.primary_cta.label }}</a>
+      {% endif %}
+      {% if section.secondary_cta %}
+      <a class="fu-btn fu-btn--outline" href="{{ section.secondary_cta.href }}">{{ section.secondary_cta.label }}</a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</section>

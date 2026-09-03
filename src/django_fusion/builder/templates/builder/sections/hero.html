@@ -1,0 +1,20 @@
+<section class="fu-section--gap fu-builder__hero">
+  <div class="fu-builder__container">
+    <div class="fu-section-title fu-section-title--left">
+      {% if section.badge %}<span class="fu-section-title__eyebrow">{{ section.badge }}</span>{% endif %}
+      <h1 class="fu-section-title__title">{{ section.title }}{% if section.accent %} <span>{{ section.accent }}</span>{% endif %}</h1>
+      {% if section.subtitle %}<p class="fu-section-title__subtitle">{{ section.subtitle }}</p>{% endif %}
+    </div>
+    {% if section.primary_cta or section.secondary_cta %}
+    <div class="fu-builder__actions">
+      {% if section.primary_cta %}
+      <a class="fu-btn fu-btn--primary" href="{{ section.primary_cta.href }}">{{ section.primary_cta.label }}</a>
+      {% endif %}
+      {% if section.secondary_cta %}
+      <a class="fu-btn fu-btn--outline" href="{{ section.secondary_cta.href }}">{{ section.secondary_cta.label }}</a>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% if section.note %}<p class="fu-builder__note">{{ section.note }}</p>{% endif %}
+  </div>
+</section>

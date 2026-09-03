@@ -1,0 +1,34 @@
+<section class="fu-section--gap fu-builder__pricing">
+  <div class="fu-builder__container">
+    <div class="fu-section-title">
+      {% if section.eyebrow %}<span class="fu-section-title__eyebrow">{{ section.eyebrow }}</span>{% endif %}
+      <h2 class="fu-section-title__title">{{ section.title }}</h2>
+      {% if section.description %}<p class="fu-section-title__subtitle">{{ section.description }}</p>{% endif %}
+    </div>
+    <div class="fu-builder__grid fu-builder__grid--3">
+      {% for tier in section.tiers %}
+      <div class="fu-pricing{% if tier.featured %} fu-pricing--featured{% endif %}">
+        <div class="fu-pricing__header">
+          {% if tier.featured %}<span class="fu-pricing__badge fu-badge fu-badge--primary">Featured</span>{% endif %}
+          <h3 class="fu-pricing__title">{{ tier.name }}</h3>
+          {% if tier.description %}<p class="fu-builder__muted">{{ tier.description }}</p>{% endif %}
+          <div class="fu-pricing__price-wrap">
+            <span class="fu-pricing__amount">{{ tier.price }}</span>
+            {% if tier.period %}<span class="fu-pricing__duration">/ {{ tier.period }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="fu-pricing__body">
+          <ul class="fu-pricing__list">
+            {% for feature in tier.features %}<li>{{ feature }}</li>{% endfor %}
+          </ul>
+        </div>
+        {% if tier.cta_label %}
+        <div class="fu-pricing__footer">
+          <a class="fu-btn fu-btn--primary fu-btn--block" href="{{ tier.cta_href }}">{{ tier.cta_label }}</a>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

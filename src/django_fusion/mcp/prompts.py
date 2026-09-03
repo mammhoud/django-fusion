@@ -1,6 +1,6 @@
 """Read-only prompt catalog access for django-fusion MCP servers.
 
-This is a generalized version of the Kilo prompt catalog (applications/agents/).
+This is a generalized version of the Kilo prompt catalog (.agents/mcp/).
 Projects can mount their own catalog by setting ``FUSION_MCP_PROMPT_CATALOG_PATH``
 in Django settings or by passing an explicit ``catalog_path``.
 

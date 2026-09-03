@@ -93,10 +93,10 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
   old location. All 59 references across source and tests were updated.
   Template tags continue to load via Django's `templatetags` auto-discovery.
 - **Prompt catalog delegated to django-fusion.** The Kilo prompt catalog
-  (`applications/agents/prompt_catalog.py`) now delegates to
+  (`.agents/mcp/prompt_catalog.py`) now delegates to
   `django_fusion.mcp.prompts` when django-fusion is available, falling back
   to local implementation for standalone use.
-- **Kilo MCP server simplified.** `applications/agents/mcp_server.py`
+- **Kilo MCP server simplified.** `.agents/mcp/mcp_server.py`
   reduced by ~250 lines. Now imports `FusionMCPRouter` and
   `DesignerMCPRouter` from django-fusion, keeping only Structa-Cloud-specific
   infrastructure endpoints (Docker, Traefik, OpenRouter, ceptor-ai).

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" {{ builder_theme_attrs|safe }}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ page.title }}{% endblock %}</title>
+  <meta name="description" content="{{ page.search_description }}">
+  {% block builder_css %}
+  {# Layout helpers + the lean reference theme build (all fu-* components
+     the builder composes + every data-theme activation). Products override
+     this block with their full compiled theme SCSS. #}
+  {% for url in builder_css_urls %}<link rel="stylesheet" href="{{ url }}">{% endfor %}
+  {% endblock %}
+  {% block theme_css %}{% endblock %}
+</head>
+<body class="fu-builder">
+  {% if builder.preview %}
+  <div class="fu-builder__preview-bar" role="status">
+    <span class="fu-builder__preview-bar__label">Builder preview</span>
+    {% if builder.has_unresolved %}
+      <span class="fu-builder__preview-bar__issue">{{ builder.unresolved_count }} unresolved dynamic field(s) — see template context</span>
+    {% else %}
+      <span class="fu-builder__preview-bar__ok">All dynamic fields resolved</span>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <header class="fu-header">
+    <div class="fu-header__wrapper fu-builder__container">
+      <div class="fu-header__logo">
+        <a href="/">{{ page.title }}</a>
+      </div>
+      <nav class="fu-header__nav" aria-label="Main navigation">
+        <ul>
+          <li><a href="#content">{{ page.title }}</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content">
+    {{ builder_sections|safe }}
+  </main>
+
+  <footer class="fu-footer">
+    <div class="fu-builder__container fu-footer__copyright">
+      <p>© {{ page.title }} — built with the Structa landing builder</p>
+    </div>
+  </footer>
+</body>
+</html>

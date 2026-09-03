@@ -29,6 +29,8 @@
 | DF-018 | [`docs/18-render-contract.md`](./18-render-contract.md) | Slot & prop render contract (0.5.0 breaking changes): single-render slots, bare-context-var props, kwarg-style defaults, migration examples | ✅ Exists |
 | DF-019 | [`docs/19-openapi-and-filtering.md`](./19-openapi-and-filtering.md) | OpenAPI docs (`OpenAPISpec`, `/docs`, `/docs/openapi.json`) + viewset filtering/search/ordering/pagination, mapped from django-bolt | ✅ Exists |
 | DF-020 | [`docs/20-language-contract.md`](./20-language-contract.md) | Shared language/locale contract — resolution, persistence, middleware, API, Wagtail content selection, Mermaid diagrams | ✅ Exists |
+| DF-021 | [`docs/21-landing-builder.md`](./21-landing-builder.md) | Landing builder — Wagtail page assembly from the fu-* catalog, theme picking, dynamic fields, JSON road | ✅ Exists |
+| DF-022 | [`docs/22-template-fields.md`](./22-template-fields.md) | Sandboxed dynamic template field engine — parse/resolve/validate/escape/filter/preview | ✅ Exists |
 
 ## Auxiliary files (unchanged or supporting)
 

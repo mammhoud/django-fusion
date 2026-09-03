@@ -1,0 +1,45 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Landing Builder — Reference Theme Entry
+   ─────────────────────────────────────────────────────────────────────
+   A lean build of the shared theme engine (projects/assets/theme/) for
+   the builder's own preview. It imports every theme's token file plus
+   only the fu-* components the builder section templates compose, so
+   switching data-theme on a builder page re-skins the preview.
+
+   Consuming products should instead compile their full theme SCSS
+   (projects/assets/theme/_index.scss) into their own pipeline and
+   override the builder page template's ``theme_css`` block.
+
+   Generated artifact: builder-theme.css (compiled with
+   ``npx sass --load-path=projects/assets/theme ...``). Do not edit the
+   compiled CSS by hand — edit this entry or the theme sources.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── All theme token files (so every data-theme value resolves) ── */
+@import 'default/tokens/fu-default-theme';
+@import 'lms/tokens/fu-lms-theme';
+@import 'crm/tokens/fu-crm-theme';
+@import 'pos/tokens/fu-pos-theme';
+@import 'saas/tokens/fu-saas-theme';
+@import 'enterprise/tokens/fu-enterprise-theme';
+@import 'corporate/tokens/fu-corporate-theme';
+@import 'educational/tokens/fu-educational-theme';
+@import 'retail/tokens/fu-retail-theme';
+@import 'minimal/tokens/fu-minimal-theme';
+@import 'dark/tokens/fu-dark-theme';
+@import 'contrast/tokens/fu-contrast-theme';
+
+/* ── Components the builder templates compose ── */
+@import 'default/components/fu-btn';
+@import 'default/components/fu-card';
+@import 'default/components/fu-badge';
+@import 'default/components/fu-section-title';
+@import 'default/components/fu-pricing';
+@import 'default/components/fu-accordion';
+@import 'default/components/fu-counter';
+@import 'default/components/fu-header';
+@import 'default/components/fu-footer';
+
+/* ── Theme engine: semantic aliases + runtime switching ── */
+@import 'engine/fu-tokens';
+@import 'engine/fu-engine';

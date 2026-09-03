@@ -1,0 +1,23 @@
+<section class="fu-section--gap fu-builder__features">
+  <div class="fu-builder__container">
+    <div class="fu-section-title">
+      {% if section.eyebrow %}<span class="fu-section-title__eyebrow">{{ section.eyebrow }}</span>{% endif %}
+      <h2 class="fu-section-title__title">{{ section.title }}</h2>
+      {% if section.description %}<p class="fu-section-title__subtitle">{{ section.description }}</p>{% endif %}
+    </div>
+    <div class="fu-builder__grid fu-builder__grid--3">
+      {% for feature in section.features %}
+      <article class="fu-card fu-card--interactive">
+        <div class="fu-card__body">
+          {% if feature.label %}<span class="fu-badge">{{ feature.label }}</span>{% endif %}
+          <h3 class="fu-card__title">
+            {% if feature.href %}<a href="{{ feature.href }}">{{ feature.title }}</a>
+            {% else %}{{ feature.title }}{% endif %}
+          </h3>
+          {% if feature.description %}<p class="fu-card__text">{{ feature.description }}</p>{% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

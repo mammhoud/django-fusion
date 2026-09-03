@@ -393,11 +393,15 @@ class ProjectConfig:
                 site,
             )
             data["SITE"] = merged_site
+        # Ensure data["SITE"] is a dict before writing base_url/side markers.
+        # The loaded YAML may store a plain string under SITE; setdefault won't
+        # replace an existing value, so we force a dict when the existing value
+        # isn't a Mapping.
+        if not isinstance(data.get("SITE"), Mapping):
+            data["SITE"] = {}
         if base_url:
-            data.setdefault("SITE", {})
             data["SITE"]["base_url"] = base_url
         if side:
-            data.setdefault("SITE", {})
             data["SITE"]["side"] = side
         # Environment still wins for identity-critical keys after resolution.
         for key in ("SITE_DOMAIN", "DOMAIN_NAME", "WEBSITE_NAME"):

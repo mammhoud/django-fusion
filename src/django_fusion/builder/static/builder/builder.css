@@ -1,0 +1,106 @@
+@charset "UTF-8";
+/* ═══════════════════════════════════════════════════════════════════
+   Landing Builder — layout helpers + preview bar
+   ─────────────────────────────────────────────────────────────────────
+   Structural classes for the builder page shell and section grids.
+   All values resolve from the theme engine's semantic tokens
+   (--fu-token-*), so the builder re-skins with the active theme.
+
+   The fu-* component styling (fu-btn, fu-card, fu-pricing, …) comes
+   from the product's compiled theme SCSS
+   (projects/assets/theme/_index.scss). This file only owns the
+   builder-specific layout and the preview bar.
+   ═══════════════════════════════════════════════════════════════════ */
+.fu-builder {
+  font-family: var(--fu-token-font-sans, sans-serif);
+  color: var(--fu-token-ink, #111);
+  background: var(--fu-token-paper, #fff);
+  line-height: var(--fu-token-leading-normal, 1.5);
+  -webkit-font-smoothing: antialiased;
+}
+
+.fu-builder__container {
+  max-width: var(--fu-token-container-xl, 80rem);
+  margin-inline: auto;
+  padding-inline: var(--fu-token-space-lg, 1.5rem);
+}
+
+/* Narrow reading column (FAQ, prose). */
+.fu-builder__narrow {
+  max-width: var(--fu-token-container-md, 48rem);
+  margin-inline: auto;
+}
+
+.fu-builder__grid {
+  display: grid;
+  gap: var(--fu-token-space-lg, 1.5rem);
+}
+.fu-builder__grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.fu-builder__grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.fu-builder__grid--4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 1024px) {
+  .fu-builder__grid--3, .fu-builder__grid--4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .fu-builder__grid--2, .fu-builder__grid--3, .fu-builder__grid--4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.fu-builder__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fu-token-space-md, 1rem);
+  margin-top: var(--fu-token-space-lg, 1.5rem);
+}
+.fu-builder__actions--center {
+  justify-content: center;
+}
+
+.fu-builder__note {
+  margin-top: var(--fu-token-space-md, 1rem);
+  font-size: var(--fu-token-text-sm, 0.875rem);
+  color: var(--fu-token-muted, #666);
+}
+
+.fu-builder__muted {
+  color: var(--fu-token-muted, #666);
+  font-size: var(--fu-token-text-sm, 0.875rem);
+}
+
+/* ── Preview bar (editor preview mode only) ── */
+.fu-builder__preview-bar {
+  position: sticky;
+  top: 0;
+  z-index: var(--fu-token-z-sticky, 100);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fu-token-space-sm, 0.75rem);
+  padding: var(--fu-token-space-sm, 0.75rem) var(--fu-token-space-lg, 1.5rem);
+  font-size: var(--fu-token-text-sm, 0.875rem);
+  background: hsl(var(--fu-default-warning, 48 100% 50%)/0.15);
+  border-bottom: 1px solid var(--fu-token-line, #e5e5e5);
+}
+.fu-builder__preview-bar__label {
+  font-weight: var(--fu-token-weight-bold, 700);
+  text-transform: uppercase;
+  letter-spacing: var(--fu-token-tracking-wide, 0.025em);
+  font-size: var(--fu-token-text-xs, 0.75rem);
+}
+.fu-builder__preview-bar__issue {
+  color: var(--fu-token-error, #c0392b);
+}
+.fu-builder__preview-bar__ok {
+  color: var(--fu-token-success, #27ae60);
+}
+
+/*# sourceMappingURL=builder.css.map */

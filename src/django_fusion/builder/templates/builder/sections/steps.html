@@ -1,0 +1,19 @@
+<section class="fu-section--gap fu-builder__steps">
+  <div class="fu-builder__container">
+    <div class="fu-section-title">
+      {% if section.eyebrow %}<span class="fu-section-title__eyebrow">{{ section.eyebrow }}</span>{% endif %}
+      <h2 class="fu-section-title__title">{{ section.title }}</h2>
+    </div>
+    <div class="fu-builder__grid fu-builder__grid--4">
+      {% for step in section.steps %}
+      <article class="fu-card">
+        <div class="fu-card__body">
+          <span class="fu-badge fu-badge--primary">{{ step.number }}</span>
+          <h3 class="fu-card__title">{{ step.title }}</h3>
+          {% if step.copy %}<p class="fu-card__text">{{ step.copy }}</p>{% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>

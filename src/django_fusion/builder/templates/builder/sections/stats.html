@@ -1,0 +1,17 @@
+<section class="fu-section--gap fu-builder__stats">
+  <div class="fu-builder__container">
+    {% if section.title %}<div class="fu-section-title"><h2 class="fu-section-title__title">{{ section.title }}</h2></div>{% endif %}
+    <div class="fu-builder__grid fu-builder__grid--4">
+      {% for stat in section.stats %}
+      <div class="fu-counter fu-counter--bordered">
+        <div class="fu-counter__inner">
+          <div class="fu-counter__content">
+            <h3><span class="counter">{{ stat.value }}</span>{% if stat.suffix %}{{ stat.suffix }}{% endif %}</h3>
+            <span class="subtitle">{{ stat.label }}</span>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
