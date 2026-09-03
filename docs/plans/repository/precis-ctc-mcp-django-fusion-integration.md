@@ -252,7 +252,7 @@ xyOps (`application/tools/xyops/`) is the operations automation tool. Integrate 
 | `docs/guides/design-commands.md` | `manage.py design` usage, prompt templates, variations |
 | `docs/ai/agent-instructions.md` | Agent prompts for design, content, translation tasks |
 | `.agents/skills/ctc-design.json` | Skill definition for CTC-specific design work |
-| `application/agents/config.json` | MCP server registration for xyOps |
+| `.agents/mcp/config.json` | MCP server registration for xyOps |
 | `docs/ar-content/guides/mcp-integration.md` | Arabic translation of MCP guide |
 
 ### Agent Skill

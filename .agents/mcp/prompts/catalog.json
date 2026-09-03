@@ -3,8 +3,8 @@
   "catalog_id": "structa-cloud-agent-prompts",
   "description": "Reusable prompts for Structa Cloud coding agents. Prompts are planning and implementation instructions only; they never grant shell, filesystem, migration, credential, or deployment authority.",
   "source_of_truth": {
-    "agent_roles": "application/agents/agent/*.json",
-    "scoped_skills": "application/agents/skills/*/SKILL.md",
+    "agent_roles": ".agents/mcp/agent/*.json",
+    "scoped_skills": ".agents/mcp/skills/*/SKILL.md",
     "project_rules": "Nearest AGENTS.md plus the project README and Makefile"
   },
   "safety_contract": [
@@ -164,7 +164,7 @@
         "authorization boundary",
         "test command"
       ],
-      "prompt": "Act as the MCP integration specialist. Read application/agents/AGENTS.md, the existing MCP server, the relevant project AGENTS.md files, and the MCP builder reference. Keep imports side-effect free and optional dependencies lazy. Define bounded JSON-compatible inputs and structured outputs with actionable errors. Separate read-only catalog/analysis operations from any future apply operation. Require project-level authentication, CSRF/origin policy for browser POSTs, rate limiting, audit logging, and explicit human approval for mutations. Never add shell execution, arbitrary filesystem reads/writes, migrations, provider credentials, or deployment behavior to a metadata endpoint. Add deterministic unit/contract tests and document the transport.",
+      "prompt": "Act as the MCP integration specialist. Read .agents/mcp/AGENTS.md, the existing MCP server, the relevant project AGENTS.md files, and the MCP builder reference. Keep imports side-effect free and optional dependencies lazy. Define bounded JSON-compatible inputs and structured outputs with actionable errors. Separate read-only catalog/analysis operations from any future apply operation. Require project-level authentication, CSRF/origin policy for browser POSTs, rate limiting, audit logging, and explicit human approval for mutations. Never add shell execution, arbitrary filesystem reads/writes, migrations, provider credentials, or deployment behavior to a metadata endpoint. Add deterministic unit/contract tests and document the transport.",
       "expected_output": [
         "threat model",
         "tool/prompt schema",
@@ -298,7 +298,7 @@
         "component or field name",
         "existing models/templates"
       ],
-      "prompt": "Act as a django-fusion interactive designer. Read application/agents/AGENTS.md, the MCP designer tools at /designer/tools, and the owning project AGENTS.md. Start by browsing /designer/component-catalog to discover existing components before designing new ones. Use /designer/wagtail-field for field recommendations, /designer/form-scaffold for form drafts, /designer/table-scaffold for table drafts, and /designer/preview to safely preview registered components with JSON props. All tools are read-only or pure-generation; never apply generated code without explicit project-owner review, migration approval, and test verification. Keep imports canonical and follow the owning project's component, form, and table conventions.",
+      "prompt": "Act as a django-fusion interactive designer. Read .agents/mcp/AGENTS.md, the MCP designer tools at /designer/tools, and the owning project AGENTS.md. Start by browsing /designer/component-catalog to discover existing components before designing new ones. Use /designer/wagtail-field for field recommendations, /designer/form-scaffold for form drafts, /designer/table-scaffold for table drafts, and /designer/preview to safely preview registered components with JSON props. All tools are read-only or pure-generation; never apply generated code without explicit project-owner review, migration approval, and test verification. Keep imports canonical and follow the owning project's component, form, and table conventions.",
       "expected_output": [
         "component or field draft",
         "form/table scaffold code",

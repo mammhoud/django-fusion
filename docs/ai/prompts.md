@@ -75,7 +75,7 @@ Load skill "design-taste-frontend" to get full design instructions
 Load skill "shadcn" when working with shadcn/ui components
 ```
 
-See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instructions. The stable machine-readable prompt packs are in [`application/agents/prompts/catalog.json`](../../application/agents/prompts/catalog.json), with usage and validation documented in [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md).
+See each `SKILL.md` file under `.agents/skills/<name>/SKILL.md` for full instructions. The stable machine-readable prompt packs are in [`.agents/mcp/prompts/catalog.json`](../../.agents/mcp/prompts/catalog.json), with usage and validation documented in [`PROMPT_CATALOG.md`](PROMPT_CATALOG.md).
 
 ---
 
@@ -342,6 +342,6 @@ Customize the [product] theme:
 | AI overview | [`README.md`](README.md) |
 | Agents guide | [`agents.md`](agents.md) |
 | MCP integration | [`mcp-integration.md`](mcp-integration.md) |
-| Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |
+| Best practices | [`../guides/08-best-practices.md`](../guides/08-best-practices.md) |
 | .agents/skills | [`.agents/skills/`](../../.agents/skills/) |
 | Project structure | [`../project-structure.md`](../project-structure.md) |

@@ -1,6 +1,6 @@
 {% load static wagtailimages_tags %}
 
-{# Logo logic — brand_settings.logo (Wagtail image) → text fallback → Precis Protocol Mark SVG #}
+{# Logo logic — brand_settings.logo (Wagtail image) → text fallback → CTC Research SVG #}
 {% if brand_settings and brand_settings.logo %}
 {% image brand_settings.logo max-165x120 as logo %}
 {% endif %}
@@ -14,8 +14,8 @@
         {# 2. Text fallback — site name with uppercase styling #}
         <h3 class="uppercase letter-spacing-1">{{ brand_settings.site_name }}</h3>
         {% else %}
-        {# 3. SVG fallback — Precis Protocol Mark (the canonical brand mark) #}
-        <img src="{% static 'images/brand/precis-protocol-mark.svg' %}" alt="CTC Research" class="logo-img">
+        {# 3. SVG fallback — the canonical CTC Research Centre emblem #}
+        <img src="{% static 'images/logo-enhanced.svg' %}" alt="Candle Training &amp; Research Centre" class="logo-img">
         {% endif %}
     </a>
 </div>

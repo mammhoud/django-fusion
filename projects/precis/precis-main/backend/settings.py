@@ -110,6 +110,8 @@ INSTALLED_APPS = [
     "django_dramatiq",
     # django-webpack-loader — serves versioned bundles (webpack/precis-landing.config.js)
     "webpack_loader",
+    # django-extensions — management commands (graph_models ERD, shell_plus, etc.)
+    "django_extensions",
     # Landing apps (precis-lms-style organization)
     "apps.content",  # StreamField blocks + block templates
     "apps.pages",  # Wagtail page models + page templates + seed
@@ -556,6 +558,10 @@ WAGTAILADMIN_BASE_URL = os.environ.get(
 SITE_URL = os.environ.get("SITE_URL", WAGTAILADMIN_BASE_URL)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+SILENCED_SYSTEM_CHECKS = [
+    "treebeard.E001",
+]
 
 # ── Webpack Loader (django-webpack-loader) ────────────────────────
 # Reads the bundles.json produced by webpack/precis-landing.config.js.

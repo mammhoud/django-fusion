@@ -46,8 +46,8 @@ The Structa Cloud monorepo uses AI extensively through three mechanisms:
 | Mechanism | Location | Purpose |
 |-----------|----------|---------|
 | **AGENTS.md files** | Root + per-project dirs | AI coding assistant behavioral instructions |
-| **Prompt templates** | `application/agents/prompts/catalog.json`, project `PROMPTS.md`, `docs/ai/` | Skills-as-prompts, agent workflows, code generation, review, translation |
-| **MCP Servers** | Kilo helper (`application/agents`), optional ceptor-ai (`libs/ceptor-ai` when present) | Read-only repository introspection and MCP tool metadata |
+| **Prompt templates** | `.agents/mcp/prompts/catalog.json`, project `PROMPTS.md`, `docs/ai/` | Skills-as-prompts, agent workflows, code generation, review, translation |
+| **MCP Servers** | Kilo helper (`.agents/mcp`), optional ceptor-ai (`libs/ceptor-ai` when present) | Read-only repository introspection and MCP tool metadata |
 
 ### How They Work Together
 
@@ -105,7 +105,7 @@ AI agents load ALL AGENTS.md files from root to leaf — later files override ea
 | `projects/precis/precis-main/assets/templates/plugins/AGENTS.md` | Precis plugin template conventions |
 | `libs/django-fusion/AGENTS.md` | Component system, routing, canonical imports |
 | `libs/ceptor-ai/AGENTS.md` (when present) | AI assistant, MCP server, chat client |
-| `application/agents/AGENTS.md` | Kilo MCP server, tool definitions |
+| `.agents/mcp/AGENTS.md` | Kilo MCP server, tool definitions |
 
 ### AGENTS.md Structure Convention
 
@@ -139,7 +139,7 @@ See [prompts.md](prompts.md) for the human template library and [PROMPT_CATALOG.
 
 Two MCP servers provide tool access to AI assistants:
 
-### Kilo MCP Helper (`application/agents/`)
+### Kilo MCP Helper (`.agents/mcp/`)
 
 | Tool | Purpose | Parameters |
 |------|---------|------------|
@@ -203,5 +203,5 @@ See [mcp-integration.md](mcp-integration.md) for full details.
 | Syntara AI chat | [`../../projects/syntara/`](../../projects/syntara/) |
 | Ceptor-AI library | [`libs/ceptor-ai/`](../../libs/ceptor-ai/) |
 | django-fusion library | [`libs/django-fusion/`](../../libs/django-fusion/) |
-| Kilo MCP helper | [`../../application/agents/`](../../application/agents/) |
-| Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |
+| Kilo MCP helper | [`../../.agents/mcp/`](../../.agents/mcp/) |
+| Best practices | [`../guides/08-best-practices.md`](../guides/08-best-practices.md) |

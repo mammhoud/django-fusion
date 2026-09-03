@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:anytype:schema:2026-08-04:type-note:ver-1.0",
+  "type": "object",
+  "title": "Note",
+  "x-app": "Anytype",
+  "x-icon-name": "note",
+  "x-plural": "Notes",
+  "x-schema-version": "1.0",
+  "x-type-key": "note",
+  "properties": {
+    "Object type": {
+      "const": "Note",
+      "type": "string",
+      "x-format": "object",
+      "x-key": "type"
+    },
+    "Tags": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "tag",
+      "x-key": "tags"
+    },
+    "Status": {
+      "enum": ["Draft", "Active", "Completed", "Archived"],
+      "type": "string",
+      "x-key": "status"
+    },
+    "Description": {"type": "string", "x-key": "description"},
+    "Creation date": {
+      "format": "date-time",
+      "type": "string",
+      "x-format": "date",
+      "x-key": "createdDate"
+    },
+    "Links": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "links"
+    }
+  },
+  "required": ["Object type", "Tags"]
+}

@@ -102,7 +102,7 @@ Collectstatic (python manage.py collectstatic)
 
 ## 5. تكامل MCP
 
-- خادم Kilo MCP في `application/agents/`
+- خادم Kilo MCP في `.agents/mcp/`
 - الأدوات المسجلة: النشر، فحص الصحة، استعلام DB، عمليات الملفات
 - إعداد الوكيل في `.agents/kiro/settings/mcp.json`
 

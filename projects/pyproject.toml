@@ -25,6 +25,8 @@ dependencies = [
     "django-extensions",
     "django-silk",
     "django-stubs",
+    # ERD generation (graph_models management command)
+    "pydot>=3.0",
     # Data & forms
     "django-embed-video",
     "django-import-export",

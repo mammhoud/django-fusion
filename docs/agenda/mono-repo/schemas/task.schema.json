@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:anytype:schema:2026-08-04:type-task:ver-1.0",
+  "type": "object",
+  "title": "Task",
+  "x-app": "Anytype",
+  "x-icon-name": "checkbox",
+  "x-plural": "Tasks",
+  "x-schema-version": "1.0",
+  "x-type-key": "task",
+  "properties": {
+    "Object type": {
+      "const": "Task",
+      "type": "string",
+      "x-format": "object",
+      "x-key": "type"
+    },
+    "Tags": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "tag",
+      "x-key": "tags"
+    },
+    "Status": {
+      "enum": ["Backlog", "Planned", "In Progress", "Blocked", "Done", "Cancelled"],
+      "type": "string",
+      "x-key": "status"
+    },
+    "Priority": {
+      "enum": ["P0", "P1", "P2", "P3"],
+      "type": "string",
+      "x-key": "priority"
+    },
+    "Assignee": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "assignee"
+    },
+    "Due date": {
+      "format": "date-time",
+      "type": "string",
+      "x-format": "date",
+      "x-key": "dueDate"
+    },
+    "Description": {"type": "string", "x-key": "description"},
+    "Links": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "links"
+    }
+  },
+  "required": ["Object type", "Tags", "Status"]
+}

@@ -54,7 +54,8 @@ clean: ## Stop Blinko and prune its images/build cache (volumes kept)
 	@docker image prune -f 2>/dev/null || true
 	@echo "✅ Blinko clean complete"
 
-clean-unused: clean ## clean + prune stopped containers and build cache (volumes preserved)
+clean-unused: clean ## clean + prune stopped containers and all unused build cache (volumes preserved)
 	@docker container prune -f 2>/dev/null || true
-	@docker builder prune -f 2>/dev/null || true
+	@docker image prune -af 2>/dev/null || true
+	@docker builder prune -af 2>/dev/null || true
 	@echo "✅ clean-unused complete (volumes preserved)"

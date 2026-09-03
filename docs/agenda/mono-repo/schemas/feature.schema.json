@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:anytype:schema:2026-08-04:type-feature:ver-1.0",
+  "type": "object",
+  "title": "Feature",
+  "x-app": "Anytype",
+  "x-icon-name": "sparkle",
+  "x-plural": "Features",
+  "x-schema-version": "1.0",
+  "x-type-key": "feature",
+  "properties": {
+    "Object type": {
+      "const": "Feature",
+      "type": "string",
+      "x-format": "object",
+      "x-key": "type"
+    },
+    "Tags": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "tag",
+      "x-key": "tags"
+    },
+    "Status": {
+      "enum": ["Draft", "Planned", "In Development", "Completed", "Published", "Deprecated"],
+      "type": "string",
+      "x-key": "status"
+    },
+    "Edition": {"type": "string", "x-key": "edition"},
+    "Description": {"type": "string", "x-key": "description"},
+    "Related Features": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedFeatures"
+    },
+    "Related Products": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedProducts"
+    },
+    "Links": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "links"
+    }
+  },
+  "required": ["Object type", "Tags", "Status"]
+}

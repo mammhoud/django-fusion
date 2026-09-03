@@ -45,7 +45,8 @@ CLIENT_PKG_DIR := ../packages/formints-client
 .PHONY: help install migrate seed check test verify-stack dev-backend dev-api \
         dev-frontend stop clean styles config-show config-check client-build \
         backend-help backend-check backend-migrate \
-        backend-test frontend-install frontend-dev frontend-build frontend-check
+        backend-test frontend-install frontend-dev frontend-build frontend-check \
+        erd erd-all
 
 help: ## Show all commands
 	@echo 'Formint Cloud — Hosted SaaS Master edition'
@@ -149,3 +150,71 @@ frontend-build:
 
 frontend-check: client-build
 	cd $(FRONTEND_DIR) && ./node_modules/.bin/astro check
+
+# ── ERD — database schema diagrams ─────────────────────────────────────────
+# Uses django-extensions graph_models → pydot (DOT) → graphviz dot (PNG).
+# admin.register is patched to silence Tenant model registration errors that
+# occur when running in SQLite mode (no django-tenants schema backend).
+# Two-step approach avoids memory issues with large graphs.
+# Requires: graphviz system package + django-extensions + pydot in backend/pyproject.toml.
+ERD_OUT := docs/erd
+ERD_APPS ?= core domain handlers
+
+erd: ## Generate ERD PNG for all apps → docs/erd/
+	@echo 'Generating ERD (DOT intermediate)...'
+	@mkdir -p $(ERD_OUT)
+	@cd $(BACKEND_DIR) && DB_ENGINE=django.db.backends.sqlite3 \
+		PYTHONPATH=$(shell pwd)/$(BACKEND_DIR):/home/structa.cloud/libs/django-fusion/src \
+		./.venv/bin/python -W ignore -c "\
+import sys,os,warnings; warnings.filterwarnings('ignore'); \
+sys.path.insert(0,'.'); \
+sys.path.insert(0,'/home/structa.cloud/libs/django-fusion/src'); \
+os.environ['DJANGO_SETTINGS_MODULE']='configs'; \
+os.environ['DB_ENGINE']='django.db.backends.sqlite3'; \
+import django.contrib.admin as _a; _orig=_a.register; \
+def _safe(*m,**kw): \
+    def d(c): \
+        try: return _orig(*m,**kw)(c) \
+        except: return c \
+    return d; \
+_a.register=_safe; \
+import django; django.setup(); \
+from django.core.management import call_command; \
+call_command('graph_models','$(ERD_APPS)', \
+    pydot=True,group_models=True,color_code_deletions=True, \
+    output='../$(ERD_OUT)/formint_cloud_erd.dot')" 2>/dev/null
+	@dot -Tpng -Gsize="20,14\!" -Gdpi=96 \
+		$(ERD_OUT)/formint_cloud_erd.dot \
+		-o $(ERD_OUT)/formint_cloud_erd.png
+	@echo '✅ ERD saved → $(ERD_OUT)/formint_cloud_erd.png'
+
+erd-all: ## Generate per-app ERD PNGs → docs/erd/
+	@echo 'Generating per-app ERDs...'
+	@mkdir -p $(ERD_OUT)
+	@for app in core domain handlers; do \
+		echo "  → $$app"; \
+		cd $(BACKEND_DIR) && DB_ENGINE=django.db.backends.sqlite3 \
+			PYTHONPATH=$(shell pwd)/$(BACKEND_DIR):/home/structa.cloud/libs/django-fusion/src \
+			./.venv/bin/python -W ignore -c "\
+import sys,os,warnings; warnings.filterwarnings('ignore'); \
+sys.path.insert(0,'.'); \
+sys.path.insert(0,'/home/structa.cloud/libs/django-fusion/src'); \
+os.environ['DJANGO_SETTINGS_MODULE']='configs'; \
+os.environ['DB_ENGINE']='django.db.backends.sqlite3'; \
+import django.contrib.admin as _a; _orig=_a.register; \
+def _safe(*m,**kw): \
+    def d(c): \
+        try: return _orig(*m,**kw)(c) \
+        except: return c \
+    return d; \
+_a.register=_safe; \
+import django; django.setup(); \
+from django.core.management import call_command; \
+call_command('graph_models','$$app', \
+    pydot=True,group_models=True,color_code_deletions=True, \
+    output='../$(ERD_OUT)/$$app.dot')" 2>/dev/null && cd .. || cd ..; \
+		dot -Tpng -Gsize="14,10\!" -Gdpi=96 \
+			$(ERD_OUT)/$$app.dot -o $(ERD_OUT)/$$app.png 2>/dev/null || \
+			echo "  ⚠️  $$app skipped"; \
+	done
+	@echo '✅ Per-app ERDs saved → $(ERD_OUT)/'

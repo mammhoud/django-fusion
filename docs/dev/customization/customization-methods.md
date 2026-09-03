@@ -298,6 +298,6 @@ class MyPluginConfig(AppConfig):
 | Topic | Path |
 |-------|------|
 | Customization tags | [`README.md`](README.md) |
-| Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |
+| Best practices | [`../guides/08-best-practices.md`](../guides/08-best-practices.md) |
 | Clone a site | [`../guides/06-clone-site.md`](../guides/06-clone-site.md) |
 | Repo overview | [`../repo-overview.md`](../repo-overview.md) |

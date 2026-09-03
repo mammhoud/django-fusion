@@ -150,6 +150,6 @@ pytest:
 
 | Topic | Path |
 |-------|------|
-| Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |
+| Best practices | [`../guides/08-best-practices.md`](../guides/08-best-practices.md) |
 | django-fusion | [`../libs/django-fusion.md`](../libs/django-fusion.md) |
 | Repo overview | [`../repo-overview.md`](../repo-overview.md) |

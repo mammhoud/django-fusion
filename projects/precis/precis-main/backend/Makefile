@@ -1,7 +1,7 @@
 # precis-landing backend — Django + Wagtail (landing-only)
 # Mirrors projects/cms-fusion/backend conventions, trimmed to the landing slice.
 # ============================================================
-.PHONY: help dev server scheduler install migrate static collectstatic superuser shell check test format lint fix
+.PHONY: help dev server scheduler install migrate static collectstatic superuser shell check test format lint fix erd erd-all
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -94,3 +94,36 @@ lint: ## Fast lint (unused imports)
 
 fix: ## Fix all ruff issues
 	@$(UV_RUN) ruff check --fix .
+
+# ── ERD — database schema diagrams ─────────────────────────────────────────
+# Uses django-extensions graph_models → pydot (DOT format) → graphviz dot (PNG).
+# Two-step approach avoids memory issues with very large graphs.
+# Requires: graphviz system package + pydot + django-extensions in INSTALLED_APPS.
+ERD_OUT := ../docs/erd
+ERD_APPS ?= content pages handlers landing_auth learning tasks components shared
+
+erd: ## Generate ERD PNG for all apps → docs/erd/
+	@echo -e "$(BLUE)Generating ERD (DOT intermediate)...$(NC)"
+	@mkdir -p $(ERD_OUT)
+	@$(MANAGE) graph_models \
+		--pydot -g --color-code-deletions \
+		--output $(ERD_OUT)/precis_main_erd.dot \
+		$(ERD_APPS) 2>/dev/null
+	@echo -e "$(BLUE)Rendering PNG...$(NC)"
+	@dot -Tpng -Gsize="24,16\!" -Gdpi=96 \
+		$(ERD_OUT)/precis_main_erd.dot \
+		-o $(ERD_OUT)/precis_main_erd.png
+	@echo -e "$(GREEN)✅ ERD saved → $(ERD_OUT)/precis_main_erd.png$(NC)"
+
+erd-all: ## Generate per-app ERD PNGs → docs/erd/
+	@echo -e "$(BLUE)Generating per-app ERDs...$(NC)"
+	@mkdir -p $(ERD_OUT)
+	@for app in content pages handlers landing_auth learning tasks components shared; do \
+		echo -e "  $(CYAN)→ $$app$(NC)"; \
+		$(MANAGE) graph_models --pydot -g --color-code-deletions \
+			--output $(ERD_OUT)/$$app.dot $$app 2>/dev/null && \
+		dot -Tpng -Gsize="16,12\!" -Gdpi=96 \
+			$(ERD_OUT)/$$app.dot -o $(ERD_OUT)/$$app.png 2>/dev/null || \
+			echo -e "  $(YELLOW)⚠️  $$app skipped$(NC)"; \
+	done
+	@echo -e "$(GREEN)✅ Per-app ERDs saved → $(ERD_OUT)/$(NC)"

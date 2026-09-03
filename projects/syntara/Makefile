@@ -470,4 +470,36 @@ ci:
 	@$(MAKE) test
 	@echo "✅ CI checks passed"
 
+# ============================================================
+# ERD — Database schema diagrams
+# ============================================================
+# Uses django-extensions graph_models → pydot (DOT) → graphviz dot (PNG).
+# Run from OUTSIDE the syntara/ dir to avoid syntara/site.py shadowing
+# Python's built-in site module.
+# Requires: graphviz system package + django-extensions + pydot in requirements.txt.
+.PHONY: erd erd-all
+
+ERD_OUT ?= docs/erd
+
+erd: ## Generate ERD PNG for all apps → docs/erd/
+	@echo "📊 Generating ERD..."
+	@mkdir -p $(ERD_OUT)
+	@cd /tmp && PYTHONPATH=$(CURDIR):/home/structa.cloud/libs/django-fusion/src \
+		DJANGO_SETTINGS_MODULE=settings \
+		$(PYTHON) -c "\
+import sys, os; \
+sys.path.insert(0,'$(CURDIR)'); \
+sys.path.insert(0,'/home/structa.cloud/libs/django-fusion/src'); \
+os.environ['DJANGO_SETTINGS_MODULE']='settings'; \
+import django; django.setup(); \
+from django.core.management import call_command; \
+call_command('graph_models','chat', \
+    pydot=True,group_models=True,color_code_deletions=True, \
+    output='$(CURDIR)/$(ERD_OUT)/syntara_erd.dot')" 2>/dev/null
+	@dot -Tpng -Gsize="16,12\!" -Gdpi=96 \
+		$(ERD_OUT)/syntara_erd.dot -o $(ERD_OUT)/syntara_erd.png
+	@echo "✅ ERD saved → $(ERD_OUT)/syntara_erd.png"
+
+erd-all: erd ## Syntara has one app — erd-all is equivalent to erd
+
 # @tested Cypercloud - dev, migrate, collectstatic, check, test targets verified

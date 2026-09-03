@@ -3,10 +3,10 @@
 The repository now has a canonical, machine-readable prompt catalog:
 
 ```text
-application/agents/prompts/catalog.json
+.agents/mcp/prompts/catalog.json
 ```
 
-It turns the existing `.agents/skills`, `application/agents/agent/*.json`, and
+It turns the existing `.agents/skills`, `.agents/mcp/agent/*.json`, and
 project `AGENTS.md` guidance into reusable prompts that an AI agent can load,
 combine, and execute as a planning or coding workflow.
 
@@ -94,13 +94,13 @@ The initial catalog includes prompts for:
 - Dramatiq background-job architecture and staged migration.
 
 The installed full skill documents remain the detailed source material under
-`.agents/skills/` and `application/agents/skills/`. The catalog provides a
+`.agents/skills/` and `.agents/mcp/skills/`. The catalog provides a
 stable task-oriented entry point and agent mapping; it does not replace those
 skill files.
 
 ## Agent mapping
 
-The catalog uses the role definitions in `application/agents/agent/`:
+The catalog uses the role definitions in `.agents/mcp/agent/`:
 
 - `django-architect` — boundaries, services, schemas, workers;
 - `django-coder` — Django/Wagtail/templates/forms/APIs;
@@ -114,8 +114,7 @@ The catalog uses the role definitions in `application/agents/agent/`:
 - `devops-engineer` — CI, Compose, infrastructure, and operations;
 - `documentation-writer` — maintainable technical documentation.
 
-The prompt catalog does not change agent permissions. Existing permissions in
-`application/agents/agent/*.json` and `kilo.jsonc` remain authoritative.
+The prompt catalog does not change agent permissions. Existing permissionsin `.agents/mcp/agent/*.json` and `kilo.jsonc` remain authoritative.
 
 ## MCP access
 
@@ -158,8 +157,8 @@ Validation:
 
 ```bash
 cd /home/structa.cloud
-uv run pytest application/agents/test_prompts.py -q
-python3 -m json.tool application/agents/prompts/catalog.json >/dev/null
+uv run pytest .agents/mcp/test_prompts.py -q
+python3 -m json.tool .agents/mcp/prompts/catalog.json >/dev/null
 ```
 
 ## Related references
@@ -167,5 +166,5 @@ python3 -m json.tool application/agents/prompts/catalog.json >/dev/null
 - [`docs/ai/prompts.md`](prompts.md) — human prompt library and skill inventory;
 - [`docs/ai/agents.md`](agents.md) — AGENTS hierarchy and role inventory;
 - [`docs/ai/mcp-integration.md`](mcp-integration.md) — MCP architecture;
-- [`application/agents/AGENTS.md`](../../application/agents/AGENTS.md) — Kilo rules;
+- [`.agents/mcp/AGENTS.md`](../../.agents/mcp/AGENTS.md) — Kilo rules;
 - [`libs/django-fusion/docs/WEBSITE_MCP.md`](../../libs/django-fusion/docs/WEBSITE_MCP.md) — website audit MCP tools.

@@ -9,9 +9,14 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y build-essential ca-certificates curl gettext git libpq-dev \
+    && apt-get install --no-install-recommends -y \
+        build-essential ca-certificates curl gettext git libpq-dev \
+        zsh fonts-powerline graphviz \
     && rm -rf /var/lib/apt/lists/* \
-    && pip install --no-cache-dir uv
+    && pip install --no-cache-dir uv \
+    && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+    && sed -i 's/^ZSH_THEME=.*/ZSH_THEME="af-magic"/' /root/.zshrc \
+    && echo 'plugins=(git python pip django)' >> /root/.zshrc
 
 COPY projects/pyproject.toml projects/uv.lock /app/projects/
 COPY libs /app/libs

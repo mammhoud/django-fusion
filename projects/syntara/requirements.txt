@@ -10,3 +10,6 @@ pydantic>=2.0,<3.0    # configuration validation (optional)
 psycopg-binary>=3.1  # optional — for PostgreSQL connections
 whitenoise>=6.0       # static file serving
 pyyaml>=6.0           # YAML configuration support
+# ERD generation
+django-extensions>=3.2
+pydot>=3.0

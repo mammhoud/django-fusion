@@ -57,7 +57,7 @@ links:
 | [`precis/precis-landing/`](precis/precis-landing/) | `precis-landing` (legacy) | backend-api · deployment · frontend |
 | [`precis/client/ctc-research/`](precis/client/ctc-research/README.md) | `precis-ctc` | README (index) · content-strategy (editorial ICP/research) · publishing-and-production (release workflow) · client-production (case study) |
 | [`syntara/`](syntara/README.md) | `syntara` | README (index) · configuration · features · infrastructure · use-cases |
-| [`pos/`](pos/README.md) | `formints` | README (index) · editions (pointer → `plans/editions/`) · cloud-edition (pointer → `04-cloud.md`) · legacy topic pages — canonical product docs live in [`projects/formints/docs/`](../../projects/formints/docs/) |
+| [`pos/`](pos/README.md) | `formints` | README (index) · editions (pointer → `plans/editions/`) · cloud-edition (pointer → `plans/editions/04-cloud.md`) · legacy topic pages — canonical product docs live in [`projects/formints/docs/`](../projects/formints/docs/) |
 | [`pos/backend/`](pos/backend/README.md) | `formints` | rust-auth · rust-backend · rust-database · rust-data-flow · rust-operations · rust-seed-data (legacy reader-facing; canonical Rust docs in `projects/formints/docs/`) |
 | [`pos/frontend/`](pos/frontend/README.md) | `formints` | typescript-api · typescript-components · typescript-contexts-hooks · typescript-frontend (legacy reader-facing; canonical TS docs in `projects/formints/docs/`) |
 | [`pos/sidecar/`](pos/sidecar/README.md) | `formints` | django-bolt-integration · django-orm · network-architecture · robyn-migration · sidecar-api · sidecar-readme · sidecar-websocket (legacy reader-facing) |

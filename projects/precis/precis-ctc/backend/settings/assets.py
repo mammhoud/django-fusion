@@ -25,6 +25,9 @@ __all__ = [
 _SITE_DIR = Path(__file__).resolve().parent.parent
 _WORKSPACE_DIR = _SITE_DIR.parent
 _PROJECTS_DIR = _WORKSPACE_DIR.parent
+# Monorepo shared assets root — projects/ (sibling of projects/precis). The
+# canonical ctc-research media tree lives at projects/assets/media/ctc-research.
+_PROJECTS_ROOT = _WORKSPACE_DIR.parent.parent
 
 # ═══════════════════════════════════════════════════════════════════
 # Templates — ensure the consolidated assets/templates/ is in DIRS.
@@ -45,11 +48,11 @@ for _sub in ("blog", "lms", "profile", "products", "pages", "accounts",
 # ═══════════════════════════════════════════════════════════════════
 # Media — serve from the monorepo-shared media tree, project-named so the
 # shared Nginx proxy can map ctc-research.com → /var/www/media/ctc-research
-# (see application/proxy/docker-compose.nginx.yml + nginx/default.conf.template).
+# (see application/tools/docker-compose.assets.yml + nginx/assets.conf.template).
 # The runtime container overrides this via the MEDIA_ROOT env var (/app/media).
 # ═══════════════════════════════════════════════════════════════════
 MEDIA_ROOT = os.environ.get(
-    "MEDIA_ROOT", str(_PROJECTS_DIR / "assets" / "media" / "ctc-research")
+    "MEDIA_ROOT", str(_PROJECTS_ROOT / "assets" / "media" / "ctc-research")
 )
 
 # CTC archive/media pack. The attached backup is kept under the same

@@ -159,10 +159,13 @@ resource "coder_script" "toolchain" {
     fi
 
     # 3. CLI globally.
-    npm install -g freebuff
-    npm i
+    # Always run project commands from the mounted monorepo. Coder starts
+    # scripts from $HOME, and running `npm i` there installs against the
+    # wrong package.json (or fails when none exists).
+    cd "${local.workspace_folder}"
+    npm install --no-audit --no-fund
     # 4. Report the resolved toolchain versions.
-    echo "toolchain: git $(git --version) | make $(make --version | head -1) | node $(node --version) | npm $(npm --version) | freebuff $(freebuff --version)"
+    echo "toolchain: git $(git --version) | make $(make --version | head -1) | node $(node --version) | npm $(npm --version)"
   EOT
 }
 

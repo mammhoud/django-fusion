@@ -48,7 +48,7 @@ import { cachedAssets } from '@/lib/api';
 import AssetPreload from '@/components/ui/AssetPreload.astro';
 import SkeletonBridge from '@/components/ui/SkeletonBridge.astro';
 import '../styles/globals.css';
-import faviconPath from '@assets/static/images/favicon.png';
+import faviconPath from '@assets/static/images/favicon-enhanced.svg';
 
 interface Props {
   title?: string;
@@ -233,7 +233,7 @@ void THEME_STORAGE_KEY;
       rel="stylesheet"
     />
 
-    <link rel="icon" type="image/png" href={faviconPath.src} />
+    <link rel="icon" type="image/svg+xml" href={faviconPath.src} />
     <AssetPreload manifest={assetManifest} />
   </head>
   <body class="is-hydrating">
@@ -294,7 +294,7 @@ void THEME_STORAGE_KEY;
     </div>
 
     <div class="flex min-h-screen flex-col">
-      <Header siteName={siteName} navItems={navItems} logoUrl={siteSettings?.logo_url || "/static/images/favicon-enhanced.svg"} pageVariant={resolvedPageVariant} />
+      <Header siteName={siteName} navItems={navItems} logoUrl={siteSettings?.logo_url || "/static/images/logo-enhanced.svg"} pageVariant={resolvedPageVariant} />
       <main class="flex-1 pt-24 md:pt-28">
         <slot />
       </main>

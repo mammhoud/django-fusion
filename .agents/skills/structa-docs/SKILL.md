@@ -79,7 +79,7 @@ When you change code in this repo, also update docs that reference it:
 - A route/handler change → product `frontend.md` / `backend-api.md` and the site's Traefik dynamic file comment header (`application/proxy/configs/traefik/dynamic/<site>.yml` documents routes).
 - A new field/model → `docs/backend/api-models.md` or the product API doc.
 - A new pattern/architecture decision → ADR in `docs/plans/` (date + status + Remarks).
-- An MCP/agent capability → `docs/ai/mcp-integration.md` (Kilo server lives in `application/agents/`).
+- An MCP/agent capability → `docs/ai/mcp-integration.md` (Kilo server lives in `.agents/mcp/`).
 - A proxy/scaling change → `docs/nginx/traefik-routing-rules.md` (mirror `application/proxy/configs/traefik/dynamic/*.yml`) per the container-arch-scaling skill.
 
 ## 7. Pre-Flight Checklist

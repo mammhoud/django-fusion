@@ -31,6 +31,20 @@ safe_loaddata.py
 appmap.log
 application/proxy/acme/acme-dns.json
 application/databases/dockge-data/
+
+# Blinko runtime data (SurrealDB store + stale Postgres pre-migration data)
+application/tools/blinko/blinko-data/
+application/tools/blinko/blinko/blinko-data/
+
+# Blinko build data: vendored build-context clone (nested git repo) and generated docker build context
+application/tools/blinko/blinko/
+application/tools/blinko/.blinko-build-context/
+
+# Tools proxy basic-auth credentials (password hash)
+application/tools/nginx/htpasswd
+
+# Unreferenced root media artifact
+ctc-research.logo.jpeg
 # ── Docs artifacts & archives ────────────────────────────────────────
 .archives/
 archives/

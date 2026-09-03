@@ -88,7 +88,11 @@ services:
       - ../projects/cli.py:/app/cli.py:z
       - ../projects/manage.py:/app/manage.py:z
       - ../projects/__main__.py:/app/__main__.py:z
-      - ../projects/assets:/app/assets:z
+      # NOTE: projects/assets (media/static/bundles data) is intentionally NOT
+      # mounted into the shared worker. The worker executes task code only;
+      # product web containers and the assets-proxy own asset data. Keeping
+      # the assets tree out keeps this stack minimal and avoids needlessly
+      # syncing media into a task runtime.
       - ../libs:/app/libs:z
       - ../projects/logs:/app/logs:z
       # Shared task/config code is hot-reloadable without rebuilding the image.
@@ -111,7 +115,9 @@ services:
       - ../projects/cli.py:/app/cli.py:z
       - ../projects/manage.py:/app/manage.py:z
       - ../projects/__main__.py:/app/__main__.py:z
-      - ../projects/assets:/app/assets:z
+      # NOTE: projects/assets is intentionally not mounted here either (see
+      # shared-worker above) — the scheduler only registers cron jobs and
+      # needs no asset data.
       - ../libs:/app/libs:z
       - ../projects/logs:/app/logs:z
       - ../projects/precis/configs:/app/shared/configs:z

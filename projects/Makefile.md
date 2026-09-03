@@ -82,8 +82,8 @@ Every command takes `WEBSITE=<site>` — see the site selection table below.
 ### Docker Cleanup
 | Command | Description |
 |---------|-------------|
-| `make docker-clean` | Down + `docker system prune -f --volumes` |
-| `make docker-clean-all` | Clean + remove all images/volumes (destructive) |
+| `make docker-clean` | Down + prune unused containers/images/networks/build cache (volumes preserved) |
+| `make docker-clean-all` | Clean + remove all unused images/volumes (destructive) |
 | `make docker-prune-containers` | Down with `--remove-orphans` |
 | `make docker-prune-data` | Down with `--volumes --remove-orphans` (destructive) |
 

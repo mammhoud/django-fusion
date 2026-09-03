@@ -37,7 +37,15 @@ RUN apt-get update -qq \
         librsvg2-dev libsoup-3.0-dev libjavascriptcoregtk-4.1-dev \
         libssl-dev libpq-dev libffi-dev libxml2-dev libxslt1-dev \
         python3 python3-pip python3-venv make \
+        zsh fonts-powerline \
     && rm -rf /var/lib/apt/lists/*
+
+# ---------------------------------------------------------------------------
+# Oh My Zsh (installed for root; the non-root `node` user gets it below)
+# ---------------------------------------------------------------------------
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+    && sed -i 's/^ZSH_THEME=.*/ZSH_THEME="af-magic"/' /root/.zshrc \
+    && echo 'plugins=(git python pip docker docker-compose)' >> /root/.zshrc
 
 # ---------------------------------------------------------------------------
 # Docker CLI + compose plugin (static binaries; daemon via docker-in-docker)
@@ -101,7 +109,14 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
 RUN chown -R node:node /usr/local/cargo /usr/local/rustup /usr/local/lib/docker \
     && mkdir -p /workspaces && chown -R node:node /workspaces
 
+# ---------------------------------------------------------------------------
+# Oh My Zsh for the non-root `node` user
+# ---------------------------------------------------------------------------
 USER node
+RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+    && sed -i 's/^ZSH_THEME=.*/ZSH_THEME="af-magic"/' ~/.zshrc \
+    && echo 'plugins=(git python pip docker docker-compose node)' >> ~/.zshrc
+
 WORKDIR /workspaces/structa.cloud
 
 # Verify the full toolchain is present (fails the build if anything is missing).

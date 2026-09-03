@@ -35,7 +35,11 @@ WORKDIR ${APP_HOME}
 # System deps
 RUN apt-get update && apt-get install --no-install-recommends -y \
         curl libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+        zsh fonts-powerline graphviz \
+    && rm -rf /var/lib/apt/lists/* \
+    && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+    && sed -i 's/^ZSH_THEME=.*/ZSH_THEME="af-magic"/' /root/.zshrc \
+    && echo 'plugins=(git python pip django)' >> /root/.zshrc
 
 # ── Install Python dependencies ──────────────────────────────────────────
 COPY cypercloud/requirements.txt /tmp/requirements.txt

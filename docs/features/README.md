@@ -108,5 +108,5 @@ links:
 |-------|------|
 | Project index | [`../projects/`](../projects/) |
 | Syntara platform plan | [`../syntara/platform-plan.md`](../syntara/platform-plan.md) |
-| Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |
+| Best practices | [`../guides/08-best-practices.md`](../guides/08-best-practices.md) |
 | Repo overview | [`../repo-overview.md`](../repo-overview.md) |

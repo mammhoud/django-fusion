@@ -1,3 +1,6 @@
 xyops-data/
 xyops-conf/
 xyops-logs/
+# local admin secret
+.admin-password
+.xy-jar*

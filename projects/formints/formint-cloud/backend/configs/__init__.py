@@ -55,6 +55,8 @@ SHARED_APPS = [
     "rest_framework",
     "django_filters",
     "django_bolt",
+    # django-extensions — management commands (graph_models ERD, shell_plus, etc.)
+    "django_extensions",
 
     # POS Cloud (precis-style apps/ package)
     "apps.core.apps.CoreConfig",

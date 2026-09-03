@@ -125,6 +125,8 @@ INSTALLED_APPS = [
     "django_dramatiq",
     # django-webpack-loader — serves versioned bundles (webpack/precis-landing.config.js)
     "webpack_loader",
+    # django-extensions — management commands (graph_models ERD, shell_plus, etc.)
+    "django_extensions",
     # Landing apps (precis-lms-style organization)
     "apps.content",  # StreamField blocks + block templates
     "apps.pages",  # Wagtail page models + page templates + seed

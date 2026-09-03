@@ -25,7 +25,8 @@ structa.cloud/
 │   ├── Makefile              # Canonical project dispatcher
 │   └── pyproject.toml        # Python workspace dependencies and pytest config
 ├── libs/                     # Reusable libraries (currently django-fusion)
-├── application/             # Databases, proxy, Compose, scripts, Kilo/MCP
+├── application/             # Databases, proxy, Compose, scripts
+├── .agents/                 # Agent skills, Kilo/MCP server, runtime config
 ├── tests/                    # Workspace integration, HTTP, browser, fixtures
 ├── docs/                     # MkDocs/docs site, plans, and project references
 ├── .github/                  # CI workflows and composite actions
@@ -93,7 +94,7 @@ root safety and repository rules remain in force.
 │       └── projects/formints/tests/pos-e2e/AGENTS.md
 ├── libs/django-fusion/AGENTS.md
 ├── application/AGENTS.md
-│   └── application/agents/AGENTS.md
+├── .agents/mcp/AGENTS.md
 ├── tests/AGENTS.md
 ├── .github/AGENTS.md
 └── deeper template/frontend/test AGENTS.md files

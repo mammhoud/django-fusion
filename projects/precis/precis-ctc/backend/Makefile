@@ -6,7 +6,8 @@
         lint fix fix-unused shell debug db-shell reset-db clean-migrations \
         reset-migrations clean-python clean env-show \
         frontend-install frontend-build frontend-watch frontend-production build-assets main-assets assets \
-        workspace-assets workspace-test scripts workspace-script css-purge css-analyze frontend-clean assets-setup webpack-validate
+        workspace-assets workspace-test scripts workspace-script css-purge css-analyze frontend-clean assets-setup webpack-validate \
+        erd erd-all
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -318,3 +319,41 @@ skeleton-manifest: ## Generate skeleton manifest for Astro build (runs after web
 .PHONY: list health containers production production-simple domains vresume-pages
 list health containers production production-simple domains vresume-pages:
 	@:
+
+# ── ERD — database schema diagrams ─────────────────────────────────────────
+# Uses django-extensions graph_models → pydot (DOT format) → graphviz dot (PNG).
+# -X Note,AbstractNote,AbstractSharedNote excludes abstract fusion models that
+# have no concrete counterpart in this project's app registry.
+# Two-step approach avoids memory issues with very large graphs.
+# Requires: graphviz system package + pydot + django-extensions in INSTALLED_APPS.
+ERD_OUT := ../docs/erd
+ERD_APPS ?= apps_core pages handlers accounts lms blog products profile precis_auth tasks
+ERD_EXCLUDE ?= Note,AbstractNote,AbstractSharedNote
+
+erd: ## Generate ERD PNG for all apps → docs/erd/
+	@echo -e "$(BLUE)Generating ERD (DOT intermediate)...$(NC)"
+	@mkdir -p $(ERD_OUT)
+	@$(MANAGE) graph_models \
+		--pydot -g --color-code-deletions \
+		-X $(ERD_EXCLUDE) \
+		--output $(ERD_OUT)/precis_ctc_erd.dot \
+		$(ERD_APPS) 2>/dev/null
+	@echo -e "$(BLUE)Rendering PNG...$(NC)"
+	@dot -Tpng -Gsize="24,16\!" -Gdpi=96 \
+		$(ERD_OUT)/precis_ctc_erd.dot \
+		-o $(ERD_OUT)/precis_ctc_erd.png
+	@echo -e "$(GREEN)✅ ERD saved → $(ERD_OUT)/precis_ctc_erd.png$(NC)"
+
+erd-all: ## Generate per-app ERD PNGs → docs/erd/
+	@echo -e "$(BLUE)Generating per-app ERDs...$(NC)"
+	@mkdir -p $(ERD_OUT)
+	@for app in apps_core pages handlers accounts lms blog products profile precis_auth tasks; do \
+		echo -e "  $(CYAN)→ $$app$(NC)"; \
+		$(MANAGE) graph_models --pydot -g --color-code-deletions \
+			-X $(ERD_EXCLUDE) \
+			--output $(ERD_OUT)/$$app.dot $$app 2>/dev/null && \
+		dot -Tpng -Gsize="16,12\!" -Gdpi=96 \
+			$(ERD_OUT)/$$app.dot -o $(ERD_OUT)/$$app.png 2>/dev/null || \
+			echo -e "  $(YELLOW)⚠️  $$app skipped$(NC)"; \
+	done
+	@echo -e "$(GREEN)✅ Per-app ERDs saved → $(ERD_OUT)/$(NC)"

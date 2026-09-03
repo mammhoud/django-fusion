@@ -30,6 +30,9 @@ dependencies = [
     "pydantic>=2.0",
     "apscheduler>=3.10",
     "msgspec>=0.21.1",
+    # ERD generation (graph_models management command)
+    "django-extensions>=3.2",
+    "pydot>=3.0",
 ]
 
 [project.optional-dependencies]

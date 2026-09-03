@@ -1,0 +1,7 @@
+node_modules
+dist
+.git
+.blinko-build-context
+blinko-data
+test-docker
+*.log

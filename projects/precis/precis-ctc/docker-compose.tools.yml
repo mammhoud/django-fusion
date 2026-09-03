@@ -50,6 +50,9 @@ services:
       # Backend code is copied into the image; keep source code out of the
       # production service mount so the image remains self-contained.
       - ../../../logs:/app/logs:z
+      # Media stays mounted RW for the worker ONLY: content_tasks reads
+      # source video files and stores generated thumbnails into a Wagtail
+      # ImageField (MEDIA_ROOT=/app/media). Scheduler and web are separate.
       - ../../assets/media/ctc-research:/app/media:rw
     networks:
       - common
@@ -100,7 +103,10 @@ services:
       # Backend code is copied into the image; keep source code out of the
       # production service mount so the image remains self-contained.
       - ../../../logs:/app/logs:z
-      - ../../assets/media/ctc-research:/app/media:rw
+      # NOTE: the media tree is intentionally NOT mounted for the scheduler —
+      # it only registers cron jobs and never touches asset data. The worker
+      # (which executes tasks that read/write media) and the website backend
+      # keep their own media mounts.
     networks:
       - common
       - warehouse-net

@@ -632,17 +632,20 @@ clean-logs:
 	@find $(LOG_DIR) -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null || true
 	@touch $(LOG_DIR)/.gitkeep
 
-# Clean all docker resources (containers, images, volumes)
+# Safe Docker clean: removes stopped containers, unused images, networks and
+# build cache, but never removes volumes (volumes may contain databases/media).
 docker-clean:
-	@echo "Cleaning Docker containers and images..."
+	@echo "Cleaning Docker containers, images and build cache (volumes kept)..."
 	docker compose -f docker-compose.yml down --remove-orphans 2>/dev/null || true
-	docker system prune -f --volumes
+	docker system prune -af --volumes=false
+	docker builder prune -af
+	@echo "Docker clean complete (volumes preserved)"
 
-# Aggressive clean - removes all images and volumes
+# Aggressive clean - removes all unused images and volumes.
 docker-clean-all: docker-clean
 	@echo "Removing all Docker images..."
 	docker rmi -f $$(docker images -q) 2>/dev/null || true
-	@echo "Removing all Docker volumes..."
+	@echo "Removing all unused Docker volumes..."
 	docker volume prune -f
 
 # Deploy warehouse services (postgres, redis)

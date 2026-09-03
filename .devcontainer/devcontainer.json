@@ -11,7 +11,7 @@
       "moby": true
     }
   },
-  "postCreateCommand": "npm install --no-audit --no-fund && echo '--- toolchain ---' && node -v && npm -v && (cd /tmp && pnpm -v) && npx nx --version && python3 --version && uv --version && rustc --version && docker --version && docker compose version",
+  "postCreateCommand": "cd /workspaces/structa.cloud && npm install --no-audit --no-fund && echo '--- toolchain ---' && node -v && npm -v && (cd /tmp && pnpm -v) && cd /workspaces/structa.cloud && npx nx --version && python3 --version && uv --version && rustc --version && docker --version && docker compose version",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -28,5 +28,8 @@
     }
   },
   "forwardPorts": [3000, 4321, 5173],
-  "postAttachCommand": "npm install -g freebuff && echo 'workspace ready'"
+  "postAttachCommand": "echo 'workspace ready: /workspaces/structa.cloud'",
+  "containerEnv": {
+    "SHELL": "/usr/bin/zsh"
+  }
 }

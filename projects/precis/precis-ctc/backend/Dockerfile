@@ -36,7 +36,11 @@ WORKDIR ${APP_HOME}
 RUN apt-get update && apt-get install --no-install-recommends -y \
         bash-completion build-essential ca-certificates cron curl gettext git \
         libpq-dev make nano ssh sudo wget \
-    && rm -rf /var/lib/apt/lists/*
+        zsh fonts-powerline graphviz \
+    && rm -rf /var/lib/apt/lists/* \
+    && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended \
+    && sed -i 's/^ZSH_THEME=.*/ZSH_THEME="af-magic"/' /root/.zshrc \
+    && echo 'plugins=(git python pip django)' >> /root/.zshrc
 
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
     && apt-get install --no-install-recommends -y nodejs \

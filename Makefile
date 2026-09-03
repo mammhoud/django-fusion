@@ -1109,11 +1109,11 @@ prune-images:
 # database/media data for running services). This is the target to run after
 # `make build` / image rebuilds to reclaim disk without risking data loss.
 cleanup:
-	@echo "🧹 Cleaning up unused Docker data (stopped containers, dangling images, build cache)..."
+	@echo "🧹 Cleaning up unused Docker data (volumes preserved)..."
 	@docker container prune -f
-	@docker image prune -f
-	@docker builder prune -f
-	@echo "✅ Cleanup complete"
+	@docker image prune -af
+	@docker builder prune -af
+	@echo "✅ Cleanup complete (volumes preserved)"
 
 # -----------------------------------------------------------------
 # Clean family — safe by default; destructive variants are explicit.
@@ -1167,7 +1167,7 @@ clean-docker:
 	@docker compose -f application/docker-compose.yml down 2>/dev/null || true
 	@docker container prune -f
 	@docker image prune -af
-	@docker builder prune -f
+	@docker builder prune -af
 	@echo "✅ Docker cleaned — unused containers/images/build cache removed (volumes preserved)"
 
 # Everything unused, short of volume data: file-level clean + Docker prune.

@@ -193,7 +193,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 | **Formint Cloud** | `projects/formints/formint-cloud/` | Django + Channels + Unfold | `projects/formints/formint-cloud/AGENTS.md` |
 | **Formint Client** | `projects/formints/formint-client/` | Tauri 2 + Vue 3 | `projects/formints/formint-client/AGENTS.md` |
 | **django-fusion** | `libs/django-fusion/` | Python package | `libs/django-fusion/AGENTS.md` |
-| **Kilo MCP** | `application/agents/` | FastAPI | `application/agents/AGENTS.md` |
+| **Kilo MCP** | `.agents/mcp/` | FastAPI | `.agents/mcp/AGENTS.md` |
 
 ---
 

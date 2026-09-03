@@ -195,7 +195,7 @@ yet define it. See [Project awareness](guides/00-project-awareness.md).
 
 This directory contains the Nuxt/Docus application that serves the authored
 repository documentation. The canonical reader-facing implementation guide is
-[`../guides/09-docus.md`](../guides/09-docus.md); keep operational detail there
+[`guides/09-docus.md`](guides/09-docus.md); keep operational detail there
 instead of maintaining a second documentation copy in this package README.
 
 ## Local development
@@ -227,7 +227,7 @@ trees before development and build. Do not edit or commit `content/`, `.nuxt/`,
 
 The production image is built from `docs/Dockerfile`, runs the Docus Nuxt SSR
 server on `docus:3000`, and is routed by the shared proxy. See the canonical
-[Docus implementation guide](../guides/09-docus.md) for the proxy contract,
+[Docus implementation guide](guides/09-docus.md) for the proxy contract,
 metadata model, validation commands, and source-of-truth rules.
 
 ## Remarks & Notes

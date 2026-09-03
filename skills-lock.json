@@ -25,6 +25,12 @@
       "skillPath": "marketing-skill/skills/content-strategy/SKILL.md",
       "computedHash": "195c9620009edf383f852d89bc87891d6ee4fb8ea6194474d11db95d64898b37"
     },
+    "context7": {
+      "source": "intellectronica/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/context7/SKILL.md",
+      "computedHash": "fccbea654f8e35824a8bdce3e059e206efeb6c1fab9f6c096c3867e761081983"
+    },
     "deployment-documentation": {
       "source": "aj-geddes/useful-ai-prompts",
       "sourceType": "github",
@@ -132,6 +138,12 @@
       "sourceType": "github",
       "skillPath": "website-screenshot/SKILL.md",
       "computedHash": "284b5cc7874a7ec1979c94f713272c08009e09b031c7489172c17d5f1542ec52"
+    },
+    "writing-documentation-with-diataxis": {
+      "source": "sammcj/agentic-coding",
+      "sourceType": "github",
+      "skillPath": "Skills_disabled/diataxis-documentation/SKILL.md",
+      "computedHash": "80b05e3bf8a65e2d22b2861e6d39d7d47b643a17f27a7c6c91aa76b99a84cd8c"
     }
   }
 }

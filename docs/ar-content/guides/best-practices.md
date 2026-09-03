@@ -76,5 +76,5 @@ function MyComponent({ data }: Props): JSX.Element {
 
 ## Remarks & Notes
 
-- النسخة الإنجليزية الكاملة: [`/docs/en/guides/07-best-practices`](/docs/en/guides/07-best-practices).
+- النسخة الإنجليزية الكاملة: [`/docs/en/guides/08-best-practices`](/docs/en/guides/08-best-practices).
 - راجع [`/docs/en/guides/05-customize`](/docs/en/guides/05-customize) لنظام الوسوم التفصيلي.

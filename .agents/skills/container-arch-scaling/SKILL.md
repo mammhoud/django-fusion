@@ -1,6 +1,6 @@
 ---
 name: container-arch-scaling
-description: "Containerized architecture scaling and full-stack documentation for the Structa Cloud monorepo (Django/Wagtail + django-fusion backends, Astro frontends, Traefik proxy, PostgreSQL/Redis, Nginx shared-proxy). Use when planning infrastructure scale-ups, editing application/proxy Traefik routers or Compose files, mapping request lifecycles across frontend/backend/media routes, keeping docs in sync (ADRs, runbooks, routing guides), proposing full-stack code changes with diffs, or planning MCP integration (discover registered MCP servers first — runtime .agents/kiro/settings/mcp.json and repo-shipped application/agents/config.json — then document their real tools). Docker and Nginx/Traefik are first-class; cloud-provider docs are only consulted if the workload is not fully containerised."
+description: "Containerized architecture scaling and full-stack documentation for the Structa Cloud monorepo (Django/Wagtail + django-fusion backends, Astro frontends, Traefik proxy, PostgreSQL/Redis, Nginx shared-proxy). Use when planning infrastructure scale-ups, editing application/proxy Traefik routers or Compose files, mapping request lifecycles across frontend/backend/media routes, keeping docs in sync (ADRs, runbooks, routing guides), proposing full-stack code changes with diffs, or planning MCP integration (discover registered MCP servers first — runtime .agents/kiro/settings/mcp.json and repo-shipped .agents/mcp/config.json — then document their real tools). Docker and Nginx/Traefik are first-class; cloud-provider docs are only consulted if the workload is not fully containerised."
 tags: [infrastructure, docker, traefik, nginx, compose, scaling, deployment, structa-cloud]
 argument-hint: "<scale target, timeline, and product context>"
 ---
@@ -23,9 +23,9 @@ You are a principal infrastructure and full-stack architect for the Structa Clou
 **Tooling Layer (pluggable — discover MCP first, never assume):**
 - **Discover what MCP servers are actually registered** before relying on any:
   1. Runtime registration: `.agents/kiro/settings/mcp.json` → `mcpServers` lists servers connected to THIS environment. (As of this writing it is `{}` — none connected; verify before use.)
-  2. Repo-shipped registration: `application/agents/config.json` (ships `deployment` → `python mcp_server.py`, and `ceptor-ai` → `uvicorn ceptor_ai.mcp_server:app` on 127.0.0.1:8002).
-  3. Intended capabilities: `application/agents/kilo.jsonc` and `docs/ai/mcp-integration.md`.
-- If a server is reachable (e.g. `application/agents/mcp_server.py` on :8002) → use its REAL endpoints: `/health`, `/traefik/status`, `/docker/status`, `/migrations/status`, `/websites/endpoints`, `/django-fusion/*`, `/designer/*`, `/tasks/*`, `/prompts` (full inventory in the MCP Integration Plan below). Auth: `X-API-Key` with `FUSION_MCP_DESIGNER_API_KEY`, or localhost-only when unset.
+  2. Repo-shipped registration: `.agents/mcp/config.json` (ships `deployment` → `python mcp_server.py`, and `ceptor-ai` → `uvicorn ceptor_ai.mcp_server:app` on 127.0.0.1:8002).
+  3. Intended capabilities: `.agents/mcp/kilo.jsonc` and `docs/ai/mcp-integration.md`.
+- If a server is reachable (e.g. `.agents/mcp/mcp_server.py` on :8002) → use its REAL endpoints: `/health`, `/traefik/status`, `/docker/status`, `/migrations/status`, `/websites/endpoints`, `/django-fusion/*`, `/designer/*`, `/tasks/*`, `/prompts` (full inventory in the MCP Integration Plan below). Auth: `X-API-Key` with `FUSION_MCP_DESIGNER_API_KEY`, or localhost-only when unset.
 - If none are reachable → manually inspect the project directory, Dockerfiles, compose files, and reverse-proxy configs (`application/proxy/configs/traefik/dynamic/`).
 
 Always **cite sources** with local file paths (`docs/...`, `application/proxy/configs/traefik/dynamic/lms-fusion.yml`) or remote URLs.
@@ -261,15 +261,15 @@ repo's server — use the real endpoints below.
 ### 1. Discovery (run before planning)
 
 1. Read the runtime registration: `.agents/kiro/settings/mcp.json` — `mcpServers` lists servers connected to THIS environment (currently `{}`).
-2. Read the repo-shipped registration: `application/agents/config.json` — registers:
+2. Read the repo-shipped registration: `.agents/mcp/config.json` — registers:
    - `deployment` → `python mcp_server.py` (`DJANGO_SETTINGS_MODULE=core.settings`, `PYTHONPATH=libs/ceptor-ai/src`)
    - `ceptor-ai` → `uvicorn ceptor_ai.mcp_server:app --host 127.0.0.1 --port 8002`
-3. Read `application/agents/kilo.jsonc` and `docs/ai/mcp-integration.md` for intended capabilities.
+3. Read `.agents/mcp/kilo.jsonc` and `docs/ai/mcp-integration.md` for intended capabilities.
 4. If a server is running, probe its routes (e.g. `curl http://127.0.0.1:8002/health`).
 
-### 2. What the repo-shipped MCP server (`application/agents/mcp_server.py`) can actually do
+### 2. What the repo-shipped MCP server (`.agents/mcp/mcp_server.py`) can actually do
 
-FastAPI app "Structa Cloud MCP" (`uvicorn mcp_server:app --app-dir application/agents`), delegating to django-fusion routers.
+FastAPI app "Structa Cloud MCP" (`uvicorn mcp_server:app --app-dir .agents/mcp`), delegating to django-fusion routers.
 
 **Infrastructure / status (read-only, no auth):**
 
@@ -308,9 +308,9 @@ FastAPI app "Structa Cloud MCP" (`uvicorn mcp_server:app --app-dir application/a
 | `/prompts/{prompt_id}` | Fetch a single prompt's full text |
 
 **Documentation-related assets shipped alongside the server:**
-- `application/agents/prompts/catalog.json` + `prompt_catalog.py` — validated read-only prompt catalog; `test_prompts.py` enforces the contract (id/title/description/agent/prompt/safety/expected_output/inputs).
-- `application/agents/commands/*.md` — agent-facing workflows: `add-field` (Wagtail model field + migration), `apply-design` (SCSS/Figma → BEM), `deploy`, `ceptor-ai`, `find-component`.
-- `application/agents/agent/*.json` — role definitions: `documentation-writer`, `django-coder`, `django-architect`, `docker-engineer`, `frontend-developer`, `test-engineer`, `security-auditor`, `performance-optimizer`, `data-engineer`, `database-engineer`, `refactoring-specialist`, `template-tinker`, `orchestrator`, `product-manager`, `ceptor-ai-toolsmith`, `vresume-agent`, `lms-demo-agent`.
+- `.agents/mcp/prompts/catalog.json` + `prompt_catalog.py` — validated read-only prompt catalog; `test_prompts.py` enforces the contract (id/title/description/agent/prompt/safety/expected_output/inputs).
+- `.agents/mcp/commands/*.md` — agent-facing workflows: `add-field` (Wagtail model field + migration), `apply-design` (SCSS/Figma → BEM), `deploy`, `ceptor-ai`, `find-component`.
+- `.agents/mcp/agent/*.json` — role definitions: `documentation-writer`, `django-coder`, `django-architect`, `docker-engineer`, `frontend-developer`, `test-engineer`, `security-auditor`, `performance-optimizer`, `data-engineer`, `database-engineer`, `refactoring-specialist`, `template-tinker`, `orchestrator`, `product-manager`, `ceptor-ai-toolsmith`, `vresume-agent`, `lms-demo-agent`.
 - `docs/ai/` — `mcp-integration.md`, `PROMPT_CATALOG.md`, `agents.md`, `prompts.md`: the authoritative human docs — keep them in sync when extending.
 
 ### 3. Relevance to this monorepo
@@ -322,7 +322,7 @@ doc-sync and code-enhancement workflow below.
 
 ### 4. Known gaps / improvement & error-fix candidates
 
-- `_traefik_status()` in `mcp_server.py` hardcodes `/home/structa.cloud/application/proxy/configs/traefik` — violates `application/agents/AGENTS.md` ("never hard-code machine-specific absolute paths"). Fix: resolve from `Path(__file__)` or an env var, like the rest of the repo.
+- `_traefik_status()` in `mcp_server.py` hardcodes `/home/structa.cloud/application/proxy/configs/traefik` — violates `.agents/mcp/AGENTS.md` ("never hard-code machine-specific absolute paths"). Fix: resolve from `Path(__file__)` or an env var, like the rest of the repo.
 - `_website_endpoints()` hardcodes ports 5070-5072/service names that drift from `application/proxy/configs/traefik/dynamic/*.yml` — derive them from the dynamic configs instead.
 - No `analyze_proxy_config` / `docker_inspect_container` / `exec_check` tool yet — candidates to add to `mcp_server.py`, reusing `application/proxy/scripts/validate-traefik-config.py` (read-only first).
 - The prompt catalog is read-only by design; doc-writing actions must go through the normal filesystem workflow with `<!-- AI-generated: review needed -->` markers.
@@ -337,7 +337,7 @@ doc-sync and code-enhancement workflow below.
 
 ### 6. Registering a new MCP server (if one is added)
 
-Add it to `.agents/kiro/settings/mcp.json` (runtime) or `application/agents/config.json` (repo-shipped), document it in `docs/ai/mcp-integration.md`, and record its real tools in this section.
+Add it to `.agents/kiro/settings/mcp.json` (runtime) or `.agents/mcp/config.json` (repo-shipped), document it in `docs/ai/mcp-integration.md`, and record its real tools in this section.
 
 ## Validation Gates (Enhanced with Local Checks)
 
@@ -357,7 +357,7 @@ When using this prompt:
 3. **Generate and update local docs** – use the related doc prompts to write to the `docs/` folder.
 4. **Execute code enhancements** – use the suggested diffs to modify backend/frontend files and Traefik dynamic configs.
 5. **Run checks** – after each change, run the appropriate validation command (narrowest first: `python manage.py check`, `docker compose config -q`, `validate-traefik-config.py`, targeted pytest).
-6. **Create/update the MCP plan** – run the discovery in the MCP Integration Plan above, document what the discovered server can actually do, and extend `docs/ai/mcp-integration.md` (and `application/agents/`) with the plan *before* writing any server code. This ensures alignment.
+6. **Create/update the MCP plan** – run the discovery in the MCP Integration Plan above, document what the discovered server can actually do, and extend `docs/ai/mcp-integration.md` (and `.agents/mcp/`) with the plan *before* writing any server code. This ensures alignment.
 7. **Output format** – for each phase, provide:
    - Architecture diagram (text)
    - Nginx/Traefik config snippets (with repo file paths)

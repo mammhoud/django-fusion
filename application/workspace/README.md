@@ -30,10 +30,10 @@ The project directory is a read-write bind mount, not a clone:
 - The same checkout is mounted into the devcontainer at
   `/workspaces/structa.cloud`.
 - Local edits and workspace edits are the same files, and Git operations work
-  from either side.
-
-The agent runs as root because the host checkout is root-owned. This avoids the
-`npm install` EACCES failure on the bind mount.
+  from either side.The agent runs as root because the host checkout is root-owned. This avoids
+the `npm install` EACCES failure on the bind mount. Startup scripts explicitly
+change to `/home/coder/structa.cloud` before installing dependencies, so Coder's
+initial `$HOME` working directory cannot cause npm to target the wrong package.
 
 ## What the template provisions
 
@@ -112,8 +112,9 @@ root so npm and Git can write to the root-owned checkout.
 
 On every workspace start, an idempotent `coder_script` installs the base
 toolchain (`git`, `make`, Node.js, and `npm install -g freebuff`) directly in
-the agent-host container — so the toolchain is available even before (or
-without) the devcontainer. This absorbs the former `toolchain` template.
+the agent-host container. It first changes to `/home/coder/structa.cloud`, so
+`npm install` always uses the monorepo's root `package.json`; the devcontainer
+uses the same explicit working directory. This absorbs the former `toolchain` template.
 
 The `devcontainers-cli` module always installs the devcontainer CLI, and
 `coder_devcontainer` auto-starts `.devcontainer/docker-compose.yml` only when

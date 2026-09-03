@@ -54,7 +54,7 @@ observability, and deployment-host verification.
 | django-fusion task log | `django_fusion.models.tasks.BackgroundTaskLog` | Dramatiq | **Active** — shared audit record |
 | django-fusion dispatch | `django_fusion.tasks` and `django_fusion.services.jobs` | Dramatiq | **Active** — `dispatch_job` is a deprecated compatibility wrapper |
 | ceptor-ai MCP server | `libs/ceptor-ai/src/ceptor_ai/mcp_server.py` | FastAPI + MCP | **Active** — read-only metadata |
-| Kilo MCP server | `application/agents/mcp_server.py` | FastAPI | **Active** — introspection |
+| Kilo MCP server | `.agents/mcp/mcp_server.py` | FastAPI | **Active** — introspection |
 
 ### 2.2 Gaps
 
@@ -827,7 +827,7 @@ def handle_task_workers():
 
 ### 6.4 MCP Server Registration
 
-**⚠️ Boundary and production gate:** django-fusion MCP tools must NOT be registered into `ceptor-ai`'s MCP server. ceptor-ai explicitly avoids Django imports (see `application/agents/commands/ceptor-ai.md`). Instead, django-fusion serves its own MCP endpoint at `/fusion/mcp/` within the Django application.
+**⚠️ Boundary and production gate:** django-fusion MCP tools must NOT be registered into `ceptor-ai`'s MCP server. ceptor-ai explicitly avoids Django imports (see `.agents/mcp/commands/ceptor-ai.md`). Instead, django-fusion serves its own MCP endpoint at `/fusion/mcp/` within the Django application.
 
 > **Implemented 2026-08-18.** The production gate is now enforced in
 > `django_fusion/tasks/mcp_views.py`: an explicit `FUSION_MCP_TOKEN` bearer

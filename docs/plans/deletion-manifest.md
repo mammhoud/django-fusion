@@ -30,8 +30,8 @@ Every deletion must have a recorded replacement, archive, evidence scan, hold de
 | DOC-0006 | `docs/plans/legacy/pos/forge-pos-ui-enhancement-master.md` | archive | Completed Forge design evidence | Formint design contract | same path | pending | rollback/design hold | pending | — | POS |
 | DOC-0007 | `docs/plans/legacy/pos/forge-pos-tasks-status.md` | archive | Completed Forge status snapshot | Formint parity gates | same path | pending | rollback/design hold | pending | — | POS |
 | DOC-0008 | `docs/plans/legacy/pos/forge-pos-enhancement.md` | archive | Completed Forge implementation source | Formint migration | same path | pending | rollback/design hold | pending | — | POS |
-| DOC-0009 | `docs/Anytype/plans/market-research.md` | update | Broad Structa Cloud research; not POS-specific | `docs/Anytype/plans/pos-market-research.md` | pending | pending | evidence hold | pending | — | Product |
-| DOC-0010 | `docs/Anytype/objects/_status.md` | update | Stale tracker with nonexistent names | This lifecycle plan | — | pending | none | n/a | — | Docs |
+| DOC-0009 | `docs/agenda/mono-repo/plans/market-research.md` | update | Broad Structa Cloud research; not POS-specific | `docs/agenda/mono-repo/plans/pos-market-research.md` | pending | pending | evidence hold | pending | — | Product |
+| DOC-0010 | `docs/agenda/mono-repo/objects/_status.md` | update | Stale tracker with nonexistent names | This lifecycle plan | — | pending | none | n/a | — | Docs |
 | DOC-0011 | `docs/plans/repository/worker-consolidation.md` | archive | Celery/LMS-inclusive worker design is superseded | `docs/plans/repository/active-monorepo-consolidation-2026-08-14.md` | `docs/plans/repository/worker-consolidation.md` | pending | migration hold | pending | 2026-08-14 | Infrastructure |
 | DOC-0012 | `application/templates/dev-stack/` | delete | Renamed to the canonical Coder template path | `application/templates/workspace/` | Git history | pending | deployment hold | pending | 2026-08-14 | Infrastructure |
 | DOC-0016 | `application/templates/dev-workspace/` | update | Template renamed to `workspace` (containers no longer depend on the Coder workspace name) | `application/templates/workspace/` | Git history | completed in working tree | none | pending review | 2026-08-14 | Infrastructure |
@@ -124,5 +124,5 @@ recoverable from git history, and the deletion gate's replacement test is
 satisfied by the canonical `docs/plans/README.md` index. This supersedes the
 `docs/plans/legacy/pos/*` rows (DOC-0006, DOC-0007, DOC-0008), the earlier
 `docs/plans/pos/*` rows (DOC-0001 … DOC-0005, removed 2026-08-14), and the
-`docs/Anytype/*` rows (DOC-0009, DOC-0010). `DJANGO_BOLT_FUSION_CASE_STUDY.md`
+`docs/agenda/mono-repo/*` rows (DOC-0009, DOC-0010). `DJANGO_BOLT_FUSION_CASE_STUDY.md`
 is retained as the historical case study.

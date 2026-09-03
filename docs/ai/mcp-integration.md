@@ -14,7 +14,7 @@
              │ MCP Protocol (stdio/HTTP)
 ┌────────────▼────────────────────────┐
 │       Kilo MCP Server                │
-│   application/agents/                 │
+│   .agents/mcp/                        │
 │   • search_codebase                  │
 │   • read_files                       │
 │   • run_tests                        │
@@ -23,7 +23,7 @@
              │
 ┌────────────▼────────────────────────┐
 │       Prompt Catalog (read-only)     │
-│   application/agents/prompts/       │
+│   .agents/mcp/prompts/             │
 │   • skill prompts                    │
 │   • project descriptions              │
 │   • agent workflows                  │
@@ -50,7 +50,7 @@
 ### Location
 
 ```
-application/agents/
+.agents/mcp/
 ├── config.json          # Tool definitions
 ├── mcp_server.py        # Server implementation
 ├── tools/
@@ -64,7 +64,7 @@ application/agents/
 ### Tool Definitions
 
 ```json
-// application/agents/config.json
+// .agents/mcp/config.json
 {
   "tools": [
     {
@@ -221,7 +221,7 @@ contents = client.read_files([
     {
       "name": "kilo",
       "command": "python",
-      "args": ["application/agents/mcp_server.py"],
+      "args": [".agents/mcp/mcp_server.py"],
       "env": {
         "PROJECT_ROOT": "/home/structa.cloud"
       }

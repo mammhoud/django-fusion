@@ -93,6 +93,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "webpack_loader",
+    # django-extensions — management commands (graph_models ERD, shell_plus, etc.)
+    "django_extensions",
     "chat.apps.ChatConfig",
 ]
 

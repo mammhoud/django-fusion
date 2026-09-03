@@ -352,7 +352,7 @@ projects/
 
 ### 5.1 Kilo MCP Server Router Map
 
-The Kilo server (`application/agents/mcp_server.py`) exposes django-fusion's
+The Kilo server (`.agents/mcp/mcp_server.py`) exposes django-fusion's
 capabilities to AI agents via FastAPI endpoints:
 
 ```
@@ -405,7 +405,7 @@ Kilo MCP Server (port 8002)
 ### 5.4 MCP Directory Layout
 
 ```
-application/agents/
+.agents/mcp/
 ├── mcp_server.py            # FastAPI app — mounts all routers
 ├── config.json              # MCP server configuration
 ├── kilo.jsonc               # Kilo agent config
