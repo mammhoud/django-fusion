@@ -32,6 +32,9 @@ appmap.log
 application/proxy/acme/acme-dns.json
 application/databases/dockge-data/
 
+# Legacy root-level media tree (runtime uploads; active media lives under projects/)
+assets/media/
+
 # Blinko runtime data (SurrealDB store + stale Postgres pre-migration data)
 application/tools/blinko/blinko-data/
 application/tools/blinko/blinko/blinko-data/

@@ -32,11 +32,12 @@ secrets.yml
 *.pfx
 
 # ── Django media (uploaded at runtime) ───────────────────────────────
-projects/*/assets/media/images/
-projects/*/assets/media/avatar_images/
-projects/*/assets/media/documents/
-projects/*/backend/media/
-projects/lms/assets/media/
+# Whole runtime MEDIA_ROOT targets (precis shared tree, per-site trees).
+# Previous `projects/*/...` patterns were dead: with a slash in the pattern
+# git anchors it at this .gitignore's directory, so they never matched.
+**/backend/media/
+**/backend/assets/media/
+**/assets/media/
 # Shared media tree (FileGator uploads served at media.structa.cloud/media/)
 # Runtime uploads are ignored, but the directory skeleton (incl. the
 # FileGator repo dir) ships tracked so a fresh clone keeps the bind-mount
