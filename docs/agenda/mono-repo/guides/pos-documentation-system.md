@@ -59,6 +59,7 @@ graph LR
     F --> G[Link active objects to parents]
     G --> H[Inspect Graph View]
 ```
+![Rendered diagram](/agenda/diagrams/mono-repo-guides-pos-documentation-system-1.svg)
 
 ## Writing method
 

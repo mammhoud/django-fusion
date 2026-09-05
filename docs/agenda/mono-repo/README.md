@@ -31,6 +31,9 @@ Status: Active
 | `stories/starting-the-project.md` | Founder journey — how the project started |
 | `goals/achievement-board.md` | Goals-as-tracker / achievement board by phase |
 | `plans/startup-planner.md` | Startup product and business strategy |
+| `projects/_index.md` | Bounded initiatives (Loop-CRM merge, editions chain, docs) |
+| `editions/_index.md` | Formint + Precis edition tiers |
+| `diagrams/_index.md` | Rendered diagram objects (SVGs + mermaid sources) |
 | `objects/_object-types.md` | Object type definitions and properties |
 | `objects/_tags.md` | Shared tag vocabulary |
 | `objects/_relations.md` | Relations for the Anytype graph |
@@ -46,6 +49,19 @@ This hub imports as **one Anytype Channel** (Vault → Channel → Objects). All
 - **features/** — Capability descriptions and edition behavior
 - **plans/** — Workspace, product, delivery, marketing, sales, and market decisions
 - **products/** — Customer-facing product descriptions and positioning
+- **projects/** — Bounded initiatives (Loop-CRM merge, editions chain, CTC, docs)
+- **editions/** — Customer-facing edition tiers (Formint chain, Precis unified)
+- **sprints/** — Time-boxed delivery cycles
+- **releases/** — Version and deployment history
+- **integrations/** — External connectors and channels
+- **apis/** — Endpoint contracts (Loop-CRM roads, django-fusion surface)
+- **components/** — Reusable UI/logic building blocks
+- **tools/** — Capabilities and utilities (Tauri, Blinko, Docus, SurrealDB, Postgres/Redis)
+- **pipelines/** — CI/CD and docs automation
+- **styles/** — Design tokens and visual identity
+- **diagrams/** — Rendered diagram objects (SVGs + mermaid sources)
+- **reports/ · dashboards/ · data-pipelines/ · methodologies/ · insights/ · recommendations/** — Data-analysis layer
+- **repositories/ · modules/ · documentation/** — Monorepo structure layer
 - **stories/** — Founder journeys and project narratives
 - **goals/** — Goals, objectives, and the achievement board
 - **objects/** — Object types, relations, tags, and templates (schema)

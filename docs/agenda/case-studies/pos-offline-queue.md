@@ -95,6 +95,7 @@ graph TB
     RETRY -->|8b. Fail: schedule retry w/ backoff| RETRY
     RETRY -->|8c. Max retries: move to Dead Letter| DEAD
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-offline-queue-1.svg)
 
 ### 2.2 Outbox Queue Design
 
@@ -108,6 +109,7 @@ stateDiagram-v2
     Synced --> [*]
     DeadLettered --> [*]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-offline-queue-2.svg)
 
 ### 2.3 Retry with Exponential Backoff
 
@@ -119,6 +121,7 @@ graph LR
     R4 -->|fail| R5["Attempt 5<br/>t=8s"]
     R5 -->|fail| DL["Dead Letter<br/>max retries"]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-offline-queue-3.svg)
 
 ### 2.4 Dead Letter Handling
 
@@ -140,6 +143,7 @@ sequenceDiagram
     RS->>API: DELETE /offline-queue/{id}
     Note over API: Permanently discard
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-offline-queue-4.svg)
 
 ---
 

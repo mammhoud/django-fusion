@@ -98,6 +98,7 @@ graph TB
     TB_APP -->|7. POST /sync/ack| SYNC_API
     TC_APP -->|7. POST /sync/ack| SYNC_API
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-multi-terminal-sync-1.svg)
 
 ### 2.2 Changeset Protocol
 
@@ -129,6 +130,7 @@ sequenceDiagram
 
     API->>DB: Update changeset status
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-multi-terminal-sync-2.svg)
 
 ### 2.3 Pull Changeset (Polling Fallback)
 
@@ -139,6 +141,7 @@ graph LR
     T -->|POST /sync/changes| A
     A -->|Store| DB["Cloud DB"]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-multi-terminal-sync-3.svg)
 
 ### 2.4 Conflict Resolution
 
@@ -155,6 +158,7 @@ stateDiagram-v2
 
     Applied --> [*]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-multi-terminal-sync-4.svg)
 
 ---
 
@@ -211,6 +215,7 @@ graph LR
     S -->|Broadcast transfer| B1
     S -->|Broadcast transfer| B2
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-multi-terminal-sync-5.svg)
 
 ---
 

@@ -96,6 +96,7 @@ graph TB
     QR_CODES -->|scan| PHONE
     PHONE -->|fetch versioned URL| MENU_VIEW
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-qr-menu-1.svg)
 
 ### 2.2 Versioned URL Strategy
 
@@ -105,6 +106,7 @@ graph LR
     URL --> |version in path| V3["Menu Version 3<br/>current published"]
     URL -.->|if v3 deleted| REDIRECT["Redirect to v4<br/>latest published"]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-qr-menu-2.svg)
 
 **Key insight:** QR codes contain versioned URLs. When the menu updates from v3 to v4, old QR codes still work — they redirect to the latest version. New QR codes are generated for v4.
 
@@ -119,8 +121,9 @@ stateDiagram-v2
     Published --> Draft: New version created from published
     Published --> [*]
 
-    Note over Draft,Published: Preview shows exact output<br/>before publishing
+    note right of Draft: Preview shows exact output<br/>before publishing
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-qr-menu-3.svg)
 
 ### 2.4 Branch/Table QR Code Generation
 
@@ -141,6 +144,7 @@ graph LR
     PUB --> T1
     PUB --> T2
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-pos-qr-menu-4.svg)
 
 ---
 

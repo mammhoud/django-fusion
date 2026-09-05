@@ -52,6 +52,7 @@ stateDiagram-v2
     Todo --> Backlog: Sprint changed
     Done --> [*]
 ```
+![Rendered diagram](/agenda/diagrams/task-tracking-1.svg)
 
 ### Status definitions
 
@@ -142,6 +143,19 @@ stateDiagram-v2
 | Fix CTC MEDIA_ROOT default drift → canonical shared tree | ✅ Done | — | P0 | 2026-09-03 | — | Default now resolves to projects/assets/media/ctc-research (matches compose/docstring/CHANGELOG); `manage.py check` clean |
 | Rewrite shared-media test to current assets-proxy topology | ✅ Done | — | P0 | 2026-09-03 | — | tests/test_shared_media.py asserts application/tools assets-proxy contract; 26/26 pass incl. live container checks |
 | Research anytype.io extensibility + record proposals | ✅ Done | — | P1 | 2026-09-03 | — | [anytype-extensibility.md](anytype-extensibility.md) — Anytype model mapped to agenda/mono-repo + project separation |
+| Close Loop-CRM finance integration plan → milestone | ✅ Done | — | P0 | 2026-09-05 | Loop-CRM § Formint finance integration | Deleted `formint-integration-finance-workflows.md` (git history = archive); milestone in feature-tracking.md § Loop-CRM |
+| Close Loop-CRM demo-state plan → milestone | ✅ Done | — | P0 | 2026-09-05 | Loop-CRM § Demo state & auth gap fixing | Deleted `demo-state-gap-fixing.md`; milestone in feature-tracking.md § Loop-CRM; server-half deploy verification remains pending |
+| Close Twenty/Postiz research doc → milestone | ✅ Done | — | P1 | 2026-09-05 | Loop-CRM § Twenty/Postiz DNA research | Deleted `twenty-postiz-comparison.md`; milestone in feature-tracking.md § Loop-CRM |
+| Update plans registry + references after Loop-CRM closeout | ✅ Done | — | P1 | 2026-09-05 | — | `plans/README.md`, loop-crm README, REFERENCE.md, ar-content, product audit now point at agenda milestones |
+| Define the agenda content model (Anytype glossary + packaging) | ✅ Done | — | P0 | 2026-09-05 | Agenda Content Model | [CONTENT_MODEL.md](CONTENT_MODEL.md) — object/markdown packaging (4 packages), reference contract, first-meeting agenda |
+| Update agenda indexes to reference the content model | ✅ Done | — | P1 | 2026-09-05 | Agenda Content Model | README.md, MAIN.md, INDEX.md now link to CONTENT_MODEL.md |
+| Hold first agenda meeting from the kickoff reference | ⚪ Todo | — | P0 | 2026-09-12 | Agenda Content Model | Use CONTENT_MODEL.md § 5 + the [Drive folder](https://drive.google.com/drive/folders/1-A0MxVvAUpaOc56Nr9t2672DkrvgILb0); record notes in team-notes.md |
+| De-duplicate agenda top-level docs | ✅ Done | — | P1 | 2026-09-05 | Agenda | SUMMARY.md slimmed, INDEX tail removed, case-studies.md → pointer to case-studies/INDEX.md |
+| Create agenda diagrams package (rendered images) | ✅ Done | — | P0 | 2026-09-05 | Agenda Diagrams | [diagrams/README.md](diagrams/README.md) — API UML, Django/Rust ERDs, Blinko SurrealDB; 59 SVGs rendered into docs/public/agenda/diagrams/ |
+| Add render script + wire diagrams into indexes | ✅ Done | — | P1 | 2026-09-05 | Agenda Diagrams | [render-agenda-diagrams.mjs](../scripts/render-agenda-diagrams.mjs); README/MAIN/INDEX/CONTENT_MODEL updated |
+| Fix dangling image refs in mono-repo plans/tasks | ✅ Done | — | P2 | 2026-09-05 | Agenda | business-model + timeline now use rendered mermaid diagrams |
+| Add object types + objects separation (Anytype schema) | ✅ Done | — | P0 | 2026-09-05 | Agenda Content Model | 15 new type defs in [objects/](mono-repo/objects/) + 20 type dirs with repo-tied content (projects, editions, sprints, releases, integrations, apis, tools, modules…) — 87 files |
+| Complete all mono-repo prompts (graph, relations, guides) | ✅ Done | — | P1 | 2026-09-05 | Agenda Content Model | [_prompts.md](mono-repo/_prompts.md) ledger all ✅; [_relations.md](mono-repo/objects/_relations.md) extended; CONTENT_MODEL package B updated |
 
 ---
 

@@ -78,12 +78,24 @@ links:
 3. Include: Context → Architecture → Implementation → Results → Lessons
 4. Link from `feature-tracking.md` when the feature ships
 5. Add entry to this index
+6. Re-render the diagram images: `node docs/scripts/render-agenda-diagrams.mjs`
+   (rendered SVGs land in `docs/public/agenda/diagrams/` — see
+   [`../diagrams/README.md`](../diagrams/README.md))
+
+---
+
+## Diagram Summary
+
+Every mermaid block in this index's case studies is rendered to an SVG under
+`docs/public/agenda/diagrams/` and referenced inline after each block. The full
+diagram package (API request UML, Django/Rust ERDs, Blinko SurrealDB) is in
+[`../diagrams/README.md`](../diagrams/README.md).
 
 ---
 
 ## Remarks & Notes
 
-- All mermaid diagrams validated: 25 blocks, all well-formed
+- All mermaid diagrams validated, all well-formed
 - Diagrams use 4 types: graph, sequenceDiagram, stateDiagram-v2, erDiagram
 - Case studies are written in English only (no Arabic translations planned)
 - Each case study links to related feature tracking entries and other case studies

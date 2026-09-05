@@ -45,6 +45,7 @@ graph LR
     HUB --- GUIDES
     HUB --- REF
 ```
+![Rendered diagram](/agenda/diagrams/mono-repo-guides-object-linking-1.svg)
 
 ## Usage in files
 

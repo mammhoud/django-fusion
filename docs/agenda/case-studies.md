@@ -118,6 +118,7 @@ graph LR
     C --> D[Database]
     B --> E[Cache]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-2.svg)
 
 ### Sequence Diagram
 
@@ -135,6 +136,7 @@ sequenceDiagram
     B-->>F: Response
     F-->>U: Update UI
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-3.svg)
 
 ### State Diagram
 
@@ -146,6 +148,7 @@ stateDiagram-v2
     Review --> Draft: Revisions
     Published --> [*]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-4.svg)
 
 ### ER Diagram
 
@@ -155,6 +158,7 @@ erDiagram
     ORDER ||--|{ ORDER_ITEM : contains
     PRODUCT ||--o{ ORDER_ITEM : includes
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-5.svg)
 
 ### Task/State Tracking
 
@@ -166,138 +170,28 @@ stateDiagram-v2
     Review --> Shipped
     Review --> InProgress
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-6.svg)
 
 ---
 
 ## 📚 Existing Case Studies
 
-### Django-Bolt & django-fusion Integration (Historical)
+The canonical index with status, priority, diagram counts, and descriptions for every case study lives in
+[`case-studies/INDEX.md`](./case-studies/INDEX.md). Each case study is a full document under [`case-studies/`](./case-studies/):
 
-**Path:** [`case-studies/django-bolt-fusion.md`](./django-bolt-fusion.md)
+| Case Study | Path | Diagrams |
+|------------|------|:--------:|
+| Multi-terminal Sync (POS) | [`case-studies/pos-multi-terminal-sync.md`](./case-studies/pos-multi-terminal-sync.md) | 4 |
+| Offline Queue (POS) | [`case-studies/pos-offline-queue.md`](./case-studies/pos-offline-queue.md) | 4 |
+| QR Menu (POS) | [`case-studies/pos-qr-menu.md`](./case-studies/pos-qr-menu.md) | 4 |
+| DataToken Sync Tagging (django-fusion) | [`case-studies/data-token-sync-tagging.md`](./case-studies/data-token-sync-tagging.md) | 3 |
+| Django-Bolt & django-fusion Integration | [`case-studies/django-bolt-fusion.md`](./case-studies/django-bolt-fusion.md) | 4 |
+| Ceptor-AI Package (AI + MCP) | [`case-studies/ceptor-ai.md`](./case-studies/ceptor-ai.md) | 5 |
+| Stripe Billing | [`case-studies/stripe-billing.md`](./case-studies/stripe-billing.md) | 3 |
+| API Token Management | [`case-studies/api-token-management.md`](./case-studies/api-token-management.md) | 3 |
 
-| Field | Value |
-|-------|-------|
-| **Date** | 2026-07-26 (updated 2026-08-31) |
-| **Status** | Active — historical record with current relevance |
-| **Scope** | django-bolt API patterns across Structa Cloud + POS editions |
-
-**Diagrams:** 4 (architecture map, deployment modes, fragment pipeline, state diagram)
-
-**What it covers:**
-- Real BoltAPI usage in POS Full and LMS CMS
-- `bolt_view` adapter pattern in CTC Research
-- Former proposed `django_fusion.bolt` integration (retired)
-- Frontend integration strategy with Next.js + Fusion decoder
-- Migration checklist with completion status
-
-> **Note:** The shared `django_fusion.plugins.bolt` package was removed. Keep Bolt integrations in consuming projects.
-
----
-
-### Multi-terminal Sync (POS)
-
-**Path:** [`case-studies/pos-multi-terminal-sync.md`](./pos-multi-terminal-sync.md)
-
-| Field | Value |
-|-------|-------|
-| **Date** | 2026-08-31 |
-| **Status** | Active |
-| **Scope** | Real-time WebSocket broadcast + pull changeset across POS terminals |
-| **Feature tracking:** | [`feature-tracking.md`](./feature-tracking.md) § Multi-terminal Management |
-
-**Diagrams:** 4 (sync flow, changeset protocol, polling fallback, conflict resolution)
-
-**What it covers:**
-- WebSocket broadcast for real-time change notification
-- Pull changeset API for offline/polling fallback
-- Conflict detection and resolution UI
-- Branch transfer sync
-
----
-
-### Offline Queue (POS)
-
-**Path:** [`case-studies/pos-offline-queue.md`](./pos-offline-queue.md)
-
-| Field | Value |
-|-------|-------|
-| **Date** | 2026-08-31 |
-| **Status** | Active |
-| **Scope** | Durable OutboxQueue + retry/backoff/dead-letter flush |
-| **Feature tracking:** | [`feature-tracking.md`](./feature-tracking.md) § Multi-terminal Management |
-
-**Diagrams:** 4 (offline flow, queue state, backoff strategy, dead letter handling)
-
-**What it covers:**
-- OutboxQueue durable storage in SQLite
-- Exponential backoff retry scheduling
-- Dead letter queue for failed transactions
-- Idempotent sync
-
----
-
-### QR Menu (POS)
-
-**Path:** [`case-studies/pos-qr-menu.md`](./pos-qr-menu.md)
-
-| Field | Value |
-|-------|-------|
-| **Date** | 2026-08-31 |
-| **Status** | Active |
-| **Scope** | Versioned localized menu, preview/publish, branch/table QR codes |
-| **Feature tracking:** | [`feature-tracking.md`](./feature-tracking.md) § QR Menu |
-
-**Diagrams:** 4 (menu authoring flow, versioned URL strategy, preview/publish state, branch QR generation)
-
-**What it covers:**
-- Menu versioning with versioned QR URLs
-- Multi-language localization (Arabic, English, Spanish, French)
-- Preview endpoint (pixel-exact published output)
-- SVG QR code generation per branch/table
-
----
-
-### DataToken Sync Tagging (django-fusion)
-
-**Path:** [`case-studies/data-token-sync-tagging.md`](./data-token-sync-tagging.md)
-
-| Field | Value |
-|-------|-------|
-| **Date** | 2026-08-31 |
-| **Status** | Active |
-| **Scope** | GenericForeignKey sync row tagging with parent/child tree, progress tracking, auto-untag |
-| **Feature tracking:** | [`feature-tracking.md`](./feature-tracking.md) § django-fusion |
-
-**Diagrams:** 3 (model ERD, sync tagging flow, parent/child tree)
-
-**What it covers:**
-- GenericForeignKey-based tagging for any Django model
-- Parent/child tag tree for related rows
-- Progress tracking (progress_total + progress_done)
-- Auto-untag on completion
-- UUID PK support for distributed ID generation
-
----
-
-### Ceptor-AI Package (AI + MCP)
-
-**Path:** [`case-studies/ceptor-ai.md`](./ceptor-ai.md)
-
-| Field | Value |
-|-------|-------|
-| **Date** | 2026-08-31 |
-| **Status** | Active |
-| **Scope** | AI chat client, MCP server, BEM converter, agent generation |
-| **Consumer:** | Syntara/Cypercloud (primary), django-fusion (MCP metadata), shared worker |
-
-**Diagrams:** 5 (package structure, AI backend architecture, MCP tool architecture, Syntara integration, template discovery sequence)
-
-**What it covers:**
-- Multi-backend AI chat (Ollama, OpenAI, Claude, Gemini)
-- MCP tools: theme_analyzer, component_mapper, config_inspector
-- In-project implementations replacing external ceptor_ai dependencies
-- Template discovery across multiple sites
-- Shared worker AI tasks
+> The per-case-study summary tables below were removed as duplicates — `case-studies/INDEX.md` and the
+> individual files are the single source of truth.
 
 ---
 

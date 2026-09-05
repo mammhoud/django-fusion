@@ -25,6 +25,7 @@ graph LR
     PROD --> RES["Market Research"] --> DEC["Decision"]
     WS --> TEAM["Team"] --> PERSON["Person"]
 ```
+![Rendered diagram](/agenda/diagrams/mono-repo-objects-_index-1.svg)
 
 ## Canonical flow
 
@@ -70,6 +71,33 @@ Each object type supports periodic review and task cycles:
 | Edition | Feature completeness audit | Per release | Engineering |
 | Market Research | Evidence freshness review | Quarterly | Data Analyst |
 
+## Per-type files
+
+Every object type has a definition file in this directory. Core set:
+
+| Type | File | | Type | File |
+|---|---|---|---|---|
+| Workspace | `workspace.md` | | Project | `project.md` |
+| Plan | `plan.md` (templates) | | Goal | `goal.md` |
+| Milestone | `milestone.md` | | Task | `task.md` |
+| Sprint | `sprint.md` | | Product | `product.md` |
+| Edition | `edition.md` | | Team | `team.md` |
+| Person | `people.md` + `people/` | | Market Research | `market-research.md` |
+| Tool | `tool.md` | | Integration | `integration.md` |
+| Component | `component.md` | | API | `api.md` |
+| Release | `release.md` | | Decision | `decision.md` |
+| Pipeline | `pipeline.md` | | Style | `style.md` |
+| Blog/Post | `blog-post.md` | | Page | `page.md` |
+| Note | `note.md` | | Bookmark | `bookmark.md` |
+| Configuration | `configuration.md` | | Story | `story.md` |
+| Architecture | `architecture.md` | | Guide | `guide.md` |
+| Reference | `reference.md` | | Changelog | `changelog.md` |
+| Diagram | `diagram.md` | | Report | `report.md` |
+| Dashboard | `dashboard.md` | | Data Pipeline | `data-pipeline.md` |
+| Methodology | `methodology.md` | | Insight | `insight.md` |
+| Recommendation | `recommendation.md` | | Repository | `repository.md` |
+| Module | `module.md` | | Documentation | `documentation.md` |
+
 ## Related
 
 - → `_object-types.md` — Full type definitions
@@ -83,6 +111,10 @@ Each object type supports periodic review and task cycles:
 - → `integration.md` — Channel and integration object
 - → `edition.md` — Edition object
 - → `story.md` — Story object (founder narratives)
+- → `project.md` — Project object (bounded initiatives)
+- → `diagram.md` — Diagram object (rendered visualizations)
 - → `../stories/_index.md` — Stories directory
+- → `../projects/_index.md` — Projects directory
+- → `../editions/_index.md` — Editions directory
 - → `../plans/project-workspace.md` — Workspace operating map
 - → `../README.md` — Master index
