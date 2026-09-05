@@ -1,6 +1,7 @@
 ---
-interface Props {
-  heading?: string;
+import { publicHref } from '@/lib/site';
+
+interface Props {  heading?: string;
   intro?: string;
   ctaLabel?: string;
   ctaHref?: string;
@@ -8,7 +9,7 @@ interface Props {
 
 const {
   heading = 'Advance health through research',
-  intro = 'Structured methods and responsible medical AI, from protocol to publication.',
+  intro = 'Structured methods and rigorous evidence, from protocol to publication.',
   ctaLabel = 'Browse courses',
   ctaHref = '/courses/',
 } = Astro.props;
@@ -25,7 +26,7 @@ const {
           <p class="cta__intro" data-l10n="cta.subtitle">{intro}</p>
           <div class="cta__actions">
             <a
-              href={ctaHref}
+              href={publicHref(ctaHref)}
               class="btn-primary group !px-8 !py-3.5 text-base"
 
             >

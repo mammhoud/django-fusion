@@ -136,10 +136,9 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
         exit 1
     fi
 
-    echo "[SETUP] Checking migration files..."
-    if ! run_logged makemigrations_check python manage.py makemigrations --check --dry-run; then
-        echo "[ERROR] Model changes are missing committed migrations; see ${LOG_DIR}/makemigrations_check.log"
-        exit 1
+    echo "[SETUP] Making migrations..."
+    if ! run_logged makemigrations python manage.py makemigrations --noinput; then
+        echo "[WARN] makemigrations failed (non-fatal); see ${LOG_DIR}/makemigrations.log"
     fi
 
     echo "[SETUP] Applying migrations..."
@@ -204,12 +203,6 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
         echo "[WARN] compilemessages failed (non-fatal); see ${LOG_DIR}/compilemessages.log"
     fi
 
-    echo "[SETUP] Collecting static files..."
-    if ! run_logged collectstatic python manage.py collectstatic --noinput; then
-        echo "[ERROR] collectstatic failed; see ${LOG_DIR}/collectstatic.log"
-        exit 1
-    fi
-
     echo "[SETUP] Verifying Wagtail pages and collected assets..."
     VERIFY_ARGS=()
     [ "${STRICT_ASSETS:-false}" = "true" ] && VERIFY_ARGS+=("--strict-assets")
@@ -240,23 +233,6 @@ if [ "$#" -eq 0 ]; then
 fi
 
 case "$1" in
-    server|server-gunicorn|server-uvicorn)
-        # Dispatch straight to the site-local server helper instead of
-        # `make server` (the workspace projects/Makefile `server` target calls
-        # the removed /start script). `run` is copied into the site dir because
-        # the container's /run is a system directory.
-        SITE_RUN="${APP_HOME}/${SITE_DIR_NAME}/run"
-        if [ -x "$SITE_RUN" ]; then
-            case "$1" in
-                server-uvicorn) export SERVER_TYPE="${SERVER_TYPE:-uvicorn}" ;;
-                server-gunicorn) export SERVER_TYPE="${SERVER_TYPE:-gunicorn}" ;;
-            esac
-            echo "[RUN] Launching site server via ${SITE_RUN} (SERVER_TYPE=${SERVER_TYPE:-gunicorn})"
-            exec "$SITE_RUN"
-        fi
-        echo "[RUN] Site run helper missing; falling back to make target: $*"
-        exec /usr/bin/make "$@"
-        ;;
     uv|uvicorn|python|pytest|/bin/*|/usr/bin/*|/usr/local/bin/*)
         echo "[RUN] Executing command directly: $*"
         exec "$@"

@@ -11,10 +11,10 @@ interface Props {
 
 const {
   metrics = [
-    { value: '1', label: 'learning workspace', detail: 'Courses, progress, and certificates in one account.' },
-    { value: '0', label: 'heavy SPA required', detail: 'The public learning shell stays document-first.' },
-    { value: 'Editorial', label: 'language-aware content', detail: 'Localized learning can meet learners where they are.' },
-    { value: 'Anytime', label: 'self-paced access', detail: 'The next lesson is available when the learner is ready.' },
+    { value: '01', label: 'profile', detail: 'Keep your identity, preferences, and account controls together.' },
+    { value: '01', label: 'learning space', detail: 'Courses, enrollments, progress, and certificates in one account.' },
+    { value: '07', label: 'languages', detail: 'Choose the language that helps you learn with confidence.' },
+    { value: 'Fast', label: 'by default', detail: 'The public learning space stays readable and quick without a heavy app.' },
   ],
   problems = [
     'Learners lose momentum when the next action is hard to find.',
@@ -43,7 +43,7 @@ const {
     },
   ],
   ctaLabel = 'Start your learning path',
-  ctaHref = '/learning/',
+  ctaHref = '/courses/',
 } = Astro.props;
 ---
 

@@ -15,7 +15,7 @@ test('profile settings remains a backend-owned auth route', async ({ request }) 
 });
 
 test('seeded blog detail renders the article and moderated comments surface', async ({ page }) => {
-  const response = await page.goto('/blog/medical-ai-clinical-evidence-limits/', {
+  const response = await page.goto('/blog/where-tools-help-evidence-synthesis/', {
     waitUntil: 'domcontentloaded',
     timeout: 60_000,
   });

@@ -2,7 +2,6 @@
 import Layout from '@/layouts/Layout.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { fetchCourseDetail, cachedCourseList } from '@/lib/api';
 import { cachedSiteSettings, cachedNavigation } from '@/lib/api';
 import type { CourseCard, CourseDetail, NavigationData, SiteSettings } from '@/lib/api';
@@ -394,7 +393,6 @@ const heroImage = course?.image_url || course?.header_image;
   ) : (
     <section class="py-32"><div class="container"><ContentError label="Course not found" showHomeLink={true} /></div></section>
   )}
-  <HtmxBootstrap />
 </Layout>
 
 <!-- ===== REVEAL ANIMATIONS + ACCORDION ===== -->

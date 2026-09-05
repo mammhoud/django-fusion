@@ -3,8 +3,8 @@
     "model": "handlers.event",
     "pk": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
     "fields": {
-      "title": "AI in Medical Writing Workshop",
-      "description": "A hands-on workshop exploring how AI tools can enhance medical writing workflows, from literature review to manuscript drafting.",
+      "title": "Medical Writing Workshop",
+      "description": "A practical workshop on writing clear, accurate medical and research documents, from summaries of the evidence to complete manuscripts.",
       "event_type": "workshop",
       "start_date": "2026-07-15T09:00:00Z",
       "end_date": "2026-07-15T17:00:00Z",
@@ -20,8 +20,8 @@
     "model": "handlers.event",
     "pk": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
     "fields": {
-      "title": "Data-Driven Clinical Research Seminar",
-      "description": "Learn how to leverage data science techniques for robust clinical research and evidence synthesis.",
+      "title": "Evidence-Based Clinical Research Seminar",
+      "description": "Learn how rigorous research methods support reliable clinical research and clear evidence synthesis.",
       "event_type": "seminar",
       "start_date": "2026-08-20T10:00:00Z",
       "end_date": "2026-08-20T16:00:00Z",
@@ -37,8 +37,8 @@
     "model": "handlers.event",
     "pk": "c3d4e5f6-a7b8-9012-cdef-123456789012",
     "fields": {
-      "title": "Annual Medical AI Conference 2026",
-      "description": "Join leading researchers and practitioners for three days of talks, workshops, and networking on medical AI.",
+      "title": "Annual Clinical Research Conference 2026",
+      "description": "Join leading researchers and practitioners for three days of talks, workshops, and networking on clinical research and evidence-based medicine.",
       "event_type": "conference",
       "start_date": "2026-09-10T08:00:00Z",
       "end_date": "2026-09-12T18:00:00Z",
@@ -90,8 +90,8 @@
     "fields": {
       "event": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "language": "ar",
-      "title": "ورشة عمل الذكاء الاصطناعي في الكتابة الطبية",
-      "description": "ورشة عمل تطبيقية تستكشف كيف يمكن لأدوات الذكاء الاصطناعي تحسين سير العمل في الكتابة الطبية، من مراجعة الأدبيات إلى صياغة المخطوطات.",
+      "title": "ورشة عمل الكتابة الطبية",
+      "description": "ورشة عملية لتعلّم كتابة الوثائق الطبية والبحثية بوضوح ودقة، من تلخيص الأدلة إلى إعداد المخطوطات كاملة.",
       "location": "افتراضي - عبر زوم",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -102,8 +102,8 @@
     "fields": {
       "event": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "language": "sv",
-      "title": "Workshop: AI i medicinskt skrivande",
-      "description": "En praktisk workshop som utforskar hur AI-verktyg kan förbättra medicinskt skrivande, från litteraturöversikt till manuskriptutkast.",
+      "title": "Workshop: medicinskt skrivande",
+      "description": "En praktisk workshop i tydligt och korrekt medicinskt skrivande, från evidenssammanfattningar till färdiga manuskript.",
       "location": "Virtuellt – Zoom",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -114,8 +114,8 @@
     "fields": {
       "event": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "language": "fr",
-      "title": "Atelier : l'IA dans la rédaction médicale",
-      "description": "Un atelier pratique qui explore comment les outils d'IA peuvent améliorer les flux de rédaction médicale, de la revue de littérature à la rédaction du manuscrit.",
+      "title": "Atelier : la rédaction médicale",
+      "description": "Un atelier pratique pour écrire des documents médicaux et de recherche clairs et précis, des résumés des preuves aux manuscrits complets.",
       "location": "Virtuel – Zoom",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -126,8 +126,8 @@
     "fields": {
       "event": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "language": "de",
-      "title": "Workshop: KI im medizinischen Schreiben",
-      "description": "Ein praktischer Workshop, der zeigt, wie KI-Tools die Arbeitsabläufe beim medizinischen Schreiben verbessern können – von der Literaturrecherche bis zum Manuskriptentwurf.",
+      "title": "Workshop: Medizinisches Schreiben",
+      "description": "Ein praktischer Workshop zum klaren und präzisen Schreiben medizinischer und wissenschaftlicher Texte, von Zusammenfassungen der Evidenz bis zu vollständigen Manuskripten.",
       "location": "Virtuell – Zoom",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -138,8 +138,8 @@
     "fields": {
       "event": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "language": "es",
-      "title": "Taller: IA en la redacción médica",
-      "description": "Un taller práctico que explora cómo las herramientas de IA pueden mejorar los flujos de redacción médica, desde la revisión bibliográfica hasta el borrador del manuscrito.",
+      "title": "Taller: redacción médica",
+      "description": "Un taller práctico para escribir documentos médicos y de investigación claros y precisos, desde resúmenes de la evidencia hasta manuscritos completos.",
       "location": "Virtual – Zoom",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -150,8 +150,8 @@
     "fields": {
       "event": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
       "language": "pt-br",
-      "title": "Oficina: IA na redação médica",
-      "description": "Uma oficina prática que explora como as ferramentas de IA podem aprimorar os fluxos de redação médica, da revisão da literatura ao rascunho do manuscrito.",
+      "title": "Oficina: redação médica",
+      "description": "Uma oficina prática para escrever documentos médicos e de pesquisa claros e precisos, de resumos de evidências a manuscritos completos.",
       "location": "Virtual – Zoom",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -162,8 +162,8 @@
     "fields": {
       "event": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
       "language": "ar",
-      "title": "ندوة البحث السريري المدفوع بالبيانات",
-      "description": "تعلم كيفية الاستفادة من تقنيات علوم البيانات لإجراء أبحاث سريرية قوية وتوليف الأدلة.",
+      "title": "ندوة البحث السريري القائم على الأدلة",
+      "description": "تعلّم كيف تدعم أساليب البحث الدقيقة أبحاثاً سريرية موثوقة وتوليفاً واضحاً للأدلة.",
       "location": "قاعة المؤتمرات A، المبنى 3",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -174,8 +174,8 @@
     "fields": {
       "event": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
       "language": "sv",
-      "title": "Seminarium: datadriven klinisk forskning",
-      "description": "Lär dig hur du använder datavetenskapliga tekniker för robust klinisk forskning och evidenssyntes.",
+      "title": "Seminarium: evidensbaserad klinisk forskning",
+      "description": "Lär dig hur noggranna forskningsmetoder stödjer tillförlitlig klinisk forskning och tydlig evidenssyntes.",
       "location": "Konferenssal A, byggnad 3",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -186,8 +186,8 @@
     "fields": {
       "event": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
       "language": "fr",
-      "title": "Séminaire : recherche clinique pilotée par les données",
-      "description": "Apprenez à exploiter les techniques de science des données pour une recherche clinique robuste et une synthèse des preuves.",
+      "title": "Séminaire : recherche clinique fondée sur les preuves",
+      "description": "Apprenez comment des méthodes de recherche rigoureuses soutiennent une recherche clinique fiable et une synthèse claire des preuves.",
       "location": "Salle de conférence A, bâtiment 3",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -198,8 +198,8 @@
     "fields": {
       "event": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
       "language": "de",
-      "title": "Seminar: datengesteuerte klinische Forschung",
-      "description": "Lernen Sie, wie Sie Techniken der Datenwissenschaft für robuste klinische Forschung und Evidenzsynthese einsetzen.",
+      "title": "Seminar: evidenzbasierte klinische Forschung",
+      "description": "Erfahren Sie, wie sorgfältige Forschungsmethoden zuverlässige klinische Forschung und klare Evidenzsynthese unterstützen.",
       "location": "Konferenzsaal A, Gebäude 3",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -210,8 +210,8 @@
     "fields": {
       "event": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
       "language": "es",
-      "title": "Seminario: investigación clínica basada en datos",
-      "description": "Aprenda a aprovechar las técnicas de ciencia de datos para una investigación clínica sólida y síntesis de evidencia.",
+      "title": "Seminario: investigación clínica basada en la evidencia",
+      "description": "Aprenda cómo los métodos rigurosos de investigación respaldan una investigación clínica fiable y una síntesis clara de la evidencia.",
       "location": "Sala de conferencias A, edificio 3",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -222,8 +222,8 @@
     "fields": {
       "event": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
       "language": "pt-br",
-      "title": "Seminário: pesquisa clínica baseada em dados",
-      "description": "Aprenda a aproveitar as técnicas de ciência de dados para uma pesquisa clínica robusta e síntese de evidências.",
+      "title": "Seminário: pesquisa clínica baseada em evidências",
+      "description": "Aprenda como métodos rigorosos de pesquisa apoiam uma pesquisa clínica confiável e uma síntese clara de evidências.",
       "location": "Salão de conferências A, edifício 3",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -234,8 +234,8 @@
     "fields": {
       "event": "c3d4e5f6-a7b8-9012-cdef-123456789012",
       "language": "ar",
-      "title": "المؤتمر السنوي للذكاء الاصطناعي الطبي 2026",
-      "description": "انضم إلى الباحثين والممارسين الرائدين لثلاثة أيام من المحاضرات وورش العمل والتواصل حول الذكاء الاصطناعي الطبي.",
+      "title": "المؤتمر السنوي للبحث السريري 2026",
+      "description": "انضم إلى الباحثين والممارسين في ثلاثة أيام من المحاضرات وورش العمل والتواصل حول البحث السريري والطب المبني على الأدلة.",
       "location": "مركز المؤتمرات الكبير",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -246,8 +246,8 @@
     "fields": {
       "event": "c3d4e5f6-a7b8-9012-cdef-123456789012",
       "language": "sv",
-      "title": "Årlig medicinsk AI-konferens 2026",
-      "description": "Följ ledande forskare och yrkesverksamma under tre dagar av föredrag, workshops och nätverkande inom medicinsk AI.",
+      "title": "Årlig klinisk forskningskonferens 2026",
+      "description": "Följ ledande forskare och yrkesverksamma under tre dagar av föredrag, workshops och nätverkande inom klinisk forskning och evidensbaserad medicin.",
       "location": "Grand Convention Center",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -258,8 +258,8 @@
     "fields": {
       "event": "c3d4e5f6-a7b8-9012-cdef-123456789012",
       "language": "fr",
-      "title": "Conférence annuelle sur l'IA médicale 2026",
-      "description": "Rejoignez chercheurs et praticiens de premier plan pour trois jours de conférences, d'ateliers et de réseautage sur l'IA médicale.",
+      "title": "Conférence annuelle sur la recherche clinique 2026",
+      "description": "Rejoignez chercheurs et praticiens de premier plan pour trois jours de conférences, d'ateliers et de rencontres autour de la recherche clinique et de la médecine fondée sur les preuves.",
       "location": "Grand Centre des congrès",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -270,8 +270,8 @@
     "fields": {
       "event": "c3d4e5f6-a7b8-9012-cdef-123456789012",
       "language": "de",
-      "title": "Jährliche Medizin-KI-Konferenz 2026",
-      "description": "Begleiten Sie führende Forschende und Praktiker an drei Tagen mit Vorträgen, Workshops und Networking rund um medizinische KI.",
+      "title": "Jährliche klinische Forschungskonferenz 2026",
+      "description": "Begleiten Sie führende Forschende und Praktiker an drei Tagen mit Vorträgen, Workshops und Austausch rund um klinische Forschung und evidenzbasierte Medizin.",
       "location": "Grand Convention Center",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -282,8 +282,8 @@
     "fields": {
       "event": "c3d4e5f6-a7b8-9012-cdef-123456789012",
       "language": "es",
-      "title": "Conferencia anual de IA médica 2026",
-      "description": "Únase a investigadores y profesionales líderes durante tres días de charlas, talleres y networking sobre IA médica.",
+      "title": "Conferencia anual de investigación clínica 2026",
+      "description": "Únase a investigadores y profesionales líderes durante tres días de charlas, talleres y encuentros sobre investigación clínica y medicina basada en la evidencia.",
       "location": "Gran Centro de Convenciones",
       "updated_at": "2026-06-01T00:00:00Z"
     }
@@ -294,8 +294,8 @@
     "fields": {
       "event": "c3d4e5f6-a7b8-9012-cdef-123456789012",
       "language": "pt-br",
-      "title": "Conferência anual de IA médica 2026",
-      "description": "Junte-se a pesquisadores e profissionais líderes durante três dias de palestras, oficinas e networking sobre IA médica.",
+      "title": "Conferência anual de pesquisa clínica 2026",
+      "description": "Junte-se a pesquisadores e profissionais líderes durante três dias de palestras, oficinas e encontros sobre pesquisa clínica e medicina baseada em evidências.",
       "location": "Grande Centro de Convenções",
       "updated_at": "2026-06-01T00:00:00Z"
     }

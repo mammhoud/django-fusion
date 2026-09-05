@@ -26,6 +26,7 @@ User = get_user_model()
 _BACKEND_DIR = Path(__file__).resolve().parents[1]
 _WORKSPACE_DIR = _BACKEND_DIR.parent  # projects/precis/precis-ctc/
 _BUNDLE_CSS = _WORKSPACE_DIR / "assets" / "bundles" / "ctc-research"
+_SOURCE_CSS = _WORKSPACE_DIR / "assets" / "static" / "styles" / "pages" / "_auth.scss"
 
 # Locate the compiled main CSS bundle (contenthash filename varies per build).
 _BUNDLE_CSS_CANDIDATES = sorted(
@@ -37,10 +38,11 @@ _COMPILED_CSS = _BUNDLE_CSS_CANDIDATES[0] if _BUNDLE_CSS_CANDIDATES else None
 
 
 def _read_bundled_css() -> str:
-    """Return the full compiled CSS bundle content, or '' if unavailable."""
-    if _COMPILED_CSS is None:
+    """Read the generated bundle, or the authoritative SCSS source in CI/local checkouts."""
+    css_path = _COMPILED_CSS or _SOURCE_CSS
+    if css_path is None or not css_path.exists():
         return ""
-    return _COMPILED_CSS.read_text()
+    return css_path.read_text()
 
 
 _CSS = _read_bundled_css()
@@ -61,32 +63,34 @@ def _has_auth_rule(prop: str, value_fragment: str) -> bool:
     return bool(re.search(pattern, _CSS))
 
 
+def _media_blocks(max_width: int) -> list[str]:
+    """Return balanced CSS media-query bodies from source or compiled CSS."""
+    marker = re.compile(rf"@media\s*\(max-width:\s*{max_width}px\)\s*\{{")
+    blocks = []
+    for match in marker.finditer(_CSS):
+        depth = 1
+        index = match.end()
+        while depth and index < len(_CSS):
+            if _CSS[index] == "{":
+                depth += 1
+            elif _CSS[index] == "}":
+                depth -= 1
+            index += 1
+        if depth == 0:
+            blocks.append(_CSS[match.end():index - 1])
+    return blocks
+
+
 def _has_rule_in_media(max_width: int, prop: str, value_fragment: str) -> bool:
-    """Like _has_auth_rule, but scoped to a specific @media(max-width:Npx) block."""
-    # Find the media block
-    mq_pattern = re.compile(
-        rf"@media\(max-width:\s*{max_width}px\)\s*\{{(.*?)\}}\s*(?:@media|$)",
-        re.DOTALL,
-    )
-    for m in mq_pattern.finditer(_CSS):
-        block = m.group(1)
-        auth_selectors = r"(?:\.auth|\.form__|\.btn)"
-        inner = rf"{auth_selectors}[^}}]*?\{{\s*[^}}]*?{re.escape(prop)}[^;}}]*?{re.escape(value_fragment)}"
-        if re.search(inner, block):
-            return True
-    return False
+    """Like _has_auth_rule, but scoped to a specific media-query block."""
+    auth_selectors = r"(?:\.auth|\.form__|\.btn)"
+    inner = rf"{auth_selectors}[^}}]*?\{{\s*[^}}]*?{re.escape(prop)}[^;}}]*?{re.escape(value_fragment)}"
+    return any(re.search(inner, block) for block in _media_blocks(max_width))
 
 
 def _has_any_rule_in_media(max_width: int, prop: str) -> bool:
     """Like _has_rule_in_media but matches any selector containing the property."""
-    mq_pattern = re.compile(
-        rf"@media\(max-width:\s*{max_width}px\)\s*\{{(.*?)\}}\s*(?:@media|$)",
-        re.DOTALL,
-    )
-    for m in mq_pattern.finditer(_CSS):
-        if prop in m.group(1):
-            return True
-    return False
+    return any(prop in block for block in _media_blocks(max_width))
 
 
 # =============================================================================
@@ -240,7 +244,7 @@ class TestAuthViewportStability(TestCase):
 
     def test_smallest_breakpoint_covers_narrow_phones(self):
         """Smallest explicit max-width breakpoint must be between 320-480px."""
-        mq_pattern = re.compile(r"@media\(max-width:\s*(\d+)px\)")
+        mq_pattern = re.compile(r"@media\s*\(\s*max-width:\s*(\d+)px\s*\)")
         breakpoints = [int(x) for x in mq_pattern.findall(_CSS)]
         assert breakpoints, "Must have at least one max-width media query"
         auth_bps = [
@@ -259,7 +263,7 @@ class TestAuthViewportStability(TestCase):
     def test_reduced_motion_disables_all_auth_animations(self):
         """prefers-reduced-motion:reduce targets .auth * with none !important."""
         pattern = (
-            r"@media\(prefers-reduced-motion:\s*reduce\)\s*\{"
+            r"@media\s*\(\s*prefers-reduced-motion:\s*reduce\s*\)\s*\{"
             r"[^}]*\.auth\s*\*[^}]*transition\s*:\s*none\s*!important"
         )
         assert re.search(pattern, _CSS), (
@@ -277,7 +281,8 @@ class TestAuthViewportStability(TestCase):
 
     def test_auth_uses_premium_easing(self):
         """Auth hover/transition uses cubic-bezier(0.16,1,0.3,1) per skill."""
-        assert "cubic-bezier(0.16,1,0.3,1)" in _CSS, (
+        normalized_css = re.sub(r"\s+", "", _CSS)
+        assert "cubic-bezier(0.16,1,0.3,1)" in normalized_css, (
             "auth CSS must use the premium cubic-bezier(0.16,1,0.3,1) easing"
         )
 

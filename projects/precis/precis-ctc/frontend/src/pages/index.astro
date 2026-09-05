@@ -6,7 +6,6 @@ import OutcomeFramework from '@/components/blocks/OutcomeFramework.astro';
 import HomeSlider from '@/components/blocks/HomeSlider.astro';
 import CourseSlider from '@/components/blocks/CourseSlider.astro';
 import CTA from '@/components/blocks/CTA.astro';import Toast from '@/components/ui/Toast.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, cachedMediaManifest, cachedCourseList } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -67,6 +66,23 @@ const archiveGallery = mediaManifest?.items
   }));
 const heroGallery = pageGallery?.length ? pageGallery : archiveGallery;
 const sliderImages = (heroGallery || []).filter((item) => Boolean(item.src)).slice(0, 4);
+const STATIC_RESEARCH_ART = [
+  '/static/images/element/medical.svg',
+  '/static/images/element/data-science.svg',
+  '/static/images/element/engineering.svg',
+  '/static/images/element/30.svg',
+];
+
+// The CMS may retain references to an optional archive media volume that is
+// empty in a clean deployment. Keep the editorial slides visual by using the
+// verified static research-art pack whenever a media URL is unavailable.
+const safeResearchImage = (src: string | undefined, index: number): string =>
+  src && !src.startsWith('/media/') ? src : STATIC_RESEARCH_ART[index % STATIC_RESEARCH_ART.length];
+
+const safeSliderImages = sliderImages.map((item, index) => ({
+  ...item,
+  src: safeResearchImage(item.src, index),
+}));
 const agendaSlides = [
   {
     eyebrow: 'clinical evidence',
@@ -74,16 +90,16 @@ const agendaSlides = [
     text: 'Start with the clinical need, make the estimand explicit, and build a study record the whole team can inspect.',
     href: '/services/',
     cta: 'Explore services',
-    image: sliderImages[0]?.src,
+    image: safeSliderImages[0]?.src,
     alt: sliderImages[0]?.alt,
   },
   {
-    eyebrow: 'responsible medical AI',
+    eyebrow: 'rigorous research methods',
     title: 'Make data useful and accountable',
-    text: 'Evaluate clinical data and AI systems with attention to bias, validation, safety, and implementation in care.',
+    text: 'Evaluate clinical data with attention to measurement, bias, safety, and implementation in care.',
     href: '/courses/',
     cta: 'View the course',
-    image: sliderImages[1]?.src,
+    image: safeSliderImages[1]?.src,
     alt: sliderImages[1]?.alt,
   },
   {
@@ -92,7 +108,7 @@ const agendaSlides = [
     text: 'Use reproducible search, appraisal, extraction, and reporting to give decisions the context they need.',
     href: '/courses/',
     cta: 'Build the method',
-    image: sliderImages[2]?.src,
+    image: safeSliderImages[2]?.src,
     alt: sliderImages[2]?.alt,
   },
   {
@@ -101,7 +117,7 @@ const agendaSlides = [
     text: 'Short, applied learning paths help clinicians, researchers, and medical writers take the next defensible step.',
     href: '/courses/',
     cta: 'Browse courses',
-    image: sliderImages[3]?.src,
+    image: safeSliderImages[3]?.src,
     alt: sliderImages[3]?.alt,
   },
 ];
@@ -111,12 +127,12 @@ const agendaSlides = [
 // fallback so the home page reflects CMS content on both render roads.
 const heroSlides = (pageHero?.slides || [])
   .map((slide, i) => ({
-    eyebrow: slide.subtitle || ['clinical evidence', 'responsible medical AI', 'evidence synthesis', 'education and training'][i % 4],
+    eyebrow: slide.subtitle || ['clinical evidence', 'rigorous research methods', 'evidence synthesis', 'education and training'][i % 4],
     title: slide.title || '',
     text: slide.description || '',
     href: slide.button_link || '/courses/',
     cta: slide.button_text || 'Learn more',
-    image: slide.image || sliderImages[i % Math.max(1, sliderImages.length)]?.src,
+    image: safeResearchImage(slide.image || safeSliderImages[i % Math.max(1, safeSliderImages.length)]?.src, i),
     alt: slide.alt || slide.title || '',
   }))
   .filter((s) => Boolean(s.title));
@@ -148,7 +164,7 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
 
 <Layout
   title={pageData?.title || 'CTC Research'}
-  description={pageData?.search_description || 'CTC Research — a medical research center for clinical evidence, biostatistics, and responsible medical AI.'}
+  description={pageData?.search_description || 'CTC Research — a medical research center for clinical evidence, biostatistics, and rigorous research methods.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -168,7 +184,7 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
       { value: '7', label: 'languages' },
     ]}
     evidenceTitle={evidencePanel.title || 'Evidence you can rely on'}
-    evidenceText={evidencePanel.text || 'The center supports clinical studies, evidence reviews, medical writing, and responsible use of AI — so health decisions rest on a solid foundation.'}
+    evidenceText={evidencePanel.text || 'The center supports clinical studies, evidence reviews, medical writing, and rigorous research methods — so health decisions rest on a solid foundation.'}
     variant="home"
   />
 
@@ -299,7 +315,6 @@ const visionSubtitle = String(visionBlock?.subtitle || '');
   />
 
   <Toast />
-  <HtmxBootstrap />
 </Layout>
 
 <script>

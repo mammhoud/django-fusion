@@ -2,7 +2,6 @@
 import Layout from '@/layouts/Layout.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import PageHeader from '@/components/blocks/PageHeader.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, fetchPublications, CONTENT_LANGUAGE } from '@/lib/api';
 import type { NavigationData, PublicationListData, SiteSettings } from '@/lib/api';
 
@@ -94,5 +93,4 @@ try {
   ) : (
     <ContentError label="The research library is unavailable from the backend." />
   )}
-  <HtmxBootstrap />
 </Layout>

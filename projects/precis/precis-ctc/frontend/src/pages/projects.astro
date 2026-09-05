@@ -7,7 +7,6 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -77,12 +76,11 @@ const repoProjects = pageProjects?.length ? pageProjects.map((p: any) => ({
   ) : null}
 
   <Stats />
-  <Features heading='Evidence you can build on' intro='Structured methods, reproducible reviews, and responsible data analytics.' />
+  <Features heading='Evidence you can build on' intro='Structured methods, reproducible reviews, and rigorous evidence synthesis.' />
   <Testimonials />
   <FAQ />
   <!-- Project content is already rendered from page data; avoid requesting
        the full Astro document into an inner HTMX target. -->
   <CTA heading={pageCta?.title || 'Advance health through research'} intro={pageCta?.subtitle || 'Join clinicians, biostatisticians, and medical writers building trusted evidence.'} ctaLabel={pageCta?.primary_cta?.label || 'Get started'} ctaHref={pageCta?.primary_cta?.href || '/courses/'} />
   <Toast />
-  <HtmxBootstrap />
 </Layout>

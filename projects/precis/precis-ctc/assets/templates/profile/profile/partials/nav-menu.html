@@ -1,119 +1,115 @@
 {% load i18n %}
-{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
-<ul class="profile__nav-menu nav nav-pills flex-column gap-1 p-3">
-    <li class="profile__nav-item">
-        <a class="profile__nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
-            href="{% url 'handlers:dashboard' %}"
-            hx-get="{% url 'handlers:dashboard' %}"
-            hx-target="#panel-content"
-            hx-swap="innerHTML"
-            hx-push-url="true">
-            <i class="bi bi-speedometer2 me-2"></i>
-            <span class="profile__nav-text">{% trans "Dashboard" %}</span>
-        </a>
-    </li>
-    <li class="profile__nav-item">
-        <a class="profile__nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
-            href="{% url 'handlers:profile' %}"
-            hx-get="{% url 'handlers:profile' %}"
-            hx-target="#panel-content"
-            hx-swap="innerHTML"
-            hx-push-url="true">
-            <i class="bi bi-person me-2"></i>
-            <span class="profile__nav-text">{% trans "Profile" %}</span>
-        </a>
-    </li>
-    <li class="profile__nav-item">
-        <a class="profile__nav-link {% if request.resolver_match.url_name == 'courses' %}active{% endif %}"
-            href="{% url 'handlers:courses' %}"
-            hx-get="{% url 'handlers:courses' %}"
-            hx-target="#panel-content"
-            hx-swap="innerHTML"
-            hx-push-url="true">
-            <i class="bi bi-book me-2"></i>
-            <span class="profile__nav-text">{% trans "Courses" %}</span>
-            <span class="profile__nav-badge badge bg-primary rounded-pill ms-auto">{{ courses_count|default:0 }}</span>
-        </a>
-    </li>
-    <li class="profile__nav-item">
-        <a class="profile__nav-link {% if request.resolver_match.url_name == 'certifications' %}active{% endif %}"
-            href="{% url 'handlers:certifications' %}"
-            hx-get="{% url 'handlers:certifications' %}"
-            hx-target="#panel-content"
-            hx-swap="innerHTML"
-            hx-push-url="true">
-            <i class="bi bi-award me-2"></i>
-            <span class="profile__nav-text">{% trans "Certifications" %}</span>
-        </a>
-    </li>
-    {% if user == request.user %}
-    <li class="profile__nav-item">
-        <a class="profile__nav-link {% if request.resolver_match.url_name == 'notes' %}active{% endif %}"
-            href="{% url 'handlers:notes' %}"
-            hx-get="{% url 'handlers:notes' %}"
-            hx-target="#panel-content"
-            hx-swap="innerHTML"
-            hx-push-url="true">
-            <i class="bi bi-file-text me-2"></i>
-            <span class="profile__nav-text">{% trans "notes" %}</span>
-        </a>
-    </li>
-    <li class="profile__nav-item">
-        <a class="profile__nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}"
-            href="{% url 'handlers:settings' %}"
-            hx-get="{% url 'handlers:settings' %}"
-            hx-target="#panel-content"
-            hx-swap="innerHTML"
-            hx-push-url="true">
-            <i class="bi bi-gear me-2"></i>
-            <span class="profile__nav-text">{% trans "Settings" %}</span>
-        </a>
-    </li>
-    <li class="profile__nav-divider">
-        <hr class="my-3">
-    </li>
-    <li class="profile__nav-item">
-        <a class="profile__nav-link {% if request.resolver_match.url_name == 'messages' %}active{% endif %}"
-            href="{% url 'handlers:messages' %}"
-            hx-get="{% url 'handlers:messages' %}"
-            hx-target="#panel-content"
-            hx-swap="innerHTML"
-            hx-push-url="true">
-            <i class="bi bi-chat me-2"></i>
-            <span class="profile__nav-text">{% trans "Messages" %}</span>
-        </a>
-    </li>
-    {% endif %}
-</ul>
+{% load static unfold wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
 
-<script>
-(function() {
-    function updateActiveState() {
-        const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('.profile__nav-link');
+<nav class="profile__nav-shell" aria-label="{% trans 'Account navigation' %}">
+    <div class="profile__nav-heading">
+        <span class="profile__nav-kicker">{% trans "Member workspace" %}</span>
+        <span class="profile__nav-status" aria-hidden="true"></span>
+    </div>
 
-        navLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && currentPath === href) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-    }
+    <ul class="profile__nav-menu">
+        <li class="profile__nav-section-label">{% trans "Overview" %}</li>
+        <li class="profile__nav-item">
+            <a class="profile__nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                href="{% url 'handlers:dashboard' %}"
+                hx-get="{% url 'handlers:dashboard' %}"
+                hx-target="#panel-content"
+                hx-swap="innerHTML"
+                hx-push-url="true">
+                <span class="profile__nav-icon" aria-hidden="true">01</span>
+                <span class="profile__nav-copy"><strong>{% trans "Dashboard" %}</strong><small>{% trans "Your next step" %}</small></span>
+                <span class="profile__nav-arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
+        <li class="profile__nav-item">
+            <a class="profile__nav-link {% if request.resolver_match.url_name == 'profile' or request.resolver_match.url_name == 'profile-edit' %}active{% endif %}"
+                href="{% url 'handlers:profile' %}"
+                hx-get="{% url 'handlers:profile' %}"
+                hx-target="#panel-content"
+                hx-swap="innerHTML"
+                hx-push-url="true">
+                <span class="profile__nav-icon" aria-hidden="true">02</span>
+                <span class="profile__nav-copy"><strong>{% trans "Profile" %}</strong><small>{% trans "Your public record" %}</small></span>
+                <span class="profile__nav-arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
 
-    // Update on initial load
-    updateActiveState();
+        <li class="profile__nav-section-label">{% trans "Learning" %}</li>
+        <li class="profile__nav-item">
+            <a class="profile__nav-link {% if request.resolver_match.url_name == 'courses' %}active{% endif %}"
+                href="{% url 'handlers:courses' %}"
+                hx-get="{% url 'handlers:courses' %}"
+                hx-target="#panel-content"
+                hx-swap="innerHTML"
+                hx-push-url="true">
+                <span class="profile__nav-icon" aria-hidden="true">03</span>
+                <span class="profile__nav-copy"><strong>{% trans "Courses" %}</strong><small>{% trans "Enrollments & progress" %}</small></span>
+                <span class="profile__nav-count">{{ courses_count|default:0 }}</span>
+            </a>
+        </li>
+        <li class="profile__nav-item">
+            <a class="profile__nav-link {% if request.resolver_match.url_name == 'certifications' %}active{% endif %}"
+                href="{% url 'handlers:certifications' %}"
+                hx-get="{% url 'handlers:certifications' %}"
+                hx-target="#panel-content"
+                hx-swap="innerHTML"
+                hx-push-url="true">
+                <span class="profile__nav-icon" aria-hidden="true">04</span>
+                <span class="profile__nav-copy"><strong>{% trans "Certificates" %}</strong><small>{% trans "Credentials & renewal" %}</small></span>
+                <span class="profile__nav-arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
+        <li class="profile__nav-item">
+            <a class="profile__nav-link {% if request.resolver_match.url_name == 'notes' %}active{% endif %}"
+                href="{% url 'handlers:notes' %}"
+                hx-get="{% url 'handlers:notes' %}"
+                hx-target="#panel-content"
+                hx-swap="innerHTML"
+                hx-push-url="true">
+                <span class="profile__nav-icon" aria-hidden="true">05</span>
+                <span class="profile__nav-copy"><strong>{% trans "Notes" %}</strong><small>{% trans "Research workspace" %}</small></span>
+                <span class="profile__nav-arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
 
-    // Update after HTMX swaps
-    document.body.addEventListener('htmx:afterOnLoad', function(evt) {
-        // Only update if the target was the panel content
-        if (evt.detail.target.id === 'panel-content') {
-            updateActiveState();
-        }
-    });
+        {% if user == request.user %}
+        <li class="profile__nav-section-label">{% trans "Account" %}</li>
+        <li class="profile__nav-item">
+            <a class="profile__nav-link {% if request.resolver_match.url_name == 'settings' or request.resolver_match.url_name in 'change_password cancel_subscription update_plan delete_account export_data revoke_sessions verify_2fa disable_2fa enable_2fa' %}active{% endif %}"
+                href="{% url 'handlers:settings' %}"
+                hx-get="{% url 'handlers:settings' %}"
+                hx-target="#panel-content"
+                hx-swap="innerHTML"
+                hx-push-url="true">
+                <span class="profile__nav-icon" aria-hidden="true">06</span>
+                <span class="profile__nav-copy"><strong>{% trans "Settings" %}</strong><small>{% trans "Privacy, security & preferences" %}</small></span>
+                <span class="profile__nav-arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
+        <li class="profile__nav-item profile__nav-item--sub">
+            <a class="profile__nav-link profile__nav-link--sub" href="/accounts/password/change/">
+                <span class="profile__nav-icon" aria-hidden="true">↳</span>
+                <span class="profile__nav-copy"><strong>{% trans "Change password" %}</strong><small>{% trans "Update sign-in credentials" %}</small></span>
+                <span class="profile__nav-arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
+        <li class="profile__nav-item">
+            <a class="profile__nav-link {% if request.resolver_match.url_name == 'messages' %}active{% endif %}"
+                href="{% url 'handlers:messages' %}"
+                hx-get="{% url 'handlers:messages' %}"
+                hx-target="#panel-content"
+                hx-swap="innerHTML"
+                hx-push-url="true">
+                <span class="profile__nav-icon" aria-hidden="true">07</span>
+                <span class="profile__nav-copy"><strong>{% trans "Messages" %}</strong><small>{% trans "Research team updates" %}</small></span>
+                <span class="profile__nav-arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
 
-    // Handle back/forward buttons
-    window.addEventListener('popstate', updateActiveState);
-})();
-</script>
+    <div class="profile__nav-footer">
+        <span class="profile__nav-footer-mark">CTC</span>
+        <span>{% trans "Private learning space" %}</span>
+    </div>
+</nav>

@@ -1,6 +1,7 @@
 ---
-interface Slide {
-  eyebrow: string;
+import { publicHref } from '@/lib/site';
+
+interface Slide {  eyebrow: string;
   title: string;
   text: string;
   href: string;
@@ -134,7 +135,7 @@ const {
                 </p>
                 <h3 class="home-slider__title">{slide.title}</h3>
                 <p class="home-slider__text">{slide.text}</p>
-                <a class="btn-secondary mt-6 inline-flex w-fit" href={slide.href}>
+                <a class="btn-secondary mt-6 inline-flex w-fit" href={publicHref(slide.href)}>
                   <span>{slide.cta}</span>
                   <span class="home-slider__cta-arrow" aria-hidden="true">→</span>
                 </a>

@@ -75,10 +75,10 @@
     "model": "lms.course",
     "pk": 4,
     "fields": {
-      "title": "Medical AI & Clinical Data Analytics",
-      "slug": "medical-ai-clinical-data-analytics",
-      "description": "Explore responsible machine learning for healthcare data, including dataset quality, clinical context, validation, bias, explainability, and safe communication of model results. Covers common ML models applied to clinical classification, prediction, and pattern recognition tasks.",
-      "short_description": "Apply responsible AI methods to real clinical data questions",
+      "title": "Real-World Evidence & Observational Research",
+      "slug": "real-world-evidence-observational-research",
+      "description": "Explore methods for real-world evidence and observational research, including data quality, clinical context, confounding control, and transparent communication of findings. Covers cohort and case-control designs, propensity score methods, and sensitivity analysis.",
+      "short_description": "Apply rigorous methods to real-world clinical data questions",
       "price": "179.99",
       "original_price": "229.99",
       "discount_percentage": "21.74",
@@ -101,7 +101,7 @@
     "fields": {
       "title": "Scientific & Medical Manuscript Writing",
       "slug": "scientific-medical-manuscript-writing",
-      "description": "Develop a publishable scientific manuscript from research question to discussion, using clear structure, evidence-aware language, effective tables and figures, and responsible AI assistance. Covers IMRaD structure, abstract writing, results reporting, and journal selection strategies.",
+      "description": "Develop a publishable scientific manuscript from research question to discussion, using clear structure, evidence-aware language, effective tables and figures, and transparent reporting practices. Covers IMRaD structure, abstract writing, results reporting, and journal selection strategies.",
       "short_description": "Turn rigorous research into a clear, publishable manuscript",
       "price": "119.99",
       "original_price": "149.99",

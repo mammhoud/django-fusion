@@ -126,7 +126,7 @@ EXPECTED_COURSES = {
     "Clinical Trial Design & Protocol Development",
     "Biostatistics for Clinical Research",
     "Systematic Reviews & Evidence Synthesis",
-    "Medical AI & Clinical Data Analytics",
+    "Real-World Evidence & Observational Research",
     "Scientific & Medical Manuscript Writing",
     "Research Ethics, GCP & Publication Integrity",
 }
@@ -134,11 +134,11 @@ EXPECTED_MEDICAL_COURSE_SLUGS = {
     "clinical-trial-design-protocol-development",
     "biostatistics-clinical-research",
     "systematic-reviews-evidence-synthesis",
-    "medical-ai-clinical-data-analytics",
+    "real-world-evidence-observational-research",
     "scientific-medical-manuscript-writing",
     "research-ethics-gcp-publication-integrity",
 }
-EXPECTED_EVENTS = {"AI in Medical Writing Workshop"}
+EXPECTED_EVENTS = {"Medical Writing Workshop"}
 
 # StreamField block keys present on the fixture HomePage records
 HOME_BLOCK_TYPES = {"slider", "features"}   # head
@@ -672,15 +672,15 @@ class TestFixtureData(TestCase):
     def test_medical_course_detail_api_returns_all_learning_content(self):
         """Course detail API exposes all seeded medical learning fields."""
         response = self.client.get(
-            "/api/courses/medical-ai-clinical-data-analytics/"
+            "/api/courses/real-world-evidence-observational-research/"
         )
         assert response.status_code == 200
         data = json.loads(response.content)
-        assert data["slug"] == "medical-ai-clinical-data-analytics"
+        assert data["slug"] == "real-world-evidence-observational-research"
         assert data["objectives"]
         assert data["target_audience"]
         assert data["requirements"]
-        assert "Medical AI & Digital Health" in data["specializations"]
+        assert "Evidence-Based Medicine" in data["specializations"]
         assert "Clinical Data" in data["tags"]
         assert isinstance(data["overview"], (str, list))
         # The learning path must surface the seeded modules and their lessons
@@ -744,13 +744,13 @@ class TestFixtureData(TestCase):
         from apps.handlers.models.manage.event import Event
 
         event = Event.objects.filter(
-            title="AI in Medical Writing Workshop"
+            title="Medical Writing Workshop"
         ).first()
         assert event is not None
         response = self.client.get(f"/api/events/{event.pk}/")
         assert response.status_code == 200
         body = json.loads(response.content)
-        assert body["title"] == "AI in Medical Writing Workshop"
+        assert body["title"] == "Medical Writing Workshop"
 
     def test_event_detail_unknown_uuid_404(self):
         """Unknown event UUID returns 404 (not 500)."""
@@ -767,8 +767,8 @@ class TestFixtureData(TestCase):
         assert response.status_code == 200
         data = json.loads(response.content)
         titles = {e.get("title") for e in data.get("results", [])}
-        assert "Atelier : l'IA dans la rédaction médicale" in titles
-        assert "AI in Medical Writing Workshop" not in titles
+        assert "Atelier : la rédaction médicale" in titles
+        assert "Medical Writing Workshop" not in titles
 
     def test_events_api_serves_localized_location(self):
         """The overlay location replaces the canonical venue."""
@@ -783,7 +783,7 @@ class TestFixtureData(TestCase):
         assert response.status_code == 200
         data = json.loads(response.content)
         titles = {e.get("title") for e in data.get("events", [])}
-        assert "Conferencia anual de IA médica 2026" in titles
+        assert "Conferencia anual de investigación clínica 2026" in titles
 
     def test_events_page_hero_subtitle_is_localized(self):
         """EventPage intro_text feeds the localized hero subtitle."""
@@ -799,9 +799,9 @@ class TestFixtureData(TestCase):
     # (Medical Writers Meetup) is seeded inactive and must stay off the
     # public roads (see test_arabic_overlay_covers_inactive_event_below).
     AR_EVENT_TITLES = {
-        "ورشة عمل الذكاء الاصطناعي في الكتابة الطبية",
-        "ندوة البحث السريري المدفوع بالبيانات",
-        "المؤتمر السنوي للذكاء الاصطناعي الطبي 2026",
+        "ورشة عمل الكتابة الطبية",
+        "ندوة البحث السريري القائم على الأدلة",
+        "المؤتمر السنوي للبحث السريري 2026",
         "ندوة عبر الإنترنت حول أفضل ممارسات مراجعة الأقران",
     }
     AR_EVENT_LOCATIONS = {
@@ -820,7 +820,7 @@ class TestFixtureData(TestCase):
         assert titles == self.AR_EVENT_TITLES, titles
         # Every Arabic title is RTL content — none of the canonical English
         # titles may leak through the overlay merge.
-        assert "AI in Medical Writing Workshop" not in titles
+        assert "Medical Writing Workshop" not in titles
 
     def test_events_api_serves_arabic_overlay_locations(self):
         """The Arabic overlay replaces the canonical venue with RTL text."""

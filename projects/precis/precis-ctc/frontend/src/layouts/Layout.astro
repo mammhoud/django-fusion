@@ -2,6 +2,7 @@
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import CookieConsent from '@/components/ui/CookieConsent.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import LoginModal from '@/components/ui/LoginModal.astro';
 import { THEME_STORAGE_KEY, fallbackSiteName, ogImage as fallbackOgImage, siteUrl } from '@/lib/site';
 
@@ -289,7 +290,7 @@ void THEME_STORAGE_KEY;
       <!-- Footer hint — switches between "Loading…" and elapsed time -->
       <p class="htmx-indicator__hint" id="htmx-indicator-hint">
         <span class="htmx-indicator__pulse" aria-hidden="true"></span>
-        Loading&hellip;
+        One moment&hellip; bringing in the latest content.
       </p>
     </div>
 
@@ -326,7 +327,9 @@ void THEME_STORAGE_KEY;
       import '../fusion';
     </script>
 
-    <!-- HTMX bootstrap is now loaded per-page via <HtmxBootstrap /> —
-         only pages that use LiveFragment or NewsletterSubscribe pay the ~61 KB cost. -->
+    <!-- Load the small interaction layer globally so the newsletter signup in
+         the footer works on every page, including pages without other live
+         content. -->
+    <HtmxBootstrap />
   </body>
 </html>

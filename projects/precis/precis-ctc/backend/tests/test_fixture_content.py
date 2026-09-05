@@ -49,7 +49,7 @@ class TestFixtureContent(TestCase):
                 title="Test Home Page",
                 slug="test-home",
                 live=True,
-                seo_title="CTC Research | AI-Powered Platform",
+                seo_title="CTC Research | Clinical Research Platform",
                 search_description="A powerful CMS platform.",
                 show_in_menus=False,
                 locale=cls.en,

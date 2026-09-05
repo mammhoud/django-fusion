@@ -1,6 +1,7 @@
 ---
-interface Plan {
-  name: string;
+import { publicHref } from '@/lib/site';
+
+interface Plan {  name: string;
   price: number;
   period: string;
   description: string;
@@ -45,7 +46,7 @@ const { plan } = Astro.props;
   </ul>
 
   <a
-    href={plan.cta.href}
+    href={publicHref(plan.cta.href)}
     class:list={['mt-auto w-full', plan.highlighted ? 'btn-primary' : 'btn-secondary']}
   >
     {plan.cta.label}

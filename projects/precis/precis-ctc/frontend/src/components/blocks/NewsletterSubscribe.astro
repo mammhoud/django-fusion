@@ -2,8 +2,8 @@
 /** Newsletter subscription form — submits via HTMX to the Django backend.
  *
  * The backend endpoint POST /api/newsletter/subscribe/ accepts { email } and
- * returns an HTML fragment showing success or error state.
- * Falls back to a toast notification if HTMX is unavailable.
+ * returns a visitor-friendly HTML fragment for HTMX (or JSON for API clients).
+ * The address is saved as pending until the visitor confirms it by email.
  */
 interface Props {
   title?: string;
@@ -15,11 +15,11 @@ interface Props {
 }
 
 const {
-  title = 'Stay in the loop',
-  description = 'Research news, new courses, and practical writing guidance — one useful email a month, no spam.',
-  placeholder = 'you@example.com',
-  buttonLabel = 'Subscribe',
-  privacyNote = 'No spam. Unsubscribe anytime.',
+  title = 'Keep learning with us',
+  description = 'Get occasional research news, new course announcements, and practical guidance for better health evidence.',
+  placeholder = 'Your email address',
+  buttonLabel = 'Join the list',
+  privacyNote = 'One useful email a month. No advertising. Leave whenever you like.',
 } = Astro.props;
 ---
 
@@ -30,6 +30,8 @@ const {
       {description && <p class="newsletter__text">{description}</p>}
 
     <form
+        method="post"
+        action="/api/newsletter/subscribe/"
         hx-post="/api/newsletter/subscribe/"
         hx-target="#newsletter-feedback"
         hx-swap="innerHTML"
@@ -46,7 +48,7 @@ const {
           class="newsletter__input"
         />
         <button type="submit" class="btn-primary shrink-0">
-          <span id="newsletter-spinner" class="htmx-indicator mr-1 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true"></span>
+          <span id="newsletter-spinner" class="htmx-indicator newsletter__spinner mr-1 inline-block h-3 w-3 border-2 border-current" aria-hidden="true"></span>
           {buttonLabel}
         </button>
       </form>

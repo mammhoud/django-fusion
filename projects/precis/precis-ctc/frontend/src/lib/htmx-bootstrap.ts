@@ -8,8 +8,9 @@
  *   - Request counter — nested HTMX calls don't prematurely hide the indicator
  *   - Fade transitions — smooth in/out via CSS classes, not abrupt display toggle
  *   - Timeout safety — auto-dismiss after 15 s to prevent stuck overlay
- *   - Target label — shows which region is being swapped (set via hx-indicator attr)
- *   - Elapsed-time hint — switches from "Loading…" to "Still loading (Xs)" after 4 s
+ *   - Friendly progress text — explains what is happening without exposing
+ *     implementation details
+ *   - Elapsed-time hint — switches to a longer, reassuring message after 4 s
  *   - Branded skeleton — Layout.astro renders a full-page mimetic placeholder
  */
 
@@ -71,7 +72,9 @@ function showIndicator(triggerElement?: Element | null): void {
         swapArea?.getAttribute('data-skeleton-label') ||
         swapArea?.closest('[data-skeleton-label]')?.getAttribute('data-skeleton-label') ||
         (targetId ? `#${targetId}` : 'this region');
-      targetLabel.textContent = `Swapping ${label}`;
+      targetLabel.textContent = label && label !== 'this region'
+        ? `Updating ${label}`
+        : 'Updating the page';
     }
 
     // Start elapsed-time counter
@@ -123,7 +126,7 @@ function forceDismiss(): void {
   // Notify via Redux toast
   const showToast = (window as any).__showToast;
   if (showToast) {
-    showToast('Request timed out — please try again.', 'warning');
+    showToast('This is taking longer than expected. Please try again.', 'warning');
   }
 }
 
@@ -140,7 +143,7 @@ function updateHint(): void {
   const elapsed = Date.now() - startTime;
   if (elapsed > SLOW_THRESHOLD_MS) {
     const seconds = Math.round(elapsed / 1000);
-    hint.innerHTML = `<span class="htmx-indicator__pulse htmx-indicator__pulse--slow" aria-hidden="true"></span> Still loading (${seconds}s)&hellip;`;
+    hint.innerHTML = `<span class="htmx-indicator__pulse htmx-indicator__pulse--slow" aria-hidden="true"></span> Still working (${seconds}s)&hellip;`;
   }
 }
 
@@ -201,6 +204,6 @@ document.addEventListener('htmx:afterSwap', (event) => {
 document.body.addEventListener('htmx:responseError', () => {
   const showToast = (window as any).__showToast;
   if (showToast) {
-    showToast('Something went wrong — please try again.', 'error');
+    showToast('We could not update this section. Please try again.', 'error');
   }
 });

@@ -24,7 +24,7 @@ const {
   courses = [],
   eyebrow = 'the catalog',
   heading = 'Featured courses',
-  intro = 'Short, practical learning paths that connect study design, evidence reviews, medical writing, and responsible use of AI in medicine.',
+  intro = 'Short, practical learning paths that connect study design, evidence reviews, and clear medical writing.',
 } = Astro.props;
 
 // Deterministic strip: dedupe by base slug (drop -en/-sv/-fr/-de/-es/-ar/-ptbr
@@ -43,15 +43,16 @@ const slides = Array.from(seen.values()).slice(0, 6);
 const formatPrice = (price: number) =>
   price === 0 ? 'Free' : `$${Number(price).toFixed(price % 1 ? 2 : 0)}`;
 
-// Card art: courses carry no image_url in the seed, so map the archive media
-// pack visuals (img-00 … img-16) deterministically by slide index.
+// Card art uses the prepared static CTC illustration pack. The archive media
+// volume is optional in clean deployments, so course cards must never depend
+// on `/media/media/*` files that may not have been restored yet.
 const ART = [
-  '/media/media/img-00.png',
-  '/media/media/img-04.webp',
-  '/media/media/img-08.png',
-  '/media/media/img-10.jpeg',
-  '/media/media/img-14.jpeg',
-  '/media/media/img-16.jpeg',
+  '/static/images/element/medical.svg',
+  '/static/images/element/data-science.svg',
+  '/static/images/element/medal.svg',
+  '/static/images/element/engineering.svg',
+  '/static/images/element/30.svg',
+  '/static/images/element/contact.svg',
 ];
 ---
 

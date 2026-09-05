@@ -5,7 +5,6 @@ import Pricing from '@/components/blocks/Pricing.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -60,7 +59,7 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
     accent='printed clearly'
     intro={pageHero?.subtitle || 'Simple, transparent pricing — start free and scale as you grow. No hidden fees, cancel anytime.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Start free', href: '/#cta' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact sales', href: '/contact' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact sales', href: '/contact/' }}
     variant="product"
   />
 
@@ -87,5 +86,4 @@ const faqItems = pageFaq?.length ? pageFaq.map((f: any) => ({
     ctaHref={pageCta?.primary_cta?.href || '/courses/'}
   />
   <Toast />
-  <HtmxBootstrap />
 </Layout>

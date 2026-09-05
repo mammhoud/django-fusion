@@ -16,9 +16,9 @@
     "model": "lms.specialization",
     "pk": 7,
     "fields": {
-      "title": "Medical AI & Digital Health",
-      "slug": "medical-ai-digital-health",
-      "description": "Apply artificial intelligence, data analytics, and digital health methods responsibly in medical research.",
+      "title": "Evidence-Based Medicine",
+      "slug": "evidence-based-medicine",
+      "description": "Apply rigorous research methods, clinical data analysis, and evidence-based approaches in medical research.",
       "is_active": true,
       "order": 7,
       "created_at": "2026-08-08T00:00:00Z",
@@ -76,8 +76,8 @@
     "model": "lms.coursetag",
     "pk": 14,
     "fields": {
-      "name": "Medical AI",
-      "slug": "medical-ai"
+      "name": "Research Methods",
+      "slug": "research-methods"
     }
   },
   {
@@ -222,15 +222,15 @@
     "model": "lms.course",
     "pk": 12,
     "fields": {
-      "title": "Medical AI & Clinical Data Analytics",
-      "slug": "medical-ai-clinical-data-analytics",
+      "title": "Real-World Evidence & Observational Research",
+      "slug": "real-world-evidence-observational-research",
       "specializations": [7],
       "tags": [14, 15, 20],
-      "description": "Explore responsible machine learning for healthcare data, including dataset quality, clinical context, validation, bias, explainability, and safe communication of model results.",
-      "short_description": "Apply responsible AI methods to real clinical data questions.",
-      "objectives": "Identify common sources of bias in clinical datasets\nPrepare and validate data for research analysis\nCompare useful model evaluation strategies\nExplain limitations and risks to clinical stakeholders",
-      "requirements": "Basic Python or data-analysis experience\nFoundational clinical research knowledge is useful",
-      "target_audience": "Clinical data scientists, health researchers, informaticians, and AI practitioners",
+      "description": "Explore methods for real-world evidence and observational research, including data quality, clinical context, confounding control, and transparent communication of findings.",
+      "short_description": "Apply rigorous methods to real-world clinical data questions.",
+      "objectives": "Identify common sources of bias in observational data\nPrepare and clean data for research analysis\nChoose appropriate study designs and analytical methods\nCommunicate limitations and risks to clinical stakeholders",
+      "requirements": "Basic familiarity with clinical research data\nFoundational clinical research knowledge is useful",
+      "target_audience": "Clinical researchers, health data analysts, and research coordinators",
       "price": "179.99",
       "original_price": "229.99",
       "discount_percentage": "21.74",
@@ -256,9 +256,9 @@
       "slug": "scientific-medical-manuscript-writing",
       "specializations": [9],
       "tags": [17, 19],
-      "description": "Develop a publishable scientific manuscript from research question to discussion, using clear structure, evidence-aware language, effective tables and figures, and responsible AI assistance.",
+      "description": "Develop a publishable scientific manuscript from research question to discussion, using clear structure, evidence-aware language, effective tables and figures, and transparent reporting practices.",
       "short_description": "Turn rigorous research into a clear, publishable manuscript.",
-      "objectives": "Structure an IMRaD manuscript for the intended audience\nWrite precise abstracts, results, and discussions\nUse tables and figures to clarify evidence\nApply responsible AI support without compromising authorship or integrity",
+      "objectives": "Structure an IMRaD manuscript for the intended audience\nWrite precise abstracts, results, and discussions\nUse tables and figures to clarify evidence\nApply transparent reporting practices without compromising authorship or integrity",
       "requirements": "A research project, dataset, or manuscript idea to develop\nBasic academic writing experience",
       "target_audience": "Medical writers, clinicians, researchers, and postgraduate students",
       "price": "119.99",
