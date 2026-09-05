@@ -10,7 +10,19 @@ via ``APIV1DeprecationMiddleware``.
 
 from django.urls import path
 
-from apps.core.api import dashboard_api, reports_api, workspace_current_api
+from apps.core.api import (
+    ai_catalog_api,
+    ai_consent_api,
+    ai_operation_api,
+    badge_counts_api,
+    dashboard_api,
+    employee_report_api,
+    employees_api,
+    reports_api,
+    search_api,
+    workspace_current_api,
+)
+from apps.core.locale_api import locale_api
 from apps.crm.views import deal_move_api, pipeline_board_api
 
 urlpatterns = [
@@ -21,6 +33,15 @@ urlpatterns = [
     path("dashboard/", dashboard_api, name="dashboard_api"),
     # Report catalog — /reports/ surface. (was: /apis/reports/)
     path("reports/", reports_api, name="reports_api"),
+    path("ai/", ai_catalog_api, name="ai_catalog_api"),
+    path("ai/consent/", ai_consent_api, name="ai_consent_api"),
+    path("ai/<str:operation>/", ai_operation_api, name="ai_operation_api"),
+    path("employees/", employees_api, name="employees_api"),
+    path("employees/<int:pk>/report/", employee_report_api, name="employee_report_api"),
+    path("search/", search_api, name="search_api"),
+    # Live sidebar badge counters (approvals/invoices/tasks). (was: /apis/badges/)
+    path("badges/", badge_counts_api, name="badge_counts_api"),
+    path("locale/", locale_api, name="locale_api"),
     # Pipeline kanban board payload. (was: /api/v1/board/)
     path("board/", pipeline_board_api, name="pipeline_board_api"),
     # Move a deal between stages. (was: /api/v1/deals/<pk>/stage/)

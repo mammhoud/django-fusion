@@ -45,6 +45,7 @@ export const NAVIGATION: NavigationModule[] = [
     { id: 'touchpoints', label: 'Touchpoints', href: '/attribution/touchpoints/' },
     { id: 'reports', label: 'Revenue reports', href: '/attribution/reports/' },
   ] },
+  { id: 'ai', label: 'AI Hub', href: '/ai/', icon: 'ai', description: 'Consent-gated lead scoring, sales-email drafts, and social-post drafts.', children: [] },
   { id: 'reports', label: 'Reports', href: '/reports/', icon: 'reports', description: 'The catalog of revenue, pipeline, publishing, employee, and billing reports.', children: [] },
   { id: 'tasks', label: 'Tasks', href: '/tasks/', icon: 'tasks', description: 'Background job history — workflows, attribution, publishing, and finance.', children: [] },
   { id: 'workspace', label: 'Workspace', href: '/settings/', icon: 'workspace', description: 'Members, workflows, integrations, and audit history.', children: [

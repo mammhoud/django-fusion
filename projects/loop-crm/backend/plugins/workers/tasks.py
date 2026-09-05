@@ -90,7 +90,7 @@ def publish_post(post_id: int) -> None:
     from apps.marketing.connectors import connector_for
     from apps.marketing.models import Post
 
-    post = Post.objects.select_related("channel").get(pk=post_id)
+    post = Post.objects.select_related("channel", "media").get(pk=post_id)
     post.status = "publishing"
     post.save(update_fields=["status", "updated_at"])
     # Refresh a stale OAuth token before publishing; channels without a token

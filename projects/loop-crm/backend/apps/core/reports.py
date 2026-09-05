@@ -53,8 +53,8 @@ REPORTS = [
         "name": "Employee activity",
         "module": "workspace",
         "href": "/employees/",
-        "description": "Activities, deals touched, posts approved, and invoices created per member.",
-        "available": False,
+        "description": "Live member activity, deals touched, posts approved, and invoices created per workspace member.",
+        "available": True,
     },
     {
         "id": "saas-billing",

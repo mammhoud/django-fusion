@@ -11,8 +11,10 @@ from decimal import Decimal
 
 from django.contrib.auth.decorators import login_required
 from django.db import OperationalError, ProgrammingError
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_GET
+from django.db.models import Q
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.utils.translation import gettext as _
+from django.views.decorators.http import require_GET, require_POST
 from django_fusion.plugins.apis.auth import (
     FusionTokenError,
     TokenUserError,
@@ -97,7 +99,7 @@ def tables_api(request, resource: str):
     link) and rows are formatted cell lists aligned to the headers.
     """
     if resolve_resource(resource) is None:
-        return JsonResponse({"detail": "Unknown resource."}, status=404)
+        return JsonResponse({"detail": _("Unknown resource.")}, status=404)
     workspace_id = current_workspace_id(request)
     queryset = RESOURCES[resource].model.objects.all()
     if workspace_id is not None:
@@ -114,7 +116,7 @@ def resource_api(request, resource: str, pk: int | None = None):
     workspace and validated against the resource's write allowlist.
     """
     if resolve_resource(resource) is None:
-        return JsonResponse({"detail": "Unknown resource."}, status=404)
+        return JsonResponse({"detail": _("Unknown resource.")}, status=404)
     workspace_id = current_workspace_id(request)
     method = request.method
 
@@ -144,7 +146,7 @@ def resource_api(request, resource: str, pk: int | None = None):
         if method == "POST":
             payload = _body_json(request)
             if payload is None:
-                return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+                return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
             row, errors, status = create_row(resource, payload, workspace_id)
             if errors:
                 return JsonResponse(errors, status=status)
@@ -157,15 +159,15 @@ def resource_api(request, resource: str, pk: int | None = None):
     if method == "GET":
         row = get_row(resource, pk, workspace_id)
         if row is None:
-            return JsonResponse({"detail": "Not found."}, status=404)
+            return JsonResponse({"detail": _("Not found.")}, status=404)
         return JsonResponse(row)
     if method == "PATCH":
         payload = _body_json(request)
         if payload is None:
-            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
         row, errors, status = update_row(resource, pk, payload, workspace_id)
         if status == 404:
-            return JsonResponse({"detail": "Not found."}, status=404)
+            return JsonResponse({"detail": _("Not found.")}, status=404)
         if errors:
             return JsonResponse(errors, status=status)
         safe_publish_workspace_event(
@@ -174,7 +176,7 @@ def resource_api(request, resource: str, pk: int | None = None):
         return JsonResponse(row)
     if method == "DELETE":
         if not delete_row(resource, pk, workspace_id):
-            return JsonResponse({"detail": "Not found."}, status=404)
+            return JsonResponse({"detail": _("Not found.")}, status=404)
         safe_publish_workspace_event(
             workspace_id, "resource.deleted", {"resource": resource, "pk": pk}
         )
@@ -192,7 +194,7 @@ def _dashboard_workspace_id(request):
 @login_required
 def dashboard_api(request):
     if request.method != "GET":
-        return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
+        return JsonResponse({"detail": _("This read endpoint accepts GET only.")}, status=405)
     workspace_id = _dashboard_workspace_id(request)
     counts = {}
     for key, (model, _fields) in RESOURCE_MODELS.items():
@@ -222,7 +224,7 @@ def token_api(request):
     try:
         payload = json.loads(request.body or "{}")
     except (TypeError, ValueError):
-        return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+        return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
 
     if not getattr(request.user, "is_authenticated", False):
         return JsonResponse({"detail": "Sign in is required to issue a user token."}, status=401)
@@ -319,7 +321,7 @@ def resource_export(request):
     slug = (request.GET.get("resource") or "").strip()
     fmt = (request.GET.get("format") or "csv").strip().lower()
     if resolve_resource(slug) is None:
-        return JsonResponse({"detail": "Unknown resource."}, status=404)
+        return JsonResponse({"detail": _("Unknown resource.")}, status=404)
     if fmt not in {"csv", "json"}:
         return JsonResponse({"detail": "Format must be csv or json."}, status=400)
     workspace_id = current_workspace_id(request)
@@ -364,10 +366,10 @@ def email_accounts_api(request):
         )
     if request.method == "POST":
         if workspace_id is None:
-            return JsonResponse({"detail": "A workspace is required."}, status=403)
+            return JsonResponse({"detail": _("A workspace is required.")}, status=403)
         payload = _body_json(request)
         if payload is None:
-            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
         provider = str(payload.get("provider") or "").strip().lower()
         email = str(payload.get("email") or "").strip().lower()
         if provider not in {"gmail", "outlook"}:
@@ -416,14 +418,14 @@ def email_account_sync_api(request, pk: int):
     from .models import EmailAccount
 
     if request.method != "POST":
-        return JsonResponse({"detail": "This endpoint accepts POST only."}, status=405)
+        return JsonResponse({"detail": _("This endpoint accepts POST only.")}, status=405)
     workspace_id = current_workspace_id(request)
     queryset = EmailAccount.objects.filter(pk=pk)
     if workspace_id is not None:
         queryset = queryset.filter(workspace_id=workspace_id)
     account = queryset.first()
     if account is None:
-        return JsonResponse({"detail": "Not found."}, status=404)
+        return JsonResponse({"detail": _("Not found.")}, status=404)
     result = sync_account(account)
     status = 200 if result.status == "synced" else (400 if result.status == "error" else 409)
     return JsonResponse(
@@ -443,7 +445,7 @@ def email_messages_api(request):
     from .models import EmailMessage
 
     if request.method != "GET":
-        return JsonResponse({"detail": "This read endpoint accepts GET only."}, status=405)
+        return JsonResponse({"detail": _("This read endpoint accepts GET only.")}, status=405)
     workspace_id = current_workspace_id(request)
     queryset = EmailMessage.objects.select_related("account", "contact", "deal")
     if workspace_id is not None:
@@ -472,6 +474,237 @@ def email_messages_api(request):
             "next": offset + limit if offset + limit < total else None,
         }
     )
+
+
+@login_required
+@require_GET
+def ai_catalog_api(request: HttpRequest) -> JsonResponse:
+    """Expose AI capabilities and consent state without exposing credentials."""
+    from .ai import consent_enabled, operation_catalog, provider_catalog
+
+    profile = getattr(request.user, "profile", None)
+    return JsonResponse(
+        {
+            "consent": consent_enabled(profile) if profile else False,
+            "operations": operation_catalog(),
+            "providers": provider_catalog(),
+        }
+    )
+
+
+@login_required
+def ai_consent_api(request: HttpRequest) -> JsonResponse:
+    """Read or update the workspace member's explicit AI consent."""
+    from .ai import consent_enabled, set_consent
+
+    profile = getattr(request.user, "profile", None)
+    if profile is None:
+        return JsonResponse({"detail": _("A user profile is required.")}, status=400)
+    if request.method == "GET":
+        return JsonResponse({"consent": consent_enabled(profile)})
+    if request.method != "POST":
+        return JsonResponse({"detail": "This consent endpoint accepts POST only."}, status=405)
+    payload = _body_json(request)
+    if payload is None or not isinstance(payload.get("enabled"), bool):
+        return JsonResponse({"enabled": "enabled must be a boolean."}, status=400)
+    set_consent(profile, payload["enabled"])
+    workspace_id = current_workspace_id(request)
+    if workspace_id is not None:
+        from .models import AuditLog
+
+        AuditLog.objects.create(
+            user=request.user,
+            workspace_id=workspace_id,
+            action="update",
+            model_name="AIConsent",
+            object_id=str(request.user.pk),
+            changes={"enabled": payload["enabled"]},
+        )
+    return JsonResponse({"consent": payload["enabled"]})
+
+
+@login_required
+@require_POST
+def ai_operation_api(request: HttpRequest, operation: str) -> JsonResponse:
+    """Run one consent-gated AI operation; outputs are never auto-published."""
+    from .ai import consent_enabled, operation_catalog, run_operation
+
+    profile = getattr(request.user, "profile", None)
+    if profile is None or not consent_enabled(profile):
+        return JsonResponse(
+            {"status": "deferred", "reason": "Workspace AI consent is required."}, status=403
+        )
+    allowed = {item["id"] for item in operation_catalog()}
+    if operation not in allowed:
+        return JsonResponse({"detail": _("Unknown AI operation.")}, status=404)
+    payload = _body_json(request)
+    if payload is None:
+        return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
+    context = payload.get("context") if isinstance(payload.get("context"), dict) else {}
+    result = run_operation(operation, context)
+    workspace_id = current_workspace_id(request)
+    if workspace_id is not None:
+        from .models import AuditLog
+
+        AuditLog.objects.create(
+            user=request.user,
+            workspace_id=workspace_id,
+            action="view",
+            model_name="AIOperation",
+            object_id=operation,
+            changes={"operation": operation, "status": result.status, "provider": result.provider},
+        )
+    response = {
+        "status": result.status,
+        "provider": result.provider,
+        "operation": result.operation,
+    }
+    if result.output is not None:
+        response["output"] = result.output
+    if result.reason:
+        response["reason"] = result.reason
+    return JsonResponse(response, status=200 if result.status != "failed" else 502)
+
+
+@login_required
+@require_GET
+def employees_api(request):
+    """List workspace members with live activity, deal, post, and invoice counts."""
+    from django.contrib.auth.models import User
+
+    from apps.crm.models import Activity, Deal
+    from apps.finance.models import Invoice
+    from apps.marketing.models import Post
+
+    workspace_id = current_workspace_id(request)
+    members = User.objects.select_related("profile", "profile__workspace")
+    if workspace_id is not None:
+        members = members.filter(profile__workspace_id=workspace_id)
+    results = []
+    for member in members.order_by("username", "email"):
+        results.append(
+            {
+                "id": member.pk,
+                "name": member.get_full_name() or member.username,
+                "email": member.email,
+                "username": member.username,
+                "role": getattr(member.profile, "role", "viewer"),
+                "title": getattr(member.profile, "title", ""),
+                "workspace_name": getattr(getattr(member.profile, "workspace", None), "name", None),
+                "metrics": {
+                    "activities": Activity.objects.filter(workspace_id=workspace_id, created_by=member).count(),
+                    "deals": Deal.objects.filter(workspace_id=workspace_id, owner=member).count(),
+                    "posts": Post.objects.filter(workspace_id=workspace_id, created_by=member).count(),
+                    "invoices": Invoice.objects.filter(workspace_id=workspace_id, created_by=member).count(),
+                },
+            }
+        )
+    return JsonResponse({"results": results, "count": len(results)})
+
+
+@login_required
+@require_GET
+def employee_report_api(request, pk: int):
+    """Return a live performance dossier for one workspace member."""
+    from django.contrib.auth.models import User
+    from django.db.models import Sum
+
+    from apps.crm.models import Activity, Deal
+    from apps.finance.models import Invoice
+    from apps.marketing.models import Post
+
+    workspace_id = current_workspace_id(request)
+    queryset = User.objects.select_related("profile", "profile__workspace")
+    if workspace_id is not None:
+        queryset = queryset.filter(profile__workspace_id=workspace_id)
+    member = queryset.filter(pk=pk).first()
+    if member is None:
+        return JsonResponse({"detail": _("Employee not found.")}, status=404)
+    deals = Deal.objects.filter(workspace_id=workspace_id, owner=member)
+    posts = Post.objects.filter(workspace_id=workspace_id, created_by=member)
+    activities = Activity.objects.filter(workspace_id=workspace_id, created_by=member)
+    invoices = Invoice.objects.filter(workspace_id=workspace_id, created_by=member)
+    return JsonResponse(
+        {
+            "employee": {
+                "id": member.pk,
+                "name": member.get_full_name() or member.username,
+                "email": member.email,
+                "role": getattr(member.profile, "role", "viewer"),
+                "title": getattr(member.profile, "title", ""),
+            },
+            "metrics": {
+                "activities": activities.count(),
+                "deals": deals.count(),
+                "deal_value": str(deals.aggregate(total=Sum("value"))["total"] or 0),
+                "posts": posts.count(),
+                "published_posts": posts.filter(status="published").count(),
+                "invoices": invoices.count(),
+                "invoice_value": str(invoices.aggregate(total=Sum("total"))["total"] or 0),
+            },
+            "recent": {
+                "activities": list(activities.order_by("-created_at").values("id", "subject", "activity_type")[:5]),
+                "deals": list(deals.order_by("-updated_at").values("id", "name", "value")[:5]),
+                "posts": list(posts.order_by("-updated_at").values("id", "content", "status")[:5]),
+            },
+        }
+    )
+
+
+@login_required
+@require_GET
+def search_api(request):
+    """Federated tenant-scoped search for the command palette."""
+    query = (request.GET.get("q") or "").strip()
+    if len(query) < 2:
+        return JsonResponse({"results": [], "count": 0})
+    workspace_id = current_workspace_id(request)
+    from django.contrib.auth.models import User
+
+    from apps.crm.models import Company, Contact, Deal
+    from apps.marketing.models import Post
+
+    results = []
+    for label, model, fields, href in [
+        ("Company", Company, ("name", "industry", "email"), "/crm/companies/"),
+        ("Contact", Contact, ("first_name", "last_name", "email", "title"), "/crm/contacts/"),
+        ("Deal", Deal, ("name",), "/crm/deals/"),
+        ("Post", Post, ("content",), "/marketing/calendar/"),
+    ]:
+        condition = Q()
+        for field in fields:
+            condition |= Q(**{f"{field}__icontains": query})
+        queryset = model.objects.filter(condition)
+        if workspace_id is not None:
+            queryset = queryset.filter(workspace_id=workspace_id)
+        for row in queryset[:6]:
+            title = getattr(row, "full_name", None) or getattr(row, "name", None) or getattr(row, "content", "")
+            results.append({"type": label.lower(), "title": str(title)[:100], "meta": getattr(row, "email", ""), "href": href})
+    members = User.objects.filter(profile__workspace_id=workspace_id).filter(
+        Q(username__icontains=query) | Q(email__icontains=query) | Q(first_name__icontains=query) | Q(last_name__icontains=query)
+    )[:6]
+    results.extend(
+        {"type": "employee", "title": member.get_full_name() or member.username, "meta": member.email, "href": f"/employees/?employee={member.pk}"}
+        for member in members
+    )
+    return JsonResponse({"results": results[:24], "count": len(results[:24])})
+
+
+@login_required
+@require_GET
+def badge_counts_api(request):
+    """Return live sidebar counters for the caller's workspace."""
+    from apps.finance.models import Invoice
+    from apps.marketing.models import Post
+
+    from .models import TaskExecution, WorkflowRun
+
+    workspace_id = current_workspace_id(request)
+    posts = Post.objects.filter(workspace_id=workspace_id, status="pending_approval").count()
+    invoices = Invoice.objects.filter(workspace_id=workspace_id, status__in=["issued", "partially_paid", "overdue"]).count()
+    tasks = WorkflowRun.objects.filter(workspace_id=workspace_id, status__in=["queued", "running"]).count()
+    tasks += TaskExecution.objects.filter(site_name="loop-crm", status__in=["queued", "started", "retrying"]).count()
+    return JsonResponse({"approvals": posts, "invoices": invoices, "tasks": tasks})
 
 
 @login_required
@@ -546,14 +779,14 @@ def custom_objects_api(request):
         return JsonResponse({"results": results, "count": len(results)})
     if request.method == "POST":
         if workspace_id is None:
-            return JsonResponse({"detail": "A workspace is required."}, status=403)
+            return JsonResponse({"detail": _("A workspace is required.")}, status=403)
         payload = _body_json(request)
         if payload is None:
-            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
         name = str(payload.get("name") or "").strip()
         key = str(payload.get("key") or "").strip().lower()
         if not name or not key:
-            return JsonResponse({"detail": "name and key are required."}, status=400)
+            return JsonResponse({"detail": _("name and key are required.")}, status=400)
         try:
             fields = validate_definition_fields(payload.get("fields") or [])
         except ValidationError as exc:
@@ -609,7 +842,7 @@ def custom_object_records_api(request, key: str):
     if request.method == "POST":
         payload = _body_json(request)
         if payload is None:
-            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
         try:
             data = validate_record_data(definition, payload.get("data"))
         except ValidationError as exc:
@@ -645,13 +878,13 @@ def custom_object_record_detail_api(request, key: str, pk: int):
         queryset = queryset.filter(workspace_id=workspace_id)
     record = queryset.filter(pk=pk).first()
     if record is None:
-        return JsonResponse({"detail": "Not found."}, status=404)
+        return JsonResponse({"detail": _("Not found.")}, status=404)
     if request.method == "GET":
         return JsonResponse({"id": record.pk, "data": record.data})
     if request.method == "PATCH":
         payload = _body_json(request)
         if payload is None:
-            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
         merged = {**(record.data or {}), **(payload.get("data") or {})}
         try:
             record.data = validate_record_data(definition, merged)
@@ -699,16 +932,16 @@ def saved_views_api(request):
         return JsonResponse({"results": results, "count": len(results)})
     if request.method == "POST":
         if workspace_id is None:
-            return JsonResponse({"detail": "A workspace is required."}, status=403)
+            return JsonResponse({"detail": _("A workspace is required.")}, status=403)
         payload = _body_json(request)
         if payload is None:
-            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
         name = str(payload.get("name") or "").strip()
         resource = str(payload.get("resource") or "").strip()
         if not name or not resource:
             return JsonResponse({"detail": "name and resource are required."}, status=400)
         if resolve_resource(resource) is None:
-            return JsonResponse({"detail": "Unknown resource."}, status=404)
+            return JsonResponse({"detail": _("Unknown resource.")}, status=404)
         config = payload.get("config") if isinstance(payload.get("config"), dict) else {}
         view_type = (
             payload.get("view_type") if payload.get("view_type") in {"list", "kanban"} else "list"
@@ -744,13 +977,13 @@ def saved_view_detail_api(request, pk: int):
         queryset = queryset.filter(workspace_id=workspace_id)
     view = queryset.filter(pk=pk).first()
     if view is None:
-        return JsonResponse({"detail": "Not found."}, status=404)
+        return JsonResponse({"detail": _("Not found.")}, status=404)
     if request.method == "GET":
         return JsonResponse(_saved_view_payload(view))
     if request.method == "PATCH":
         payload = _body_json(request)
         if payload is None:
-            return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+            return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
         if "config" in payload and isinstance(payload["config"], dict):
             view.config = payload["config"]
         if "view_type" in payload and payload["view_type"] in {"list", "kanban"}:

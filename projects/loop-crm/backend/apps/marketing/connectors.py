@@ -1,8 +1,10 @@
 """Social connector contracts for Loop-CRM.
 
-The catalog covers the source platform families without pretending credentials
-or API calls are configured. Real OAuth adapters implement ``SocialConnector``
-and are dispatched by platform from the Dramatiq worker.
+Real OAuth adapters implement ``SocialConnector`` and are dispatched by
+platform from the Dramatiq worker. Every catalog platform now maps to a real
+publisher when the channel holds a token; ``UnconfiguredConnector`` remains
+the safe default for channels without credentials so a post is never marked
+published without provider I/O.
 """
 from __future__ import annotations
 

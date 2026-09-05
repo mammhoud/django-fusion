@@ -28,6 +28,8 @@ interface Options {
   workspaceId?: number | string;
 }
 
+// The deprecated compatibility copy remains at /api/v1/workspace/current/;
+// the canonical session-cookie road below is /apis/core/.
 const WORKSPACE_ENDPOINT = '/apis/core/workspace/current/';
 const MAX_BACKOFF_MS = 10_000;
 

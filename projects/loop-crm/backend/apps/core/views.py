@@ -121,9 +121,9 @@ class LoopPageView(LoginRequiredMixin, TemplateView):
 
     template_name = "dashboard/module.html"
     module_id = "overview"
-    page_title = "Overview"
-    page_kicker = "Workspace"
-    page_description = ""
+    page_title = _("Overview")
+    page_kicker = _("Workspace")
+    page_description = _("")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -243,6 +243,32 @@ def profile_view(request: HttpRequest) -> HttpResponse:
     )
 
 
+class AihubView(LoopPageView):
+    """Consent-gated AI workspace surface with provider-neutral operations."""
+
+    template_name = "dashboard/ai.html"
+    module_id = "ai"
+    page_title = _("AI Hub")
+    page_kicker = _("Workspace · assisted operations")
+    page_description = _(
+        "Draft and score from CRM context without auto-publishing, auto-emailing, or hidden provider calls."
+    )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from .ai import consent_enabled, operation_catalog, provider_catalog
+
+        profile = getattr(self.request.user, "profile", None)
+        context.update(
+            {
+                "ai_consent": consent_enabled(profile) if profile else False,
+                "ai_operations": operation_catalog(),
+                "ai_providers": provider_catalog(),
+            }
+        )
+        return context
+
+
 class WorkflowListView(LoopPageView):
     """Workspace workflow editor backed by WorkflowDefinition records."""
 
@@ -307,7 +333,7 @@ def workflow_steps_update(request: HttpRequest, pk: int) -> JsonResponse:
     try:
         payload = json.loads(request.body or b"{}")
     except (TypeError, ValueError):
-        return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+        return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
     trigger = str(payload.get("trigger") or "").strip()
     actions = payload.get("actions")
     allowed_actions = {item["id"] for item in WORKFLOW_ACTION_CATALOG}
@@ -342,7 +368,7 @@ def workflow_graph_update(request: HttpRequest, pk: int) -> JsonResponse:
     try:
         payload = json.loads(request.body or b"{}")
     except (TypeError, ValueError):
-        return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+        return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
     trigger = str(payload.get("trigger") or "").strip() or workflow.trigger
     allowed_actions = {item["id"] for item in WORKFLOW_ACTION_CATALOG}
     try:
@@ -383,7 +409,7 @@ def workflow_run(request: HttpRequest, pk: int) -> HttpResponse:
     """Queue one workflow run and report the actual queue state to the user."""
     workflow = get_object_or_404(_workflow_queryset(current_workspace_id(request)), pk=pk)
     if workflow.status != "active":
-        return JsonResponse({"detail": "Only active workflows can be queued."}, status=409)
+        return JsonResponse({"detail": _("Only active workflows can be queued.")}, status=409)
 
     run = WorkflowRun.objects.create(
         definition=workflow,
@@ -466,7 +492,7 @@ class ResourceListView(LoopPageView):
 
     template_name = "dashboard/resource_list.html"
     resource = ""
-    empty_message = "No records yet."
+    empty_message = _("No records yet.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -505,7 +531,7 @@ class CustomFieldsView(LoopPageView):
     page_title = _("Custom fields")
     page_kicker = _("Workspace · custom fields")
     page_description = _("Built-in and workspace-defined field metadata for companies, contacts, deals, campaigns, and posts.")
-    empty_message = "No custom fields are defined."
+    empty_message = _("No custom fields are defined.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -538,7 +564,7 @@ class IntegrationsView(LoopPageView):
     page_title = _("Integrations")
     page_kicker = _("Workspace · integrations")
     page_description = _("The social platform surface Loop-CRM can publish to, with the capabilities each connector advertises.")
-    empty_message = "No integrations are available."
+    empty_message = _("No integrations are available.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -629,7 +655,7 @@ class CustomObjectsView(LoopPageView):
     page_title = _("Custom objects")
     page_kicker = _("Workspace · data model")
     page_description = _("Add a new record type without a migration — declarative fields with validated JSON rows.")
-    empty_message = "No custom objects are defined yet."
+    empty_message = _("No custom objects are defined yet.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -662,7 +688,7 @@ class CustomObjectRecordsView(LoopPageView):
     page_title = _("Custom object records")
     page_kicker = _("Workspace · data model")
     page_description = _("Workspace-scoped rows for a custom object type.")
-    empty_message = "No records for this object yet."
+    empty_message = _("No records for this object yet.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -705,15 +731,15 @@ class ImportView(LoopPageView):
         object_type = (request.POST.get("object_type") or "").strip()
         csv_file = request.FILES.get("csv_file")
         if object_type not in IMPORTABLE_OBJECTS:
-            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "Choose a valid object type."}]}
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": _("Choose a valid object type.")}]}
             return render(request, self.template_name, context, status=422)
         if csv_file is None:
-            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "Choose a CSV file to upload."}]}
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": _("Choose a CSV file to upload.")}]}
             return render(request, self.template_name, context, status=422)
         try:
             text = csv_file.read().decode("utf-8-sig")
         except UnicodeDecodeError:
-            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "CSV must be UTF-8 encoded."}]}
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": _("CSV must be UTF-8 encoded.")}]}
             return render(request, self.template_name, context, status=422)
         try:
             rows = parse_csv(text)
@@ -721,7 +747,7 @@ class ImportView(LoopPageView):
             context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": f"Could not parse CSV: {exc}"}]}
             return render(request, self.template_name, context, status=422)
         if not rows:
-            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": "The CSV has no data rows."}]}
+            context["import_result"] = {"created": 0, "errors": [{"row": 0, "message": _("The CSV has no data rows.")}]}
             return render(request, self.template_name, context, status=422)
         result = import_rows(object_type, rows, current_workspace_id(request), request.user)
         context["import_result"] = result
@@ -737,7 +763,7 @@ class SavedViewsView(LoopPageView):
     page_title = _("Saved views")
     page_kicker = _("Workspace · views")
     page_description = _("Your persisted list and kanban view configurations for every resource.")
-    empty_message = "You have not saved any views yet."
+    empty_message = _("You have not saved any views yet.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -769,7 +795,7 @@ class AuditLogView(LoopPageView):
     page_title = _("Audit log")
     page_kicker = _("Workspace · audit")
     page_description = _("The write-once record of workspace mutations, newest first.")
-    empty_message = "No audit events have been recorded."
+    empty_message = _("No audit events have been recorded.")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

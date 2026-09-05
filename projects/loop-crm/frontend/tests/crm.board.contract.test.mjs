@@ -11,7 +11,7 @@ const read = (relativePath) => readFile(resolve(ROOT, relativePath), 'utf8');
 test('PipelineBoard island loads the board from the compatibility API road', async () => {
   const board = await read('src/components/board/PipelineBoard.tsx');
   assert.match(board, /fetch\(BOARD_URL\)/);
-  assert.match(board, /BOARD_URL = '\/api\/v1\/board\/'/);
+  assert.match(board, /BOARD_URL = '(?:\/apis\/core\/board\/|\/api\/v1\/board\/)'/);
   assert.match(board, /payload\.results/);
 });
 

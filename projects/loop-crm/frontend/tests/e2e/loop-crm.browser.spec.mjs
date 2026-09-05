@@ -14,7 +14,8 @@ async function signIn(page) {
   await page.locator('#id_login').fill(EMAIL);
   await page.locator('#id_password').fill(PASSWORD);
   await page.locator('button[type="submit"]').click();
-  await expect(page).toHaveURL((url) => url.pathname === '/', { timeout: 15_000 });
+  // Post-login lands on the authenticated home (/overview/, LOGIN_REDIRECT_URL).
+  await expect(page).toHaveURL((url) => url.pathname === '/overview/', { timeout: 15_000 });
 }
 
 async function waitForNavigationRefresh(page, href) {
