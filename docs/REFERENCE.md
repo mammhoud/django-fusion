@@ -95,9 +95,9 @@ links:
 |-----|----------------|-----------------------------|
 | [`plans/`](plans/README.md) | workspace | README (registry) · deletion-manifest · document-lifecycle · precis-landing · marketing-claims · DJANGO_BOLT_FUSION_CASE_STUDY · THEME_DIRECTORY_STRATEGY |
 | [`plans/django-fusion/`](plans/django-fusion/) | `django-fusion` | comp-htmx-fusionproxy-analysis · analyzer-skeleton-assets · enhancements · llm-mcp · tasks-mcp · webpack plans · fusion-assets-templates-cleanup |
-| [`plans/editions/`](plans/editions/README.md) | `formints` | README (index) · comparison (feature matrix) · 01-community → 08-tenant-schemas · 09-completion-plan · finish-community-standard (archived) |
-| [`plans/loop-crm/`](plans/loop-crm/) | `loop-crm` | demo-state-gap-fixing · formint-integration-finance · merge-plan · twenty-postiz-comparison · wagtail-landing-plan |
-| [`plans/repository/`](plans/repository/) | workspace | monorepo consolidation · project closeout · ctc publish · enhancement plans · migration cleanup · worker consolidation · startup-docs-enhancement-plan |
+| [`plans/editions/`](plans/editions/README.md) | `formints` | README (index) · comparison (feature matrix) · 01-community → 08-tenant-schemas · 09-completion-plan · 10-formint-audit (finish-community-standard archived, deleted 2026-09-05 — git history is the archive) |
+| [`plans/loop-crm/`](plans/loop-crm/) | `loop-crm` | README (index + finished-plan milestones) · merge-plan · wagtail-landing-plan |
+| [`plans/repository/`](plans/repository/) | workspace | README (index + finished-plan milestones) · monorepo consolidation · project closeout · ctc publish · enhancement plans · migration cleanup · worker consolidation · startup-docs-enhancement-plan |
 | ~~`plans/legacy-archive/`~~ | deleted (DOC-0024, 2026-08-19) | dead-code-audit · deployment-reports · dev-notes — superseded by the plans registry; git history is the archive |
 
 ## Startup strategy (private) 🔒

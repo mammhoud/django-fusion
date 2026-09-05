@@ -11,7 +11,6 @@ Cross-project repository-level implementation and migration plans.
 | [active-monorepo-consolidation-2026-08-14.md](active-monorepo-consolidation-2026-08-14.md) | Monorepo consolidation |
 | [active-project-closeout-2026-08-11.md](active-project-closeout-2026-08-11.md) | Project closeout |
 | [ceptor-ai-cleanup.md](ceptor-ai-cleanup.md) | Ceptor-AI cleanup |
-| [ctc-research-ceptor-ai-migration.md](ctc-research-ceptor-ai-migration.md) | CTC Research + Ceptor-AI migration |
 | [ctc-research-publish-2026-08-18.md](ctc-research-publish-2026-08-18.md) | CTC Research publish pass |
 | [enhancement-plans.md](enhancement-plans.md) | Enhancement plans |
 | [fix-deploy-webpack-cleanup.md](fix-deploy-webpack-cleanup.md) | Deploy + webpack cleanup |
@@ -21,6 +20,14 @@ Cross-project repository-level implementation and migration plans.
 | [precis-ctc-workflows.md](precis-ctc-workflows.md) | CTC cross-module workflows |
 | [precis-dev-multitenant.md](precis-dev-multitenant.md) | Precis Dev multi-tenant platform |
 | [worker-consolidation.md](worker-consolidation.md) | Worker consolidation |
+
+## Finished plans (recorded as agenda milestones)
+
+| Plan | Milestone record |
+|------|-----------------|
+| `ctc-research-ceptor-ai-migration.md` — ceptor-ai removal (✅ code-level complete) | [`docs/agenda/feature-tracking.md`](../../agenda/feature-tracking.md) § CTC Research — ceptor-ai migration |
+
+Completed plans are deleted from this directory; git history is the archive.
 
 ## Remarks & Notes
 

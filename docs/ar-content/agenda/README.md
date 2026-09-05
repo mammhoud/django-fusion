@@ -32,6 +32,7 @@ links:
 
 | الملف | الغرض |
 |-------|--------|
+| **`CONTENT_MODEL.md`** | ⭐ تعريف الجدول — مسرد مفاهيم Anytype، تقسيم الكائنات/ملفات markdown، وعقد مرجع الفريق (كل رابط يمر عبر الخطط والإنجازات). **اقرأه أولًا.** |
 | **`MAIN.md`** | المركز/فهرس — كيف يرتبط كل شيء |
 | **`feature-tracking.md`** | دورة حياة الميزات: Proposed → Prioritized → In Progress → Review → Shipped |
 | **`case-studies.md`** | دراسات حالة تنفيذات حقيقية مع مخططات عمارة mermaid |
@@ -44,10 +45,12 @@ links:
 ## البدء السريع
 
 ```
+جديد على الجدول؟  → CONTENT_MODEL.md (التعريف، الحزم، عقد المرجع)
 ميزة جديدة؟ → feature-tracking.md
 مهمة جديدة؟ → task-tracking.md
 اجتماع؟ → meeting-agenda.md (انسخ القالب) + team-notes.md (سجّل الملاحظات)
 ميزة منشورة؟ → case-studies.md (اكتب دراسة حالة مع مخطط) + feature-tracking.md (حدّث الحالة)
+خطة مكتملة؟ → CONTENT_MODEL.md § 4.2 (احذف الخطة → سجّل إنجاز ✅ Shipped)
 مشروع مكتمل؟ → completion-checklist.md (شغّلها) + team-notes.md (سجّل القرار)
 ```
 

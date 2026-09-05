@@ -19,7 +19,6 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | **Formint** (canonical) | [`editions/README.md`](editions/README.md) | Community → Standard → Pro → Cloud → Client → SDK execution chain — the main, latest product + edition plans |
 | Precis Landing | [`precis-landing.md`](precis-landing.md) | Landing site architecture, content, and frontend work |
 | Loop-CRM | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) | Unified CRM + social scheduling (Twenty + Postiz merge) |
-| Loop-CRM finance + workflows + integrations | [`loop-crm/formint-integration-finance-workflows.md`](loop-crm/formint-integration-finance-workflows.md) | Formint POS financial data → Loop-CRM finance module; workflow + connector expansion |
 | Loop-CRM Wagtail landing + billing + webapp | [`loop-crm/wagtail-landing-plan.md`](loop-crm/wagtail-landing-plan.md) | Wagtail-managed public landing (precis-landing pattern), Stripe subscriptions, sidenav/guided UX, employees + report catalog, shared-locale i18n, license removal |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Config cascade (all Django products) | [`django-fusion/config-cascade-plan.md`](django-fusion/config-cascade-plan.md) | Layered config cascade (`config.project`), project `configs/` dirs (Precis Main/CTC, Loop-CRM, Syntara, Formint Cloud), base-URL priority resolution, Docker env cascade, static-files read/output/deploy reference |
@@ -93,7 +92,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | CTC Research workflow plan | 2026-08-18 | Proposed — 16 cross-module workflows with Dramatiq as the single publishing, refresh, analytics, and attribution boundary |
 | Loop-CRM tenancy + auth gating | 2026-08-14 | Workspace-scoped reads/mutations, login-gated pages/APIs, CSRF-protected kanban move, tenant-isolation tests |
 | Loop-CRM CRUD + channels + allauth + real screens | 2026-08-14 | Tenant-scoped REST CRUD + msgspec schemas on both roads, Channels manager + Mastodon/Bluesky adapters, complete allauth flows, data-backed module tables, motion/design pass |
-| Loop-CRM finance + workflows + integrations plan | 2026-08-14 | Formint↔Loop-CRM integration audit; POS financial-data ingestion into the finance module; workflow action/template expansion; webhooks/email/Slack/social/export connectors |
+| Loop-CRM finance + workflows + integrations | 2026-08-14 → completed 2026-09-05 | Formint↔Loop-CRM finance ingestion, workflow expansion, and connectors **completed** — recorded as a milestone in [`docs/agenda/feature-tracking.md`](../agenda/feature-tracking.md) § Loop-CRM; the plan itself was deleted (git history is the archive) |
 
 ## Lifecycle rules
 
