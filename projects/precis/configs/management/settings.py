@@ -88,6 +88,23 @@ configure_site_environment(
 # ── Shared Django settings ──────────────────────────────────────────────
 from configs.settings import *  # noqa: E402,F401,F403
 
+# The shared worker is site-agnostic: it must never import product-local
+# code. The base configs default both allauth adapters to the Precis/CTC
+# app path (`apps.pages.accounts.adapters`), which pulls ctc apps into the
+# worker and crashes `rundramatiq` (`ModuleNotFoundError: apps.content`).
+# Reset them to allauth's stock adapters for the shared sentinel stack.
+ACCOUNT_ADAPTER = "allauth.account.adapter.DefaultAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "allauth.socialaccount.adapter.DefaultSocialAccountAdapter"
+
+# The shared stack never renders site templates, and the base TEMPLATES
+# config registers site-specific libraries (menu_tags / components_field →
+# apps.pages.* / apps.components.*) that are absent from this site-agnostic
+# INSTALLED_APPS. Drop them so template-engine init skips product imports.
+for _tpl in TEMPLATES:
+    _tpl_libs = _tpl.setdefault("OPTIONS", {}).setdefault("libraries", {})
+    _tpl_libs.pop("menu_tags", None)
+    _tpl_libs.pop("components_field", None)
+
 # Explicit override of the per-app site identifier. `configs.settings`
 # already arrived with these defaults filled in via the configs layer,
 # but we re-assert them to make the intent visible in this file —

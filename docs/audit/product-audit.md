@@ -87,8 +87,9 @@ READMEs.
 - **Visual DAG workflow editor** — trigger-rooted node/edge canvas with
   branching/merging, cycle rejection, topological action order.
 - **Formint finance ingestion** — `pos_sales` push, data mapping, `apps/pos`
-  model expansion, workflow action/template growth
-  (`formint-integration-finance-workflows.md`).
+  model expansion, workflow action/template growth (✅ completed — see
+  [`docs/agenda/feature-tracking.md`](../agenda/feature-tracking.md) § Loop-CRM;
+  the plan file was deleted, git history is the archive).
 - **Wagtail landing Phases 5–8** — sidenav/guided UX, employees + report
   catalog, shared-locale i18n, license removal (`wagtail-landing-plan.md`).
 - **Full per-resource Bolt OpenAPI** (partial today).
@@ -114,9 +115,9 @@ READMEs.
   idempotent mirroring; merge or accept as permanent boundary.
 - **Dual rendering roads** — render-first (HTMX) + data (Astro islands):
   documented contract, but each screen must consciously choose; drift risk.
-- **Demo-state complexity** — `demo-state-gap-fixing.md` documents deployed
-  auth/demo gaps that had to be patched; the demo credential contract must
-  never leak into production paths.
+- **Demo-state complexity** — the demo state + auth gap fixes shipped (see
+  [`docs/agenda/feature-tracking.md`](../agenda/feature-tracking.md) § Loop-CRM);
+  the demo credential contract must never leak into production paths.
 - **Test skew** — 28 test files, but Playwright coverage is scoped to nav/
   workflow/content; finance, billing, and landing flows lack browser coverage.
 - **Committed dev artifacts** — `projects/db.sqlite3`, `dev_db.sqlite3`, and

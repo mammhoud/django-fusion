@@ -67,8 +67,15 @@ fixes every subdomain at once.
    - apex `AAAA` → `2a02:4780:28:4cb8::1` (this host's IPv6), **or delete the
      AAAA record entirely** so Let's Encrypt uses IPv4.
    - each product subdomain → `CNAME structa.cloud`
-2. `application/proxy/configs/acme.json` exists with mode `0600` (run
-   `./scripts/production/manage-certs.sh bootstrap-acme`).
+2. `application/proxy/configs/acme.json` is a **file** (not a directory)
+   with mode `0600` (run `./scripts/production/manage-certs.sh bootstrap-acme`).
+   Verify before first start:
+
+   ```bash
+   stat -c '%F %a' application/proxy/configs/acme.json
+   # expected: regular file 600
+   # a directory (755) here breaks HTTPS — see Troubleshooting below
+   ```
 3. Inbound TCP 80/443 open on the host firewall / hosting security group.
 4. A valid contact email for the Let's Encrypt account (used for expiry
    notifications). `admin@structa.cloud` is the default.
@@ -195,11 +202,45 @@ Let's Encrypt has aggressive rate limits (5 duplicate certs per week per
 domain). Use the pre-issuance DNS gate and fix DNS before triggering repeated
 issuance attempts.
 
+### `acme.json` is a directory instead of a file (HTTPS handshake fails)
+
+**Symptom:** every HTTPS request dies at the TLS handshake — `curl` reports
+`SSL_ERROR_SYSCALL` / exit `35` (or `000`), even though HTTP → HTTPS 301
+redirects work. Traefik logs repeat:
+
+```text
+ERR Unable to parse certificate /etc/traefik/certs/localhost.crt ...
+ERR Error while creating certificate store ... tlsStoreName=default
+```
+
+and `stat application/proxy/configs/acme.json` shows `directory` (mode `755`)
+instead of `regular file 600`.
+
+**Root cause:** `acme.json` was created as a directory (e.g. `mkdir` / an
+empty git checkout of the gitignored path) instead of with
+`bootstrap-acme`. Because the compose file bind-mounts it at
+`/etc/traefik/acme/acme.json`, Traefik can never write the LE store, so no
+certificates are ever issued and there is no default cert to serve.
+
+**Fix:** remove the directory, bootstrap the real file, and **recreate** the
+container — a `docker restart` is NOT enough, because the container was
+created while the mount target was a directory and keeps a directory mount:
+
+```bash
+rmdir application/proxy/configs/acme.json        # only if it is an empty directory
+./application/proxy/scripts/production/manage-certs.sh bootstrap-acme
+cd application/proxy && docker compose -f docker-compose.traefik.yml down && docker compose -f docker-compose.traefik.yml up -d
+```
+
+Then hit `https://<domain>/` once to trigger issuance, and confirm with
+`./application/proxy/scripts/production/manage-certs.sh status`.
+
 ### acme.json is empty after restart
 
 `acme.json` must exist with mode `0600` **before** the container starts. Run
 `./scripts/production/manage-certs.sh bootstrap-acme`, then start the proxy
-and hit an HTTPS endpoint to trigger issuance.
+and hit an HTTPS endpoint to trigger issuance. If `status` reports
+`acme.json not found`, check the previous section — it may be a directory.
 
 ### `LETSENCRYPT_EMAIL` must be set
 

@@ -550,9 +550,16 @@ deploy-tasks: deploy-databases _wait-redis
 	@DB_NAME=$(TASKS_DB_NAME) docker compose --project-name $(TASKS_PROJECT_NAME) \
 		-f $(TASKS_COMPOSE_FILE) down --remove-orphans 2>&1 | tail -3
 	@echo ""
-	@echo "  [3/3] bring up (no build; uses cached images)..."
-	@DB_NAME=$(TASKS_DB_NAME) docker compose --project-name $(TASKS_PROJECT_NAME) \
-		-f $(TASKS_COMPOSE_FILE) up -d --no-build --remove-orphans 2>&1 | tail -5
+	@if docker image inspect structa-shared-tasks:latest >/dev/null 2>&1; then \
+		echo "  [3/3] bring up (no build; image present)..."; \
+		DB_NAME=$(TASKS_DB_NAME) docker compose --project-name $(TASKS_PROJECT_NAME) \
+			-f $(TASKS_COMPOSE_FILE) up -d --no-build --remove-orphans 2>&1 | tail -5 || exit 1; \
+	else \
+		echo "  [3/3] image missing — building structa-shared-tasks first..."; \
+		set -o pipefail; \
+		DB_NAME=$(TASKS_DB_NAME) docker compose --project-name $(TASKS_PROJECT_NAME) \
+			-f $(TASKS_COMPOSE_FILE) up -d --build --remove-orphans 2>&1 | tail -5 || exit 1; \
+	fi
 	@echo ""
 	@echo "✅ shared-task deploy complete"
 
