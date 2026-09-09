@@ -8,26 +8,35 @@ revenue operations.
 
 ## Status
 
-Foundation integrated. The domain models, django-fusion Site/Application
-registry, shared module/sidebar navigation, finance ledger, RevOps dashboard
-(revenue-trend card + funnel-to-board deep links), responsive Astro shell,
-canonical optional django-bolt API, compatibility JSON API, workflow catalog,
-provider-neutral connector surface, cross-module workflow actions, and
-Dramatiq publishing boundary are in place. Multi-tenant isolation is enforced
-end-to-end: every read/mutation path is workspace-scoped through
-`apps/core/tenancy.py`, dashboard pages and data APIs require login, and the
-kanban move mutation is CSRF-protected. A Wagtail-managed public landing
-(`/cms/` editor → `/apis/pages/<slug>/` JSON → Astro), Stripe-backed SaaS
-billing (`apps/billing`: checkout/portal/webhook, `/apis/billing/plans/`),
-a `/reports/` catalog, and a `/settings/plan/` billing surface are shipped.
-Provider OAuth credentials and concrete API adapters are intentionally the
-next integration boundary (see `docs/plans/loop-crm/merge-plan.md`).
+The merged sales + marketing platform is feature-complete at the code level.
+Domain models, the django-fusion Site/Application registry, shared
+module/sidebar navigation, the finance ledger, the RevOps dashboard
+(revenue-trend card + funnel-to-board deep links), the responsive Astro
+shell, the canonical optional django-bolt API, the compatibility JSON API,
+the workflow catalog, cross-module workflow actions, the Dramatiq publishing
+boundary, the **AI Hub** (consent-gated `/apis/core/ai/`), **en/ar locale**
+(`/apis/core/locale/`), and the **connector expansion** (12-platform catalog;
+OAuth for LinkedIn/X/Mastodon/Bluesky/Discord/Slack + Google/Meta/TikTok/Reddit)
+are all in place. Multi-tenant isolation is enforced end-to-end: every
+read/mutation path is workspace-scoped through `apps/core/tenancy.py`,
+dashboard pages and data APIs require login, and the kanban move mutation is
+CSRF-protected. A Wagtail-managed public landing (`/cms/` editor →
+`/apis/pages/<slug>/` JSON → Astro), Stripe-backed SaaS billing (`apps/billing`:
+checkout/portal/webhook, `/apis/billing/plans/`), a `/reports/` catalog, and a
+`/settings/plan/` billing surface are shipped.
+
+**Remaining gates are operational, not feature code:** live OAuth provider
+credentials + publish/consent E2E on the deployed `crm.structa.cloud` stack,
+realtime/WebSocket hardening on deploy, and the demo-state server-half
+verification (see `docs/agenda/feature-tracking.md` § Loop-CRM and
+`docs/plans/loop-crm/merge-plan.md`).
 
 ## Layout
 
 ```text
 loop-crm/
 ├── backend/                 # Django + django-fusion (modular monolith)
+│   ├── docs/erd/             # Database ERD (make erd / make erd-all → per-app PNGs)
 │   ├── apps/
 │   │   ├── core/            # Workspace tenancy, User (RBAC), AuditLog, navigation, workflows
 │   │   ├── crm/             # Company, Contact, Pipeline, Deal, Activity, custom fields
@@ -187,5 +196,6 @@ Do not use the example secret values in a public deployment. DNS for
 - [**docs/SETUP_AND_BUILD.md**](docs/SETUP_AND_BUILD.md) — full step-by-step setup & build guide
 - [**docs/FUSION_FORMS_TABLES.md**](docs/FUSION_FORMS_TABLES.md) — django-fusion forms/tables usage in Loop-CRM
 - [**docs/DESIGN_SYSTEM.md**](docs/DESIGN_SYSTEM.md) — the Tactical Telemetry design system
+- [**docs/erd/README.md**](docs/erd/README.md) — model ERD per team domain (`make erd`/`erd-all`)
 - See the merge plan for the full 18-week roadmap and the Twenty/Postiz
   feature-merging matrix.

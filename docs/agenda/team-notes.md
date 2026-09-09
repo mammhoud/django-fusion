@@ -34,7 +34,7 @@ links:
 # 📝 Team Notes — Meeting Notes, Decisions & Blockers
 
 > **Purpose:** The team's written memory — meeting notes, key decisions, blockers, and notable events. Searchable, date-stamped, and linked to features and tasks.
-> **Last updated:** 2026-08-31
+> **Last updated:** 2026-09-06
 
 ---
 
@@ -332,6 +332,41 @@ recorded in `mono-repo/_prompts.md`.
 - Related proposal: [`anytype-extensibility.md`](./anytype-extensibility.md)
 - Related task board: [`task-tracking.md`](./task-tracking.md) § Sprint 2 (2026-09-03 rows)
 - Related test: [`tests/test_shared_media.py`](../../tests/test_shared_media.py)
+
+---
+
+### 2026-09-06 — Loop-CRM + Agenda — Implementation Reconciliation, Component Audit & Model ERDs
+
+**Attendees:** Workspace team (agent session)
+
+**Topic / Agenda:** Close the loop on the un-recorded Loop-CRM AI-hub work, reconcile what is actually implemented (backend × frontend) per product, audit frontend components for placeholders, and stand up the model-ERD (graph_models) docs for Loop-CRM.
+
+**Key points:**
+- The 2026-09-05 Loop-CRM commit (AI hub, en/ar locale, Google/Meta/TikTok/Reddit connectors, people/search islands) was never recorded in the agenda — added as a ✅ Shipped milestone under `feature-tracking.md` § Loop-CRM.
+- dev-team-plans.md now carries an **implementation-status truth table** (backend × frontend per product) and a "couldn't add" register; Loop-CRM's remaining items are operational gates (live provider credentials, realtime hardening, demo-state server verify), not feature code.
+- Component audit (`docs/audit/frontend-components-2026-09-06.md`): Loop-CRM app islands are all real-data with explicit empty/pending states; genuine findings are CTC lorem blog-demo templates, the precis-main `brand.ts` "coming soon" tagline, and Formint Pro "Add … coming soon" stub toasts.
+- Loop-CRM backend now follows the repo ERD convention (`django_extensions` + `make erd`/`erd-all` + `docs/erd/README.md`), generating per-app model graphs incl. **crm (sales)** and **marketing**.
+
+**Decisions made:**
+- PNG ERD outputs stay gitignored derived assets (repo convention); the per-project `docs/erd/README.md` tables are the committed contract.
+- The component audit is a report, not a plan — findings move into sprint backlog tasks (task-tracking.md Backlog) rather than new plan files.
+
+**Action items:**
+- [x] Record Loop-CRM AI-hub/locale/connectors milestone — Done (2026-09-06)
+- [x] Reconcile implementation status per product in dev-team-plans.md — Done (2026-09-06)
+- [x] Publish frontend component audit — Done (2026-09-06)
+- [x] Add Loop-CRM ERD tooling + docs/erd README — Done (2026-09-06)
+- [ ] Configure live OAuth credentials and run publish/consent E2E on the deployed stack — Pending (deploy-gated)
+- [x] Implement Formint Pro create-forms behind the "coming soon" toasts — Done (2026-09-06; suppliers, HR roles/schedules/payroll, admin notes, recipes + ingredients — create/edit modals wired to the Django server API; see [`../audit/frontend-components-2026-09-06.md`](../audit/frontend-components-2026-09-06.md) § 2.3)
+- [x] Verify Formint Pro modals end-to-end (2026-09-06) — removed stale `item.*_name` table bindings in favor of `empName()`/`prodName()` FK resolution; added `create-forms.contract.test.ts` (payload/endpoint/method contracts); `vitest run` **86/86** passed across 8 files and `astro check` reports **0 errors / 0 warnings**. Backend suite cannot run in this sandbox: the server lockfile requires `libs/django-bolt`, which is not in this checkout — run `make test` inside the Formint Pro Docker image on the host (see audit doc § 2.3).
+
+**Blockers / Risks:**
+- `graphviz` was not pre-installed in the agent sandbox — installed on request (2026-09-06) and PNGs rendered for Loop-CRM + regenerated for precis-main/precis-ctc/syntara (models unchanged — tracked `.dot` files were left at HEAD to avoid pure churn). Formint-cloud's ERD cannot re-render here because its optional `django_bolt` package is not in the sandbox venv (run `make erd` in its backend Docker image).
+
+**Links:**
+- Related feature tracking: [`feature-tracking.md`](./feature-tracking.md) § Loop-CRM — AI Hub, locale & connectors
+- Related component audit: [`../audit/frontend-components-2026-09-06.md`](../audit/frontend-components-2026-09-06.md)
+- Related task board: [`task-tracking.md`](./task-tracking.md) § Sprint 2 + Backlog
 
 ---
 

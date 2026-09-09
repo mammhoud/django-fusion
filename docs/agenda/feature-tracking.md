@@ -2098,6 +2098,37 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 
 ---
 
+**AI Hub, locale support & channel connector expansion**
+
+| Field | Value |
+|-------|-------|
+| **Status** | ✅ Shipped |
+| **Priority** | P0 |
+| **Product** | Loop-CRM |
+| **Owner** | — |
+| **Target** | Done (2026-09-05; live-provider verification pending real deploy) |
+| **Depends on** | — |
+
+**Why it matters:** Moves Loop-CRM past plumbing toward the AI-assisted RevOps loop — a workspace consent-gated AI surface that acts on real CRM context, an en/ar interface, and the connector catalog expansion that makes scheduled publishing real for more platforms.
+
+**Scope:**
+- **AI Hub** — provider-neutral operation catalog + workspace consent + OpenAI-compatible adapter in `apps/core/ai.py`; endpoints under `/apis/core/ai/` (catalog, consent, run); backend template `dashboard/ai.html`; Astro `AiHub` island. Operations take a bounded brief, never mutate CRM records without review (human-review note rendered with every result).
+- **Locale (en/ar)** — `LocaleMiddleware`/`LANGUAGES`/shared `projects/assets/locale` catalogs; `apps/core/locale_api.py` (+`/apis/core/locale/` read/write); `LocaleSwitcher` island applies direction + reloads. Contracts documented in `docs/ai/templates-and-request-flows.md`.
+- **People & shell islands** — `EmployeeDirectory` (+`/apis/core/people/`), `OnboardingTour`, `CommandPalette` (route index + live `/apis/core/search/`), `ProfileCard`; nav catalog and AppShell wiring updated.
+- **Connector expansion** — OAuth additions (Google, Meta, TikTok, Reddit) in `apps/marketing/oauth.py` (+322); catalog connectors in `apps/marketing/connector_adapters.py` (+740) — real HTTP publish adapters gated on configured credentials; post rows/forms updated.
+
+**Acceptance criteria:**
+- [x] AI catalog, consent toggle, and operation run round-trip against real workspace data with CSRF + tenant scoping (`apps/core/test_ai.py` 127 lines)
+- [x] Locale read/write + catalog integrity covered (`test_locale.py`, `test_locale_catalog.py`)
+- [x] People/employee directory API covered (`test_people_api.py`)
+- [x] Connector + OAuth suites green (`test_connectors.py` +307, `test_oauth.py` +254)
+- [x] Frontend islands mount real endpoints — no mocked aggregates (E2E suites: task-center, workflow-dag, revops-dashboard, email-sync contracts)
+- [ ] Live provider credentials configured + end-to-end publish/consent verified against the deployed `crm.structa.cloud` stack (requires real deploy)
+
+**Notes:** No plan file was created for this slice — commit `61893cc7` (2026-09-05) is the archive. `AiHub` consent is explicit before any CRM context leaves the workspace. See [`dev-team-plans.md`](./dev-team-plans.md) § Loop-CRM and the frontend component audit `docs/audit/frontend-components-2026-09-06.md`.
+
+---
+
 ## 🔄 Keeping This in Sync
 
 1. **When a feature moves to Shipped:**

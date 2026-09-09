@@ -7,7 +7,7 @@ Status: Published
 # Development Team Plans
 
 > **Scope:** All engineering plans across Structa Cloud products
-> **Updated:** 2026-08-28
+> **Updated:** 2026-09-06
 
 ---
 
@@ -55,11 +55,12 @@ Status: Published
 **Runtime alias:** `cypercloud` preserved for external contracts
 **Stack:** Django + Webpack + HTMX + Monaco Editor + Ollama/OpenAI/Claude/Gemini
 
-### 6. Loop-CRM — **Merge in Progress**
+### 6. Loop-CRM — **Active (merge complete at feature level)**
 **Canonical:** `docs/plans/loop-crm/merge-plan.md`
 **Owner:** CRM team
 **Path:** `projects/loop-crm/`
-**Milestones:** Tenancy/auth → tenant-scoped CRUD → channels/adapters → allauth → AI hub
+**Status:** Merge milestones shipped end-to-end (tenancy/auth → tenant-scoped CRUD → channels/adapters → allauth → finance ledger → AI hub → en/ar locale → billing/Wagtail landing). Remaining gates are operational, not feature code: live OAuth provider credentials, realtime/WebSocket hardening on the deployed stack, and the demo-state server-half verification.
+**Milestones:** Tenancy/auth → tenant-scoped CRUD → channels/adapters → allauth → finance/POS ingestion → AI hub + locale → billing/landing
 
 ### 7. django-fusion (Shared Framework) — **P2**
 **Canonical:** `docs/plans/django-fusion/`
@@ -70,6 +71,35 @@ Status: Published
 - LLM & AI MCP Enhancement: provider-neutral routing, model levels, caching, streaming
 - Webpack Enhancement: project-customizable webpack, env configs
 - Analyzer + Skeleton + Asset APIs: dynamic skeletons, per-page components, Astro bridge
+
+---
+
+## ✅ Implementation status truth (backend × frontend) — 2026-09-06
+
+> Reconciliation pass run 2026-09-06 across the Django products. "Implemented"
+> means code-backed in the current tree; "Not yet" is planned/missing;
+> "Couldn't add" records work intentionally deferred or blocked. Cross-product
+> component evidence lives in
+> [`docs/audit/frontend-components-2026-09-06.md`](../../audit/frontend-components-2026-09-06.md).
+
+| Product | Backend — implemented | Backend — not yet / couldn't add | Frontend — implemented | Frontend — not yet / flagged |
+|---------|-----------------------|---------------------------------|------------------------|------------------------------|
+| **Loop-CRM** | Tenancy+RBAC, CRM pipeline/deals/board, marketing posts + 12-platform catalog connectors + OAuth (incl. Google/Meta/TikTok/Reddit), attribution, finance/POS ledger, billing/Stripe, Wagtail landing road, workflows, Dramatiq tasks, realtime events, AI Hub (consent-gated), en/ar locale | Live OAuth credentials + publish E2E on deployed stack; realtime/WebSocket hardening on deploy; demo-state server-half verify (all need a real deploy, not code) | Astro shell, RevOps dashboard, PipelineBoard (real `/apis/core/` data, GSAP drag, CSRF move), AiHub, CommandPalette, LocaleSwitcher, EmployeeDirectory, BillingPlan, ReportCatalog, Task Center — no placeholder components | `PipelineDemo` is an inert marketing demo island (fake deals) — landing-preview only, not app code; live-provider config remains env-gated |
+| **Precis LMS (precis-main)** | Wagtail content/pages + LMS backend + django-fusion routing | Deployment/CI gates per plan; builder/data surfaces | Astro/marketing shell shipped | `frontend/src/lib/brand.ts` carries a stale "CRM + social scheduling · coming soon" tagline — flagged copy, see audit |
+| **Precis Landing** | Render-first Django contract (HTML/HTMX/JSON) | — | Astro front-end live | — |
+| **CTC Research** | Multi-lang catalogs (es/sv/pt-br), media proxy, i18n fixtures, containerized deploy | Publish gates (email parity E2E, redeploy validation) still open | Backend-rendered pages live | `blog/*-details*.html` demo templates still carry hard-coded Lorem-ipsum/2018 theme markup — not view-referenced, should be removed or quarantined |
+| **Syntara (Cypercloud)** | Django `chat` app, config cascade, model routing, token tracking | Provider keys + OAuth for live AI calls (local Ollama works) | Webpack/HTMX + Monaco customizer shipped | — |
+| **Formint Pro** | Django `server/` backend + sync; finance ledger groundwork | Invoicing/reports APIs, client onboarding funnel (next gates) | Astro + Vue shells shipped; create/edit modals + delete wired for suppliers, HR roles, schedules, payroll, admin notes, kitchen recipes (2026-09-06) | — |
+| **Formint Cloud** | Django `backend/` (core/domain/handlers) + Channels API road | Multi-tenant SaaS, KDS, realtime sync scale-out | Astro frontend + shared client | — |
+| **Formint Community / Standard / Client** | SQLite/Rust (Community/Standard), Vue+Tauri (Client) | — (Cloud API integration for Client) | Rust/Tauri + Vue | — |
+| **django-fusion** | Component/fragment/task/config systems; bolt bridge | Celery removal + MCP tooling + LLM routing consolidation (P2) | Astro bridge + skeleton APIs in flight | — |
+
+**What couldn't be added (deferred or blocked, with reason):**
+- **Loop-CRM live provider publishing** — connectors + OAuth exist and are tested, but no real provider credentials are configured anywhere; verification requires the deployed stack (`crm.structa.cloud`) and secrets. Not a code gap.
+- **Loop-CRM realtime on deploy** — Channels/SSE path is dev-verified; production Redis/channel-layer hardening is a deploy gate.
+- **CTC publish gates** — content/component audit + i18n + media proxy shipped; email parity + `make redeploy` validation remain deploy-blocked.
+- ~~Formint Pro create forms~~ — resolved 2026-09-06: suppliers, HR roles/schedules/payroll, admin notes and kitchen recipes/ingredients now open real create/edit modals wired to the Django server API (see [`docs/audit/frontend-components-2026-09-06.md`](../../audit/frontend-components-2026-09-06.md) § 2.3).
+- **ERD PNGs for Loop-CRM** — tooling added (2026-09-06); DOT graphs generated and PNGs rendered after installing `graphviz` locally. PNGs stay git-ignored derived assets (repo convention); the committed contract is the `docs/erd` README + DOT. Formint-cloud re-render remains blocked in this sandbox by the missing optional `django_bolt` package (present in its Docker image).
 
 ---
 

@@ -85,7 +85,7 @@ import Icon from '../../../components/ui/Icon.astro';
           <template x-for="item in pagedItems()" :key="item.id">
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span x-text="item.id" class="text-xs tabular-nums"></span></td>
-              <td class="px-3 py-2"><span x-text="item.product_name || item.product || '-'" class="text-xs font-medium"></span></td>
+              <td class="px-3 py-2"><span class="text-xs font-medium" x-text="prodName(item.product) || '-'"></span></td>
               <td class="px-3 py-2"><span x-text="item.quantity" class="text-xs tabular-nums"></span></td>
               <td class="px-3 py-2">
                 <span class="badge" :class="{ 'badge-soft-success': item.transaction_type==='in'||item.transaction_type==='restock', 'badge-soft-error': item.transaction_type==='out'||item.transaction_type==='waste', 'badge-soft-warning': item.transaction_type==='adjustment', 'badge-soft-info': item.transaction_type==='transfer_out'||item.transaction_type==='transfer_in'||item.transaction_type==='return' }" x-text="(item.transaction_type||'').replace(/_/g,' ').replace(/\b\w/g, l => l.toUpperCase())"></span>
@@ -238,6 +238,10 @@ import Icon from '../../../components/ui/Icon.astro';
         product_id: '', transaction_type: 'in', quantity: '',
         reference: '', created_by: '', shipping_fee: '0',
         inventory_id: 'main', notes: '',
+      },
+      prodName(id) {
+        const p = this.productList.find((x) => String(x.id) === String(id));
+        return p ? p.name : null;
       },
 
       get total() { return this.items.length; },

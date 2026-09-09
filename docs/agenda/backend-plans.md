@@ -7,7 +7,7 @@ Status: Published
 # Backend Plans
 
 > **Scope:** Backend engineering plans across Structa Cloud products, with focus on Formint POS versions
-> **Updated:** 2026-08-28
+> **Updated:** 2026-09-06
 
 ---
 
@@ -63,10 +63,11 @@ Status: Published
 **Stack:** Django + PostgreSQL + AI providers
 **Key areas:** Chat sessions, template customization, provider routing, token tracking
 
-### 5. Loop-CRM Backend — Merge in Progress
+### 5. Loop-CRM Backend — Active (code-complete; deploy gates open)
 
 **Owner:** CRM team
 **Milestones:** Tenancy/auth → tenant CRUD → channels/adapters → feature parity
+**Status (2026-09-06):** Domain apps (core/crm/marketing/attribution/finance/pos/billing/pages) ship 42 models across sales, marketing, finance/RevOps, POS-ingest, SaaS-billing and landing domains; `graph_models` ERD targets (`make erd`/`erd-all`) now match the repo convention. Remaining work is deploy-gated: live OAuth provider credentials + publish E2E, realtime/Channels hardening on the deployed stack, and the demo-state server-half verification.
 
 ### 6. django-fusion (Shared Backend Framework) — P2
 

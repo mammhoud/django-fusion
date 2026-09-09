@@ -78,7 +78,7 @@ import Icon from '../../../components/ui/Icon.astro';
               <td class="px-3 py-2"><span x-text="item.name" class="text-xs font-medium"></span></td>
               <td class="px-3 py-2"><span x-text="item.sku || '-'" class="text-xs font-mono opacity-60"></span></td>
               <td class="px-3 py-2"><span x-text="'$' + Number(item.price || 0).toFixed(2)" class="text-xs tabular-nums"></span></td>
-              <td class="px-3 py-2"><span x-text="item.category_name || item.category || '-'" class="text-xs"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="catName(item.category) || '-'"></span></td>
               <td class="px-3 py-2">
                 <span class="badge" :class="(item.stock_quantity ?? 0) <= (item.low_stock_threshold ?? 10) ? 'badge-soft-error' : 'badge-soft-success'" x-text="item.stock_quantity ?? 0"></span>
               </td>
@@ -246,6 +246,10 @@ import Icon from '../../../components/ui/Icon.astro';
         category: '', tax_rate: 'standard', stock_quantity: '0',
         low_stock_threshold: '10', image_url: '', description: '',
         is_active: true,
+      },
+      catName(id) {
+        const c = this.categories.find((x) => String(x.id) === String(id));
+        return c ? c.name : null;
       },
 
       get total() { return this.items.length; },

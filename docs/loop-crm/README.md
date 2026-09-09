@@ -47,6 +47,7 @@ links:
 |-----|------|--------|
 | **Design System** | [`projects/loop-crm/docs/DESIGN_SYSTEM.md`](../../projects/loop-crm/docs/DESIGN_SYSTEM.md) | Industrial-brutalist / tactical telemetry design tokens, typography, layout, components. |
 | **Setup & Build** | [`projects/loop-crm/docs/SETUP_AND_BUILD.md`](../../projects/loop-crm/docs/SETUP_AND_BUILD.md) | Step-by-step startup, backend + frontend setup, build and run commands. |
+| **Database ERD** | [`projects/loop-crm/docs/erd/README.md`](../../projects/loop-crm/docs/erd/README.md) | `make erd`/`erd-all` model diagrams per team domain — sales (crm), marketing, attribution, finance, pos, billing, pages, core. |
 
 ## Env & Config
 
@@ -69,6 +70,8 @@ make backend-migrate   # makemigrations + migrate
 make backend-seed      # seed demo workspace (demo@loop.dev / demo-pass-123)
 make validate-env      # check env against the configs contract
 make i18n              # makemessages + compilemessages (en, ar)
+make backend-erd       # Django model ERD → docs/erd/ (needs graphviz dot)
+make backend-erd-all   # one model ERD PNG per domain app (sales crm, marketing, …)
 
 # Through Nx (requires root npm install)
 make nx-check          # npx nx run loop-crm:check

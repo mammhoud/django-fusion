@@ -156,6 +156,13 @@ stateDiagram-v2
 | Fix dangling image refs in mono-repo plans/tasks | ✅ Done | — | P2 | 2026-09-05 | Agenda | business-model + timeline now use rendered mermaid diagrams |
 | Add object types + objects separation (Anytype schema) | ✅ Done | — | P0 | 2026-09-05 | Agenda Content Model | 15 new type defs in [objects/](mono-repo/objects/) + 20 type dirs with repo-tied content (projects, editions, sprints, releases, integrations, apis, tools, modules…) — 87 files |
 | Complete all mono-repo prompts (graph, relations, guides) | ✅ Done | — | P1 | 2026-09-05 | Agenda Content Model | [_prompts.md](mono-repo/_prompts.md) ledger all ✅; [_relations.md](mono-repo/objects/_relations.md) extended; CONTENT_MODEL package B updated |
+| Record Loop-CRM AI hub + locale + connectors as milestone | ✅ Done | — | P0 | 2026-09-06 | Loop-CRM § AI Hub, locale & connectors | Commit `61893cc7` recorded as ✅ Shipped milestone in [feature-tracking.md](feature-tracking.md) § Loop-CRM |
+| Backend × frontend implementation-status reconciliation | ✅ Done | — | P1 | 2026-09-06 | dev-team-plans.md | Status-truth matrix + "couldn't add" blockers added to [dev-team-plans.md](dev-team-plans.md) |
+| Frontend component placeholder audit (all products) | ✅ Done | — | P1 | 2026-09-06 | Component audit | Report in docs/audit/frontend-components-2026-09-06.md — CTC lorem demo templates, precis-main brand tagline, Formint Pro "coming soon" Add forms |
+| Add Loop-CRM ERD tooling + docs/erd README | ✅ Done | — | P0 | 2026-09-06 | Loop-CRM models | `django_extensions` + `make erd`/`erd-all` in backend; docs/erd README; graph_models DOT generated incl. crm (sales) + marketing apps |
+| Update per-project docs + agenda indexes | ✅ Done | — | P2 | 2026-09-06 | Agenda docs | SUMMARY/team-notes/dev-team-plans updated; plans README + loop-crm docs pointed at the audit |
+| Implement Formint Pro create/edit modals replacing "coming soon" toasts | ✅ Done | — | P1 | 2026-09-06 | Formint Pro | suppliers, hr/roles, hr/schedules, hr/payroll, admin/notes, kitchen/recipes wired to /suppliers/, /roles/, /employee-schedules/, /payroll/, /notes/, /recipes/ + /ingredients/; `astro check` clean (audit doc § 2.3) |
+| Formint Pro modal verification: stale display fields + Vitest payload contracts | ✅ Done | — | P1 | 2026-09-06 | Formint Pro | Removed `item.*_name` bindings → `empName()`/`prodName()` FK resolution; new create-forms.contract.test.ts; vitest 86/86 pass, astro check 0 errors/0 warnings. Backend suite blocked in sandbox (lockfile needs libs/django-bolt absent from checkout) — run `make test` in the product image (audit doc § 2.3) |
 
 ---
 
@@ -173,6 +180,10 @@ stateDiagram-v2
 | Review feature-tracking entries for completeness | P1 | — | Check all features have acceptance criteria |
 | Write case study for System Templates | P2 | System Templates | After Stripe Billing ships |
 | Write case study for LMS Video Hosting | P2 | Video Hosting | After implementation starts |
+| Configure live OAuth provider credentials + publish E2E | P0 | Loop-CRM § AI Hub, locale & connectors | Requires deployed `crm.structa.cloud` + secrets |
+| Verify demo-state server half on deployed stack | P0 | Loop-CRM § Demo state | Real deploy required |
+| Quarantine CTC `blog/*-details*.html` lorem demo templates | P2 | CTC | Static theme pages, not view-referenced — delete or move out of templates/ |
+| Fix precis-main brand.ts "coming soon" Loop-CRM tagline | P2 | Precis LMS | Content copy refresh |
 
 ---
 

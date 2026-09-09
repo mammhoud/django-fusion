@@ -63,6 +63,49 @@ import Icon from '../../../components/ui/Icon.astro';
         </div>
       </div>
     </div>
+
+    <div x-show="deleteTarget" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" @click.self="deleteTarget=null">
+      <div class="card max-w-sm mx-4 p-6 text-center space-y-4">
+        <p class="font-semibold">Delete this note?</p>
+        <p class="text-sm opacity-60 truncate" x-text="(deleteTarget?.title || 'Note #'+deleteTarget?.id)"></p>
+        <div class="flex gap-2 justify-center">
+          <button @click="deleteTarget=null" class="btn btn-ghost btn-sm">Cancel</button>
+          <button @click="doDelete()" class="btn btn-error btn-sm">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <div x-show="formOpen" x-transition.opacity.duration.200ms class="fixed inset-0 z-[60] flex items-start justify-center pt-[8vh] bg-black/50 px-4 overflow-y-auto" @click.self="closeForm()" @keydown.escape.window="closeForm()">
+      <div class="card w-full max-w-lg p-6 space-y-5 shadow-2xl" x-transition.scale.90.duration.200ms @click.stop>
+        <div class="flex items-center justify-between"><h2 class="text-base font-bold" x-text="editingItem ? 'Edit Note' : 'New Note'"></h2><button @click="closeForm()" class="btn btn-ghost btn-sm" aria-label="Close"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x" /></svg></button></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Title</label><input type="text" x-model="form.title" class="input w-full" placeholder="Short title (optional)" /></div>
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Status</label>
+            <select x-model="form.status" class="input w-full">
+              <option value="draft">Draft</option>
+              <option value="saved">Saved</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Content</label><textarea x-model="form.content" class="input w-full" rows="4" placeholder="Note body…"></textarea></div>
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Reference type</label>
+            <select x-model="form.reference_type" class="input w-full">
+              <option value="">General</option>
+              <option value="cart">Cart</option>
+              <option value="inventory">Inventory</option>
+              <option value="count">Count</option>
+              <option value="order">Order</option>
+              <option value="customer">Customer</option>
+            </select>
+          </div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Reference ID</label><input type="number" min="0" x-model="form.reference_id" class="input w-full" placeholder="Optional entity id" /></div>
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Created by</label><input type="text" x-model="form.created_by" class="input w-full" placeholder="User / device name" /></div>
+        </div>
+        <div class="flex gap-2 justify-end pt-2 border-t border-[var(--color-border-subtle)]"><button @click="closeForm()" class="btn btn-ghost btn-sm" :disabled="formSaving">Cancel</button><button @click="doSave()" class="btn btn-primary btn-sm gap-1" :disabled="formSaving"><span x-show="formSaving" class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span><span x-text="editingItem ? 'Update' : 'Create'"></span></button></div>
+      </div>
+    </div>
   </div>
 </Layout>
 
@@ -70,7 +113,9 @@ import Icon from '../../../components/ui/Icon.astro';
   import Alpine from 'alpinejs';
   document.addEventListener('alpine:init', () => {
     Alpine.data('notesPage', () => ({
-      items: [], loading: true, search: '', filterStatus: '', page: 1, perPage: 20,
+      items: [], loading: true, search: '', filterStatus: '', page: 1, perPage: 20, deleteTarget: null,
+      formOpen: false, formSaving: false, editingItem: null,
+      form: { title: '', content: '', status: 'draft', reference_type: '', reference_id: '', created_by: '' },
       get total() { return this.items.length; },
       get draftCount() { return this.items.filter((i: any) => i.status==='draft').length; },
       get savedCount() { return this.items.filter((i: any) => i.status==='saved').length; },
@@ -78,9 +123,29 @@ import Icon from '../../../components/ui/Icon.astro';
       get filteredItems() { let l = this.items; if (this.search) { const q = this.search.toLowerCase(); l = l.filter((i: any) => Object.values(i).some(v => String(v).toLowerCase().includes(q))); } if (this.filterStatus) l = l.filter((i: any) => i.status===this.filterStatus); return l; },
       pagedItems() { const s = (this.page-1)*this.perPage; return this.filteredItems.slice(s, s+this.perPage); },
       async load() { this.loading=true; try { const r = await fetch('/notes/'); if (r.ok) { const d = await r.json(); this.items = d.data || d || []; } } catch(e){} finally { this.loading=false; } },
-      openAdd() { this.$store.ui.toast('Add note form coming soon', 'info'); },
-      openEdit(item: any) { this.$store.ui.toast('Editing: ' + (item.title || 'Note #'+item.id), 'info'); },
-      confirmDelete(item: any) { this.$store.ui.toast('Delete stub', 'info'); },
+      resetForm() { this.form = { title: '', content: '', status: 'draft', reference_type: '', reference_id: '', created_by: '' }; this.editingItem = null; },
+      openAdd() { this.resetForm(); this.formOpen = true; },
+      openEdit(item: any) { this.resetForm(); this.editingItem = item; this.form = { title: item.title || '', content: item.content || '', status: item.status || 'draft', reference_type: item.reference_type || '', reference_id: item.reference_id ?? '', created_by: item.created_by || '' }; this.formOpen = true; },
+      closeForm() { if (this.formSaving) return; this.formOpen = false; this.resetForm(); },
+      async doSave() {
+        this.formSaving = true;
+        const p = {
+          title: this.form.title, content: this.form.content, status: this.form.status,
+          reference_type: this.form.reference_type,
+          reference_id: this.form.reference_id === '' || this.form.reference_id === null ? null : parseInt(String(this.form.reference_id), 10) || null,
+          created_by: this.form.created_by,
+        };
+        try {
+          let r;
+          if (this.editingItem) { r = await fetch('/notes/' + this.editingItem.id + '/', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }); }
+          else { r = await fetch('/notes/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }); }
+          if (r.ok) { this.$store.ui.toast(this.editingItem ? 'Note updated' : 'Note created', 'success'); this.closeForm(); await this.load(); }
+          else { const e = await r.text(); this.$store.ui.toast('Save failed: ' + (e || r.status), 'error'); }
+        } catch(e) { this.$store.ui.toast('Network error', 'error'); }
+        finally { this.formSaving = false; }
+      },
+      confirmDelete(item: any) { this.deleteTarget = item; },
+      async doDelete() { if (!this.deleteTarget) return; const id = this.deleteTarget.id; this.deleteTarget = null; try { await fetch('/notes/' + id + '/', { method: 'DELETE' }); this.items = this.items.filter((i: any) => i.id !== id); this.$store.ui.toast('Note deleted', 'success'); } catch(e) { this.$store.ui.toast('Failed', 'error'); } },
     }));
   });
 </script>

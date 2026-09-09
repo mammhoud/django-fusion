@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.google",
     "django_tables2",
+    # django-extensions provides `graph_models` for the ERD diagram targets
+    # (`make erd` / `make erd-all` → docs/erd/), matching the repo convention.
+    "django_extensions",
     # django-dramatiq wires Dramatiq into Django (provides `rundramatiq`).
     "django_dramatiq",
     # Wagtail — editor-managed public landing pages (precis-landing pattern).

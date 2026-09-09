@@ -74,7 +74,14 @@ erDiagram
 | `PipelineStage` | `pipeline` |
 | `Deal` | `workspace`, `company`, `contact`, `pipeline`, `stage`, `campaign`, `owner` |
 | `Activity` | `workspace`, `deal`, `contact`, `created_by` |
-| `CustomFieldDefinition`, `CustomObjectDefinition` | `workspace` |
+| `CustomFieldDefinition`, `CustomObjectDefinition`, `CustomObjectRecord` | `workspace` (tenant-defined fields/objects + their records) |
+
+### `apps/pages` — Wagtail landing/builder pages
+
+| Model | Key relations |
+|-------|---------------|
+| `LandingPage` / `BuilderPage` | Wagtail page hierarchy + StreamField sections |
+| `HomePage`, `PricingPage`, `FaqPage`, `LegalPage` (Privacy/Terms) | public `/apis/pages/<slug>/` road |
 
 ### `apps/pos` — POS ledger
 
@@ -125,8 +132,17 @@ assume (`/apis/core/workspace/current/` is the tenant discovery call).
 
 ## 4. How this was produced
 
-The ERD above mirrors what `django-extensions` `graph_models` would emit from
-the model source. The mermaid block is the editable source; the rendered SVG
-(`/agenda/diagrams/diagrams-django-loop-crm-er-1.svg`) is what gets embedded elsewhere.
+Two sources describe the same model graph:
+
+1. **The mermaid block above** is the editable, render-anywhere summary (sales,
+   marketing, finance, POS, billing, attribution, core). It is the source for
+   the SVG at `/agenda/diagrams/diagrams-django-loop-crm-er-1.svg`.
+2. **`django-extensions` `graph_models`** emits the canonical full graph from
+   the model source — run `cd projects/loop-crm/backend && make erd` (combined
+   PNG) or `make erd-all` (one PNG per team app: `crm.png` = sales,
+   `marketing.png` = marketing, plus attribution/finance/pos/billing/pages/
+   core). Outputs land in `projects/loop-crm/docs/erd/` (README is the
+   committed contract; PNGs are git-ignored derived assets). Verified
+   2026-09-06: every domain app's models appear in the generated graph.
 
 <!-- AI-generated: review needed -->
