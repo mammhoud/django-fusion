@@ -5,7 +5,6 @@ import Testimonials from '@/components/blocks/Testimonials.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -34,7 +33,7 @@ const capabilities = pageFeatures?.length ? pageFeatures.map((f: any) => ({
 })) : [];
 ---
 
-<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'CTC Research capabilities — medical AI, biostatistics, evidence synthesis, and publication integrity.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
+<Layout title={pageData?.title || 'Features'} description={pageData?.search_description || 'CTC Research capabilities — clinical research, biostatistics, evidence synthesis, and publication integrity.'} navItems={navData?.nav_items} siteSettings={siteSettings} pageData={pageData} pageSlug="features">
   <Hero eyebrow={pageHero?.badge || 'features · the full capability list'} heading={pageHero?.title || 'Research capabilities'} accent='in practice' intro={pageHero?.subtitle || 'Clinical studies, data analysis, evidence reviews, and publication support — what each capability does and why it matters for medical care.'} primaryCta={{ label: 'See the products', href: '/products' }} secondaryCta={{ label: 'Explore projects', href: '/projects' }} variant="research" />
 
   {capabilities.length ? (
@@ -43,7 +42,7 @@ const capabilities = pageFeatures?.length ? pageFeatures.map((f: any) => ({
       <div class='mx-auto mb-14 max-w-2xl text-center'>
         <p class='tag-marker mb-4'>capabilities</p>
         <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Capabilities, broken down</h2>
-        <p class='text-fu-muted'>Medical AI, biostatistics, and evidence synthesis — what each capability does and why it matters for trusted evidence.</p>
+        <p class='text-fu-muted'>Clinical research, biostatistics, and evidence synthesis — what each capability does and why it matters for trusted evidence.</p>
       </div>
       <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
         {capabilities.map((cap, i) => (
@@ -65,7 +64,6 @@ const capabilities = pageFeatures?.length ? pageFeatures.map((f: any) => ({
   <!-- All feature content above is rendered from the same build-time page
        data contract. Do not fetch the full `/features/` document into a
        fragment target; that would nest the Astro shell. -->
-  <CTA heading={pageCta?.title || 'Advance health through research'} intro={pageCta?.subtitle || 'Structured methods and responsible medical AI, from protocol to publication.'} ctaLabel={pageCta?.primary_cta?.label || 'Browse courses'} ctaHref={pageCta?.primary_cta?.href || '/courses/'} />
+  <CTA heading={pageCta?.title || 'Advance health through research'} intro={pageCta?.subtitle || 'Structured methods and rigorous evidence, from protocol to publication.'} ctaLabel={pageCta?.primary_cta?.label || 'Browse courses'} ctaHref={pageCta?.primary_cta?.href || '/courses/'} />
   <Toast />
-  <HtmxBootstrap />
 </Layout>

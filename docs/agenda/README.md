@@ -6,8 +6,11 @@
 
 | File | Purpose |
 |------|---------|
+| **`CONTENT_MODEL.md`** | ⭐ The agenda definition — Anytype concept glossary, object/markdown packaging, and the team reference contract (every link routes through plans & milestones). **Read this first.** |
 | **`MAIN.md`** | Hub and index — how everything connects |
+| **`mono-repo/`** | 🧠 Package B — the Anytype object graph: type definitions, per-type content objects (projects, editions, sprints, releases, integrations, APIs, components, tools, pipelines, styles, diagrams, reports, dashboards, methodologies, insights, recommendations, repositories, modules, documentation) + install guides |
 | **`feature-tracking.md`** | Feature lifecycle: Proposed → Prioritized → In Progress → Review → Shipped |
+| **`diagrams/`** | 📊 Diagram package — rendered SVG assets + mermaid sources (API request UML, Django/Rust ERDs, Blinko SurrealDB) |
 | **`case-studies.md`** | Real implementation case studies with mermaid architecture diagrams |
 | **`task-tracking.md`** | Sprint task board — assignees, status, due dates |
 | **`team-notes.md`** | Meeting notes, decisions, blockers — the team's written memory |
@@ -18,10 +21,15 @@
 ## Quick start
 
 ```
+New to the agenda?  → CONTENT_MODEL.md (definition, packages, reference contract)
+Know the Anytype schema? → mono-repo/README.md (object types + per-type content objects)
 New feature? → feature-tracking.md
 New task? → task-tracking.md
 Meeting? → meeting-agenda.md (copy template) + team-notes.md (record notes)
 Feature shipped? → case-studies.md (write case study with diagram) + feature-tracking.md (update status)
+Need a diagram? → diagrams/README.md (rendered SVGs + mermaid sources + render script)
+Add an object to the graph? → mono-repo/objects/_object-types.md + per-type directory
+Plan finished? → CONTENT_MODEL.md § 4.2 (delete plan → record ✅ Shipped milestone)
 Project done? → completion-checklist.md (run through it) + team-notes.md (record decision)
 ```
 
@@ -56,12 +64,21 @@ See: [Anytype Objects](https://doc.anytype.io/anytype/create/objects), [Anytype 
 
 ## Diagrams
 
-All architecture and flow diagrams use mermaid. Patterns:
+All architecture and flow diagrams use mermaid, **rendered to SVG images** so they
+are viewable everywhere (GitHub, Docus, Anytype import). See
+[`diagrams/README.md`](./diagrams/README.md) — rendered assets live in
+`docs/public/agenda/diagrams/` and mermaid sources are editable. Re-render with:
+
+```bash
+node docs/scripts/render-agenda-diagrams.mjs
+```
+
+Patterns:
 
 - `graph LR/TB` — architecture and data flow
-- `sequenceDiagram` — request/response sequences
+- `sequenceDiagram` — request/response sequences (see `diagrams/api-request-flows.md`)
 - `stateDiagram-v2` — status lifecycles
-- `erDiagram` — data models
+- `erDiagram` — data models (see `diagrams/django-loop-crm-er.md`, `diagrams/rust-sqlite-er.md`)
 
 Test diagrams with `npm run validate-content` in `docs/docus/`.
 

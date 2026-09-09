@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 
 from apps.content.models.contact import ContactSubmission
+from apps.domain.models.newsletter.subscriber import Subscriber
 from apps.pages.blog.models import BlogComment, BlogPost
 
 
@@ -134,3 +135,36 @@ class LandingApiTests(TestCase):
         ):
             with self.subTest(path=path):
                 self.assertNotEqual(self.client.get(path).status_code, 404)
+
+    def test_newsletter_subscription_persists_and_returns_json_for_api_clients(self):
+        response = self.client.post(
+            "/api/newsletter/subscribe/",
+            data={"email": "Researcher@Example.com"},
+            HTTP_ACCEPT="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["success"], True)
+        self.assertTrue(Subscriber.objects.filter(email="researcher@example.com", status="pending").exists())
+
+    def test_newsletter_subscription_returns_html_for_htmx(self):
+        response = self.client.post(
+            "/api/newsletter/subscribe/",
+            data={"email": "reader@example.com"},
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/html; charset=utf-8")
+        self.assertIn("Thanks for signing up", response.content.decode())
+        self.assertIn("newsletter__message--success", response.content.decode())
+
+    def test_newsletter_subscription_rejects_invalid_email(self):
+        response = self.client.post(
+            "/api/newsletter/subscribe/",
+            data={"email": "not-an-email"},
+            HTTP_HX_REQUEST="true",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("valid email address", response.content.decode())

@@ -90,6 +90,7 @@ graph TB
     FUSION -->|Fragment + data| FUSION_RENDER
     CLOUD -->|Minimal CRM| BOLT_REAL
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-django-bolt-fusion-1.svg)
 
 ### 2.2 Deployment Modes
 
@@ -115,6 +116,7 @@ graph LR
         BOLT_URLS -->|ORM queries| DJANGO_ORD
     end
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-django-bolt-fusion-2.svg)
 
 ### 2.3 Fragment Rendering Pipeline (django-fusion)
 
@@ -142,6 +144,7 @@ sequenceDiagram
     
     F->>B: Render page
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-django-bolt-fusion-3.svg)
 
 ### 2.4 What Was Considered vs. What Was Built
 
@@ -160,6 +163,7 @@ stateDiagram-v2
     Evaluated --> Retired: django_fusion.bolt module NOT adopted
     Retired --> [*]: Removed — projects own their API routes
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-django-bolt-fusion-4.svg)
 
 ---
 

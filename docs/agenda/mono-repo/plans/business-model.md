@@ -14,9 +14,67 @@ Status: Published
 
 ## Business Model Canvas
 
-![Business Model Canvas](files/business-model-canvas-png_h.webp)
+```mermaid
+graph LR
+    subgraph "Key Partners"
+        KP1[OSS Community]
+        KP2[Docker Hub]
+        KP3[Hosting Providers]
+    end
+    subgraph "Key Activities"
+        KA1[Multi-site CMS/LMS dev]
+        KA2[Component library]
+    end
+    subgraph "Value Proposition"
+        VP1[AI-powered multi-site CMS+LMS]
+        VP2[Component-based architecture]
+        VP3[Self-hosted, open source]
+    end
+    subgraph "Customer Relationships"
+        CR1[Community support]
+        CR2[Enterprise SLAs]
+    end
+    subgraph "Channels"
+        CH1[GitHub]
+        CH2[Documentation]
+        CH3[Community Discord]
+    end
+    subgraph "Customer Segments"
+        CS1[EdTech companies]
+        CS2[Corporate training]
+        CS3[Digital agencies]
+    end
+    subgraph "Cost Structure"
+        CO1[Infra + CI/CD]
+        CO2[Maintenance]
+    end
+    subgraph "Revenue Streams"
+        RS1[Support subscriptions]
+        RS2[Enterprise licenses]
+        RS3[Premium templates]
+    end
 
-*Source: [Windmill Digital](https://www.windmill.digital)*
+    KP1 --> KA1
+    KP2 --> KA1
+    KA1 --> VP1
+    KA2 --> VP2
+    VP1 --> CR1
+    VP2 --> CR2
+    VP1 --> CH2
+    VP2 --> CS1
+    VP3 --> CS2
+    CH1 --> CS3
+    VP1 --> RS1
+    VP2 --> RS2
+    VP3 --> RS3
+    CO1 --> VP1
+    CO2 --> VP3
+```
+![Rendered diagram](/agenda/diagrams/mono-repo-plans-business-model-1.svg)
+
+> **Gap fixed (2026-09-05):** the local `files/business-model-canvas-png_h.webp`
+> and the external Windmill Digital image were both dangling. Replaced with a
+> rendered canvas diagram (see [`docs/agenda/diagrams/`](../../diagrams/README.md)).
 
 ---
 

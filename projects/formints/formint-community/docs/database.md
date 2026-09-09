@@ -8,6 +8,11 @@ Formint uses an **embedded SQLite** database managed via **Diesel ORM** migratio
 
 ## Entity Relationship Diagram
 
+> 💡 **Interactive ERD (Formint Standard edition):** the [interactive ERD with
+> per-entity operations logic](../formint-standard/docs/erd/README.md) — searchable
+> viewer (`docs/erd/index.html`) plus a printable/PDF export. This static ASCII
+> diagram below is kept for quick reference.
+
 ```
 ┌─────────────┐       ┌──────────────┐       ┌───────────────┐
 │  settings   │       │  categories  │       │  products     │
@@ -109,6 +114,8 @@ Formint uses an **embedded SQLite** database managed via **Diesel ORM** migratio
 │ is_active    │    │ is_active    │
 └──────────────┘    └──────────────┘
 ```
+
+See also: [Full interactive ERD + operations logic (40 tables, Formint Standard edition)](../formint-standard/docs/erd/README.md)
 
 ---
 

@@ -66,6 +66,23 @@ import Icon from '../../../components/ui/Icon.astro';
         </div>
       </div>
     </div>
+
+    <div x-show="formOpen" x-transition.opacity.duration.200ms class="fixed inset-0 z-[60] flex items-start justify-center pt-[8vh] bg-black/50 px-4 overflow-y-auto" @click.self="closeForm()" @keydown.escape.window="closeForm()">
+      <div class="card w-full max-w-lg p-6 space-y-5 shadow-2xl" x-transition.scale.90.duration.200ms @click.stop>
+        <div class="flex items-center justify-between"><h2 class="text-base font-bold" x-text="editingItem ? 'Edit Supplier' : 'New Supplier'"></h2><button @click="closeForm()" class="btn btn-ghost btn-sm" aria-label="Close"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#i-x" /></svg></button></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Name *</label><input type="text" x-model="form.name" class="input w-full" placeholder="Northline Produce Co." required /></div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Contact name</label><input type="text" x-model="form.contact_name" class="input w-full" placeholder="Mara Ellison" /></div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Phone</label><input type="tel" x-model="form.phone" class="input w-full" placeholder="+1 312 555 0147" /></div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Email</label><input type="email" x-model="form.email" class="input w-full" placeholder="orders@northline.example" /></div>
+          <div><label class="text-xs font-medium opacity-70 mb-1 block">Tax ID</label><input type="text" x-model="form.tax_id" class="input w-full font-mono" placeholder="TX-88231" /></div>
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Payment terms</label><input type="text" x-model="form.payment_terms" class="input w-full" placeholder="Net 30" /></div>
+          <div class="sm:col-span-2"><label class="text-xs font-medium opacity-70 mb-1 block">Address</label><textarea x-model="form.address" class="input w-full" rows="2" placeholder="Street, city, region"></textarea></div>
+          <div class="flex items-center gap-2 sm:col-span-2"><input type="checkbox" x-model="form.is_active" class="rounded" /><label class="text-xs font-medium opacity-70">Active supplier</label></div>
+        </div>
+        <div class="flex gap-2 justify-end pt-2 border-t border-[var(--color-border-subtle)]"><button @click="closeForm()" class="btn btn-ghost btn-sm" :disabled="formSaving">Cancel</button><button @click="doSave()" class="btn btn-primary btn-sm gap-1" :disabled="formSaving"><span x-show="formSaving" class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-current border-t-transparent"></span><span x-text="editingItem ? 'Update' : 'Create'"></span></button></div>
+      </div>
+    </div>
   </div>
 </Layout>
 
@@ -74,6 +91,8 @@ import Icon from '../../../components/ui/Icon.astro';
   document.addEventListener('alpine:init', () => {
     Alpine.data('suppliersPage', () => ({
       items: [], loading: true, search: '', page: 1, perPage: 20, deleteTarget: null,
+      formOpen: false, formSaving: false, editingItem: null,
+      form: { name: '', contact_name: '', phone: '', email: '', address: '', tax_id: '', payment_terms: '', is_active: true },
       get total() { return this.items.length; },
       get activeCount() { return this.items.filter((i: any) => i.is_active).length; },
       get poCount() { return this.items.length; },
@@ -84,10 +103,29 @@ import Icon from '../../../components/ui/Icon.astro';
       },
       pagedItems() { const s = (this.page-1)*this.perPage; return this.filteredItems.slice(s, s+this.perPage); },
       async load() { this.loading=true; try { const r = await fetch('/suppliers/'); if (r.ok) { const d = await r.json(); this.items = d.data || d || []; } } catch(e){} finally { this.loading=false; } },
-      openAdd() { this.$store.ui.toast('Add form coming soon', 'info'); },
-      openEdit(item: any) { this.$store.ui.toast('Editing: ' + item.name, 'info'); },
+      resetForm() { this.form = { name: '', contact_name: '', phone: '', email: '', address: '', tax_id: '', payment_terms: '', is_active: true }; this.editingItem = null; },
+      openAdd() { this.resetForm(); this.formOpen = true; },
+      openEdit(item: any) { this.resetForm(); this.editingItem = item; this.form = { name: item.name || '', contact_name: item.contact_name || '', phone: item.phone || '', email: item.email || '', address: item.address || '', tax_id: item.tax_id || '', payment_terms: item.payment_terms || '', is_active: item.is_active !== false }; this.formOpen = true; },
+      closeForm() { if (this.formSaving) return; this.formOpen = false; this.resetForm(); },
+      async doSave() {
+        if (!this.form.name.trim()) { this.$store.ui.toast('Supplier name is required', 'error'); return; }
+        this.formSaving = true;
+        const p = {
+          name: this.form.name, contact_name: this.form.contact_name, phone: this.form.phone,
+          email: this.form.email, address: this.form.address, tax_id: this.form.tax_id,
+          payment_terms: this.form.payment_terms, is_active: this.form.is_active,
+        };
+        try {
+          let r;
+          if (this.editingItem) { r = await fetch('/suppliers/' + this.editingItem.id + '/', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }); }
+          else { r = await fetch('/suppliers/', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(p) }); }
+          if (r.ok) { this.$store.ui.toast(this.editingItem ? 'Supplier updated' : 'Supplier created', 'success'); this.closeForm(); await this.load(); }
+          else { const e = await r.text(); this.$store.ui.toast('Save failed: ' + (e || r.status), 'error'); }
+        } catch(e) { this.$store.ui.toast('Network error', 'error'); }
+        finally { this.formSaving = false; }
+      },
       confirmDelete(item: any) { this.deleteTarget = item; },
-      async doDelete() { if (!this.deleteTarget) return; const id = this.deleteTarget.id; this.deleteTarget = null; try { await fetch('/suppliers/' + id + '/', { method: 'DELETE' }); this.items = this.items.filter((i: any) => i.id !== id); } catch(e) { this.$store.ui.toast('Failed', 'error'); } },
+      async doDelete() { if (!this.deleteTarget) return; const id = this.deleteTarget.id; this.deleteTarget = null; try { await fetch('/suppliers/' + id + '/', { method: 'DELETE' }); this.items = this.items.filter((i: any) => i.id !== id); this.$store.ui.toast('Supplier removed', 'success'); } catch(e) { this.$store.ui.toast('Failed', 'error'); } },
     }));
   });
 </script>

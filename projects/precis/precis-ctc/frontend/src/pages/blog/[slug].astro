@@ -3,7 +3,6 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, fetchBlogPosts, fetchBlogPost } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData, BlogPostData } from '@/lib/api';
@@ -60,7 +59,7 @@ const excerpt = String(pageData?.excerpt || '');
 
 <Layout
   title={pageData?.title || 'Blog post'}
-  description={excerpt || pageData?.search_description || 'A CTC Research blog post on medical AI and health innovation.'}
+  description={excerpt || pageData?.search_description || 'A CTC Research blog post on clinical research and health innovation.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -72,7 +71,7 @@ const excerpt = String(pageData?.excerpt || '');
     accent=''
     intro={pageHero?.subtitle || excerpt}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: '← All posts', href: '/blog' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }}
     variant="archive"
     breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Blog', href: '/blog/' }, { label: pageHero?.title || pageData?.title || 'Blog post' }]}
   />
@@ -193,5 +192,4 @@ const excerpt = String(pageData?.excerpt || '');
     ctaHref={pageCta?.primary_cta?.href || '/blog'}
   />
   <Toast />
-  <HtmxBootstrap />
 </Layout>

@@ -182,6 +182,7 @@ graph TD
     M -->|No| N[Send notification]
     M -->|Yes| O[✅ PROJECT CLOSED]
 ```
+![Rendered diagram](/agenda/diagrams/completion-checklist-1.svg)
 
 ---
 

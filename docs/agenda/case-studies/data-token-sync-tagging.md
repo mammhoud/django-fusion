@@ -73,7 +73,7 @@ erDiagram
     DATATOKEN_SYNC_TAG_GFK }o--|| ANY_MODEL : generic_fk
 
     DATATOKEN_SYNC_TAG {
-        UUID pk
+        string pk_id PK "UUID"
         string content_type
         integer object_id
         string tag_name
@@ -85,14 +85,15 @@ erDiagram
     }
 
     DATATOKEN_SYNC_TAG_CHILD {
-        UUID pk
-        UUID parent_id
+        string pk_id PK "UUID"
+        string parent_id "UUID"
         string content_type
         integer object_id
     }
 
     ANY_MODEL }o--|| DATATOKEN_SYNC_TAG_GFK : tagged
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-data-token-sync-tagging-1.svg)
 
 ### 2.2 Sync Tagging Flow
 
@@ -118,6 +119,7 @@ sequenceDiagram
     S->>T: On complete, auto-untag
     Note over T: Remove tag, delete children
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-data-token-sync-tagging-2.svg)
 
 ### 2.3 Parent/Child Tree
 
@@ -135,6 +137,7 @@ graph TB
     style C1 fill:#bbf,stroke:#333
     style C2 fill:#bbf,stroke:#333
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-data-token-sync-tagging-3.svg)
 
 ---
 

@@ -25,7 +25,7 @@ from apps.pages.blog.models.tag import BlogTag
 # Each entry: title, slug, category, tags, excerpt, and body (Wagtail rich text).
 CATEGORIES = [
     {"name": "Research Methods", "slug": "research-methods"},
-    {"name": "Medical AI", "slug": "medical-ai"},
+    {"name": "Evidence in Practice", "slug": "evidence-in-practice"},
     {"name": "Evidence Synthesis", "slug": "evidence-synthesis"},
     {"name": "Scientific Writing", "slug": "scientific-writing"},
 ]
@@ -33,7 +33,7 @@ CATEGORIES = [
 TAGS = [
     {"name": "Protocols", "slug": "protocols"},
     {"name": "Publication", "slug": "publication"},
-    {"name": "Machine Learning", "slug": "machine-learning"},
+    {"name": "Evidence-Based Medicine", "slug": "evidence-based-medicine"},
     {"name": "Clinical Evidence", "slug": "clinical-evidence"},
     {"name": "Systematic Review", "slug": "systematic-review"},
     {"name": "GRADE", "slug": "grade"},
@@ -59,11 +59,11 @@ POSTS = [
             answered reproducibly. The protocol is the first reproducibility tool,
             not a bureaucratic form: it fixes the population, the intervention, the
             comparator, and the outcome before the data decides for you.</p>
-            <h2>Registration closes the p-hacking door</h2>
-            <p>Registering the analysis plan on a public registry turns the protocol
-            into a contract. When the final manuscript reports the pre-specified
-            endpoints — and transparently lists deviations — reviewers can trust the
-            results rather than the narrative.</p>
+            <h2>Register the plan before the results arrive</h2>
+            <p>Registering the analysis plan on a public registry makes the plan part
+            of the public record. When the final manuscript reports the outcomes chosen
+            in advance — and openly lists any changes — reviewers can trust the results
+            rather than the narrative.</p>
             <h2>Publication is a service, not a finish line</h2>
             <p>Peer review works best when the manuscript answers the question the
             protocol asked. Clear methods, complete reporting checklists, and raw
@@ -72,29 +72,29 @@ POSTS = [
         """,
     },
     {
-        "title": "Medical AI in Clinical Evidence: Where Models Help and Where They Fall Short",
-        "slug": "medical-ai-clinical-evidence-limits",
-        "category": "medical-ai",
-        "tags": ["machine-learning", "clinical-evidence"],
+        "title": "Streamlining Evidence Synthesis: Where Tools Help and Where They Must Stop",
+        "slug": "where-tools-help-evidence-synthesis",
+        "category": "evidence-in-practice",
+        "tags": ["evidence-based-medicine", "clinical-evidence"],
         "excerpt": (
-            "Machine learning accelerates parts of the evidence pipeline — screening, "
-            "extraction, coding — but it cannot manufacture validity. A guide to "
-            "where models help and where they must stay out."
+            "Screening tools accelerate parts of the evidence pipeline — deduplication, "
+            "screening, extraction — but they cannot manufacture validity. A guide to "
+            "where automation helps and where it must stay out."
         ),
         "days_ago": 14,
         "body": """
             <h2>The fast parts are real</h2>
             <p>Deduplicating record sets, screening titles, and extracting structured
-            fields from PDFs are genuinely faster with modern language models. Teams
+            fields from PDFs are genuinely faster with modern screening tools. Teams
             routinely cut months off systematic reviews by automating these steps —
             with a human in the loop and a disagreement log.</p>
             <h2>The slow parts are the ones that matter</h2>
             <p>Risk-of-bias judgments, outcome definitions, and clinical reasoning
-            depend on context a model cannot reconstruct from text alone. When a
-            model reports a pooled effect, the validity still comes from the study
-            design, the population, and the measurement — not the token stream.</p>
+            depend on context no automated tool can reconstruct from text alone. When a
+            tool reports a pooled effect, the validity still comes from the study
+            design, the population, and the measurement — not the screening step.</p>
             <h2>An evidence-first rule of thumb</h2>
-            <p>Use AI to make the pipeline faster, never to make it more certain.
+            <p>Use automation to make the pipeline faster, never to make it more certain.
             Every automated claim needs a verifiable source, and every source needs
             a human reader before it enters a conclusion.</p>
         """,
@@ -105,9 +105,9 @@ POSTS = [
         "category": "evidence-synthesis",
         "tags": ["systematic-review", "grade"],
         "excerpt": (
-            "Peer reviewers read the methods first. PRISMA reporting, a reproducible "
-            "search, and GRADE-certainty language turn a good review into one that "
-            "survives the round table."
+            "Peer reviewers read the methods first. Clear reporting, a reproducible "
+            "search, and honest language about how certain the evidence is turn a "
+            "good review into one that survives the round table."
         ),
         "days_ago": 7,
         "body": """
@@ -117,11 +117,11 @@ POSTS = [
             the date of the last run, and the number of records per source — a
             reviewer should be able to re-execute it from the text alone.</p>
             <h2>Show the decisions, not just the count</h2>
-            <p>A PRISMA flow diagram documents the journey from records to included
+            <p>A study flow diagram documents the journey from records to included
             studies. Pair it with a reasons-for-exclusion list: reviewers need to
             see why studies were dropped, not just that they were.</p>
-            <h2>Speak certainty, not certainty</h2>
-            <p>GRADE separates the effect estimate from how confident we are in it.
+            <h2>Separate the size of the effect from how certain we are</h2>
+            <p>Good reporting separates the size of the effect from how confident we are in it.
             High certainty and low certainty can share the same point estimate —
             the difference is the language you use to present it.</p>
         """,

@@ -1762,17 +1762,140 @@ textarea:-webkit-autofill:focus {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .profile__actions {
-        flex-wrap: wrap;
-    }
 
-    .profile__actions .btn {
-        flex: 1 0 calc(50% - 0.5rem);
-        min-width: auto;
-    }
+/* Canonical django-fusion member sidebar.
+   This is intentionally a square, high-contrast navigation plate so the
+   dashboard, learning, certificates, and settings destinations remain clear
+   on every profile surface. */
+.profile__nav-shell {
+    border: 2px solid var(--fu-ink, #0a0a0a);
+    background: var(--fu-card, #fff);
+    box-shadow: 4px 4px 0 var(--fu-ink, #0a0a0a);
+}
 
-    .modal-dialog {
-        margin: 1rem;
+.profile__nav-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1rem 0.85rem;
+    border-bottom: 2px solid var(--fu-ink, #0a0a0a);
+}
+
+.profile__nav-kicker,
+.profile__nav-section-label,
+.profile__nav-footer {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.profile__nav-kicker,
+.profile__nav-section-label {
+    color: var(--fu-muted, #676e7e);
+}
+
+.profile__nav-status {
+    width: 0.55rem;
+    height: 0.55rem;
+    background: var(--fu-link, #e61919);
+}
+
+.profile__nav-menu {
+    margin: 0;
+    padding: 0.75rem;
+    list-style: none;
+}
+
+.profile__nav-section-label {
+    padding: 0.8rem 0.5rem 0.35rem;
+}
+
+.profile__nav-section-label:not(:first-child) {
+    margin-top: 0.35rem;
+    border-top: 1px solid var(--fu-line, #d9dde3);
+}
+
+.profile__nav-link {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.15rem 0.55rem;
+    min-height: 3.25rem;
+    padding: 0.6rem 0.55rem;
+    border-left: 3px solid transparent;
+    color: var(--fu-muted, #676e7e);
+    text-decoration: none;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.profile__nav-link:hover,
+.profile__nav-link.active {
+    border-left-color: var(--fu-link, #e61919);
+    background: var(--fu-paper, #f8fafb);
+    color: var(--fu-ink, #20242c);
+}
+
+.profile__nav-icon {
+    grid-row: span 2;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    color: var(--fu-link, #e61919);
+}
+
+.profile__nav-copy {
+    display: grid;
+    gap: 0.15rem;
+}
+
+.profile__nav-copy strong {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.profile__nav-copy small {
+    font-size: 0.7rem;
+    line-height: 1.35;
+    color: var(--fu-muted, #676e7e);
+}
+
+.profile__nav-arrow,
+.profile__nav-count {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.68rem;
+    color: var(--fu-link, #e61919);
+}
+
+.profile__nav-count {
+    min-width: 1.5rem;
+    padding: 0.2rem 0.3rem;
+    border: 1px solid var(--fu-ink, #0a0a0a);
+    text-align: center;
+}
+
+.profile__nav-link--sub {
+    margin-left: 0.75rem;
+    border-left-width: 1px;
+}
+
+.profile__nav-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.8rem 1rem;
+    border-top: 1px solid var(--fu-line, #d9dde3);
+    color: var(--fu-muted, #676e7e);
+}
+
+.profile__nav-footer-mark {
+    color: var(--fu-link, #e61919);
+    font-weight: 700;
+}
+
+@media (max-width: 991.98px) {
+    .profile__nav-shell {
+        box-shadow: none;
     }
 }

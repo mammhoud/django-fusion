@@ -1,7 +1,7 @@
 # loop-crm backend — Django + django-fusion (unified sales + marketing)
 # Mirrors the precis-landing backend Makefile verb set so `make -C backend`
 # behaves identically across the workspace.
-.PHONY: help dev server worker scheduler install migrate static collectstatic superuser seed seed-demo seed-pages seed-builder shell check test format lint fix i18n makemessages compilemessages
+.PHONY: help dev server worker scheduler install migrate static collectstatic superuser seed seed-demo seed-pages seed-builder shell check test format lint fix i18n makemessages compilemessages locale-check erd erd-all
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -13,6 +13,7 @@ UV_BIN := $(shell which uv 2>/dev/null || (test -x $(HOME)/.local/bin/uv && echo
 UV := $(UV_BIN) --project ../..
 UV_RUN := $(UV) run
 MANAGE := $(UV_RUN) python manage.py
+SHARED_LOCALE_DIR := $(CURDIR)/../../assets/locale
 
 help: ## Show backend commands
 	@echo "=== Loop-CRM Backend (Django + django-fusion) ==="
@@ -75,10 +76,57 @@ lint: ## Lint with ruff
 fix: ## Auto-fix lint issues
 	@$(UV_RUN) ruff check --fix .
 
-makemessages: ## Extract translatable strings into locale/ .po files
+makemessages: ## Extract translatable strings into the shared projects/assets/locale catalog
 	@$(MANAGE) makemessages -l en -l ar --no-wrap
+	@mkdir -p $(SHARED_LOCALE_DIR)
+	@for lang in en ar; do \
+		if [ -f locale/$$lang/LC_MESSAGES/django.po ]; then \
+			cp locale/$$lang/LC_MESSAGES/django.po $(SHARED_LOCALE_DIR)/$$lang/LC_MESSAGES/django.po; \
+		fi; \
+	done
 
-compilemessages: ## Compile .po files into .mo catalogs
+compilemessages: ## Compile the shared projects/assets/locale catalogs
 	@$(MANAGE) compilemessages -l en -l ar
 
+locale-check: ## Verify the shared en/ar catalog layout
+	@test -f $(SHARED_LOCALE_DIR)/en/LC_MESSAGES/django.po
+	@test -f $(SHARED_LOCALE_DIR)/ar/LC_MESSAGES/django.po
+
 i18n: makemessages compilemessages ## Extract + compile translations
+
+# ── ERD — database schema diagrams ─────────────────────────────────────────
+# Uses django-extensions graph_models → DOT → graphviz dot (PNG). The DOT text
+# is written directly (no pydot), so the model graph can be generated on any
+# machine; PNG rendering requires the graphviz system package (pre-installed
+# in the product Docker images). App labels are the Loop-CRM domain apps
+# (crm = sales, marketing = marketing, plus attribution/finance/pos/billing/
+# pages/core).
+# Requires: django-extensions in INSTALLED_APPS (settings) + pydot package
+# from projects/pyproject.toml; `dot` for PNG output only.
+ERD_OUT := ../docs/erd
+ERD_APPS ?= core crm marketing attribution finance pos billing pages
+
+erd: ## Generate ERD PNG for all apps → docs/erd/
+	@echo "Generating ERD (DOT intermediate)..."
+	@mkdir -p $(ERD_OUT)
+	@DJANGO_SETTINGS_MODULE=settings $(MANAGE) graph_models \
+		--output $(ERD_OUT)/loop_crm_erd.dot \
+		$(ERD_APPS) 2>/dev/null
+	@echo "Rendering PNG..."
+	@dot -Tpng -Gsize="24,16\!" -Gdpi=96 \
+		$(ERD_OUT)/loop_crm_erd.dot \
+		-o $(ERD_OUT)/loop_crm_erd.png
+	@echo "✅ ERD saved → $(ERD_OUT)/loop_crm_erd.png"
+
+erd-all: ## Generate per-app ERD PNGs → docs/erd/
+	@echo "Generating per-app ERDs..."
+	@mkdir -p $(ERD_OUT)
+	@for app in $(ERD_APPS); do \
+		echo "  → $$app"; \
+		DJANGO_SETTINGS_MODULE=settings $(MANAGE) graph_models \
+			--output $(ERD_OUT)/$$app.dot $$app 2>/dev/null && \
+		dot -Tpng -Gsize="16,12\!" -Gdpi=96 \
+			$(ERD_OUT)/$$app.dot -o $(ERD_OUT)/$$app.png 2>/dev/null || \
+			echo "  ⚠️  $$app skipped"; \
+	done
+	@echo "✅ Per-app ERDs saved → $(ERD_OUT)/"

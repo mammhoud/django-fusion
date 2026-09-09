@@ -1,6 +1,6 @@
 # Loop-CRM — Wagtail Landing, Subscription/Billing, and Webapp Enhancement Plan
 
-> **Status:** Phases 0–4 shipped (2026-08-18) · Phases 5–8 planned
+> **Status:** Phases 0–4 shipped (2026-08-18) · Phase 7 catalog bootstrap + Loop-CRM backend translation sweep shipped (2026-09-05) · Remaining: frontend translations, reviewed monorepo catalog merge, and Phases 5/8 follow-up work
 > **Date:** 2026-08-18
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
 > **Related:** [`merge-plan.md`](merge-plan.md) · [`projects/loop-crm/docs/DESIGN_SYSTEM.md`](../../../projects/loop-crm/docs/DESIGN_SYSTEM.md) · [`docs/plans/editions/08-tenant-schemas.md`](../editions/08-tenant-schemas.md) · [`libs/django-fusion/docs/06-forms-and-tables.md`](../../../libs/django-fusion/docs/06-forms-and-tables.md)
@@ -408,25 +408,30 @@ covering:
 
 ## 16. Translations & shared locale (i18n)
 
-**Current state (audited 2026-08-18, excluding `.venv` / `node_modules`):**
+**Current state (updated 2026-09-05):**
 
-- **Loop-CRM has no `locale/` dir.** `LANGUAGES` (en/ar), `LocaleMiddleware`
-  and `LOCALE_PATHS` are already configured in
-  `backend/configs/default/__init__.py`, but no catalogs exist and `make i18n`
-  has never produced them. The frontend has no i18n layer (`src/i18n` and
-  `src/locales` do not exist) — matching the remaining todo list in
-  `docs/changelogs/session-2026-08-18.md`.
-- The monorepo keeps **per-project catalogs in two different layouts**:
-  - LC_MESSAGES dirs: `projects/precis/precis-main/backend/locale/<lang>/LC_MESSAGES/django.{po,mo}`
-    (en, ar, de, es, fr, pt, sv) and `projects/precis/precis-landing/backend/locale/<lang>/LC_MESSAGES/`
-    (ar, de, pt, sv, …).
-  - **Mixed flat + dir (messy):** `projects/precis/precis-lms/assets/locale/`
-    and `projects/precis/precis-ctc/assets/locale/` hold flat `<lang>.po`
-    files **and** `<lang>/LC_MESSAGES/django.{po,mo}` dirs (duplicated
-    catalogs in one tree).
-- **`projects/assets/locale/` already exists as the shared target** (only a
-  `.gitkeep` today). Per the repo map in the root `AGENTS.md`, `projects/assets/`
-  is the monorepo-level shared assets dir — a shared catalog belongs there.
+- Loop-CRM now exposes the shared `en/ar` locale preference contract and the
+  authenticated shell selector. First-party bootstrap catalogs now exist at
+  `projects/assets/locale/<lang>/LC_MESSAGES/django.po` for both advertised
+  languages.
+- The Loop-CRM backend translation sweep now covers the shared navigation,
+  page metadata, empty states, billing/API errors, and member-table labels via
+  Django gettext. New entries are present in both shared catalogs, including
+  Arabic translations for the shipped runtime messages.
+- Other products' catalogs remain in their existing locations. A repo-wide
+  merge is intentionally separate so duplicate `msgid` conflicts can be
+  reviewed instead of silently overwriting product translations.
+- `projects/loop-crm/backend/Makefile` targets the shared locale directory for
+  `makemessages` and exposes `locale-check`; `compilemessages` uses the
+  configured shared `LOCALE_PATHS`.
+
+**Previous audit (2026-08-18):**
+
+- Loop-CRM had no catalog before this foundation slice. `LANGUAGES` (en/ar),
+  `LocaleMiddleware`, and `LOCALE_PATHS` were configured in
+  `backend/configs/default/__init__.py`.
+- The monorepo keeps per-project catalogs in both `LC_MESSAGES` and older mixed
+  flat layouts; those sources remain candidates for a later reviewed merge.
 
 **Decision — consolidate into one shared catalog:**
 
@@ -439,10 +444,10 @@ covering:
    `<lang>/LC_MESSAGES/django.po`); merge duplicate msgids per language across
    sources (later project wins, then manual review of conflicts).
 3. **Change `LOCALE_PATHS` at each Django backend project** to the shared dir.
-   Loop-CRM: `LOCALE_PATHS = [BASE_DIR.parents[2] / "assets" / "locale"]`
-   (`BASE_DIR` = `projects/loop-crm/backend` → `parents[2]` = `projects/`,
-   so the path resolves to `projects/assets/locale`). Keep each backend's
-   `LANGUAGES` as its advertised set; the shared dir holds the merged catalogs.
+   Loop-CRM: `LOCALE_PATHS = [BASE_DIR.parents[1] / "assets" / "locale"]`
+   (`BASE_DIR` = `projects/loop-crm/backend`; this resolves to
+   `projects/assets/locale`). Keep each backend's `LANGUAGES` as its advertised
+   set; the shared dir holds the merged catalogs.
 4. **Complete compilation:** one `python manage.py compilemessages` pass (or
    `django-admin compilemessages -l …`) against `projects/assets/locale/` so
    **all languages compile** — no backend left without a compiled `.mo` for
@@ -509,22 +514,31 @@ covering:
   `apps/billing/gates.py`; demo workspace trial seed; write `payment_succeeded`
   → `finance.RevenueEvent`.
 
-### Phase 6 — Webapp enhancements
-- Sidenav (collapsible groups, workspace switcher, Cmd+K palette, badge
-  counts, user card + plan chip); `/bolt/search/` federated search; onboarding
-  tour component + first-login trigger; animated empty/loading states +
-  guided create flows; `/employees/` directory + `/employees/<pk>/report/` via
-  custom-object schema + `/reports/` catalog pages.
+### Phase 6 — Webapp enhancements — shipped locally
+- Sidenav (collapsible groups, workspace telemetry, Cmd+K palette, badge
+  counts, user card, and plan surface) is shipped. `/employees/` and
+  `/reports/` are live data surfaces. The locale selector is now part of the
+  authenticated shell; full translated copy remains a follow-up to the shared
+  catalog work.
 
-### Phase 7 — Translations & shared locale (i18n)
-- **Merge catalogs:** move/reconcile every per-project catalog (§16) into
+### Phase 7 — Translations & shared locale (i18n) — catalog bootstrap shipped
+  `projects/assets/locale/<lang>/LC_MESSAGES/`, the monorepo canonical target,
+  and exposes a safe `GET|POST /apis/core/locale/` contract for the `en/ar`
+  interface languages. The Astro app shell includes an accessible locale
+  selector that persists Django's language cookie and applies RTL direction for
+  Arabic.
+- **Still open:** merge/reconcile the first-party `.po` catalogs, run
+  `makemessages`/`compilemessages` across the shared tree, complete the backend
+  `gettext_lazy` sweep, and add translated frontend strings/i18n catalogs.
+
+### Phase 7 — Translations & shared locale (i18n) — remaining work
   `projects/assets/locale/<lang>/LC_MESSAGES/` — `precis-main/backend/locale`,
   `precis-landing/backend/locale`, `precis-lms/assets/locale`,
   `precis-ctc/assets/locale`, plus archived/legacy project dirs; normalize the
   mixed flat/`LC_MESSAGES` layouts; exclude `.venv`/`node_modules`/`dist`.
 - **Change `LOCALE_PATHS` at each Django backend project** to the shared dir
   (Loop-CRM first: `backend/configs/default/__init__.py` →
-  `BASE_DIR.parents[2] / "assets" / "locale"`).
+  `BASE_DIR.parents[1] / "assets" / "locale"`).
 - **Loop-CRM backend sweep:** `gettext_lazy` on remaining models, forms, view
   messages, `fusion.py`, templates; extend `make i18n` to makemessages into
   the shared dir + compilemessages en/ar.
@@ -648,7 +662,7 @@ override the user's design system.
 | `libs/django-fusion/docs/10-wagtail-integration.md` + `18-render-contract.md` | Wagtail integration + render contract for Phases 1–3 |
 | `docs/plans/precis-landing.md` | Landing plan pattern (checks-before-blocks, plan dir conventions) |
 | `docs/plans/loop-crm/merge-plan.md` | The Loop-CRM merge roadmap this plan extends (license header, adapters, AI hub) |
-| `docs/plans/loop-crm/formint-integration-finance-workflows.md` | Formint↔Loop-CRM finance + workflow expansion — related surface |
+| `docs/agenda/feature-tracking.md` § Loop-CRM — Formint finance integration | Formint↔Loop-CRM finance + workflow expansion (completed — the plan file was deleted; git history is the archive) |
 | `docs/plans/editions/08-tenant-schemas.md` | django-tenants migration pattern reference (§6) |
 | `docs/plans/repository/locale-fixture-audit-2026-07-31.md` | Wagtail content-locale audit (distinct from `.po` catalogs; both matter for §16) |
 | `docs/plans/repository/active-monorepo-consolidation-2026-08-14.md` | Monorepo consolidation context (workers, Nx, dev-workspace) |
@@ -697,7 +711,7 @@ override the user's design system.
   vendored dependency catalogs — merge only first-party project/archived
   project sources, then run ONE complete `compilemessages`.
 - Loop-CRM `LOCALE_PATHS` math: `BASE_DIR` = `projects/loop-crm/backend`;
-  `BASE_DIR.parents[2] / "assets" / "locale"` resolves to
+  `BASE_DIR.parents[1] / "assets" / "locale"` resolves to
   `projects/assets/locale`.
 - `docs/plans/repository/locale-fixture-audit-2026-07-31.md` is a Wagtail
   *content* locale audit (page fixtures), a different layer from `.po`/`.mo`

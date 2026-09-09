@@ -114,44 +114,43 @@ COURSES_EN = [
         ],
     },
     {
-        "slug": "medical-ai-clinical-applications",
-        "title": "Medical AI & Clinical Applications",
-        "short_description": "From ML fundamentals to FDA AI/ML action plan. Learn model validation, bias detection, clinical deployment, and responsible AI governance in healthcare.",
-        "description": "Understand how machine learning is transforming clinical workflows—imaging analysis, EHR prediction models, NLP for clinical notes, and decision support. Covers supervised/unsupervised learning, model validation, fairness audits, FDA SaMD regulation, and responsible AI principles for healthcare.",
-        "objectives": "Explain core ML algorithms used in medical AI\nDesign and interpret model validation studies\nIdentify and mitigate algorithmic bias in clinical datasets\nApply FDA AI/ML-Based SaMD regulatory framework\nEvaluate AI tools for clinical decision support deployment",
-        "requirements": "Basic data literacy\nFamiliarity with clinical workflows helpful but not required",
-        "target_audience": "Clinicians evaluating AI tools\nClinical informaticists\nHealth data scientists",
+        "slug": "real-world-evidence-observational-research",
+        "title": "Real-World Evidence & Observational Research",
+        "short_description": "Cohort and case-control designs, data quality, confounding control, and transparent reporting for evidence that supports clinical decisions.",
+        "description": "Understand how observational data from registries, electronic health records, and claims inform clinical research. Covers study designs, measurement, confounding and bias, propensity score methods, sensitivity analyses, and reporting standards such as STROBE.",
+        "objectives": "Design cohort, case-control, and cross-sectional studies\nRecognize and control confounding and bias in observational data\nApply propensity score and sensitivity analysis methods\nAssess data quality and missingness in real-world sources\nReport observational studies transparently (STROBE)",
+        "requirements": "Basic familiarity with clinical research concepts\nFamiliarity with study designs is helpful",
+        "target_audience": "Clinical researchers\nEpidemiologists and health data analysts\nResearch coordinators and evidence teams",
         "difficulty": "intermediate",
         "duration": 16,
         "price": "159.00",
         "is_featured": True,
         "has_certificate": True,
-        "tags": ["Medical AI", "Machine Learning", "Data Science"],
-        "specializations": ["Medical AI & Digital Health"],
+        "tags": ["Clinical Research", "Evidence-Based Medicine", "Biostatistics"],
+        "specializations": ["Evidence-Based Medicine"],
         "modules": [
-            ("ML Foundations for Clinicians", [
-                ("Supervised vs Unsupervised Learning", 25, True),
-                ("Classification, Regression, Clustering", 22, False),
-                ("Neural Networks and Deep Learning Basics", 20, False),
+            ("Foundations of Observational Research", [
+                ("Cohort, Case-Control, and Cross-Sectional Designs", 25, True),
+                ("Data Sources: Registries, Records, and Claims", 22, False),
+                ("Defining Exposures and Outcomes", 18, False),
             ]),
-            ("Medical Imaging AI", [
-                ("Convolutional Neural Networks for Imaging", 28, False),
-                ("Radiology and Pathology AI Applications", 22, False),
-                ("Validation Studies for Imaging Models", 24, False),
+            ("Measurement & Data Quality", [
+                ("Measurement Error and Misclassification", 22, False),
+                ("Missing Data and Data Quality Checks", 20, False),
+                ("Time-Varying Exposures", 18, False),
             ]),
-            ("NLP & EHR Applications", [
-                ("Clinical NLP: Named Entity Recognition", 22, False),
-                ("EHR Prediction Models", 20, False),
-                ("Chatbots and Clinical Documentation AI", 18, False),
+            ("Confounding & Bias", [
+                ("Confounding and Effect Modification", 28, False),
+                ("Selection and Information Bias", 24, False),
+                ("Propensity Score Methods", 30, False),
             ]),
-            ("Model Validation & Fairness", [
-                ("Internal and External Validation", 28, False),
-                ("Calibration Curves and Decision Curves", 22, False),
-                ("Algorithmic Bias: Detection and Mitigation", 30, False),
+            ("Analysis & Sensitivity", [
+                ("Adjusted Analysis and Stratification", 26, False),
+                ("Sensitivity and Subgroup Analyses", 22, False),
             ]),
-            ("Regulation & Deployment", [
-                ("FDA AI/ML SaMD Regulatory Framework", 25, False),
-                ("Clinical AI Governance Frameworks", 20, False),
+            ("Reporting & Translation", [
+                ("STROBE Reporting Standards", 20, False),
+                ("Communicating Evidence to Clinical Teams", 18, False),
             ]),
         ],
     },
@@ -359,12 +358,12 @@ COURSE_TRANSLATIONS = {
             "requirements": "Compréhension des méthodes de recherche de base\nFamiliarité avec la littérature médicale",
             "target_audience": "Chercheurs cliniciens\nÉquipes de synthèse de preuves\nAnalystes en évaluation des technologies de la santé",
         },
-        "medical-ai-clinical-applications": {
-            "title": "IA médicale et applications cliniques",
-            "short_description": "Des fondamentaux du ML au plan d'action FDA IA/ML. Validation de modèles, détection de biais, déploiement clinique et gouvernance responsable de l'IA en santé.",
-            "objectives": "Expliquer les algorithmes ML utilisés en IA médicale\nConcevoir et interpréter des études de validation de modèles\nIdentifier et atténuer les biais algorithmiques dans les données cliniques\nAppliquer le cadre réglementaire FDA SaMD IA/ML\nÉvaluer les outils d'IA pour le déploiement en aide à la décision clinique",
-            "requirements": "Alphabétisation de base en données\nFamiliarité avec les flux cliniques utile mais non requise",
-            "target_audience": "Cliniciens évaluant les outils d'IA\nInformaticiens cliniques\nData scientists en santé",
+        "real-world-evidence-observational-research": {
+            "title": "Données réelles et recherche observationnelle",
+            "short_description": "Études de cohorte et cas-témoins, qualité des données, contrôle des facteurs de confusion et rapport transparent pour des preuves qui soutiennent les décisions cliniques.",
+            "objectives": "Concevoir des études de cohorte, cas-témoins et transversales\nReconnaître et contrôler les facteurs de confusion et les biais dans les données observationnelles\nAppliquer les méthodes de score de propension et les analyses de sensibilité\nÉvaluer la qualité des données et les données manquantes dans les sources réelles\nRapporter les études observationnelles de manière transparente (STROBE)",
+            "requirements": "Connaissances de base en recherche clinique\nLa familiarité avec les conceptions d'études est utile",
+            "target_audience": "Chercheurs cliniques\nÉpidémiologistes et analystes de données de santé\nCoordinateurs de recherche et équipes d'évidence",
         },
         "scientific-writing-medical-manuscripts": {
             "title": "Rédaction scientifique pour les manuscrits médicaux",
@@ -403,12 +402,12 @@ COURSE_TRANSLATIONS = {
             "requirements": "Verständnis grundlegender Forschungsmethodik\nVertrautheit mit der medizinischen Literatur",
             "target_audience": "Klinische Forscher\nEvidenz-Synthese-Teams\nAnalysten in der Nutzenbewertung",
         },
-        "medical-ai-clinical-applications": {
-            "title": "Medizinische KI und klinische Anwendungen",
-            "short_description": "Von ML-Grundlagen zum FDA KI/ML-Aktionsplan. Modellvalidierung, Bias-Erkennung, klinisches Deployment und verantwortungsvolle KI-Governance im Gesundheitswesen.",
-            "objectives": "Grundlegende ML-Algorithmen in der medizinischen KI erklären\nModellvalidierungsstudien entwerfen und interpretieren\nAlgorithmische Verzerrungen in klinischen Datensätzen identifizieren und mindern\nFDA KI/ML SaMD-Regulierungsrahmen anwenden\nKI-Werkzeuge für die klinische Entscheidungsunterstützung evaluieren",
-            "requirements": "Grundlegende Datenkompetenz\nVertrautheit mit klinischen Abläufen hilfreich, aber nicht erforderlich",
-            "target_audience": "Kliniker, die KI-Tools bewerten\nKlinische Informatiker\nGesundheits-Datenwissenschaftler",
+        "real-world-evidence-observational-research": {
+            "title": "Real-World-Evidenz und Beobachtungsforschung",
+            "short_description": "Kohorten- und Fall-Kontroll-Designs, Datenqualität, Kontrolle von Störfaktoren und transparente Berichterstattung für Evidenz, die klinische Entscheidungen stützt.",
+            "objectives": "Kohorten-, Fall-Kontroll- und Querschnittsstudien entwerfen\nStörfaktoren und Verzerrungen in Beobachtungsdaten erkennen und kontrollieren\nPropensity-Score- und Sensitivitätsanalysen anwenden\nDatenqualität und fehlende Daten in Real-World-Quellen bewerten\nBeobachtungsstudien transparent berichten (STROBE)",
+            "requirements": "Grundkenntnisse in klinischer Forschung\nVertrautheit mit Studiendesigns ist hilfreich",
+            "target_audience": "Klinische Forscher\nEpidemiologen und Gesundheitsdatenanalysten\nForschungskoordinatoren und Evidenz-Teams",
         },
         "scientific-writing-medical-manuscripts": {
             "title": "Wissenschaftliches Schreiben für medizinische Manuskripte",
@@ -440,12 +439,12 @@ COURSE_TRANSLATIONS = {
             "requirements": "Comprensión de metodología de investigación básica\nFamiliaridad con la literatura médica",
             "target_audience": "Investigadores clínicos\nEquipos de síntesis de evidencia\nAnalistas de evaluación de tecnologías sanitarias",
         },
-        "medical-ai-clinical-applications": {
-            "title": "IA médica y aplicaciones clínicas",
-            "short_description": "De los fundamentos del ML al plan de acción FDA IA/ML. Validación de modelos, detección de sesgos, despliegue clínico y gobernanza responsable de IA en salud.",
-            "objectives": "Explicar los algoritmos ML utilizados en IA médica\nDiseñar e interpretar estudios de validación de modelos\nIdentificar y mitigar sesgos algorítmicos en conjuntos de datos clínicos\nAplicar el marco regulatorio FDA SaMD IA/ML\nEvaluar herramientas de IA para soporte de decisiones clínicas",
-            "requirements": "Alfabetización básica en datos\nFamiliaridad con flujos clínicos útil pero no requerida",
-            "target_audience": "Médicos evaluando herramientas de IA\nInformáticos clínicos\nCientíficos de datos en salud",
+        "real-world-evidence-observational-research": {
+            "title": "Evidencia del mundo real e investigación observacional",
+            "short_description": "Diseños de cohortes y casos y controles, calidad de los datos, control de confusión y presentación de informes transparentes para evidencia que respalde decisiones clínicas.",
+            "objectives": "Diseñar estudios de cohortes, casos y controles y transversales\nReconocer y controlar la confusión y el sesgo en datos observacionales\nAplicar métodos de puntuación de propensión y análisis de sensibilidad\nEvaluar la calidad de los datos y los datos faltantes en fuentes reales\nInformar estudios observacionales de forma transparente (STROBE)",
+            "requirements": "Conocimientos básicos de investigación clínica\nLa familiaridad con los diseños de estudio es útil",
+            "target_audience": "Investigadores clínicos\nEpidemiólogos y analistas de datos de salud\nCoordinadores de investigación y equipos de evidencia",
         },
         "biostatistics-clinical-research": {
             "title": "Bioestadística para investigación clínica",
@@ -470,12 +469,12 @@ COURSE_TRANSLATIONS = {
             "requirements": "فهم منهجية البحث الأساسية\nإلمام بالأدبيات الطبية",
             "target_audience": "الباحثون السريريون\nفرق تركيب الأدلة\nمحللو تقييم التقنيات الصحية",
         },
-        "medical-ai-clinical-applications": {
-            "title": "الذكاء الاصطناعي الطبي والتطبيقات السريرية",
-            "short_description": "من أسس التعلم الآلي إلى خطة عمل FDA للذكاء الاصطناعي. التحقق من صحة النماذج، اكتشاف التحيز، النشر السريري وحوكمة الذكاء الاصطناعي المسؤول في الرعاية الصحية.",
-            "objectives": "شرح خوارزميات التعلم الآلي المستخدمة في الذكاء الاصطناعي الطبي\nتصميم وتفسير دراسات التحقق من صحة النماذج\nتحديد التحيز الخوارزمي في مجموعات البيانات السريرية ومعالجته\nتطبيق إطار FDA التنظيمي للذكاء الاصطناعي SaMD\nتقييم أدوات الذكاء الاصطناعي لدعم القرار السريري",
-            "requirements": "محو الأمية الأساسية في البيانات\nالإلمام بالسير السريرية مفيد لكنه غير مطلوب",
-            "target_audience": "الأطباء الذين يقيّمون أدوات الذكاء الاصطناعي\nالمعلوماتيون السريريون\nعلماء البيانات الصحية",
+        "real-world-evidence-observational-research": {
+            "title": "الأدلة الواقعية والبحث الرصدي",
+            "short_description": "تصاميم الأتراب والحالات والشواهد، جودة البيانات، التحكم في العوامل المربكة، والإبلاغ الشفاف عن أدلة تدعم القرارات السريرية.",
+            "objectives": "تصميم دراسات الأتراب والحالات والشواهد والمقطعية\nالتعرف على العوامل المربكة والتحيز في البيانات الرصدية والتحكم فيها\nتطبيق أساليب درجات الميل وتحليلات الحساسية\nتقييم جودة البيانات والبيانات المفقودة في المصادر الواقعية\nالإبلاغ الشفاف عن الدراسات الرصدية (STROBE)",
+            "requirements": "إلمام أساسي بمفاهيم البحث السريري\nالإلمام بتصاميم الدراسات مفيد",
+            "target_audience": "الباحثون السريريون\nعلماء الأوبئة ومحللو البيانات الصحية\nمنسقو البحث وفرق الأدلة",
         },
         "biostatistics-clinical-research": {
             "title": "الإحصاء الحيوي للبحث السريري",

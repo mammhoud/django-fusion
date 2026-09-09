@@ -16,6 +16,8 @@ export const ICON_PATHS: Record<string, string> = {
   reports: '<path d="M4 20V10M10 20V4M16 20v-7M21 20H3"/>',
   workspace:
     '<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3"/><circle cx="12" cy="4" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="14" cy="20" r="2"/>',
+  people: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17.5" cy="9" r="2.6"/><path d="M16 14.6a5 5 0 0 1 5.5 5.2"/>',
+  ai: '<path d="M4 5h16v14H4z"/><path d="m8 10 2 2-2 2M12.5 14H16"/>',
   loop: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20.5 3.5v4.5H16"/>',
 };
 

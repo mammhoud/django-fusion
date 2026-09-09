@@ -3,96 +3,96 @@
     "model": "lms.coursetag",
     "pk": 1,
     "fields": {
-      "name": "Python",
-      "slug": "python"
+      "name": "Study Design",
+      "slug": "study-design"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 2,
     "fields": {
-      "name": "Django",
-      "slug": "django"
+      "name": "Health Economics",
+      "slug": "health-economics"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 3,
     "fields": {
-      "name": "JavaScript",
-      "slug": "javascript"
+      "name": "Medical Writing",
+      "slug": "medical-writing"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 4,
     "fields": {
-      "name": "React",
-      "slug": "react"
+      "name": "Observational Studies",
+      "slug": "observational-studies"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 5,
     "fields": {
-      "name": "Web Development",
-      "slug": "web-development"
+      "name": "Epidemiology",
+      "slug": "epidemiology"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 6,
     "fields": {
-      "name": "Data Science",
-      "slug": "data-science"
+      "name": "Real-World Evidence",
+      "slug": "real-world-evidence"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 7,
     "fields": {
-      "name": "Mobile",
-      "slug": "mobile"
+      "name": "Health Policy",
+      "slug": "health-policy"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 8,
     "fields": {
-      "name": "Backend",
-      "slug": "backend"
+      "name": "Research Informatics",
+      "slug": "research-informatics"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 9,
     "fields": {
-      "name": "Frontend",
-      "slug": "frontend"
+      "name": "Peer Review",
+      "slug": "peer-review"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 10,
     "fields": {
-      "name": "Full-Stack",
-      "slug": "full-stack"
+      "name": "Publication Ethics",
+      "slug": "publication-ethics"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 11,
     "fields": {
-      "name": "Machine Learning",
-      "slug": "machine-learning"
+      "name": "Causal Inference",
+      "slug": "causal-inference"
     }
   },
   {
     "model": "lms.coursetag",
     "pk": 12,
     "fields": {
-      "name": "API Development",
-      "slug": "api-development"
+      "name": "Research Communication",
+      "slug": "research-communication"
     }
   }
 ]

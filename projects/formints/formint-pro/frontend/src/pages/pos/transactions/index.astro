@@ -86,7 +86,7 @@ import Icon from '../../../components/ui/Icon.astro';
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span x-text="item.id" class="text-xs tabular-nums"></span></td>
               <td class="px-3 py-2"><span x-text="item.sale_date || item.date || '-'" class="text-xs"></span></td>
-              <td class="px-3 py-2"><span x-text="item.customer_name || item.customer || 'Walk-in'" class="text-xs font-medium"></span></td>
+              <td class="px-3 py-2"><span class="text-xs font-medium" x-text="custName(item.customer) || 'Walk-in'"></span></td>
               <td class="px-3 py-2"><span x-text="'$' + Number(item.total||0).toFixed(2)" class="text-xs tabular-nums font-medium"></span></td>
               <td class="px-3 py-2"><span x-text="(item.payment_method||'').charAt(0).toUpperCase() + (item.payment_method||'').slice(1)" class="text-xs"></span></td>
               <td class="px-3 py-2">
@@ -246,6 +246,11 @@ import Icon from '../../../components/ui/Icon.astro';
         customer_id: '', subtotal: '', tax_amount: '0',
         discount_amount: '0', total: '', payment_method: 'cash',
         status: 'completed', notes: '',
+      },
+      custName(id) {
+        const c = this.customerList.find((x) => String(x.id) === String(id));
+        if (!c) return null;
+        return (c.first_name || '') + ' ' + (c.last_name || '');
       },
 
       get total() { return this.items.length; },

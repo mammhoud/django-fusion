@@ -2,8 +2,6 @@
 import Layout from '@/layouts/Layout.astro';
 import ContactForm from '@/components/blocks/ContactForm.astro';
 import PageHeader from '@/components/blocks/PageHeader.astro';
-import NewsletterSubscribe from '@/components/blocks/NewsletterSubscribe.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedContact } from '@/lib/api';
@@ -38,11 +36,9 @@ const methods = contactData?.methods;
       <div id="contact-form" class='py-14'>
         <ContactForm methods={methods} formTitle={contactData.form_title} formDescription={contactData.form_description} buttonText={contactData.button_text} successMessage={contactData.success_message} errorMessage={contactData.error_message} fields={contactData.fields} />
       </div>
-      <NewsletterSubscribe />
     </>
   ) : <ContentError label="Contact content is unavailable from the backend." />}
   <Toast />
-  <HtmxBootstrap />
   <script>
     import { syncContactLocale } from '../lib/runtime-locale';
     syncContactLocale();

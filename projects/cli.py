@@ -218,13 +218,19 @@ class SiteCLI:
                 "WEBSITE": self.site,
                 "WEBSITE_NAME": self.site,
                 "PROJECT_PATH": cfg["project_path"],
-                "DJANGO_WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
-                "WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
                 "DB_NAME": db_name,
-                "DJANGO_SETTINGS_MODULE": "settings",
                 "ALLOWED_HOSTS": "*",
             }
         )
+        # Respect an explicitly provided settings module and site dirs — the
+        # shared-task compose (projects/docker-compose.tasks.yml) routes
+        # DJANGO_SETTINGS_MODULE=configs.management.settings and
+        # DJANGO_WEBSITE_DIR=/app/shared for the site-agnostic worker. Only
+        # fall back to the per-site defaults when the environment left them
+        # unset (plain `python projects/cli.py --site <site>` runs).
+        env.setdefault("DJANGO_WEBSITE_DIR", str(REPO_ROOT / cfg["path"]))
+        env.setdefault("WEBSITE_DIR", str(REPO_ROOT / cfg["path"]))
+        env.setdefault("DJANGO_SETTINGS_MODULE", "settings")
         env.pop("DJANGO_SECRET_KEY", None)  # read from file in production
         return env
 

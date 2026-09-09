@@ -101,6 +101,7 @@ graph TB
     SERVICES --> WORKER
     MODELS --> WORKER
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-ceptor-ai-1.svg)
 
 ### 2.2 AI Backend Architecture
 
@@ -138,6 +139,7 @@ graph LR
     CHAT_BUB --> AISERVICE
     CHAT_BUB -.->|fallback| OLLAMA
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-ceptor-ai-2.svg)
 
 ### 2.3 MCP Tool Architecture
 
@@ -153,6 +155,7 @@ graph TD
     TOOL2 -->|scans| FS2["Local filesystem<br/>*.html in components/"]
     TOOL3 -->|reads| ENV["os.environ<br/>(names only)"]
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-ceptor-ai-3.svg)
 
 ### 2.4 Syntara Integration Points
 
@@ -180,6 +183,7 @@ graph TB
     CEPTOR --> CHAT_INT
     SERVICES --> AI_INT
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-ceptor-ai-4.svg)
 
 ---
 
@@ -296,6 +300,7 @@ sequenceDiagram
     AI-->>S: Code suggestion
     S-->>U: Display in Monaco editor
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-ceptor-ai-5.svg)
 
 **Configured sites for template discovery:**
 
@@ -526,7 +531,7 @@ ChatBubble's fallback to local Ollama when the chat server is unreachable means 
 | Django-Bolt case study | [`case-studies/django-bolt-fusion.md`](./django-bolt-fusion.md) |
 | Shared use cases | [`../../shared/use-cases.md`](../../shared/use-cases.md) |
 | Shared methods | [`../../shared/shared-methods.md`](../../shared/shared-methods.md) |
-| CTC Research ceptor-ai migration | [`../../plans/repository/ctc-research-ceptor-ai-migration.md`](../../plans/repository/ctc-research-ceptor-ai-migration.md) |
+| CTC Research ceptor-ai migration | ✅ complete — recorded as a finished milestone in [`../../agenda/feature-tracking.md`](../../agenda/feature-tracking.md) § CTC Research (the plan file was deleted; git history is the archive) |
 
 ---
 

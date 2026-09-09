@@ -3,7 +3,6 @@ import Layout from '@/layouts/Layout.astro';
 import Hero from '@/components/blocks/Hero.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, fetchCourseList } from '@/lib/api';
 import type { CourseCard, CourseListData, NavigationData, SiteSettings } from '@/lib/api';
 
@@ -29,7 +28,7 @@ const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-
 
 <Layout
   title="Courses"
-  description="CTC Research courses help clinicians, researchers, and medical writers make stronger decisions — from protocol to publication. Clinical trial design, biostatistics, evidence synthesis, medical AI, and scientific writing."
+  description="CTC Research courses help clinicians, researchers, and medical writers make stronger decisions — from protocol to publication. Clinical trial design, biostatistics, evidence synthesis, and scientific writing."
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageSlug="courses"
@@ -294,7 +293,6 @@ const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-
     ctaLabel="Talk to the research team"
     ctaHref="/contact/"
   />
-  <HtmxBootstrap />
 </Layout>
 
 <style is:global>

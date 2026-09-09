@@ -95,7 +95,7 @@ test('LMS-Fusion Compose E2E: frontend serves the document shell', async (t) => 
     assert.equal(response.status, 200);
     const body = await response.text();
     assert.match(body, /<html\b/i);
-    assert.match(body, /Clinical Trial Design|Medical AI|Research/i);
+    assert.match(body, /Clinical Trial Design|Real-World Evidence|Research/i);
     assert.match(body, /course catalog|the catalog/i);
   });
 

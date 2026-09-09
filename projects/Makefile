@@ -478,10 +478,16 @@ validate-worker-target:
 	esac
 
 docker-up:
-	@mkdir -p $(LOG_DEPLOY_DIR)
-	@timestamp=$$(date +%Y%m%d-%H%M%S); \
-	 echo "[up] $(DOCKER_SERVICE) -> $(LOG_DEPLOY_DIR)/up-$(SITE)-$$timestamp.log"; \
-	 $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE) 2>&1 | tee $(LOG_DEPLOY_DIR)/up-$(SITE)-$$timestamp.log
+	@case '$(SITE)' in \
+	  precis-ctc) \
+	    echo "[up] precis-ctc — delegating to full-stack project Makefile"; \
+	    $(MAKE) -C precis/precis-ctc up ;; \
+	  *) \
+	    mkdir -p $(LOG_DEPLOY_DIR); \
+	    timestamp=$$(date +%Y%m%d-%H%M%S); \
+	    echo "[up] $(DOCKER_SERVICE) -> $(LOG_DEPLOY_DIR)/up-$(SITE)-$$timestamp.log"; \
+	    $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE) 2>&1 | tee $(LOG_DEPLOY_DIR)/up-$(SITE)-$$timestamp.log ;; \
+	esac
 
 docker-down:
 	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) down --remove-orphans

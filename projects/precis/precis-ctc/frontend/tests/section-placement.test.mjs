@@ -90,8 +90,8 @@ test('home is a slim hero + methods + programs entry page with seeded content', 
   assert.match(home, /ctc research · medical research learning/);
   // Seeded methods (HomePage.CTA → why_choose_section → methods).
   assert.match(home, /Our methods/);
-  assert.match(home, /cross-disciplinary research in AI/);
-  assert.match(home, /medical data analytics/);
+  assert.match(home, /cross-disciplinary clinical research/);
+  assert.match(home, /clinical data analysis/);
   // Seeded program pillars (HomePage.summary → about → service_items).
   assert.match(home, /The Mastery Pillar/);
   assert.match(home, /The Capability Pillar/);
@@ -160,7 +160,7 @@ test('courses index shows the seeded medical-research catalog', () => {
     'Clinical Trial Design &amp; Protocol Development',
     'Biostatistics for Clinical Research',
     'Systematic Review &amp; Meta-Analysis',
-    'Medical AI &amp; Clinical Applications',
+    'Real-World Evidence &amp; Observational Research',
     'Clinical Data Management',
     'Evidence Synthesis for HTA',
     'Research Ethics &amp; Integrity',

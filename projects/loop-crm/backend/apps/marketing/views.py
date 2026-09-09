@@ -33,11 +33,23 @@ class ApprovalsView(LoopPageView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         workspace_id = current_workspace_id(self.request)
-        queryset = Post.objects.filter(status="pending_approval").select_related("channel", "campaign")
+        queryset = Post.objects.filter(status="pending_approval").select_related("channel", "campaign", "media")
         if workspace_id is not None:
             queryset = queryset.filter(workspace_id=workspace_id)
         context["pending_posts"] = list(queryset.order_by("scheduled_at"))
         return context
+
+
+def _oauth_configured() -> dict[str, bool]:
+    """Which redirect-OAuth clients have credentials in settings."""
+    return {
+        "linkedin_configured": bool(settings.LINKEDIN_CLIENT_ID and settings.LINKEDIN_CLIENT_SECRET),
+        "x_configured": bool(settings.X_CLIENT_ID and settings.X_CLIENT_SECRET),
+        "meta_configured": bool(settings.META_CLIENT_ID and settings.META_CLIENT_SECRET),
+        "tiktok_configured": bool(settings.TIKTOK_CLIENT_KEY and settings.TIKTOK_CLIENT_SECRET),
+        "youtube_configured": bool(settings.GOOGLE_CLIENT_ID and settings.GOOGLE_CLIENT_SECRET),
+        "reddit_configured": bool(settings.REDDIT_CLIENT_ID and settings.REDDIT_CLIENT_SECRET),
+    }
 
 
 def _channel_status(channel: SocialChannel) -> str:
@@ -102,7 +114,7 @@ class MediaListView(LoopPageView):
 
 def post_rows(request: HttpRequest) -> list[Post]:
     workspace_id = current_workspace_id(request)
-    queryset = Post.objects.select_related("workspace", "campaign", "channel")
+    queryset = Post.objects.select_related("workspace", "campaign", "channel", "media")
     if workspace_id is not None:
         queryset = queryset.filter(workspace_id=workspace_id)
     try:
@@ -127,8 +139,7 @@ class ContentCalendarView(LoopPageView):
                 "posts": post_rows(self.request),
                 "post_form": PostComposerForm(request=self.request),
                 "channels": channel_rows(self.request),
-                "linkedin_configured": bool(settings.LINKEDIN_CLIENT_ID and settings.LINKEDIN_CLIENT_SECRET),
-                "x_configured": bool(settings.X_CLIENT_ID and settings.X_CLIENT_SECRET),
+                **_oauth_configured(),
             }
         )
         return context
@@ -151,8 +162,7 @@ class ChannelListView(LoopPageView):
                 "channel_connect_form": ChannelConnectForm(),
                 "manual_connect": MANUAL_CONNECT,
                 "platform_catalog": platform_catalog(),
-                "linkedin_configured": bool(settings.LINKEDIN_CLIENT_ID and settings.LINKEDIN_CLIENT_SECRET),
-                "x_configured": bool(settings.X_CLIENT_ID and settings.X_CLIENT_SECRET),
+                **_oauth_configured(),
             }
         )
         return context
@@ -276,7 +286,7 @@ def _post_fragment_context(request: HttpRequest) -> dict:
 @require_POST
 @login_required
 def post_create(request: HttpRequest) -> HttpResponse:
-    form = PostComposerForm(request.POST, request=request)
+    form = PostComposerForm(request.POST, files=request.FILES or None, request=request)
     if not form.is_valid():
         return render(request, "dashboard/partials/post_form.html", {"post_form": form}, status=422)
     post = form.save(commit=False)
@@ -285,6 +295,16 @@ def post_create(request: HttpRequest) -> HttpResponse:
         post.workspace_id = workspace_id
     if getattr(request.user, "is_authenticated", False):
         post.created_by = request.user
+    # Optional attached media: the composer carries a multipart file that is
+    # stored as a workspace-scoped ``Media`` row and linked to the post so
+    # media-capable connectors (Instagram/TikTok/YouTube, photo posts) can
+    # publish it.
+    media_file = request.FILES.get("media")
+    if media_file is not None:
+        media = Media(workspace_id=post.workspace_id, file=media_file)
+        media.alt_text = post.content[:255]
+        media.save()
+        post.media = media
     post.save()
     safe_publish_workspace_event(
         post.workspace_id, "resource.created", {"resource": "posts", "pk": post.pk}

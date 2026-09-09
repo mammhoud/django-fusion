@@ -326,6 +326,14 @@ bootstrap_acme() {
   log_info "Bootstrapping ACME storage at ${acme_file}..."
 
   mkdir -p "$(dirname "$acme_file")"
+  if [ -d "$acme_file" ]; then
+    log_error "${acme_file} is a DIRECTORY, not a file."
+    log_error "Traefik bind-mounts this path, so a directory breaks ACME storage and every HTTPS handshake."
+    log_error "Remove the empty directory, then re-run this command:"
+    echo "    rmdir ${acme_file}"
+    echo "    $0 bootstrap-acme"
+    return 1
+  fi
   if [ ! -f "$acme_file" ]; then
     : > "$acme_file"
   fi
@@ -365,6 +373,10 @@ status_certificates() {
     else
       log_warning "Install 'jq' to inspect cert domains/expiries"
     fi
+  elif [ -d "$acme_file" ]; then
+    log_error "acme.json is a DIRECTORY at ${acme_file} — HTTPS is broken."
+    log_error "Remove it and re-run: rmdir ${acme_file} && $0 bootstrap-acme"
+    log_error "(a docker compose down + up is required afterwards — restart is not enough)"
   else
     log_warning "acme.json not found at ${acme_file}"
     log_info "Run: $0 bootstrap-acme"

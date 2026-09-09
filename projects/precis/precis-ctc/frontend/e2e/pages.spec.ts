@@ -23,7 +23,7 @@ const PAGES: Array<[string, RegExp | null]> = [
   ['/documents/', /document|research/i],
   ['/projects/', /program|project/i],
   ['/profile/', /profile|learning/i],
-  ['/blog/medical-ai-clinical-evidence-limits/', /medical ai|blog/i],
+  ['/blog/where-tools-help-evidence-synthesis/', /streamlining evidence|blog/i],
 ];
 
 for (const [path, headingPattern] of PAGES) {

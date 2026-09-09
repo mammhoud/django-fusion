@@ -71,7 +71,7 @@ test('backend-driven marketing routes render Wagtail content', async ({ page }) 
   const routes = [
     { path: '/faq/', expect: 'Do I need a medical background to join a course?' },
     { path: '/pricing/', expect: 'Explorer' },
-    { path: '/features/', expect: 'Medical AI assistance' },
+    { path: '/features/', expect: 'Evidence Methods Support' },
     { path: '/projects/', expect: 'Systematic Review Studio' },
     { path: '/products/', expect: 'Research Methods Library' },
   ];

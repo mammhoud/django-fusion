@@ -59,10 +59,13 @@ try {
           },
           async logout() {
             try {
+              const csrfToken = window.__FUSION_AUTH?.ensureCsrfToken
+                ? await window.__FUSION_AUTH.ensureCsrfToken()
+                : decodeURIComponent(document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1] || '');
               await fetch(window.__FUSION_AUTH?.logout || '/api/auth/browser/v1/auth/session', {
                 method: 'DELETE',
                 credentials: 'include',
-                headers: { Accept: 'application/json' },
+                headers: { Accept: 'application/json', 'X-CSRFToken': csrfToken },
               });
             } catch (error) {
               // Redirect even when the backend is temporarily unavailable.
@@ -91,32 +94,85 @@ try {
         </template>
 
         <template x-if="!loading && authed">
-          <div class="space-y-6">
-            <div class="card p-6 md:p-8">
-              <div class="flex flex-wrap items-center gap-4">
-                <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-fu-link text-sm font-bold tracking-wide text-white" x-text="initials()"></span>
-                <div><p class="tag-marker mb-1">signed in</p><h2 class="font-display text-2xl font-semibold text-fu-ink" x-text="user?.display"></h2><p class="text-sm text-fu-muted" x-text="user?.email"></p></div>
-                <button type="button" class="btn-secondary ml-auto !px-4 !py-2 text-sm" @click="logout()">Sign out</button>
+          <div class="grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)] lg:items-start">
+            <aside class="card p-4 lg:sticky lg:top-28" aria-label="Profile navigation">
+              <p class="tag-marker mb-4">member workspace</p>
+              <nav class="space-y-1">
+                <a href="/profile/dashboard/" class="profile-side-link profile-side-link--active"><span>01</span><strong>Dashboard</strong><small>Your next step</small></a>
+                <a href="/profile/courses/" class="profile-side-link"><span>02</span><strong>Courses</strong><small>Enrollments &amp; progress</small></a>
+                <a href="/profile/certifications/" class="profile-side-link"><span>03</span><strong>Certificates</strong><small>Credentials &amp; renewal</small></a>
+                <a href="/profile/settings/" class="profile-side-link"><span>04</span><strong>Settings</strong><small>Privacy &amp; security</small></a>
+                <a href="/accounts/password/change/" class="profile-side-link profile-side-link--sub"><span>↳</span><strong>Change password</strong><small>Update credentials</small></a>
+              </nav>
+            </aside>
+
+            <div class="space-y-6">
+              <div class="card p-6 md:p-8">
+                <div class="flex flex-wrap items-center gap-4">
+                  <span class="inline-flex h-14 w-14 items-center justify-center rounded-full bg-fu-link text-sm font-bold tracking-wide text-white" x-text="initials()"></span>
+                  <div><p class="tag-marker mb-1">signed in</p><h2 class="font-display text-2xl font-semibold text-fu-ink" x-text="user?.display"></h2><p class="text-sm text-fu-muted" x-text="user?.email"></p></div>
+                  <button type="button" class="btn-secondary ml-auto !px-4 !py-2 text-sm" @click="logout()">Sign out</button>
+                </div>
               </div>
-            </div>
 
-            <div class="grid gap-5 md:grid-cols-3">
-              <div class="card p-6"><p class="tag-marker mb-3">in progress</p><p class="font-mono text-3xl font-semibold text-fu-ink" x-text="learning.active"></p><p class="mt-1 text-sm text-fu-muted">active courses</p></div>
-              <div class="card p-6"><p class="tag-marker mb-3">completed</p><p class="font-mono text-3xl font-semibold text-fu-ink" x-text="learning.completed"></p><p class="mt-1 text-sm text-fu-muted">courses finished</p></div>
-              <a href="/learning/dashboard/" class="card group p-6 transition-all hover:-translate-y-0.5"><p class="tag-marker mb-3">next action</p><p class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link" x-text="learning.next?.title || 'Open your dashboard'"></p><p class="mt-1 text-sm text-fu-muted" x-text="learning.next ? `${learning.next.progress}% complete · continue →` : 'Review courses and certificates →'"></p></a>
-            </div>
+              <div class="grid gap-5 md:grid-cols-3">
+                <a href="/profile/courses/" class="card group p-6 transition-all hover:-translate-y-0.5"><p class="tag-marker mb-3">in progress</p><p class="font-mono text-3xl font-semibold text-fu-ink" x-text="learning.active"></p><p class="mt-1 text-sm text-fu-muted">active courses →</p></a>
+                <a href="/profile/certifications/" class="card group p-6 transition-all hover:-translate-y-0.5"><p class="tag-marker mb-3">completed</p><p class="font-mono text-3xl font-semibold text-fu-ink" x-text="learning.completed"></p><p class="mt-1 text-sm text-fu-muted">courses finished →</p></a>
+                <a href="/profile/dashboard/" class="card group p-6 transition-all hover:-translate-y-0.5"><p class="tag-marker mb-3">next action</p><p class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link" x-text="learning.next?.title || 'Open your dashboard'"></p><p class="mt-1 text-sm text-fu-muted" x-text="learning.next ? `${learning.next.progress}% complete · continue →` : 'Review your learning path →'"></p></a>
+              </div>
 
-            <div class="grid gap-5 md:grid-cols-2">
-              <a href="/learning/profile/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">↗</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Learning profile</h3><p class="mt-1 text-sm text-fu-muted">Courses, progress, notes, and certificates.</p></span></a>
-              <a href="/profile/settings/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">⚙</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Account settings</h3><p class="mt-1 text-sm text-fu-muted">Profile details, notifications, privacy, and MFA.</p></span></a>
-              <a href="/accounts/email/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">@</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Email addresses</h3><p class="mt-1 text-sm text-fu-muted">Manage your primary and verified addresses.</p></span></a>
-              <a href="/accounts/password/change/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">⌁</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Password &amp; security</h3><p class="mt-1 text-sm text-fu-muted">Change your password or configure MFA.</p></span></a>
+              <div class="grid gap-5 md:grid-cols-2">
+                <a href="/profile/courses/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">02</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Courses &amp; enrollments</h3><p class="mt-1 text-sm text-fu-muted">Continue active work, review recommendations, and track progress.</p></span></a>
+                <a href="/profile/certifications/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">03</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Certificates</h3><p class="mt-1 text-sm text-fu-muted">View earned credentials, expiry dates, and verification details.</p></span></a>
+                <a href="/profile/settings/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">04</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Account settings</h3><p class="mt-1 text-sm text-fu-muted">Profile details, notifications, privacy, and MFA.</p></span></a>
+                <a href="/accounts/password/change/" class="card group flex gap-4 p-6 hover:-translate-y-0.5"><span class="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line text-fu-link">↳</span><span><h3 class="font-display text-lg font-semibold text-fu-ink group-hover:text-fu-link">Change password</h3><p class="mt-1 text-sm text-fu-muted">Update your sign-in credentials on the protected account page.</p></span></a>
+              </div>
             </div>
           </div>
         </template>
       </div>
     </div>
   </section>
+
+  <style>
+    .profile-side-link {
+      display: grid;
+      grid-template-columns: 1.8rem minmax(0, 1fr);
+      gap: 0.1rem 0.55rem;
+      padding: 0.7rem 0.65rem;
+      border-left: 3px solid transparent;
+      color: hsl(var(--fu-muted));
+      text-decoration: none;
+      transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+    }
+    .profile-side-link:hover,
+    .profile-side-link--active {
+      border-left-color: hsl(var(--fu-link));
+      color: hsl(var(--fu-ink));
+      background: hsl(var(--fu-paper));
+    }
+    .profile-side-link > span {
+      grid-row: span 2;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      color: hsl(var(--fu-link));
+    }
+    .profile-side-link strong {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+    }
+    .profile-side-link small {
+      font-size: 0.7rem;
+      line-height: 1.35;
+      color: hsl(var(--fu-muted));
+    }
+    .profile-side-link--sub {
+      margin-left: 0.75rem;
+      border-left-width: 1px;
+    }
+  </style>
 
   <Toast />
 </Layout>

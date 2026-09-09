@@ -14,6 +14,9 @@ Status: Active
 
 ## Documents at a glance
 
+- **CONTENT_MODEL.md** — ⭐ The agenda definition: Anytype concept glossary, object/markdown packaging (4 packages), and the team reference contract
+- **mono-repo/** — Package B — the Anytype object graph: type definitions + per-type content objects (projects, editions, sprints, releases, integrations, APIs, components, tools, pipelines, styles, diagrams, reports, dashboards, methodologies, insights, recommendations, repositories, modules, documentation) + install guides
+- **diagrams/** — Rendered diagram images + mermaid sources: API request UML, Django/Rust ERDs, Blinko SurrealDB
 - **startup-story.md** — Founder journey story + goals-as-achievement tracking
 - **dev-team-plans.md** — Product vertical slices, edition chains, and engineering tasks
 - **backend-plans.md** — Backend architecture, API design, and database planning
@@ -40,7 +43,9 @@ Status: Active
 
 | Reference | Path | Purpose |
 |-----------|------|---------|
+| **Agenda Content Model** | `docs/agenda/CONTENT_MODEL.md` | Agenda definition, packaging, and the plans → milestones reference contract |
 | **Plan Registry** | `docs/plans/README.md` | Single source of truth for all engineering plans |
+| **Finished Milestones** | `docs/agenda/feature-tracking.md` § ✅ Shipped | Backward map of completed plans recorded as milestones |
 | **Recommendations** | `docs/recommendations.md` | Prioritized next actions & sequencing |
 | **Project Awareness** | `docs/guides/00-project-awareness.md` | Object graph, commands, computation paths |
 | **Repository Overview** | `docs/overview.md` | Project map, stack, infrastructure, name migrations |
@@ -92,19 +97,10 @@ Status: Active
 
 ---
 
-## 📂 New: Project Agenda System (2026-08-31)
+## 📂 Project Agenda System
 
-Complete project agenda system for team tracking, case studies, task management, and project completion.
-
-| Document | Purpose |
-|----------|---------|
-| [`MAIN.md`](./MAIN.md) | Hub and index — how everything connects |
-| [`feature-tracking.md`](./feature-tracking.md) | Feature lifecycle tracking |
-| [`case-studies.md`](./case-studies.md) | Real implementations with mermaid diagrams |
-| [`task-tracking.md`](./task-tracking.md) | Sprint task board |
-| [`team-notes.md`](./team-notes.md) | Meeting notes and decisions |
-| [`meeting-agenda.md`](./meeting-agenda.md) | Meeting templates |
-| [`completion-checklist.md`](./completion-checklist.md) | Project closeout checklist |
-| [`README.md`](./README.md) | Agenda system overview |
-
-See `MAIN.md` for the full system overview and how to use it.
+The working agenda (feature tracking, case studies, task board, team notes,
+meeting templates, closeout) lives in this directory. See
+[`README.md`](./README.md) for the overview and [`MAIN.md`](./MAIN.md) for the
+hub — this file is the legacy Blinko-style pointer index and no longer
+restates the agenda tables.

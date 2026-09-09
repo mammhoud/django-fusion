@@ -571,23 +571,18 @@
   }
   @media (min-width: 1024px) { .hero__status { justify-content: flex-start; } }
   .hero__status.reveal-visible { opacity: 1; transform: translateY(0) scale(1); }
-  .js .hero__source-toggle {
-    opacity: 0;
-    transform: translateY(26px) scale(0.98);
-    transition: opacity 0.8s var(--ease-premium), transform 0.8s var(--ease-premium);
-    margin-top: 3rem;
-    max-width: 30rem;
+  .hero__evidence-panel {
+    align-self: center;
+    width: 100%;
+    max-width: 34rem;
     position: relative;
     z-index: 1;
   }
-  .hero__source-toggle.reveal-visible { opacity: 1; transform: translateY(0) scale(1); }
-  @media (min-width: 1024px) { .hero__source-toggle { margin-top: 0; } }
-  .hero__source-bar {
-    margin-bottom: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
+  @media (min-width: 1024px) { .hero__evidence-panel { justify-self: end; } }
+  @media (max-width: 1023px) { .hero__evidence-panel { margin-top: 3rem; } }
+
+  .hero__evidence-panel .bezel {
+    box-shadow: 8px 8px 0 hsl(var(--fu-ink));
   }
 
   /* ── Hero gallery / evidence panel (replaces the view-source code panel) ── */
@@ -613,10 +608,12 @@
     color: hsl(var(--fu-ink));
   }
   .hero__evidence-text {
-    margin-bottom: 1.25rem;
-    font-size: 0.85rem;
-    line-height: 1.6;
+    max-width: 38rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
     color: hsl(var(--fu-muted));
+    overflow-wrap: anywhere;
   }
   .hero__evidence-grid {
     display: grid;
@@ -644,6 +641,10 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: hsl(var(--fu-muted));
+  }
+  @media (max-width: 480px) {
+    .hero__evidence { padding: 1.25rem 1rem; }
+    .hero__evidence-grid { grid-template-columns: 1fr; }
   }
 
   /* ── Page header variations ────────────────────────────────────── */
@@ -1712,7 +1713,7 @@
   html { scroll-behavior: auto; }
   .reveal, .js .reveal, .reveal.reveal-visible,
   .hero__eyebrow, .hero__heading, .hero__intro, .hero__actions,
-  .hero__status, .hero__source-toggle, .hero__breadcrumb,
+  .hero__status, .hero__evidence-panel, .hero__breadcrumb,
   .features__card, .fu-event-card, .fu-certificate__card,
   .blog-preview__card, .team__card, .timeline__card,
   .course-slider__shell, .reveal-up {
@@ -1745,8 +1746,8 @@ html:not(.js) .hero__actions,
 html:not(.fusion-motion-ready) .hero__actions,
 html:not(.js) .hero__status,
 html:not(.fusion-motion-ready) .hero__status,
-html:not(.js) .hero__source-toggle,
-html:not(.fusion-motion-ready) .hero__source-toggle,
+html:not(.js) .hero__evidence-panel,
+html:not(.fusion-motion-ready) .hero__evidence-panel,
 html:not(.js) .hero__breadcrumb,
 html:not(.fusion-motion-ready) .hero__breadcrumb,
 html:not(.js) .features__card,
@@ -1994,9 +1995,7 @@ html:not(.js) .reveal-up {
     align-items: center;
     justify-content: center;
     padding: 2rem 1.25rem;
-    background: hsl(var(--fu-paper) / 0.88);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: hsl(var(--fu-paper));
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -2035,11 +2034,7 @@ html:not(.js) .reveal-up {
     left: 0;
     height: 100%;
     width: 40%;
-    background: linear-gradient(90deg,
-      hsl(var(--fu-link)) 0%,
-      hsl(var(--fu-mark)) 50%,
-      hsl(var(--fu-link)) 100%);
-    background-size: 250% 100%;
+    background: hsl(var(--fu-link));
     animation: htmx-progress-slide 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   }
   @keyframes htmx-progress-slide {
@@ -2142,13 +2137,25 @@ html:not(.js) .reveal-up {
     display: inline-block;
     width: 6px;
     height: 6px;
-    border-radius: 50%;
     background: hsl(var(--fu-live));
     animation: fusion-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
   .htmx-indicator__pulse--slow {
-    background: hsl(var(--fu-mark));
+    background: hsl(var(--fu-link));
   }
+
+  .newsletter__spinner {
+    animation: fusion-pulse 1s ease-in-out infinite;
+  }
+  .newsletter__message {
+    border-top: 2px solid hsl(var(--fu-ink));
+    padding-top: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .newsletter__message--success { color: hsl(var(--fu-link)); }
+  .newsletter__message--error { color: hsl(var(--fu-ink)); }
+
 }
 
 .documents-hero__inner,

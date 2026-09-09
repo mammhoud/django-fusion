@@ -4,7 +4,6 @@ import Hero from '@/components/blocks/Hero.astro';
 import Timeline from '@/components/blocks/Timeline.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import Toast from '@/components/ui/Toast.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
 
@@ -42,7 +41,7 @@ const processSteps = (pageProcess || []).map((p: any) => ({
 
 <Layout
   title={pageData?.title || 'Services'}
-  description={pageData?.search_description || 'CTC Research services — medical AI, clinical evidence, and health innovation programs.'}
+  description={pageData?.search_description || 'CTC Research services — clinical research, evidence synthesis, and health innovation programs.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -52,7 +51,7 @@ const processSteps = (pageProcess || []).map((p: any) => ({
     eyebrow={pageHero?.badge || 'services · evidence support'}
     heading={pageHero?.title || 'Research services'}
     accent='for clinical teams'
-    intro={pageHero?.subtitle || 'Protocol development, evidence synthesis, medical writing, and responsible analytics for research teams that need clear methods and publishable results.'}
+    intro={pageHero?.subtitle || 'Protocol development, evidence synthesis, medical writing, and rigorous research methods for teams that need clear methods and publishable results.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Discuss a study', href: '/contact/' }}
     secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Explore courses', href: '/courses/' }}
     variant="contact"
@@ -84,7 +83,7 @@ const processSteps = (pageProcess || []).map((p: any) => ({
               </ul>
             )}
             {service.cta_label && (
-              <a href={service.cta_href || '/contact'} class='btn-secondary mt-auto w-fit !py-2 text-sm'>{service.cta_label}</a>
+              <a href={service.cta_href || '/contact/'} class='btn-secondary mt-auto w-fit !py-2 text-sm'>{service.cta_label}</a>
             )}
           </div>
         ))}
@@ -104,10 +103,9 @@ const processSteps = (pageProcess || []).map((p: any) => ({
 
   <CTA
     heading={pageCta?.title || 'Advance health through research'}
-    intro={pageCta?.subtitle || 'Partner with CTC Research on medical AI, clinical evidence, and health innovation.'}
+    intro={pageCta?.subtitle || 'Partner with CTC Research on clinical research, evidence synthesis, and health innovation.'}
     ctaLabel={pageCta?.primary_cta?.label || 'Contact us'}
     ctaHref={pageCta?.primary_cta?.href || '/contact/'}
   />
   <Toast />
-  <HtmxBootstrap />
 </Layout>

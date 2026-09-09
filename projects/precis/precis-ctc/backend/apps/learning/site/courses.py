@@ -68,12 +68,12 @@ class CoursesView(PageHandler, NotificationMixin):
         """Get course categories."""
         # This would typically come from a Category model
         return [
-            {"id": "web", "name": "Web Development"},
-            {"id": "mobile", "name": "Mobile Development"},
-            {"id": "data", "name": "Data Science"},
-            {"id": "ai", "name": "Artificial Intelligence"},
-            {"id": "business", "name": "Business"},
-            {"id": "design", "name": "Design"},
+            {"id": "web", "name": "Epidemiology"},
+            {"id": "mobile", "name": "Health Economics"},
+            {"id": "data", "name": "Biostatistics"},
+            {"id": "ai", "name": "Research Informatics"},
+            {"id": "business", "name": "Evidence Synthesis"},
+            {"id": "design", "name": "Medical Writing"},
         ]
 
     @require_POST

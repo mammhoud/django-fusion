@@ -62,7 +62,7 @@ navigation:
 |--------|----------------|------------------------|
 | `plans/` | workspace | README (السجل) · deletion-manifest · document-lifecycle · precis-landing · marketing-claims |
 | `plans/editions/` | `formints` | README (فهرس) · comparison · 01-community → 09-completion-plan |
-| `plans/loop-crm/` | `loop-crm` | demo-state-gap-fixing · formint-integration-finance · merge-plan · twenty-postiz-comparison · wagtail-landing-plan |
+| `plans/loop-crm/` | `loop-crm` | README (الفهرس + معالم مكتملة) · merge-plan · wagtail-landing-plan |
 | `plans/repository/` | workspace | توحيد المستودع، إغلاق المشاريع، نشر CTC، خطط التحسين |
 
 ## استراتيجية الشركة الناشئة (خاصة) 🔒

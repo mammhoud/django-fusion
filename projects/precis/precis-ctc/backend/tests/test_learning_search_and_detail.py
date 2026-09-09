@@ -31,15 +31,15 @@ class LearningSearchAndDetailRoutesTestCase(TestCase):
         )
         cls.tag = CourseTag.objects.create(name="Biostatistics")
         cls.spec = Specialization.objects.create(
-            title="Medical AI & Digital Health", slug="medical-ai-digital-health"
+            title="Evidence-Based Medicine", slug="evidence-based-medicine"
         )
         cls.course = Course.objects.create(
-            title="Medical AI & Clinical Data Analytics",
-            slug="medical-ai-clinical-data-analytics",
-            short_description="Apply clinical data analytics in practice.",
+            title="Real-World Evidence & Observational Research",
+            slug="real-world-evidence-observational-research",
+            short_description="Apply rigorous methods to real-world clinical data questions.",
             description="Full course description.",
-            objectives="Build predictive models\nInterpret clinical data",
-            requirements="Python basics",
+            objectives="Design observational studies\nInterpret clinical data",
+            requirements="Clinical research basics",
             target_audience="Clinical researchers",
             instructor=cls.instructor,
             is_published=True,
@@ -81,7 +81,7 @@ class LearningSearchAndDetailRoutesTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         # ``&`` is HTML-escaped to ``&amp;`` in the rendered page, so assert on
         # a plain substring of the title instead of the raw ``&``-containing one.
-        self.assertContains(response, "Medical AI")
+        self.assertContains(response, "Real-World Evidence")
         self.assertContains(response, "Course Curriculum")
 
     def test_course_detail_404_for_unknown_slug(self):

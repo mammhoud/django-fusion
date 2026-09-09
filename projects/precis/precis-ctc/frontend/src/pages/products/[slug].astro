@@ -4,7 +4,6 @@ import Hero from '@/components/blocks/Hero.astro';
 import FAQ from '@/components/blocks/FAQ.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import MediaGallery from '@/components/ui/MediaGallery.astro';
 import Toast from '@/components/ui/Toast.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
@@ -190,5 +189,4 @@ const faqItems = pageFaq?.map((f: any) => ({
     ctaHref={pageCta?.primary_cta?.href || '/courses/'}
   />
   <Toast />
-  <HtmxBootstrap />
 </Layout>

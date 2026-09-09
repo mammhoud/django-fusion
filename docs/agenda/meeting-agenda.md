@@ -358,6 +358,7 @@ links:
 
 | Topic | Path |
 |-------|------|
+| Agenda content model (definition + reference contract) | [./CONTENT_MODEL.md](./CONTENT_MODEL.md) |
 | Task tracking (use during planning/standup) | [./task-tracking.md](./task-tracking.md) |
 | Feature tracking (use during planning/review) | [./feature-tracking.md](./feature-tracking.md) |
 | Team notes (record all meetings here) | [./team-notes.md](./team-notes.md) |

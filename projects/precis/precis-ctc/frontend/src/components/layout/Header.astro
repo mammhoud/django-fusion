@@ -62,9 +62,12 @@ const displayNav = navItems && navItems.length > 0
     },
     async logout() {
       try {
+        const csrfToken = window.__FUSION_AUTH?.ensureCsrfToken
+          ? await window.__FUSION_AUTH.ensureCsrfToken()
+          : decodeURIComponent(document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1] || '');
         await fetch(window.__FUSION_AUTH?.session || '/api/auth/browser/v1/auth/session', {
           method: 'DELETE', credentials: 'include',
-          headers: { Accept: 'application/json' },
+          headers: { Accept: 'application/json', 'X-CSRFToken': csrfToken },
         });
       } catch (e) { /* best-effort */ }
       window.location.href = '/';

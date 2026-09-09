@@ -10,11 +10,9 @@ roads (Astro frontend + Django templates):
 Mirrors precis-landing's apps/pages/tests.py::test_allauth_headless_*.
 """
 
+from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.test import TestCase
-
-from allauth.account.models import EmailAddress
-
 
 # Headless API paths (stable browser contract consumed by the Alpine modal).
 # In the browser namespace, ``config`` lives at v1/config while the auth
@@ -52,6 +50,69 @@ class HeadlessAuthApiTests(TestCase):
         self.assertEqual(response.status_code, 401)
         payload = response.json()
         self.assertIs(payload["meta"]["is_authenticated"], False)
+
+    def test_headless_login_requires_csrf_for_browser_clients(self):
+        """Browser login rejects missing CSRF and accepts the issued token."""
+        User = get_user_model()
+        user = User.objects.create_user(
+            username="headless_csrf",
+            email="headless_csrf@example.com",
+            password="s3cret-passw0rd",
+        )
+        EmailAddress.objects.create(
+            user=user, email=user.email, verified=True, primary=True
+        )
+        client = self.client.__class__(enforce_csrf_checks=True)
+        client.get("/apis/auth/status/", **self.api_headers)
+        csrf_token = client.cookies["csrftoken"].value
+
+        blocked = client.post(
+            LOGIN_URL,
+            data={"email": user.email, "password": "s3cret-passw0rd"},
+            content_type="application/json",
+            **self.api_headers,
+        )
+        self.assertEqual(blocked.status_code, 403)
+
+        allowed = client.post(
+            LOGIN_URL,
+            data={"email": user.email, "password": "s3cret-passw0rd"},
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=csrf_token,
+            **self.api_headers,
+        )
+        self.assertEqual(allowed.status_code, 200)
+
+    def test_headless_logout_requires_csrf_for_browser_clients(self):
+        """Browser logout rejects missing CSRF and accepts the issued token."""
+        User = get_user_model()
+        user = User.objects.create_user(
+            username="headless_logout_csrf",
+            email="headless_logout_csrf@example.com",
+            password="s3cret-passw0rd",
+        )
+        client = self.client.__class__(enforce_csrf_checks=True)
+        client.force_login(user)
+        client.get("/apis/auth/status/", **self.api_headers)
+        csrf_token = client.cookies["csrftoken"].value
+
+        blocked = client.delete(SESSION_URL, **self.api_headers)
+        self.assertEqual(blocked.status_code, 403)
+
+        allowed = client.delete(
+            SESSION_URL,
+            HTTP_X_CSRFTOKEN=csrf_token,
+            **self.api_headers,
+        )
+        self.assertEqual(allowed.status_code, 401)
+
+    def test_auth_status_issues_a_csrf_cookie_without_auth_tokens(self):
+        """The browser status endpoint establishes CSRF, not a bearer token."""
+        response = self.client.get("/apis/auth/status/", **self.api_headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("csrftoken", response.cookies)
+        self.assertNotIn("access_token", response.json())
+        self.assertNotIn("refresh_token", response.json())
 
     def test_headless_login_round_trip(self):
         """A real login round-trip: verified user → POST → authenticated session."""

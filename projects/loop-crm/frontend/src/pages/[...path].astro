@@ -2,8 +2,12 @@
 import Layout from '@/layouts/Layout.astro';
 import AppShell from '@/components/AppShell.astro';
 import PipelineBoard from '@/components/board/PipelineBoard';
+import AiHub from '@/components/dashboard/AiHub';
 import BillingPlan from '@/components/dashboard/BillingPlan';
 import ReportCatalog from '@/components/dashboard/ReportCatalog';
+import EmployeeDirectory from '@/components/dashboard/EmployeeDirectory';
+import CommandPalette from '@/components/dashboard/CommandPalette';
+import OnboardingTour from '@/components/dashboard/OnboardingTour';
 import RevOpsDashboard from '@/components/dashboard/RevOpsDashboard';
 import ResourceTable from '@/components/dashboard/ResourceTable';
 
@@ -46,6 +50,8 @@ export function getStaticPaths() {
     { path: '/settings/saved-views/', title: 'Saved views', kicker: 'Workspace · views', description: 'Your persisted list and kanban view configurations for every resource.', module: 'workspace' },
     { path: '/settings/import/', title: 'Import', kicker: 'Workspace · data', description: 'Import companies, contacts, and deals from a CSV upload, validated and workspace-scoped.', module: 'workspace' },
     { path: '/settings/plan/', title: 'Plan & billing', kicker: 'Workspace · billing', description: 'Subscription state, plan limits, seat usage, and the Stripe customer portal.', module: 'billing' },
+    { path: '/ai/', title: 'AI Hub', kicker: 'Workspace · assisted operations', description: 'Consent-gated lead scoring, sales-email drafts, and social-post drafts.', module: 'ai' },
+    { path: '/employees/', title: 'People', kicker: 'Workspace · people', description: 'Review member activity, ownership, publishing, and performance dossiers.', module: 'employees' },
     { path: '/reports/', title: 'Reports', kicker: 'RevOps · reports', description: 'The catalog of revenue, pipeline, publishing, employee, and billing reports.', module: 'reports' },
   ];
   return pages.map((page) => ({
@@ -99,7 +105,11 @@ const cards = page.module === 'overview'
     {page.path === '/crm/deals/' && <PipelineBoard client:load />}
     {page.path === '/settings/plan/' && <BillingPlan client:load />}
     {page.path === '/reports/' && <ReportCatalog client:load />}
-    {page.path !== '/overview/' && page.path !== '/crm/deals/' && (
+    {page.path === '/ai/' && <AiHub client:load />}
+    {page.path === '/employees/' && <EmployeeDirectory client:load />}
+    {page.path === '/overview/' && <OnboardingTour client:load />}
+    <CommandPalette client:load />
+    {page.path !== '/overview/' && page.path !== '/crm/deals/' && page.path !== '/employees/' && page.path !== '/ai/' && (
     <section class="loop-page-cards" aria-label={`${page.title} highlights`}>
       {cards.map((card) => (
         <a class:list={['loop-page-card', cards.length === 1 && 'loop-page-card--wide']} href={card.href}>

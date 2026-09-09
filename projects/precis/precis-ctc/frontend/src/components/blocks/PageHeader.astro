@@ -1,4 +1,5 @@
 ---
+import { publicHref } from '@/lib/site';
 import Breadcrumb from '@/components/blocks/Breadcrumb.astro';
 
 interface Props {
@@ -39,8 +40,8 @@ const {
       {intro ? <p class="page-header__intro" data-l10n={Astro.props.introL10n || undefined}>{intro}</p> : null}
       {(primaryCta || secondaryCta) ? (
         <div class="page-header__actions">
-          {primaryCta ? <a class="btn-primary" href={primaryCta.href}>{primaryCta.label} <span aria-hidden="true">→</span></a> : null}
-          {secondaryCta ? <a class="btn-secondary" href={secondaryCta.href}>{secondaryCta.label}</a> : null}
+          {primaryCta ? <a class="btn-primary" href={publicHref(primaryCta.href)}>{primaryCta.label} <span aria-hidden="true">→</span></a> : null}
+          {secondaryCta ? <a class="btn-secondary" href={publicHref(secondaryCta.href)}>{secondaryCta.label}</a> : null}
         </div>
       ) : null}
     </div>

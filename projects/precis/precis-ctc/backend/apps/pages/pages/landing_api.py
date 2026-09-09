@@ -21,7 +21,8 @@ from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.utils.html import strip_tags
 from django.utils.text import slugify
-from django.utils.translation import activate, check_for_language, gettext as _
+from django.utils.translation import activate, check_for_language
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt, csrf_protect, ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from wagtail.blocks.list_block import ListValue
@@ -31,6 +32,7 @@ from wagtail.models import Page
 from wagtail.rich_text import RichText
 
 logger = logging.getLogger(__name__)
+
 
 def _supported_language_codes() -> list[str]:
     """Return the active Wagtail catalog, with shared settings as validation."""
@@ -341,7 +343,7 @@ def _page_data(page, request=None, language: str | None = None) -> dict:
 
     data.setdefault("cta", {
         "title": _("Start learning with CTC Research"),
-        "subtitle": _("A medical research center for clinical evidence, biostatistics, and responsible medical AI."),
+        "subtitle": _("A medical research center for clinical evidence, biostatistics, and rigorous research methods."),
         "primary_cta": {"label": _("Browse courses"), "href": "/courses/", "style": "primary"},
     })
     return data
@@ -552,7 +554,7 @@ def site_settings_api(request: HttpRequest) -> JsonResponse:
         except Exception:
             pass
     if not favicon_url:
-        favicon_url = "/favicon.svg"
+        favicon_url = "/static/images/favicon-enhanced.svg"
 
     # Best-effort model helpers: if the deployed schema predates the
     # parity migration, degrade to {} instead of 500ing the endpoint
@@ -1185,10 +1187,72 @@ def contact_submit_api(request: HttpRequest) -> HttpResponse:
 
 
 @csrf_exempt
-def newsletter_subscribe_api(request: HttpRequest) -> JsonResponse:
-    email = request.POST.get("email", "").strip()
-    valid = bool(re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", email))
-    return JsonResponse({"success": valid, "message": "Subscribed!" if valid else "Please enter a valid email address."}, status=200 if valid else 400)
+def newsletter_subscribe_api(request: HttpRequest) -> HttpResponse:
+    """Subscribe a visitor and return the format requested by the client.
+
+    The Astro newsletter form uses HTMX and needs an HTML fragment, while
+    integrations and API clients can request the same result as JSON. The
+    subscription is stored with double opt-in before the confirmation email is
+    attempted, so a temporary mail-service problem never loses the signup.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Please submit the form to subscribe."}, status=405)
+
+    from django.core.exceptions import ValidationError
+    from django.core.validators import validate_email
+
+    from apps.domain.models.newsletter.subscriber import Subscriber
+
+    email = request.POST.get("email", "").strip().lower()
+    try:
+        validate_email(email)
+    except ValidationError:
+        return _newsletter_response(request, False, "Please enter a valid email address.", status=400)
+
+    subscriber, created = Subscriber.objects.get_or_create(
+        email=email,
+        defaults={
+            "name": request.POST.get("name", "").strip(),
+            "status": "pending",
+            "source": "website_newsletter",
+        },
+    )
+
+    if not created and subscriber.status == "confirmed":
+        return _newsletter_response(request, True, "You are already subscribed to these updates.")
+
+    if not created and subscriber.status in {"unsubscribed", "bounced"}:
+        subscriber.regenerate_tokens()
+        subscriber.status = "pending"
+        subscriber.unsubscribed_at = None
+        subscriber.save(update_fields=["status", "unsubscribed_at", "updated_at"])
+
+    try:
+        from apps.domain.services.communication.newsletter import send_confirmation_email
+
+        send_confirmation_email(subscriber.id)
+    except Exception:
+        logger.exception("Newsletter confirmation email failed for subscriber %s", subscriber.pk)
+
+    return _newsletter_response(
+        request,
+        True,
+        "Thanks for signing up. Please check your inbox to confirm your email.",
+    )
+
+
+def _newsletter_response(
+    request: HttpRequest,
+    success: bool,
+    message: str,
+    *,
+    status: int = 200,
+) -> HttpResponse:
+    """Render a visitor-friendly HTMX fragment or a stable JSON response."""
+    if request.headers.get("HX-Request"):
+        css_class = "newsletter__message newsletter__message--success" if success else "newsletter__message newsletter__message--error"
+        return HttpResponse(f'<p class="{css_class}" role="status">{html.escape(message)}</p>', status=status)
+    return JsonResponse({"success": success, "message": message}, status=status)
 
 
 @ensure_csrf_cookie

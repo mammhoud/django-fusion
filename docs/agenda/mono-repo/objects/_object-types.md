@@ -25,10 +25,15 @@ graph TB
     CH --> CM
     OBJ -.-> CM
 ```
+![Rendered diagram](/agenda/diagrams/mono-repo-objects-_object-types-1.svg)
 
 See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full container guide and role mapping.
 
 ---
+
+## Per-type definition files
+
+Each type below has a dedicated definition file in this directory (`objects/<type>.md`) with its properties, use, and graph — see [`_index.md`](./_index.md) for the full table. This file is the registry that keeps them consistent.
 
 ## Core object types
 
@@ -41,7 +46,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Properties:** `Status`, `Related Editions`, `Version`, `Related Features`, `Related Guides`, `Related Goals`, `Related Decisions`, `Tags`.
 
-**Files:** `architecture/*.md`
+**Files:** `architecture/*.md` · definition: `objects/architecture.md`
 
 ---
 
@@ -54,7 +59,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Properties:** `Status`, `Related Editions`, `Priority`, `Tags`, `Depends On`, `Implementation`, `Related Goals`, `Related Milestones`, `Related APIs`, `Related Products`.
 
-**Files:** `features/*.md`
+**Files:** `features/*.md` · definition: `objects/feature.md`
 
 ---
 
@@ -67,7 +72,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Properties:** `Status`, `Category`, `Target Audience`, `Prerequisites`, `Related Architecture`, `Related Features`, `Part Of`.
 
-**Files:** `guides/*.md`
+**Files:** `guides/*.md` · definition: `objects/guide.md`
 
 ---
 
@@ -80,7 +85,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Properties:** `Category`, `Related Editions`, `Version`, `Related Architecture`.
 
-**Files:** `references/*.md`
+**Files:** `references/*.md` · definition: `objects/reference.md`
 
 ---
 
@@ -93,7 +98,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Properties:** `Version`, `Date`, `Related Editions`, `Type`, `Related Features`, `Related Goals`, `Related Milestones`, `Related Releases`.
 
-**Files:** `changelogs/*.md`
+**Files:** `changelogs/*.md` · definition: `objects/changelog.md`
 
 ---
 
@@ -106,7 +111,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Properties:** `Type`, `Related Editions`, `Related Docs`.
 
-**Files:** `diagrams/*.md`
+**Files:** `diagrams/*.md` · definition: `objects/diagram.md`
 
 ---
 
@@ -134,7 +139,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Properties:** `Status`, `Start Date`, `End Date`, `Owner`, `Related Workspace`, `Related Products`, `Related Teams`, `Related Plans`, `Related Goals`, `Related Milestones`, `Related Features`, `Related Releases`, `Tags`.
 
-**Files:** `projects/*.md` or project plans.
+**Files:** `projects/*.md` or project plans · definition: `objects/project.md`.
 
 ---
 
@@ -149,7 +154,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Type options:** `Roadmap`, `Sprint`, `Release`, `Milestone`, `Quarterly`, `Annual`, `Migration`, `Technical`, `Architecture`, `Product`, `Marketing`, `Marketing Campaign`, `Sales`, `Commerce`, `Product Development`, `Social`, `Team`.
 
-**Files:** `plans/*.md`.
+**Files:** `plans/*.md` · definition: `objects/plan.md` (see `_templates.md`).
 
 ---
 
@@ -394,7 +399,7 @@ See [`guides/channel-structure.md`](../guides/channel-structure.md) for the full
 
 **Phase options:** `Foundations`, `Experimentation`, `Platform`, `Suite`, `Enterprise`.
 
-**Files:** `stories/*.md`.
+**Files:** `stories/*.md` · definition: `objects/story.md`.
 
 ---
 

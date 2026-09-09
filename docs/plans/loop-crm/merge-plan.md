@@ -1,6 +1,6 @@
 # Loop-CRM — Merge & Architecture Plan
 
-> **Status:** Most of the merge is shipped: realtime SSE/WebSocket, webhooks + email/Slack connectors, finance CSV export, pagination/filtering, Activities + Media screens, custom objects (runtime schema), saved views, approval/report queues, CSV import, and a no-code step workflow editor. Remaining open work: the 6 credential-blocked social publish adapters + their OAuth connect flows, the AI hub (Phase 4) and full per-resource Bolt OpenAPI. See §12 for the ordered roadmap.
+> **Status:** Most of the merge is shipped: realtime SSE/WebSocket, webhooks + email/Slack connectors, finance CSV export, pagination/filtering, Activities + Media screens, custom objects (runtime schema), saved views, approval/report queues, CSV import, a no-code step workflow editor, the consent-gated AI hub foundation, per-resource Bolt OpenAPI metadata, and the Loop-CRM backend translation sweep. All 12 social platforms now publish for real behind `SocialConnector` — the six formerly credential-gated catalog adapters (Instagram/Facebook/TikTok/YouTube/Reddit/WhatsApp) are real HTTP publishers, and the composer/media row now attaches image/video to posts. Remaining open work is connect-flow polish, the reviewed monorepo catalog merge, translated frontend copy, and visual DAG/editor polish. See §12 for the ordered roadmap.
 > **Source projects:** [twentyhq/twenty](https://github.com/twentyhq/twenty) (CRM) · [gitroomhq/postiz-app](https://github.com/gitroomhq/postiz-app) (social scheduling)
 > **Canonical path:** [`projects/loop-crm/`](../../../projects/loop-crm/)
 > **Last reviewed:** 2026-08-15
@@ -126,8 +126,19 @@ Django compatibility road (`/api/v1/`) is session-authenticated
 
 ## 6. Roadmap (remaining work)
 
-- **Phase 4 — AI hub:** lead scoring, sales emails, and social post generation
-  behind provider adapters, with explicit workspace consent and audit logging.
+- **Phase 4 — AI hub:** local foundation shipped — consent-gated lead scoring,
+  sales-email drafting, and social-post drafting are exposed through provider-
+  neutral adapters with audit-safe status records. External provider activation
+  remains credential-gated; no operation auto-publishes or auto-sends.
+- **Phase 6 — API surface:** per-resource Bolt OpenAPI metadata is shipped —
+  every registered resource carries a human-readable tag, singular label,
+  description, CRUD route summaries, pagination/filter descriptions, and
+  secret-safe projections. The optional Bolt runtime still skips runtime schema
+  assertions when django-bolt is not installed.
+- **Phase 7 — locale foundation:** Loop-CRM now points at the shared
+  `projects/assets/locale/` catalog root and exposes a CSRF-protected `en/ar`
+  locale preference contract in the app shell; catalog merge and translated
+  frontend copy remain open.
 - **Phase 5 — domain screens:** shipped — the approval queue
   (`/marketing/approvals/`), real revenue reports (`/attribution/reports/`),
   custom objects (`/settings/custom-objects/`), saved views
@@ -226,11 +237,11 @@ or deferred against each source.
 
 | Postiz capability | Loop-CRM status | Notes |
 |---|---|---|
-| Real publish adapters | ⚠️ 6 of 12 | LinkedIn, X, Mastodon, Bluesky, Discord, Slack publish for real (Discord/Slack via incoming webhooks — no OAuth) |
-| Catalog adapters | ⚠️ 6 of 12 | Instagram/Facebook/TikTok/YouTube/Reddit/WhatsApp — named, credential-gated `CatalogOnlyConnector`s that honestly report "not wired yet" |
+| Real publish adapters | ✅ 12 of 12 | LinkedIn, X, Mastodon, Bluesky, Discord, Slack (webhooks), Facebook (Page feed/photo/video), Instagram (container + publish), TikTok (direct-post init/upload/status), YouTube (`videos.insert` multipart upload), Reddit (`api/submit`), WhatsApp (Cloud API messages) |
+| Media attachments | ✅ added | composer + Media row attach image/video to a post; URL-pull providers gate on `PUBLIC_SITE_URL`, byte uploads read through Django storage |
 | Analytics | ⚠️ partial | X metrics real; others return `{}` honestly |
-| OAuth connect | ⚠️ 2 flows | LinkedIn + X redirect OAuth; Mastodon/Bluesky app-password pending |
-| 30+ channels | ❌ not added | 12 cataloged, 6 real publish implementations + 6 gated catalog adapters |
+| OAuth connect | ⚠️ 2 flows + tokens | LinkedIn + X redirect OAuth; the six promoted connectors use per-channel tokens (manual entry); Mastodon/Bluesky app-password pending |
+| 30+ channels | ❌ not added | 12 cataloged, all with real publish implementations |
 | AI generation / copilot | ❌ not added | Phase 4 |
 | Canva editor / RSS / marketplace | ❌ not added | |
 
@@ -309,13 +320,15 @@ or deferred against each source.
 
 Ordered by impact; each phase is independently shippable.
 
-1. **Real publish implementations for the 6 remaining catalog adapters** —
-   Instagram/Facebook/TikTok/YouTube/Reddit/WhatsApp currently use the
-   credential-gated `CatalogOnlyConnector` (honest "not wired yet"); promote
-   each to a real publisher as credentials + their connect flows land
-   (app-password for Bluesky, instance OAuth for Mastodon). Discord and Slack
-   are already real incoming-webhook publishers. Keep the `SocialConnector`
-   contract.
+1. **Real publish implementations for all 12 catalog adapters** — ✅ shipped:
+   Instagram/Facebook/TikTok/YouTube/Reddit/WhatsApp are real HTTP publishers
+   behind the `SocialConnector` contract (Meta Graph feed/photo/video +
+   container flow, TikTok direct-post init/upload/status, YouTube
+   `videos.insert` multipart upload, Reddit `api/submit`, WhatsApp Cloud API),
+   the composer attaches media (`Post.media`), and URL-pull providers gate on
+   `PUBLIC_SITE_URL`. Discord and Slack remain real incoming-webhook
+   publishers. Remaining polish: per-provider connect flows beyond manual
+   token entry.
 2. **AI hub (Phase 4)** — post generation, sales-email drafting, lead scoring
    behind provider adapters with workspace consent + `AuditLog` writes; reuse
    the `workflow_actions` deferred-action pattern.
@@ -351,10 +364,11 @@ Ordered by impact; each phase is independently shippable.
    accept ``limit``/``offset``/``search`` on collection GETs, ``count`` is the
    filtered total, and ``next``/``previous`` are offsets.
 
-> **Finance + workflows + integrations** are planned separately in
-> [`formint-integration-finance-workflows.md`](formint-integration-finance-workflows.md) —
-> Formint POS financial-data ingestion into the finance module, workflow
-> action/template expansion, and webhooks/email/Slack/social/export connectors.
+> **Finance + workflows + integrations** shipped (2026-08-14/15): Formint POS
+> financial-data ingestion into the finance module, workflow action/template
+> expansion, and webhooks/email/Slack/social/export connectors. Recorded as a
+> finished milestone in [`docs/agenda/feature-tracking.md`](../../agenda/feature-tracking.md)
+> § Loop-CRM; the separate plan file was deleted (git history is the archive).
 
 ---
 

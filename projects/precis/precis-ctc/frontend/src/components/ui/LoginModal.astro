@@ -23,6 +23,7 @@ const loginUrl = browserEndpoint('/api/auth/browser/v1/auth/login');
 const sessionUrl = browserEndpoint('/api/auth/browser/v1/auth/session');
 const logoutUrl = browserEndpoint('/api/auth/browser/v1/auth/session');
 
+const csrfUrl = browserEndpoint('/apis/auth/status/');
 const providers = [
   { id: 'github', label: 'GitHub', icon: 'M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49v-1.7c-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.63.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.85.09-.66.35-1.12.64-1.37-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.8-4.57 5.05.36.32.68.94.68 1.9v2.82c0 .27.18.6.69.49A10.22 10.22 0 0 0 22 12.2C22 6.58 17.52 2 12 2z' },
   { id: 'google', label: 'Google', icon: 'M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z' },
@@ -34,13 +35,38 @@ const providersJson = JSON.stringify(providers);
 <!-- API endpoints + providers are injected as window globals via define:vars
      (Astro does NOT interpolate ${...} inside quoted attribute strings, so the
      Alpine x-data below reads them at runtime instead). -->
-<script is:inline define:vars={{ loginUrl, sessionUrl, logoutUrl, apiBase, providersJson }}>
+<script is:inline define:vars={{ loginUrl, sessionUrl, logoutUrl, csrfUrl, apiBase, providersJson }}>
+  const readCsrfToken = () => {
+    try {
+      const raw = document.cookie.match(/(?:^|; )csrftoken=([^;]+)/)?.[1] || '';
+      return decodeURIComponent(raw);
+    } catch {
+      return '';
+    }
+  };
+
+  const ensureCsrfToken = async () => {
+    const existing = readCsrfToken();
+    if (existing) return existing;
+    const response = await fetch(csrfUrl, {
+      method: 'GET',
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) throw new Error('Could not establish a secure session.');
+    const token = readCsrfToken();
+    if (!token) throw new Error('Could not establish a secure session.');
+    return token;
+  };
+
   window.__FUSION_AUTH = {
     login: loginUrl,
     session: sessionUrl,
     logout: logoutUrl,
+    csrf: csrfUrl,
     apiBase: apiBase,
     providers: JSON.parse(providersJson),
+    ensureCsrfToken,
   };
 </script>
 
@@ -56,10 +82,15 @@ const providersJson = JSON.stringify(providers);
       this.loading = true;
       this.error = '';
       try {
+        const csrfToken = await window.__FUSION_AUTH.ensureCsrfToken();
         const res = await fetch(window.__FUSION_AUTH.login, {
           method: 'POST',
           credentials: 'include',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
           body: JSON.stringify({ email: this.email, password: this.password }),
         });
         if (res.status === 200 || res.status === 201) {

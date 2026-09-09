@@ -70,6 +70,7 @@ stateDiagram-v2
     Revoked --> [*]
     Active --> [*]: Expired (if TTL set)
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-api-token-management-1.svg)
 
 ### 2.2 Token Authentication Flow
 
@@ -96,6 +97,7 @@ sequenceDiagram
         API-->>CLIENT: 403 Forbidden
     end
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-api-token-management-2.svg)
 
 ### 2.3 Scope Enforcement
 
@@ -119,6 +121,7 @@ graph LR
     CHECK -->|Token has| S1
     CHECK -->|Allow| EP
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-api-token-management-3.svg)
 
 ---
 

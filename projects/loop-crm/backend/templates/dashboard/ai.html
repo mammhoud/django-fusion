@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} — Loop CRM{% endblock %}
+{% block content %}
+  <nav class="loop-breadcrumb" aria-label="Breadcrumb">
+    {% for crumb in breadcrumbs %}<span>{% if not forloop.first %}<span class="loop-breadcrumb__separator" aria-hidden="true">/</span> {% endif %}{% if forloop.last %}<span aria-current="page">{{ crumb.label }}</span>{% else %}<a href="{{ crumb.href }}">{{ crumb.label }}</a>{% endif %}</span>{% endfor %}
+  </nav>
+  <p class="loop-eyebrow">{{ page_kicker }}</p>
+  <div class="loop-page-heading"><div><h1>{{ page_title }}</h1><p class="loop-lede">{{ page_description }}</p></div><span class="loop-page-heading__mark">provider-neutral<br />human review</span></div>
+
+  <section class="loop-ai-panel" aria-labelledby="ai-consent-title">
+    <div>
+      <span class="loop-card__label">Control boundary</span>
+      <h2 id="ai-consent-title">Workspace AI consent</h2>
+      <p class="loop-card__copy">AI receives only the brief submitted for an operation. It never publishes posts, sends email, or changes CRM records automatically.</p>
+    </div>
+    <div class="loop-ai-panel__state">
+      <span class="loop-pill{% if ai_consent %} loop-pill--active{% endif %}">{% if ai_consent %}consent enabled{% else %}consent required{% endif %}</span>
+      <span class="loop-ai-panel__provider">{% for provider in ai_providers %}{{ provider.label }} · {% if provider.configured %}configured{% else %}not configured{% endif %}{% endfor %}</span>
+    </div>
+  </section>
+
+  <section class="loop-ai-panel loop-ai-panel--operations" aria-labelledby="ai-operations-title">
+    <div class="loop-section-heading"><div><span class="loop-card__label">Phase 4</span><h2 id="ai-operations-title">Assisted operations</h2></div><span class="loop-pill">review before action</span></div>
+    <div class="loop-ai-grid">
+      {% for operation in ai_operations %}
+        <article class="loop-ai-card">
+          <span class="loop-ai-card__index">0{{ forloop.counter }}</span>
+          <h3>{{ operation.label }}</h3>
+          <p>{{ operation.description }}</p>
+          <a class="loop-button loop-button--quiet" href="/ai/?operation={{ operation.id }}">Open brief →</a>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}
+{% block head %}<style>
+.loop-ai-panel{display:flex;justify-content:space-between;gap:1.5rem;align-items:flex-start;margin-top:2rem;padding:1.25rem;border:1px solid var(--line);background:#121212}.loop-ai-panel h2{margin:.35rem 0 0;font-size:1.35rem;text-transform:uppercase}.loop-ai-panel__state{display:grid;gap:.55rem;justify-items:end;text-align:right}.loop-ai-panel__provider{color:#718394;font:600 .62rem ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}.loop-ai-panel--operations{display:block}.loop-ai-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;margin-top:1rem;background:var(--line);border:1px solid var(--line)}.loop-ai-card{position:relative;display:flex;min-height:14rem;flex-direction:column;gap:.6rem;padding:1.1rem;background:#0e0e0e}.loop-ai-card__index{color:var(--accent);font:700 .62rem ui-monospace,monospace}.loop-ai-card h3{margin:1.2rem 0 0;color:var(--ink);font-size:1.15rem;text-transform:uppercase;line-height:1}.loop-ai-card p{margin:0;color:var(--muted);line-height:1.55}.loop-ai-card .loop-button{margin-top:auto;align-self:flex-start;text-decoration:none}.loop-pill--active{color:var(--green);border-color:#416b39}@media(max-width:760px){.loop-ai-panel{display:block}.loop-ai-panel__state{justify-items:start;margin-top:1rem;text-align:left}.loop-ai-grid{grid-template-columns:1fr}}
+</style>{% endblock %}

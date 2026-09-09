@@ -26,6 +26,17 @@ export function browserEndpoint(path: string): string {
   return `${browserApiUrl.replace(/\/+$/, '')}${normalized}`;
 }
 
+/** Normalize internal page links so CMS values cannot create extensionless 404s. */
+export function publicHref(href: string | undefined, fallback = '/'): string {
+  const value = String(href || fallback).trim();
+  if (!value || value.startsWith('#') || /^(?:[a-z]+:|\/\/)/i.test(value)) return value || fallback;
+  const match = value.match(/^([^?#]*)([?#].*)?$/);
+  const path = match?.[1] || fallback;
+  const suffix = match?.[2] || '';
+  if (path === '/') return value;
+  return `${path.replace(/\/+$/, '')}/${suffix}`;
+}
+
 /** Canonical public URL used for SEO metadata and social previews. */
 export const siteUrl: string =
   (import.meta.env.PUBLIC_SITE_URL as string | undefined) || 'https://ctc-research.com';
@@ -34,4 +45,4 @@ export const siteUrl: string =
 export const fallbackSiteName = 'CTC Research';
 
 /** Fallback OG image path. */
-export const ogImage = '/favicon.svg';
+export const ogImage = '/static/images/logo-enhanced.svg';

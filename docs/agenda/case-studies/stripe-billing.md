@@ -90,6 +90,7 @@ graph TB
     BILLING -->|8. Generate| INVOICE
     INVOICE -->|9. Create| INV
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-stripe-billing-1.svg)
 
 ### 2.2 Subscription Lifecycle
 
@@ -113,6 +114,7 @@ stateDiagram-v2
     Pro --> [*]: Canceled
     Enterprise --> [*]: Canceled
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-stripe-billing-2.svg)
 
 ### 2.3 Usage Metering
 
@@ -135,6 +137,7 @@ sequenceDiagram
     STRIPE-->>BILLING: Usage recorded
     BILLING-->>METER: Ack
 ```
+![Rendered diagram](/agenda/diagrams/case-studies-stripe-billing-3.svg)
 
 ---
 

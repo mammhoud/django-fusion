@@ -7,10 +7,14 @@
   <div class="loop-workflow-layout">
     <section class="loop-card" aria-label="Connect a channel">
       <div class="loop-section-heading"><div><span class="loop-card__label">Connect</span><h2>Add a provider account</h2></div></div>
-      <p class="loop-card__copy">OAuth handshakes store the access token server-side and never render it. LinkedIn and X use redirect OAuth; Mastodon and Bluesky are available through the connector catalog once their credentials are configured.</p>
+      <p class="loop-card__copy">OAuth handshakes store the access token server-side and never render it. LinkedIn, X, Facebook, Instagram, WhatsApp, TikTok, YouTube, and Reddit use redirect OAuth; the manual form below stays available for direct token entry.</p>
       <div class="loop-channels__actions">
         {% if linkedin_configured %}<a class="loop-button" href="{% url 'oauth_connect' 'linkedin' %}">Connect LinkedIn</a>{% else %}<span class="loop-channels__hint" title="Set LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET in the backend .env">LinkedIn needs client credentials</span>{% endif %}
         {% if x_configured %}<a class="loop-button" href="{% url 'oauth_connect' 'twitter' %}">Connect X</a>{% else %}<span class="loop-channels__hint" title="Set X_CLIENT_ID and X_CLIENT_SECRET in the backend .env">X needs client credentials</span>{% endif %}
+        {% if meta_configured %}<a class="loop-button" href="{% url 'oauth_connect' 'facebook' %}">Connect Facebook</a><a class="loop-button" href="{% url 'oauth_connect' 'instagram' %}">Connect Instagram</a><a class="loop-button" href="{% url 'oauth_connect' 'whatsapp' %}">Connect WhatsApp</a>{% else %}<span class="loop-channels__hint" title="Set META_CLIENT_ID and META_CLIENT_SECRET in the backend .env">Facebook / Instagram / WhatsApp need Meta client credentials</span>{% endif %}
+        {% if tiktok_configured %}<a class="loop-button" href="{% url 'oauth_connect' 'tiktok' %}">Connect TikTok</a>{% else %}<span class="loop-channels__hint" title="Set TIKTOK_CLIENT_KEY and TIKTOK_CLIENT_SECRET in the backend .env">TikTok needs client credentials</span>{% endif %}
+        {% if youtube_configured %}<a class="loop-button" href="{% url 'oauth_connect' 'youtube' %}">Connect YouTube</a>{% else %}<span class="loop-channels__hint" title="Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in the backend .env">YouTube needs Google client credentials</span>{% endif %}
+        {% if reddit_configured %}<a class="loop-button" href="{% url 'oauth_connect' 'reddit' %}">Connect Reddit</a>{% else %}<span class="loop-channels__hint" title="Set REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET in the backend .env">Reddit needs client credentials</span>{% endif %}
       </div>
     </section>
     {% include "dashboard/partials/channel_connect_panel.html" %}

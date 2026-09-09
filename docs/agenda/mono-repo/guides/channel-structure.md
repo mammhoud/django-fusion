@@ -63,6 +63,7 @@ graph TB
     OBJ2 -. relations .-> GRAPH
     OBJ3 -. relations .-> GRAPH
 ```
+![Rendered diagram](/agenda/diagrams/mono-repo-guides-channel-structure-1.svg)
 
 ## Roles and members
 

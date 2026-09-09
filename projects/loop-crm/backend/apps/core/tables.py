@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import django_tables2 as tables
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
 from .permissions import is_marketing, is_revops, is_sales, role_of
 
@@ -10,12 +11,12 @@ from .permissions import is_marketing, is_revops, is_sales, role_of
 class MemberTable(tables.Table):
     """Member directory: identity, live role, workspace, and capabilities only."""
 
-    username = tables.Column(verbose_name="Member")
-    email = tables.EmailColumn(verbose_name="Email")
-    role = tables.Column(verbose_name="Role")
-    workspace = tables.Column(verbose_name="Workspace", empty_values=())
-    permissions = tables.Column(verbose_name="Access", empty_values=())
-    status = tables.Column(verbose_name="Status", empty_values=())
+    username = tables.Column(verbose_name=_("Member"))
+    email = tables.EmailColumn(verbose_name=_("Email"))
+    role = tables.Column(verbose_name=_("Role"))
+    workspace = tables.Column(verbose_name=_("Workspace"), empty_values=())
+    permissions = tables.Column(verbose_name=_("Access"), empty_values=())
+    status = tables.Column(verbose_name=_("Status"), empty_values=())
 
     class Meta:
         model = get_user_model()
@@ -25,7 +26,7 @@ class MemberTable(tables.Table):
             "thead": {"class": "loop-table__head"},
             "tbody": {"class": "loop-table__body"},
         }
-        empty_text = "No workspace members yet."
+        empty_text = _("No workspace members yet.")
 
     def render_username(self, value, record):
         return record.get_full_name() or value or record.email

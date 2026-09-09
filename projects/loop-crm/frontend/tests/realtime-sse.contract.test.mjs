@@ -73,7 +73,7 @@ test('session workspace-id endpoint feeds the WebSocket URL without hardcoding a
 test('useWorkspaceRealtime opens a workspace-scoped WebSocket with backoff + cleanup', async () => {
   const hook = await read('src/lib/useWorkspaceRealtime.ts');
   assert.match(hook, /new WebSocket\(socketUrl\(workspaceId\)\)/);
-  assert.match(hook, /\/api\/v1\/workspace\/current\//);
+  assert.match(hook, /(?:\/apis\/core\/workspace\/current\/|\/api\/v1\/workspace\/current\/)/);
   assert.match(hook, /MAX_BACKOFF_MS/);
   assert.match(hook, /socket\?\.close\(\)/);
 });

@@ -1,10 +1,14 @@
 ---
+import NewsletterSubscribe from '@/components/blocks/NewsletterSubscribe.astro';
+import { publicHref } from '@/lib/site';
+
 interface Props {
   siteName?: string;
   siteSettings?: {
     site_tagline?: string;
     footer_description?: string;
     footer_copyright?: string;
+    newsletter_prompt?: string;
     footer_link_groups?: { title: string; links: { label: string; url: string }[] }[];
   };
 }
@@ -15,27 +19,27 @@ const year = new Date().getFullYear();
 const footerGroups = siteSettings?.footer_link_groups?.length
   ? siteSettings.footer_link_groups
   : [
-    { title: 'Learning', links: [{ label: 'Courses', url: '/courses' }, { label: 'About', url: '/about' }, { label: 'Services', url: '/services' }] },
-    { title: 'Support', links: [{ label: 'Contact', url: '/contact' }, { label: 'FAQ', url: '/faq' }, { label: 'Privacy', url: '/privacy' }] },
+    { title: 'Learning', links: [{ label: 'Courses', url: '/courses/' }, { label: 'About', url: '/about/' }, { label: 'Services', url: '/services/' }] },
+    { title: 'Support', links: [{ label: 'Contact', url: '/contact/' }, { label: 'FAQ', url: '/faq/' }, { label: 'Privacy', url: '/privacy/' }] },
   ];
 ---
 
 <footer class="doc-sheet border-t border-fu-line bg-fu-paper text-fu-muted">
   <div class="container-fusion py-20 md:py-24">
     <div class="grid grid-cols-1 gap-14 md:grid-cols-12">
+      <!-- Newsletter signup -->
+      <div class="md:col-span-12">
+        <NewsletterSubscribe
+          title={siteSettings?.newsletter_prompt || 'Keep learning with us'}
+          description="Get occasional research news, new course announcements, and practical guidance for better health evidence."
+          buttonLabel="Join the list"
+        />
+      </div>
+
       <!-- Brand column -->
       <div class="md:col-span-5">
         <a href="/" class="mb-5 inline-flex items-center gap-3 font-mono font-semibold text-fu-ink">
-          <svg class="h-9 w-9" viewBox="0 0 200 200" fill="none" aria-hidden="true">
-            <circle cx="98" cy="92" r="9" stroke="#E61919" stroke-width="5"/>
-            <line x1="98" y1="44" x2="98" y2="120" stroke="#E61919" stroke-width="2" opacity=".55"/>
-            <line x1="62" y1="92" x2="120" y2="92" stroke="#E61919" stroke-width="2" opacity=".55"/>
-            <rect x="60" y="40" width="16" height="128" fill="currentColor"/>
-            <rect x="76" y="40" width="56" height="16" fill="currentColor"/>
-            <rect x="76" y="84" width="44" height="16" fill="currentColor"/>
-            <line x1="36" y1="178" x2="152" y2="178" stroke="#6C63FF" stroke-width="5"/>
-            <path d="M150 170 L164 178 L150 186 Z" fill="#6C63FF"/>
-          </svg>
+          <img src="/static/images/logo-enhanced.svg" alt="" class="h-9 w-9 object-contain" />
           <span class="uppercase tracking-[0.28em]">{siteName}</span>
         </a>
         <p class="mb-4 max-w-sm text-sm leading-relaxed">
@@ -51,7 +55,7 @@ const footerGroups = siteSettings?.footer_link_groups?.length
           <ul class="space-y-3">
             {column.links.map((link) => (
               <li>
-                <a href={link.url} class="text-sm text-fu-muted transition-colors duration-300 hover:text-fu-teal" style="transition-timing-function: cubic-bezier(0.32,0.72,0,1)">
+                <a href={publicHref(link.url)} class="text-sm text-fu-muted transition-colors duration-300 hover:text-fu-teal" style="transition-timing-function: cubic-bezier(0.32,0.72,0,1)">
                   {link.label}
                 </a>
               </li>

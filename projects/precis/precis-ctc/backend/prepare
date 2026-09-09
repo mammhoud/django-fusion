@@ -177,6 +177,15 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
                 echo "[WARN] dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
             fi
         fi
+
+        # Blog posts are seeded editorial rows served by the blog API — they
+        # are not part of the Wagtail dump. Seed them on data-load runs so a
+        # fresh or replaced database ships with published posts.
+        if python manage.py help seed_blog_posts >/dev/null 2>&1; then
+            if ! run_logged seed_blog_posts python manage.py seed_blog_posts; then
+                echo "[WARN] seed_blog_posts failed (non-fatal); see ${LOG_DIR}/seed_blog_posts.log"
+            fi
+        fi
     else
         echo "[INFO] Fixture loading disabled; use LOAD_DATA_ON_START=true for a maintenance load."
     fi

@@ -6,12 +6,18 @@ Status: Published
 
 > Prompts and instructions for AI agents working with the AnyType documentation system.
 > **Container:** the docs import as one Anytype **Channel** — see `guides/channel-structure.md` before creating or moving types.
+>
+> **Status: all prompts completed (2026-09-05).** Every type below has a
+> definition file in `objects/`, every type has a home directory with content,
+> and the graph integrity check passes (see `objects/_index.md` per-type table).
 
 ---
 
 ## Channel operations
 
 ### Setting up the Structa Cloud Channel
+
+> ✅ Completed — see `objects/_object-types.md` (registry), `objects/_relations.md` (relations), `objects/_tags.md` (tags), `objects/_templates.md` (templates), `objects/_index.md` (per-type files).
 
 Create the Anytype Channel (Vault → + → Personal/Group), choose a Page Home, then build its Content Model:
 
@@ -39,6 +45,12 @@ When reviewing a content object file, verify it is a **complete document**:
 
 ### Creating a new object type
 
+> ✅ Completed — every type defined in `_object-types.md` now has a definition
+> file (`objects/<type>.md`). Missing types added 2026-09-05: architecture,
+> guide, reference, changelog, diagram, project, report, dashboard,
+> data-pipeline, methodology, insight, recommendation, repository, module,
+> documentation.
+
 Create an AnyType object type definition for the given type name at `docs/agenda/mono-repo/objects/<name>.md`, including:
 
 1. Frontmatter with object type, tags, and status
@@ -49,6 +61,8 @@ Create an AnyType object type definition for the given type name at `docs/agenda
 6. Related links at the bottom
 
 ### Writing a platform install guide
+
+> ✅ Completed — `guides/install/` covers docker, linux, macos, windows.
 
 Create a platform installation guide at `docs/agenda/mono-repo/guides/install/<platform>.md`, including:
 
@@ -61,6 +75,8 @@ Create a platform installation guide at `docs/agenda/mono-repo/guides/install/<p
 7. Related links
 
 ### Adding a feature document
+
+> ✅ Completed — `features/` holds 14 feature objects (POS, CMS, AI, portfolio…).
 
 Create a new feature description at `docs/agenda/mono-repo/features/<name>.md`, including:
 
@@ -76,6 +92,13 @@ Create a new feature description at `docs/agenda/mono-repo/features/<name>.md`, 
 
 ### Checking graph integrity
 
+> ✅ Completed 2026-09-05 — all new directories (`projects/`, `editions/`,
+> `sprints/`, `releases/`, `integrations/`, `apis/`, `components/`, `tools/`,
+> `pipelines/`, `styles/`, `diagrams/`, `reports/`, `dashboards/`,
+> `data-pipelines/`, `methodologies/`, `insights/`, `recommendations/`,
+> `repositories/`, `modules/`, `documentation/`) verified: every `→ link`
+> resolves to an existing file, no orphaned content objects.
+
 Review the AnyType documentation for consistency:
 
 1. Check that every document has correct frontmatter (Object type, Tags)
@@ -84,6 +107,9 @@ Review the AnyType documentation for consistency:
 4. Report any duplicate or deprecated content
 
 ### Updating relations
+
+> ✅ Completed — `objects/_relations.md` now includes the data-analysis and
+> monorepo-structure relation groups added with the new types.
 
 Update the relations in `docs/agenda/mono-repo/objects/_relations.md` to include the new type entity:
 

@@ -22,6 +22,7 @@ from apps.marketing.views import ApprovalsView, ChannelListView, ContentCalendar
 
 from .navigation import navigation_context
 from .views import (
+    AihubView,
     AuditLogView,
     CustomFieldsView,
     CustomObjectRecordsView,
@@ -67,6 +68,8 @@ class LoopCrmApplication(Application):
         menu_path("attribution/", ModuleView.as_view(module_id="attribution", page_title=_("Attribution"), page_kicker=_("RevOps"), page_description=_("See which content and conversations create pipeline revenue.")), name="attribution", icon="insights", title=_("Attribution")),
         path("attribution/touchpoints/", ResourceListView.as_view(resource="touchpoints", module_id="attribution", page_title=_("Touchpoints"), page_kicker=_("Attribution · touchpoints"), page_description=_("Every social interaction credited toward a deal."), empty_message=_("No touchpoints yet.")), name="attribution_touchpoints"),
         path("attribution/reports/", ReportsView.as_view(), name="attribution_reports"),
+        path("ai/", AihubView.as_view(), name="ai"),
+        path("employees/", ModuleView.as_view(module_id="employees", page_title=_("People"), page_kicker=_("Workspace · people"), page_description=_("Review member activity, ownership, publishing, and performance dossiers.")), name="employees"),
         menu_path("tasks/", TaskCenterView.as_view(site_name="loop-crm", template_name="dashboard/tasks.html"), name="tasks", icon="bolt", title=_("Tasks")),
         menu_path("settings/", ModuleView.as_view(module_id="workspace", page_title=_("Workspace"), page_kicker=_("Workspace"), page_description=_("Configure people, automations, integrations, and audit history.")), name="settings", icon="settings", title=_("Workspace")),
         path("settings/members/", MemberListView.as_view(), name="settings_members"),

@@ -52,6 +52,7 @@ stateDiagram-v2
     Todo --> Backlog: Sprint changed
     Done --> [*]
 ```
+![Rendered diagram](/agenda/diagrams/task-tracking-1.svg)
 
 ### Status definitions
 
@@ -142,6 +143,26 @@ stateDiagram-v2
 | Fix CTC MEDIA_ROOT default drift → canonical shared tree | ✅ Done | — | P0 | 2026-09-03 | — | Default now resolves to projects/assets/media/ctc-research (matches compose/docstring/CHANGELOG); `manage.py check` clean |
 | Rewrite shared-media test to current assets-proxy topology | ✅ Done | — | P0 | 2026-09-03 | — | tests/test_shared_media.py asserts application/tools assets-proxy contract; 26/26 pass incl. live container checks |
 | Research anytype.io extensibility + record proposals | ✅ Done | — | P1 | 2026-09-03 | — | [anytype-extensibility.md](anytype-extensibility.md) — Anytype model mapped to agenda/mono-repo + project separation |
+| Close Loop-CRM finance integration plan → milestone | ✅ Done | — | P0 | 2026-09-05 | Loop-CRM § Formint finance integration | Deleted `formint-integration-finance-workflows.md` (git history = archive); milestone in feature-tracking.md § Loop-CRM |
+| Close Loop-CRM demo-state plan → milestone | ✅ Done | — | P0 | 2026-09-05 | Loop-CRM § Demo state & auth gap fixing | Deleted `demo-state-gap-fixing.md`; milestone in feature-tracking.md § Loop-CRM; server-half deploy verification remains pending |
+| Close Twenty/Postiz research doc → milestone | ✅ Done | — | P1 | 2026-09-05 | Loop-CRM § Twenty/Postiz DNA research | Deleted `twenty-postiz-comparison.md`; milestone in feature-tracking.md § Loop-CRM |
+| Update plans registry + references after Loop-CRM closeout | ✅ Done | — | P1 | 2026-09-05 | — | `plans/README.md`, loop-crm README, REFERENCE.md, ar-content, product audit now point at agenda milestones |
+| Define the agenda content model (Anytype glossary + packaging) | ✅ Done | — | P0 | 2026-09-05 | Agenda Content Model | [CONTENT_MODEL.md](CONTENT_MODEL.md) — object/markdown packaging (4 packages), reference contract, first-meeting agenda |
+| Update agenda indexes to reference the content model | ✅ Done | — | P1 | 2026-09-05 | Agenda Content Model | README.md, MAIN.md, INDEX.md now link to CONTENT_MODEL.md |
+| Hold first agenda meeting from the kickoff reference | ⚪ Todo | — | P0 | 2026-09-12 | Agenda Content Model | Use CONTENT_MODEL.md § 5 + the [Drive folder](https://drive.google.com/drive/folders/1-A0MxVvAUpaOc56Nr9t2672DkrvgILb0); record notes in team-notes.md |
+| De-duplicate agenda top-level docs | ✅ Done | — | P1 | 2026-09-05 | Agenda | SUMMARY.md slimmed, INDEX tail removed, case-studies.md → pointer to case-studies/INDEX.md |
+| Create agenda diagrams package (rendered images) | ✅ Done | — | P0 | 2026-09-05 | Agenda Diagrams | [diagrams/README.md](diagrams/README.md) — API UML, Django/Rust ERDs, Blinko SurrealDB; 59 SVGs rendered into docs/public/agenda/diagrams/ |
+| Add render script + wire diagrams into indexes | ✅ Done | — | P1 | 2026-09-05 | Agenda Diagrams | [render-agenda-diagrams.mjs](../scripts/render-agenda-diagrams.mjs); README/MAIN/INDEX/CONTENT_MODEL updated |
+| Fix dangling image refs in mono-repo plans/tasks | ✅ Done | — | P2 | 2026-09-05 | Agenda | business-model + timeline now use rendered mermaid diagrams |
+| Add object types + objects separation (Anytype schema) | ✅ Done | — | P0 | 2026-09-05 | Agenda Content Model | 15 new type defs in [objects/](mono-repo/objects/) + 20 type dirs with repo-tied content (projects, editions, sprints, releases, integrations, apis, tools, modules…) — 87 files |
+| Complete all mono-repo prompts (graph, relations, guides) | ✅ Done | — | P1 | 2026-09-05 | Agenda Content Model | [_prompts.md](mono-repo/_prompts.md) ledger all ✅; [_relations.md](mono-repo/objects/_relations.md) extended; CONTENT_MODEL package B updated |
+| Record Loop-CRM AI hub + locale + connectors as milestone | ✅ Done | — | P0 | 2026-09-06 | Loop-CRM § AI Hub, locale & connectors | Commit `61893cc7` recorded as ✅ Shipped milestone in [feature-tracking.md](feature-tracking.md) § Loop-CRM |
+| Backend × frontend implementation-status reconciliation | ✅ Done | — | P1 | 2026-09-06 | dev-team-plans.md | Status-truth matrix + "couldn't add" blockers added to [dev-team-plans.md](dev-team-plans.md) |
+| Frontend component placeholder audit (all products) | ✅ Done | — | P1 | 2026-09-06 | Component audit | Report in docs/audit/frontend-components-2026-09-06.md — CTC lorem demo templates, precis-main brand tagline, Formint Pro "coming soon" Add forms |
+| Add Loop-CRM ERD tooling + docs/erd README | ✅ Done | — | P0 | 2026-09-06 | Loop-CRM models | `django_extensions` + `make erd`/`erd-all` in backend; docs/erd README; graph_models DOT generated incl. crm (sales) + marketing apps |
+| Update per-project docs + agenda indexes | ✅ Done | — | P2 | 2026-09-06 | Agenda docs | SUMMARY/team-notes/dev-team-plans updated; plans README + loop-crm docs pointed at the audit |
+| Implement Formint Pro create/edit modals replacing "coming soon" toasts | ✅ Done | — | P1 | 2026-09-06 | Formint Pro | suppliers, hr/roles, hr/schedules, hr/payroll, admin/notes, kitchen/recipes wired to /suppliers/, /roles/, /employee-schedules/, /payroll/, /notes/, /recipes/ + /ingredients/; `astro check` clean (audit doc § 2.3) |
+| Formint Pro modal verification: stale display fields + Vitest payload contracts | ✅ Done | — | P1 | 2026-09-06 | Formint Pro | Removed `item.*_name` bindings → `empName()`/`prodName()` FK resolution; new create-forms.contract.test.ts; vitest 86/86 pass, astro check 0 errors/0 warnings. Backend suite blocked in sandbox (lockfile needs libs/django-bolt absent from checkout) — run `make test` in the product image (audit doc § 2.3) |
 
 ---
 
@@ -159,6 +180,10 @@ stateDiagram-v2
 | Review feature-tracking entries for completeness | P1 | — | Check all features have acceptance criteria |
 | Write case study for System Templates | P2 | System Templates | After Stripe Billing ships |
 | Write case study for LMS Video Hosting | P2 | Video Hosting | After implementation starts |
+| Configure live OAuth provider credentials + publish E2E | P0 | Loop-CRM § AI Hub, locale & connectors | Requires deployed `crm.structa.cloud` + secrets |
+| Verify demo-state server half on deployed stack | P0 | Loop-CRM § Demo state | Real deploy required |
+| Quarantine CTC `blog/*-details*.html` lorem demo templates | P2 | CTC | Static theme pages, not view-referenced — delete or move out of templates/ |
+| Fix precis-main brand.ts "coming soon" Loop-CRM tagline | P2 | Precis LMS | Content copy refresh |
 
 ---
 

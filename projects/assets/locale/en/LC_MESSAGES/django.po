@@ -1,0 +1,76 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: loop-crm\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Interface language"
+msgstr "Interface language"
+
+msgid "Overview"
+msgstr "Overview"
+
+msgid "Workspace"
+msgstr "Workspace"
+
+msgid "Billing is not configured."
+msgstr "Billing is not configured."
+
+msgid "Revenue workspace"
+msgstr "Revenue workspace"
+
+msgid "Members & roles"
+msgstr "Members & roles"
+
+msgid "AI Hub"
+msgstr "AI Hub"
+
+msgid "Workflows"
+msgstr "Workflows"
+
+msgid "Custom fields"
+msgstr "Custom fields"
+
+msgid "Integrations"
+msgstr "Integrations"
+
+msgid "Email inbox"
+msgstr "Email inbox"
+
+msgid "Revenue reports"
+msgstr "Revenue reports"
+
+msgid "Custom objects"
+msgstr "Custom objects"
+
+msgid "Import"
+msgstr "Import"
+
+msgid "Saved views"
+msgstr "Saved views"
+
+msgid "Audit log"
+msgstr "Audit log"
+
+msgid "Request body must be valid JSON."
+msgstr "Request body must be valid JSON."
+
+msgid "Not found."
+msgstr "Not found."
+
+msgid "A workspace is required."
+msgstr "A workspace is required."
+
+msgid "Only active workflows can be queued."
+msgstr "Only active workflows can be queued."
+
+msgid "Unknown resource."
+msgstr "Unknown resource."
+
+msgid "This read endpoint accepts GET only."
+msgstr "This read endpoint accepts GET only."
+
+msgid "Employee not found."
+msgstr "Employee not found."

@@ -1,6 +1,7 @@
 ---
 import { breadcrumbsFor, navigationFor } from '@/lib/navigation';
 import { iconSvg } from '@/lib/icons';
+import LocaleSwitcher from '@/components/dashboard/LocaleSwitcher';
 
 interface Props {
   title: string;
@@ -42,7 +43,7 @@ const breadcrumbs = breadcrumbsFor(path, title);
         <svg class="loop-app-menu-icon loop-app-menu-icon--close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
       </button>
       <div class="loop-app-context"><span class="loop-app-context__signal" aria-hidden="true" />Revenue operations <span>/</span> unified workspace</div>
-      <div class="loop-app-topbar__right"><span class="loop-app-status"><i aria-hidden="true" />local workspace</span><a href="/account/profile/" class="loop-app-profile" aria-label="Open account profile"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6" /><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" /></svg></a></div>
+      <div class="loop-app-topbar__right"><LocaleSwitcher client:load /><span class="loop-app-status" data-loop-workspace-status><i aria-hidden="true" />local workspace</span><button class="loop-app-topbar__command" type="button" data-loop-command-trigger aria-label="Open command palette"><kbd>⌘K</kbd><span>command</span></button><a href="/account/profile/" class="loop-app-profile" aria-label="Open account profile"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6" /><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0" /></svg></a></div>
     </header>
     <main id="loop-app-content" class="loop-app-content">
       <nav class="loop-app-breadcrumb" aria-label="Breadcrumb">
@@ -72,6 +73,38 @@ const breadcrumbs = breadcrumbsFor(path, title);
   document.addEventListener('keydown', (event) => {
     if ((event as KeyboardEvent).key === 'Escape') setOpen(false);
   });
+
+  const updateWorkspaceTelemetry = async () => {
+    try {
+      const [meResponse, badgeResponse] = await Promise.all([
+        fetch('/apis/me/', { credentials: 'include' }),
+        fetch('/apis/core/badges/', { credentials: 'include' }),
+      ]);
+      if (meResponse.ok) {
+        const payload = await meResponse.json();
+        const status = document.querySelector('[data-loop-workspace-status]');
+        if (status && payload.user?.workspace_name) status.innerHTML = `<i aria-hidden="true" />${payload.user.workspace_name}`;
+      }
+      if (badgeResponse.ok) {
+        const badges = await badgeResponse.json();
+        const labels: Record<string, string> = { approvals: '/marketing/approvals/', invoices: '/finance/invoices/', tasks: '/tasks/' };
+        Object.entries(labels).forEach(([key, href]) => {
+          const link = document.querySelector<HTMLAnchorElement>(`a[href="${href}"]`);
+          if (!link) return;
+          const count = Number(badges[key] || 0);
+          link.querySelector('[data-nav-badge]')?.remove();
+          if (count > 0) {
+            const badge = document.createElement('b');
+            badge.dataset.navBadge = key;
+            badge.textContent = String(count);
+            link.appendChild(badge);
+          }
+        });
+      }
+    } catch { /* telemetry is best-effort; navigation remains usable offline */ }
+  };
+  document.querySelector('[data-loop-command-trigger]')?.addEventListener('click', () => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true })));
+  void updateWorkspaceTelemetry();
 
   const navigationCacheKey = 'loop-crm:navigation:astro';
   const navigationTarget = () => document.querySelector('#loop-app-navigation-content');
@@ -189,6 +222,11 @@ const breadcrumbs = breadcrumbsFor(path, title);
   .loop-app-status i { width:.3rem; height:.3rem; background:var(--loop-accent); }
   .loop-app-profile { display:grid; place-items:center; width:2.1rem; height:2.1rem; border:1px solid var(--loop-line); background:var(--loop-panel); color:var(--loop-muted); transition:border-color .2s ease,color .2s ease,transform .2s ease; }
 
+  .loop-app-topbar__command { display:inline-flex; gap:.35rem; align-items:center; padding:.3rem .5rem; border:1px solid var(--loop-line); background:var(--loop-panel); color:var(--loop-muted); font:600 .58rem "JetBrains Mono",monospace; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+  .loop-app-topbar__command:hover { border-color:var(--loop-accent); color:var(--loop-accent-bright); }
+  .loop-app-topbar__command kbd { color:var(--loop-ink); }
+  .loop-app-nav-link [data-nav-badge] { margin-left:auto; min-width:1.1rem; padding:.12rem .25rem; background:var(--loop-accent); color:var(--loop-bg); text-align:center; font:700 .55rem "JetBrains Mono",monospace; }
+  .loop-app-topbar__command:active { transform:translateY(1px); }
   .loop-app-profile:hover { transform:translateY(-1px); border-color:var(--loop-accent); color:var(--loop-accent-bright); }
   .loop-app-content { width:min(82rem,100%); margin:0 auto; padding:clamp(1.6rem,4vw,3.8rem) clamp(1rem,4vw,3.8rem) 5rem; }
   .loop-app-breadcrumb { display:flex; flex-wrap:wrap; gap:.55rem; margin-bottom:2.7rem; color:var(--loop-dim); font:500 .62rem "JetBrains Mono",monospace; letter-spacing:.06em; text-transform:uppercase; }
@@ -218,6 +256,7 @@ const breadcrumbs = breadcrumbsFor(path, title);
     .loop-app-topbar { padding:0 1rem; }
     .loop-app-context { font-size:.54rem; }
     .loop-app-status { display:none; }
+    .loop-app-topbar__command span { display:none; }
     .loop-app-content { padding:1.6rem 1rem 3.5rem; }
   }
   @keyframes loop-breathe { 0%,100% { opacity:.5; transform:scale(.82); } 50% { opacity:1; transform:scale(1.12); } }

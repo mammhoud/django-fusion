@@ -7,7 +7,7 @@ Status: Published
 # Marketing Plans
 
 > **Scope:** Product positioning, launch campaigns, content strategy, and evidence-backed marketing claims across Structa Cloud products
-> **Updated:** 2026-08-25
+> **Updated:** 2026-09-06
 
 ---
 
@@ -116,6 +116,17 @@ Tauri, Django, Astro, HTMX, cloud transport are supporting details. The marketin
 - **Position:** "AI chat + template customizer for developers"
 - **Key Messages:** Multi-provider (Ollama/OpenAI/Claude/Gemini), Monaco editor, template discovery
 - **Status:** Active development — localhost/default `cypercloud.localhost`
+
+### Loop-CRM (🟢 Live preview — launch in progress)
+- **Position:** "Unified sales & marketing platform — from social impression to closed deal"
+- **Key Messages:** One source of truth across marketing (campaigns/channels/posts) and sales (pipeline/deals); consent-gated AI assist; en/ar locale; Stripe billing; POS→finance revenue ledger
+- **Audience:** RevOps teams merging social publishing + CRM (Twenty + Postiz DNA)
+- **Launch Gates (remaining):**
+  - [ ] Live OAuth provider credentials + publish/consent E2E on `crm.structa.cloud`
+  - [ ] Realtime/Channels hardening on the deployed stack
+  - [ ] Demo-state server-half verification
+  - [ ] Loop-CRM copy pass — no "coming soon" references (product is live)
+- **Status:** Demo preview live (`crm.structa.cloud`); milestones in [`feature-tracking.md`](./feature-tracking.md) § Loop-CRM
 
 ---
 

@@ -1,0 +1,76 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: loop-crm\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Interface language"
+msgstr "لغة الواجهة"
+
+msgid "Overview"
+msgstr "نظرة عامة"
+
+msgid "Workspace"
+msgstr "مساحة العمل"
+
+msgid "Billing is not configured."
+msgstr "الفوترة غير مُهيأة."
+
+msgid "Revenue workspace"
+msgstr "مساحة الإيرادات"
+
+msgid "Members & roles"
+msgstr "الأعضاء والأدوار"
+
+msgid "AI Hub"
+msgstr "مركز الذكاء الاصطناعي"
+
+msgid "Workflows"
+msgstr "سير العمل"
+
+msgid "Custom fields"
+msgstr "الحقول المخصصة"
+
+msgid "Integrations"
+msgstr "التكاملات"
+
+msgid "Email inbox"
+msgstr "صندوق البريد الإلكتروني"
+
+msgid "Revenue reports"
+msgstr "تقارير الإيرادات"
+
+msgid "Custom objects"
+msgstr "الكائنات المخصصة"
+
+msgid "Import"
+msgstr "استيراد"
+
+msgid "Saved views"
+msgstr "العروض المحفوظة"
+
+msgid "Audit log"
+msgstr "سجل التدقيق"
+
+msgid "Request body must be valid JSON."
+msgstr "يجب أن يكون نص الطلب بصيغة JSON صحيحة."
+
+msgid "Not found."
+msgstr "غير موجود."
+
+msgid "A workspace is required."
+msgstr "مساحة العمل مطلوبة."
+
+msgid "Only active workflows can be queued."
+msgstr "يمكن وضع سير العمل النشط فقط في قائمة الانتظار."
+
+msgid "Unknown resource."
+msgstr "المورد غير معروف."
+
+msgid "This read endpoint accepts GET only."
+msgstr "نقطة القراءة هذه تقبل GET فقط."
+
+msgid "Employee not found."
+msgstr "لم يتم العثور على الموظف."

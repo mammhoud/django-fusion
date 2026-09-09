@@ -32,7 +32,8 @@ declare global {
     __FUSION_AUTH?: {
       login: string;
       session: string;
-      logout: string;
+      csrf: string;
+      ensureCsrfToken: () => Promise<string>;
       apiBase: string;
       providers: { id: string; label: string; icon: string }[];
     };

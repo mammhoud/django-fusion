@@ -5,7 +5,6 @@ import BlogPreview from '@/components/blocks/BlogPreview.astro';
 import CTA from '@/components/blocks/CTA.astro';
 import ContentError from '@/components/ui/ContentError.astro';
 import Toast from '@/components/ui/Toast.astro';
-import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
 import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchBlogPosts } from '@/lib/api';
 import type { SiteSettings, NavigationData, PageData, BlogPostData } from '@/lib/api';
 
@@ -45,7 +44,7 @@ const posts = (pageBlog ?? livePosts).map((p: any) => ({
 
 <Layout
   title={pageData?.title || 'Blog'}
-  description={pageData?.search_description || 'The CTC Research blog — notes on medical AI, clinical evidence, and health innovation.'}
+  description={pageData?.search_description || 'The CTC Research blog — notes on clinical research, evidence synthesis, and health innovation.'}
   navItems={navData?.nav_items}
   siteSettings={siteSettings}
   pageData={pageData}
@@ -55,9 +54,9 @@ const posts = (pageBlog ?? livePosts).map((p: any) => ({
     eyebrow={pageHero?.badge || 'insights · medical research learning'}
     heading={pageHero?.title || 'The Blog'}
     accent='for evidence'
-    intro={pageHero?.subtitle || 'Notes on medical AI, clinical evidence, and health innovation from the CTC Research team.'}
+    intro={pageHero?.subtitle || 'Notes on clinical research, evidence synthesis, and health innovation from the CTC Research team.'}
     primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'Browse courses', href: '/courses/' }}
-    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }}
     variant="archive"
     breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Blog' }]}
   />
@@ -80,5 +79,4 @@ const posts = (pageBlog ?? livePosts).map((p: any) => ({
     ctaHref={pageCta?.primary_cta?.href || '/courses/'}
   />
   <Toast />
-  <HtmxBootstrap />
 </Layout>

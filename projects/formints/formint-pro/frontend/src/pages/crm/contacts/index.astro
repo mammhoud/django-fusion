@@ -67,7 +67,7 @@ import Icon from '../../../components/ui/Icon.astro';
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
               <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.first_name + ' ' + item.last_name"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.company_name || '-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="companyName(item.company) || '-'"></span></td>
               <td class="px-3 py-2"><span class="text-xs" x-text="item.job_title || '-'"></span></td>
               <td class="px-3 py-2"><span class="text-xs" x-text="item.email || '-'"></span></td>
               <td class="px-3 py-2"><span class="text-xs" x-text="item.phone || item.mobile || '-'"></span></td>
@@ -189,6 +189,11 @@ import Icon from '../../../components/ui/Icon.astro';
       form: {
         first_name: '', last_name: '', email: '', phone: '', mobile: '',
         job_title: '', source: '', notes: '', is_active: true,
+      },
+      companyName(id) {
+        if (!Array.isArray(this.items)) return '';
+        const c = this.items.find((x) => String(x.id) === String(id));
+        return c ? (c.name || null) : null;
       },
 
       get total() { return this.items.length; },

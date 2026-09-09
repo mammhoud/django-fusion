@@ -28,6 +28,9 @@ x-shared-tasks-base: &shared-tasks-base
     # This file sits one level deep (application/), unlike projects/<site>/
     # which is two deep, so all host paths below use `..` (repo root).
     context: ..
+    # Generic backend image: supplies Django's shared management/settings
+    # bootstrap. Product task packages are mounted separately below; no LMS
+    # task package is included in the shared worker.
     dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
     args:
       SOURCE_PATH: precis/precis-ctc

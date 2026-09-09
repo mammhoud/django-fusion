@@ -18,6 +18,8 @@ const useAppSelector = useSelector.withTypes<RootState>();
 // Canonical named road (/apis/core/) — the deprecated /api/v1/ copies still
 // serve but carry Deprecation/Sunset headers. BoltApiClient prefers /bolt
 // when the runtime is available; these paths are the session-cookie fallback.
+// Compatibility aliases remain available at /api/v1/board/ and /api/v1/deals/<id>/stage/;
+// the canonical session-cookie road below is /apis/core/.
 const BOARD_URL = '/apis/core/board/';
 const MOVE_URL = (dealId: number) => `/apis/core/deals/${dealId}/stage/`;
 

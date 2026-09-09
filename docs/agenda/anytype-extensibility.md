@@ -155,6 +155,7 @@ Anytype isolates content into **Spaces** (different encryption keys — types/re
 
 | Topic | Path |
 |-------|------|
+| Agenda content model (definition + reference contract) | [`./CONTENT_MODEL.md`](./CONTENT_MODEL.md) |
 | Agenda hub | [`./MAIN.md`](./MAIN.md) |
 | Anytype object types (agenda) | [`./mono-repo/objects/_object-types.md`](./mono-repo/objects/_object-types.md) |
 | Anytype relations (agenda) | [`./mono-repo/objects/_relations.md`](./mono-repo/objects/_relations.md) |

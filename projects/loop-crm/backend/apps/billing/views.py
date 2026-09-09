@@ -6,6 +6,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
@@ -49,24 +50,24 @@ def account_api(request: HttpRequest) -> JsonResponse:
 def checkout(request: HttpRequest) -> JsonResponse:
     """Create a Stripe Checkout Session for the selected plan + period."""
     if not billing_configured():
-        return JsonResponse({"detail": "Billing is not configured."}, status=503)
+        return JsonResponse({"detail": _("Billing is not configured.")}, status=503)
     workspace_id = current_workspace_id(request)
     if workspace_id is None:
-        return JsonResponse({"detail": "A workspace is required to start checkout."}, status=400)
+        return JsonResponse({"detail": _("A workspace is required to start checkout.")}, status=400)
     try:
         body = json.loads(request.body or b"{}")
     except ValueError:
-        return JsonResponse({"detail": "Request body must be valid JSON."}, status=400)
+        return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
     plan_slug = (body.get("plan") or request.POST.get("plan") or "").strip()
     period = (body.get("period") or request.POST.get("period") or "monthly").strip()
     quantity = int(body.get("quantity") or request.POST.get("quantity") or 1)
     if not plan_slug:
-        return JsonResponse({"detail": "A plan slug is required."}, status=400)
+        return JsonResponse({"detail": _("A plan slug is required.")}, status=400)
     plan = get_object_or_404(Plan, slug=plan_slug, is_active=True)
     account = ensure_account(workspace_id)
     result = create_checkout_session(account, plan, period, quantity=max(1, quantity))
     if not result.get("configured"):
-        return JsonResponse({"detail": "Billing is not configured."}, status=503)
+        return JsonResponse({"detail": _("Billing is not configured.")}, status=503)
     if result.get("error"):
         return JsonResponse({"detail": result["error"]}, status=422)
     return JsonResponse(result)
@@ -77,14 +78,14 @@ def checkout(request: HttpRequest) -> JsonResponse:
 def portal(request: HttpRequest) -> HttpResponse:
     """Redirect to the Stripe Billing Portal for self-service management."""
     if not billing_configured():
-        return JsonResponse({"detail": "Billing is not configured."}, status=503)
+        return JsonResponse({"detail": _("Billing is not configured.")}, status=503)
     workspace_id = current_workspace_id(request)
     if workspace_id is None:
-        return JsonResponse({"detail": "A workspace is required."}, status=400)
+        return JsonResponse({"detail": _("A workspace is required.")}, status=400)
     account = ensure_account(workspace_id)
     result = create_portal_session(account)
     if not result.get("configured"):
-        return JsonResponse({"detail": "Billing is not configured."}, status=503)
+        return JsonResponse({"detail": _("Billing is not configured.")}, status=503)
     return redirect(result["url"])
 
 
@@ -95,5 +96,5 @@ def webhook(request: HttpRequest) -> HttpResponse:
     signature = request.META.get("HTTP_STRIPE_SIGNATURE", "")
     ok, error = handle_webhook(request.body, signature)
     if not ok:
-        return JsonResponse({"detail": error or "Webhook rejected."}, status=400)
+        return JsonResponse({"detail": _(error or "Webhook rejected.")}, status=400)
     return JsonResponse({"received": True})

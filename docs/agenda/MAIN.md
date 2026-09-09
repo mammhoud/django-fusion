@@ -48,9 +48,11 @@ This agenda system is your team's command center for:
 
 | Area | Purpose | Key File |
 |------|---------|----------|
+| **Content model** | Definition, object/markdown packaging, team reference contract (plans → milestones) | [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) |
+| **Anytype object graph** | Package B — type definitions + per-type content objects (projects, editions, sprints, releases, integrations, APIs, components, tools, pipelines, styles, diagrams, reports, dashboards, methodologies, insights, recommendations, repositories, modules, documentation) | [`mono-repo/README.md`](./mono-repo/README.md) |
 | **Project tracking** | Track features from idea → shipped | [`feature-tracking.md`](./feature-tracking.md) |
 | **Case studies** | Document real implementations with diagrams | [`case-studies.md`](./case-studies.md) |
-| **Diagrams** | Architecture, data flow, ERD mermaid diagrams | Inline in case studies + plans |
+| **Diagrams** | Rendered SVG assets + mermaid sources — API UML, Django/Rust ERDs, Blinko | [`diagrams/README.md`](./diagrams/README.md) |
 | **Team notes** | Meeting notes, decisions, blockers | [`team-notes.md`](./team-notes.md) |
 | **Task management** | Sprint tasks, completion checklist | [`task-tracking.md`](./task-tracking.md) |
 | **Project completion** | Definition of done, closeout checklist | [`completion-checklist.md`](./completion-checklist.md) |
@@ -63,7 +65,9 @@ This agenda system is your team's command center for:
 ```
 Team member needs to...
 ├── Track a feature → feature-tracking.md
+├── Work with the Anytype schema → mono-repo/README.md (types + per-type objects)
 ├── Document a case study → case-studies.md (add entry + mermaid diagram)
+├── Need a diagram → diagrams/README.md (rendered SVGs + render script)
 ├── Run a meeting → meeting-agenda.md (pick the template)
 ├── Record team notes → team-notes.md (date-stamped entry)
 ├── Track sprint tasks → task-tracking.md
@@ -113,6 +117,7 @@ graph TB
     TN -.-> RECS
     TT -.-> FR
 ```
+![Rendered diagram](/agenda/diagrams/MAIN-1.svg)
 
 ```mermaid
 graph LR
@@ -146,6 +151,7 @@ graph LR
     TT --> ROADMAP
     CS --> CLOSEOUT
 ```
+![Rendered diagram](/agenda/diagrams/MAIN-2.svg)
 
 ---
 
@@ -165,6 +171,7 @@ stateDiagram-v2
     Blocked --> InProgress: Blocker resolved
     Shipped --> [*]
 ```
+![Rendered diagram](/agenda/diagrams/MAIN-3.svg)
 
 ---
 

@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     "allauth.socialaccount.providers.github",
     "allauth.socialaccount.providers.google",
     "django_tables2",
+    # django-extensions provides `graph_models` for the ERD diagram targets
+    # (`make erd` / `make erd-all` → docs/erd/), matching the repo convention.
+    "django_extensions",
     # django-dramatiq wires Dramatiq into Django (provides `rundramatiq`).
     "django_dramatiq",
     # Wagtail — editor-managed public landing pages (precis-landing pattern).
@@ -179,12 +182,24 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
-# Social connector OAuth clients (LinkedIn + X). Empty values keep the
-# adapters honest: publishing requires a token, refresh requires these.
+# Social connector OAuth clients. Empty values keep the adapters honest:
+# publishing requires a token, refresh requires these. YouTube reuses the
+# Google login client (its consent screen must also list the youtube.upload /
+# youtube.readonly scopes).
 LINKEDIN_CLIENT_ID = os.environ.get("LINKEDIN_CLIENT_ID", "")
 LINKEDIN_CLIENT_SECRET = os.environ.get("LINKEDIN_CLIENT_SECRET", "")
 X_CLIENT_ID = os.environ.get("X_CLIENT_ID", "")
 X_CLIENT_SECRET = os.environ.get("X_CLIENT_SECRET", "")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", "")
+# One Meta app can host Facebook Pages, Instagram professional accounts, and
+# WhatsApp Business (scopes are requested per connect flow).
+META_CLIENT_ID = os.environ.get("META_CLIENT_ID", "")
+META_CLIENT_SECRET = os.environ.get("META_CLIENT_SECRET", "")
+TIKTOK_CLIENT_KEY = os.environ.get("TIKTOK_CLIENT_KEY", "")
+TIKTOK_CLIENT_SECRET = os.environ.get("TIKTOK_CLIENT_SECRET", "")
+REDDIT_CLIENT_ID = os.environ.get("REDDIT_CLIENT_ID", "")
+REDDIT_CLIENT_SECRET = os.environ.get("REDDIT_CLIENT_SECRET", "")
 
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "Loop CRM <noreply@structa.cloud>")
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
@@ -417,6 +432,15 @@ STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 # Canonical public site URL used to build Stripe checkout/portal redirects.
 PUBLIC_SITE_URL = os.environ.get("PUBLIC_SITE_URL", "http://127.0.0.1:4321")
 
+# ── Optional AI hub ───────────────────────────────────────────────────────
+# Provider credentials stay server-side. Empty values keep AI operations
+# deferred until an operator explicitly configures a provider and each
+# workspace grants consent.
+AI_PROVIDER = os.environ.get("AI_PROVIDER", "")
+AI_API_KEY = os.environ.get("AI_API_KEY", "")
+AI_BASE_URL = os.environ.get("AI_BASE_URL", "")
+AI_MODEL = os.environ.get("AI_MODEL", "")
+
 FUSION_BOLT_AUTH_HEADER = os.environ.get("FUSION_BOLT_AUTH_HEADER", "Authorization")
 FUSION_BOLT_JWT_ISSUER = os.environ.get("FUSION_BOLT_JWT_ISSUER", "loop-crm")
 FUSION_BOLT_JWT_AUDIENCE = os.environ.get("FUSION_BOLT_JWT_AUDIENCE", "")
@@ -472,8 +496,12 @@ LANGUAGES = [
     ("ar", "العربية"),
 ]
 
-#: Compiled gettext catalogs (``locale/<lang>/LC_MESSAGES/django.mo``).
-LOCALE_PATHS = [BASE_DIR / "locale"]
+#: Compiled gettext catalogs shared by the workspace products. Keeping the
+#: catalog root outside this product lets Loop-CRM consume the monorepo's
+#: canonical ``<lang>/LC_MESSAGES/django.*`` layout without copying catalogs.
+LOCALE_PATHS = [BASE_DIR.parents[1] / "assets" / "locale"]
+LANGUAGE_COOKIE_NAME = "loop_language"
+LANGUAGE_COOKIE_AGE = 31_536_000
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "static"

@@ -79,12 +79,39 @@
 | `Related Features` | Story → Feature | many | Capabilities created along the way |
 | `Related Decisions` | Story → Decision | many | Key recorded choices |
 
+## Data analysis
+
+| Name | Source → Target | Cardinality | Use |
+|---|---|---:|---|
+| `Methodology` | Report → Methodology | one | Analysis approach used |
+| `Data Sources` | Report/Dashboard/Data Pipeline → Any | many | Evidence and inputs |
+| `Findings` | Report → Text | — | What the analysis found |
+| `Recommendations` | Report → Recommendation | many | Suggested next steps |
+| `Related Reports` | Dashboard/Methodology/Insight → Report | many | Reports behind the view or method |
+| `Related Dashboards` | Data Pipeline → Dashboard | many | Downstream consumers |
+| `Related Insights` | Recommendation → Insight | many | Evidence behind the action |
+| `Related Actions` | Insight → Recommendation | many | Actions the insight drives |
+| `Related Training` | Methodology → Guide | many | How-to for the method |
+
+## Monorepo structure
+
+| Name | Source → Target | Cardinality | Use |
+|---|---|---:|---|
+| `Related Repositories` | Module/Documentation → Repository | many | Where code and docs live |
+| `Related Libraries` | Repository → Module | many | Shared libraries inside |
+| `Related Projects` | Repository → Project | many | Projects inside the repo |
+| `Related Documentation` | Repository/Module → Documentation | many | Repo/module docs |
+| `Dependencies` | Module → Module | many | Required modules |
+| `Related Architecture` | Documentation/Guide → Architecture | many | System context |
+
 ## POS graph
 
 | Path | Flow |
 |------|------|
 | Products | Workspace → Project → Product → Edition → Feature → Release; Product → Campaign → Channel, Sales → Commerce, Team → Person |
 | Delivery | Workspace → Plan → Goal → Milestone → Task; Plan → Market Research → Decision |
+| Analysis | Report → Methodology → Insight → Recommendation → Task; Dashboard → Related Reports |
+| Structure | Repository → Project/Module → Documentation → Guide |
 
 ## Related
 
