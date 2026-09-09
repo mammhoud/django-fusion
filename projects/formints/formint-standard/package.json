@@ -55,6 +55,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "check:erd": "node scripts/check-erd-stale.mjs",
     "tauri": "tauri",
     "lint:contrast": "node scripts/lint-contrast.mjs",
     "lint:contrast:fix": "node scripts/lint-contrast.mjs --fix",
