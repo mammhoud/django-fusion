@@ -20,6 +20,7 @@ only the edition-specific files and points at the shared docs.
 | **[Guides](guides.md)** | Setup, customization, deployment, troubleshooting (Standard bundle id `com.mammhoud.pos`) |
 | **[i18n Gaps](i18n-gaps.md)** | Translation coverage report for this edition's locale files |
 | **[Mobile concept](mobile-concept.html)** | Static mobile UI preview |
+| **[Database ERD (interactive)](erd/) | 40 tables, relations, per-entity operations logic — open `index.html` or read `README.md` |
 
 ## Shared documentation (canonical in formint-community/docs/)
 

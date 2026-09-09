@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Formint POS — Interactive ERD</title>
+<style>
+  /* ── Formint design language: warm neutral + copper accent ── */
+  :root {
+    --bg: #f7f4ef;
+    --surface: #ffffff;
+    --hair: rgba(42, 33, 27, 0.10);
+    --hair-2: rgba(42, 33, 27, 0.16);
+    --text: #241d17;
+    --text-2: rgba(36, 29, 23, 0.62);
+    --text-3: rgba(36, 29, 23, 0.38);
+    --copper: #c2410c;
+    --copper-soft: #ea580c;
+    --copper-deep: #7c2d12;
+    --copper-tint: rgba(234, 88, 12, 0.09);
+    --success: #2e7d4f;
+    --danger: #c2402f;
+    --info: #1d5f8e;
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(20, 16, 13, 0.06), 0 8px 28px rgba(20, 16, 13, 0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: Outfit, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  header {
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--hair);
+    z-index: 5;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; min-width: 240px; }
+  .brand .logo {
+    width: 30px; height: 30px; border-radius: 8px; flex: none;
+    background: linear-gradient(135deg, var(--copper-soft), var(--copper-deep));
+    color: #fff; display: grid; place-items: center;
+    font-weight: 700; font-size: 15px;
+  }
+  .brand h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand p { font-size: 12px; color: var(--text-2); }
+  .stats { display: flex; gap: 8px; margin-left: auto; }
+  .stat {
+    background: var(--bg); border: 1px solid var(--hair);
+    border-radius: 10px; padding: 6px 12px;
+    font-size: 12px; color: var(--text-2); white-space: nowrap;
+  }
+  .stat b { color: var(--copper-deep); font-size: 14px; margin-right: 4px; }
+
+  /* ── Toolbar ── */
+  .toolbar {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--hair);
+  }
+  .search {
+    flex: 0 1 300px; display: flex; align-items: center; gap: 8px;
+    border: 1px solid var(--hair-2); border-radius: 10px;
+    padding: 7px 12px; background: var(--bg);
+  }
+  .search input {
+    border: 0; outline: 0; background: transparent; width: 100%;
+    font: inherit; font-size: 13px; color: var(--text);
+  }
+  .search svg { width: 15px; height: 15px; color: var(--text-3); flex: none; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    border: 1px solid var(--hair-2); background: var(--surface);
+    color: var(--text-2); font: inherit; font-size: 12px; font-weight: 600;
+    border-radius: 999px; padding: 5px 12px; cursor: pointer;
+    transition: all .15s ease;
+  }
+  .chip:hover { border-color: var(--copper-soft); color: var(--copper-deep); }
+  .chip.active { background: var(--copper-deep); border-color: var(--copper-deep); color: #fff; }
+  .chip .count { opacity: .65; font-weight: 500; }
+  .toolbar .spacer { flex: 1; }
+  .view-toggle { display: flex; border: 1px solid var(--hair-2); border-radius: 10px; overflow: hidden; }
+  .view-toggle button {
+    border: 0; background: var(--surface); color: var(--text-2);
+    font: inherit; font-size: 12px; font-weight: 600;
+    padding: 7px 14px; cursor: pointer;
+  }
+  .view-toggle button.active { background: var(--copper-tint); color: var(--copper-deep); }
+  .view-toggle button + button { border-left: 1px solid var(--hair-2); }
+
+  /* ── Main layout ── */
+  main { flex: 1; display: flex; min-height: 0; position: relative; }
+
+  /* Entity list (left) */
+  #list {
+    width: 320px; flex: none; overflow-y: auto;
+    background: var(--surface); border-right: 1px solid var(--hair);
+    padding: 14px 14px 40px;
+  }
+  .domain-group { margin-bottom: 18px; }
+  .domain-head {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--text-3); padding: 6px 8px 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .domain-head .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .entity-item {
+    display: block; width: 100%; text-align: left;
+    border: 1px solid transparent; border-radius: 10px;
+    background: transparent; padding: 8px 10px; cursor: pointer;
+    font: inherit; transition: all .12s ease;
+  }
+  .entity-item:hover { background: var(--bg); }
+  .entity-item.active { background: var(--copper-tint); border-color: rgba(234, 88, 12, .35); }
+  .entity-item .name { font-size: 13.5px; font-weight: 650; display: flex; align-items: center; gap: 8px; }
+  .entity-item .name .key { font-size: 10px; color: var(--text-3); font-weight: 500; }
+  .entity-item .desc { font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.4; }
+  .entity-item .ops { font-size: 10.5px; color: var(--copper-deep); margin-top: 3px; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  /* Diagram canvas (center) */
+  #canvas-wrap { flex: 1; position: relative; overflow: hidden; background:
+    radial-gradient(1000px 500px at 15% -10%, rgba(234, 88, 12, 0.05), transparent 60%), var(--bg); }
+  #canvas { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none; }
+  #canvas.dragging { cursor: grabbing; }
+  .canvas-hint {
+    position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+    background: var(--surface); border: 1px solid var(--hair); border-radius: 999px;
+    padding: 6px 14px; font-size: 11.5px; color: var(--text-2);
+    box-shadow: var(--shadow); pointer-events: none; white-space: nowrap;
+  }
+
+  /* Detail drawer (right) */
+  #drawer {
+    width: 400px; flex: none; background: var(--surface);
+    border-left: 1px solid var(--hair);
+    overflow-y: auto; display: flex; flex-direction: column;
+  }
+  #drawer.empty { justify-content: center; align-items: center; color: var(--text-3); font-size: 13px; text-align: center; padding: 40px; }
+  .drawer-head { padding: 18px 20px 14px; border-bottom: 1px solid var(--hair); }
+  .drawer-head .kicker {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px; margin-bottom: 8px;
+  }
+  .drawer-head h2 { font-size: 20px; font-weight: 750; letter-spacing: -0.02em; }
+  .drawer-head .table-path { font-size: 12px; color: var(--text-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; margin-top: 2px; }
+  .drawer-body { padding: 16px 20px 40px; }
+  .drawer-body .section { margin-bottom: 20px; }
+  .drawer-body .section h3 {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--text-3); margin-bottom: 8px;
+  }
+  .logic-card {
+    background: var(--bg); border: 1px solid var(--hair);
+    border-radius: var(--radius); padding: 12px 14px;
+    font-size: 13px; line-height: 1.55; color: var(--text);
+  }
+  .logic-card .head { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--copper-deep); font-weight: 600; margin-bottom: 6px; }
+  .logic-card ul { margin: 6px 0 0 16px; }
+  .logic-card li { font-size: 11.5px; color: var(--text-2); margin: 3px 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  table.cols { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.cols th {
+    text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--text-3); padding: 6px 8px; border-bottom: 1px solid var(--hair-2);
+  }
+  table.cols td { padding: 6px 8px; border-bottom: 1px solid var(--hair); }
+  table.cols tr:last-child td { border-bottom: 0; }
+  table.cols td.cname { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 600; }
+  table.cols td.ctype { color: var(--text-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em;
+    padding: 2px 7px; border-radius: 6px; margin-left: 4px; vertical-align: 1px;
+  }
+  .badge.pk { background: rgba(234, 88, 12, 0.14); color: var(--copper-deep); }
+  .badge.fk { background: rgba(29, 95, 142, 0.12); color: var(--info); }
+  .badge.null { background: rgba(36, 29, 23, 0.07); color: var(--text-3); }
+  .badge.nofk { background: rgba(36, 29, 23, 0.05); color: var(--text-3); font-weight: 500; }
+
+  .fk-list { display: flex; flex-direction: column; gap: 6px; }
+  .fk-row {
+    display: flex; align-items: center; gap: 8px; font-size: 12.5px;
+    background: var(--bg); border: 1px solid var(--hair); border-radius: 8px; padding: 8px 10px;
+  }
+  .fk-row code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 600; }
+  .fk-row .arrow { color: var(--text-3); }
+  .fk-row .target { color: var(--info); font-weight: 600; }
+  .fk-row .logical { margin-left: auto; font-size: 9.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; }
+
+  .no-results { padding: 24px; text-align: center; color: var(--text-3); font-size: 13px; }
+
+  /* Diagram node styling */
+  .node rect.node-bg { fill: var(--surface); stroke: var(--hair-2); stroke-width: 1.2; rx: 10; }
+  .node:hover rect.node-bg { stroke: var(--copper-soft); }
+  .node.active rect.node-bg { stroke: var(--copper-soft); stroke-width: 2; }
+  .node text { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .node .n-name { font-size: 12px; font-weight: 650; fill: var(--text); }
+  .node .n-sub { font-size: 10px; fill: var(--text-3); }
+  .edge { stroke: var(--hair-2); stroke-width: 1.4; fill: none; }
+  .edge:hover, .edge.hot { stroke: var(--copper-soft); stroke-width: 2.2; }
+  .edge-label { font-size: 9px; fill: var(--text-3); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .domain-label { font-size: 12px; font-weight: 700; fill: var(--text-3); letter-spacing: .1em; text-transform: uppercase; }
+
+  #legend {
+    position: absolute; top: 14px; right: 14px; z-index: 4;
+    background: var(--surface); border: 1px solid var(--hair); border-radius: var(--radius);
+    padding: 10px 14px; box-shadow: var(--shadow); font-size: 11px; color: var(--text-2);
+    display: flex; flex-direction: column; gap: 5px;
+  }
+  #legend .row { display: flex; align-items: center; gap: 8px; }
+  #legend .swatch { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  #legend code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; }
+
+  @media (max-width: 1100px) {
+    #list { display: none; }
+  }
+
+  /* ── Print / PDF export ── */
+  .btn {
+    border: 1px solid var(--hair-2); background: var(--surface);
+    color: var(--text); font: inherit; font-size: 12px; font-weight: 650;
+    border-radius: 10px; padding: 7px 14px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: all .15s ease;
+  }
+  .btn:hover { border-color: var(--copper-soft); color: var(--copper-deep); }
+  .btn svg { width: 14px; height: 14px; }
+
+  #print-root { display: none; }
+
+  @media print {
+    @page { size: A4; margin: 12mm; }
+    body { background: #fff; overflow: visible; }
+    header, .toolbar, main { display: none !important; }
+    #print-root { display: block !important; }
+  }
+
+  /* Print document layout */
+  .pr { font-family: Outfit, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a1a; }
+  .pr-cover { border-bottom: 3px solid #c2410c; padding-bottom: 14px; margin-bottom: 18px; }
+  .pr-cover h1 { font-size: 24px; letter-spacing: -0.02em; margin: 0 0 4px; }
+  .pr-cover .sub { font-size: 12px; color: #555; }
+  .pr-stats { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0 18px; }
+  .pr-stat {
+    border: 1px solid #ddd; border-radius: 8px; padding: 6px 12px;
+    font-size: 12px; color: #555;
+  }
+  .pr-stat b { color: #7c2d12; font-size: 14px; margin-right: 4px; }
+  .pr-section-title {
+    font-size: 13px; font-weight: 750; text-transform: uppercase; letter-spacing: .08em;
+    color: #7c2d12; margin: 22px 0 10px; padding-bottom: 4px; border-bottom: 1px solid #e5e0d8;
+  }
+  .pr-mmd { width: 100%; height: auto; }
+  .pr-rel-table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  .pr-rel-table th {
+    text-align: left; text-transform: uppercase; letter-spacing: .05em;
+    font-size: 9px; color: #666; padding: 4px 6px; border-bottom: 1px solid #bbb;
+  }
+  .pr-rel-table td { padding: 4px 6px; border-bottom: 1px solid #eee; }
+  .pr-rel-table code { font-family: ui-monospace, "SF Mono", Menlo, monospace; background: #f5f2ec; border-radius: 4px; padding: 1px 5px; }
+  .pr-domain { margin: 0 0 20px; break-inside: avoid; }
+  .pr-domain-head {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; font-weight: 750; color: #1a1a1a; margin-bottom: 8px;
+  }
+  .pr-domain-head .dot { width: 9px; height: 9px; border-radius: 50%; }
+  .pr-entity { border: 1px solid #ddd; border-radius: 10px; padding: 12px 14px; margin: 0 0 12px; break-inside: avoid; }
+  .pr-entity h4 { margin: 0 0 2px; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+  .pr-entity h4 .pk-hint { font-size: 9.5px; color: #888; font-weight: 500; font-family: ui-monospace, Menlo, monospace; }
+  .pr-entity .meta-line { font-size: 10.5px; color: #666; margin-bottom: 6px; }
+  .pr-entity .logic { font-size: 11px; line-height: 1.5; color: #333; background: #faf7f2; border: 1px solid #eee5d8; border-radius: 8px; padding: 8px 10px; margin-bottom: 8px; }
+  .pr-entity .logic b { color: #7c2d12; font-size: 9.5px; text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 3px; }
+  .pr-table { width: 100%; border-collapse: collapse; font-size: 10.5px; }
+  .pr-table th {
+    text-align: left; font-size: 9px; text-transform: uppercase; letter-spacing: .05em;
+    color: #666; padding: 3px 6px; border-bottom: 1px solid #bbb;
+  }
+  .pr-table td { padding: 3px 6px; border-bottom: 1px solid #eee; }
+  .pr-table td.cname, .pr-table code { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .pr-table .pk { color: #c2410c; font-weight: 700; }
+  .pr-table .fk { color: #1d5f8e; }
+  .pr-table .null { color: #999; }
+  .pr-ops { font-size: 10px; color: #444; margin-top: 6px; }
+  .pr-ops code { font-family: ui-monospace, Menlo, monospace; background: #f5f2ec; border-radius: 4px; padding: 1px 5px; }
+  .pr-footer { margin-top: 24px; padding-top: 10px; border-top: 1px solid #e5e0d8; font-size: 10px; color: #888; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">F</div>
+    <div>
+      <h1>Formint POS — Database ERD</h1>
+      <p id="meta">loading…</p>
+    </div>
+  </div>
+  <div class="stats" id="stats"></div>
+</header>
+
+<div class="toolbar">
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search" type="search" placeholder="Search tables, columns, operations…" autocomplete="off" />
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="spacer"></div>
+  <div class="view-toggle">
+    <button id="view-diagram" class="active">Diagram</button>
+    <button id="view-list">Table list</button>
+  </div>
+  <button class="btn" id="btn-print" title="Save the full ERD reference as PDF via the print dialog">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+    Print / PDF
+  </button>
+</div>
+
+<div id="print-root"></div>
+
+<main>
+  <aside id="list"></aside>
+
+  <div id="canvas-wrap">
+    <svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg>
+    <div id="legend"></div>
+    <div class="canvas-hint">Drag to pan · scroll to zoom · click an entity for details</div>
+  </div>
+
+  <aside id="drawer" class="empty">Select an entity to inspect its schema,<br/>relations and operations logic.</aside>
+</main>
+
+<script src="erd-data.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var DATA = window.ERD_DATA;
+  var entities = DATA.entities;
+  var relations = DATA.relations;
+  var domainOrder = Object.keys(DATA.domains);
+  var domainColor = {};
+  var palette = ['#c2410c', '#1d5f8e', '#2e7d4f', '#6d3a9e', '#b45309', '#0e7490', '#a21caf', '#4d7c0f'];
+  domainOrder.forEach(function (d, i) { domainColor[d] = palette[i % palette.length]; });
+
+  var state = {
+    query: '',
+    domain: null,        // null = all
+    view: 'diagram',     // 'diagram' | 'list'
+    selected: null,
+    diagramMode: false,  // list mode shows the compact table list in main area
+  };
+
+  /* ─────────────────────────────────────────────────────────────
+   * Header + stats
+   * ───────────────────────────────────────────────────────────── */
+  document.getElementById('meta').textContent =
+    'SQLite · ' + DATA.source + ' · generated ' + DATA.generated;
+  var stats = document.getElementById('stats');
+  [
+    ['tables', DATA.stats.tables],
+    ['relations', DATA.stats.relations],
+    ['modules', DATA.stats.operationsModules],
+  ].forEach(function (s) {
+    var el = document.createElement('div');
+    el.className = 'stat';
+    el.innerHTML = '<b>' + s[1] + '</b>' + s[0];
+    stats.appendChild(el);
+  });
+
+  /* ─────────────────────────────────────────────────────────────
+   * Domain chips
+   * ───────────────────────────────────────────────────────────── */
+  var chips = document.getElementById('chips');
+  function renderChips() {
+    chips.innerHTML = '';
+    var all = document.createElement('button');
+    all.className = 'chip' + (state.domain === null ? ' active' : '');
+    all.innerHTML = 'All <span class="count">(' + entities.length + ')</span>';
+    all.onclick = function () { state.domain = null; state.selected = null; refresh(); };
+    chips.appendChild(all);
+    domainOrder.forEach(function (d) {
+      var n = entities.filter(function (e) { return e.domain === d; }).length;
+      var btn = document.createElement('button');
+      btn.className = 'chip' + (state.domain === d ? ' active' : '');
+      btn.innerHTML = DATA.domains[d] + ' <span class="count">(' + n + ')</span>';
+      btn.onclick = function () { state.domain = state.domain === d ? null : d; state.selected = null; refresh(); };
+      chips.appendChild(btn);
+    });
+  }
+  renderChips();
+
+  /* ─────────────────────────────────────────────────────────────
+   * Filtering helpers
+   * ───────────────────────────────────────────────────────────── */
+  function matchesQuery(e, q) {
+    if (!q) return true;
+    q = q.toLowerCase();
+    if (e.name.toLowerCase().indexOf(q) !== -1) return true;
+    if ((e.logic || '').toLowerCase().indexOf(q) !== -1) return true;
+    if (e.columns.some(function (c) { return c.name.toLowerCase().indexOf(q) !== -1; })) return true;
+    if (e.operations.some(function (o) { return o.module.toLowerCase().indexOf(q) !== -1; })) return true;
+    return false;
+  }
+  function visibleEntities() {
+    var q = state.query.trim();
+    return entities.filter(function (e) {
+      return (state.domain === null || e.domain === state.domain) && matchesQuery(e, q);
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+   * Entity list (left sidebar)
+   * ───────────────────────────────────────────────────────────── */
+  function renderList() {
+    var list = document.getElementById('list');
+    var vis = visibleEntities();
+    if (vis.length === 0) {
+      list.innerHTML = '<div class="no-results">No entities match your filter.</div>';
+      return;
+    }
+    var html = '';
+    domainOrder.forEach(function (d) {
+      var group = vis.filter(function (e) { return e.domain === d; });
+      if (group.length === 0) return;
+      html += '<div class="domain-group"><div class="domain-head">' +
+        '<span class="dot" style="background:' + domainColor[d] + '"></span>' +
+        DATA.domains[d] + '</div>';
+      group.forEach(function (e) {
+        var opNames = e.operations.map(function (o) { return o.module + '.rs'; }).join(' · ');
+        html += '<button class="entity-item' + (state.selected === e.name ? ' active' : '') +
+          '" data-entity="' + e.name + '">' +
+          '<div class="name">' + e.name +
+          '<span class="key">' + (e.primaryKeys.length > 1 ? e.primaryKeys.join('+') : e.primaryKeys[0] || '?') + ' PK</span></div>' +
+          '<div class="desc">' + (e.logic || '') + '</div>' +
+          (opNames ? '<div class="ops">' + opNames + '</div>' : '<div class="ops">no operations module</div>') +
+          '</button>';
+      });
+      html += '</div>';
+    });
+    list.innerHTML = html;
+    list.querySelectorAll('.entity-item').forEach(function (btn) {
+      btn.onclick = function () { selectEntity(btn.dataset.entity); };
+    });
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+   * Detail drawer
+   * ───────────────────────────────────────────────────────────── */
+  function relLabel(rel) {
+    var out = relations.filter(function (r) {
+      return (r.child === rel.from && r.parent === rel.to) ||
+             (r.child === rel.to && r.parent === rel.from);
+    });
+    return out.map(function (r) {
+      return r.child + '.' + r.column + ' → ' + r.parent;
+    }).join(' · ');
+  }
+
+  function renderDrawer(name) {
+    var drawer = document.getElementById('drawer');
+    var e = entities.filter(function (x) { return x.name === name; })[0];
+    if (!e) { drawer.className = 'empty'; drawer.innerHTML = 'Entity not found.'; return; }
+
+    var html = '<div class="drawer-head">' +
+      '<span class="kicker" style="color:' + domainColor[e.domain] + ';background:' + domainColor[e.domain] + '1a">' +
+      e.domainLabel + '</span>' +
+      '<h2>' + e.name + '</h2>' +
+      '<div class="table-path">table "' + e.name + '" · ' + e.columns.length + ' columns</div>' +
+      '</div><div class="drawer-body">';
+
+    if (e.logic) {
+      html += '<div class="section"><h3>Business logic</h3>' +
+        '<div class="logic-card">' + e.logic + '</div></div>';
+    }
+
+    html += '<div class="section"><h3>Columns</h3><table class="cols"><thead><tr>' +
+      '<th>Column</th><th>Type</th></tr></thead><tbody>';
+    e.columns.forEach(function (c) {
+      var badges = '';
+      if (c.pk) badges += '<span class="badge pk">PK</span>';
+      var fk = e.foreignKeys.filter(function (f) { return f.column === c.name; })[0];
+      if (fk) badges += '<span class="badge fk">FK → ' + fk.ref + '</span>';
+      else if (!c.pk) badges += '<span class="badge nofk">—</span>';
+      if (c.nullable) badges += '<span class="badge null">NULL</span>';
+      html += '<tr><td class="cname">' + c.name + badges + '</td><td class="ctype">' + c.type + '</td></tr>';
+    });
+    html += '</tbody></table></div>';
+
+    if (e.foreignKeys.length) {
+      html += '<div class="section"><h3>Foreign keys (' + e.foreignKeys.length + ')</h3><div class="fk-list">';
+      e.foreignKeys.forEach(function (f) {
+        html += '<div class="fk-row"><code>' + e.name + '.' + f.column + '</code>' +
+          '<span class="arrow">→</span><span class="target">' + f.ref + '</span>' +
+          (f.logical ? '<span class="logical">logical FK</span>' : '') + '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    var incoming = relations.filter(function (r) { return r.parent === e.name; });
+    if (incoming.length) {
+      html += '<div class="section"><h3>Referenced by (' + incoming.length + ')</h3><div class="fk-list">';
+      incoming.forEach(function (r) {
+        html += '<div class="fk-row"><span class="target">' + r.child + '</span>' +
+          '<span class="arrow">→</span><code>' + e.name + '</code>' +
+          (r.logical ? '<span class="logical">logical</span>' : '') + '</div>';
+      });
+      html += '</div></div>';
+    }
+
+    html += '<div class="section"><h3>Operations (' + e.operations.length + ')</h3>';
+    if (e.operations.length === 0) {
+      html += '<div class="logic-card">No dedicated operations module — rows are managed by migrations/seeding or exports.</div>';
+    } else {
+      e.operations.forEach(function (op) {
+        html += '<div class="logic-card"><div class="head">' + op.file + '</div>' +
+          '<div>' + op.functions.length + ' exported functions</div>';
+        if (op.functions.length) {
+          html += '<ul>' + op.functions.map(function (f) { return '<li>' + f + '()</li>'; }).join('') + '</ul>';
+        }
+        html += '</div>';
+      });
+    }
+    html += '</div>';
+
+    html += '</div>';
+    drawer.className = '';
+    drawer.innerHTML = html;
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+   * Diagram rendering (SVG, pan/zoom, click-to-focus)
+   * ───────────────────────────────────────────────────────────── */
+  var NS = 'http://www.w3.org/2000/svg';
+  var canvas = document.getElementById('canvas');
+  var wrap = document.getElementById('canvas-wrap');
+  var transform = { x: 40, y: 30, k: 1 };
+  var isDragging = false, dragStart = null, moved = false;
+
+  var COLS = {};   // domain -> { x, entities: [...] }
+  var layout = {}; // entity -> { x, y, w, h, domain }
+  var COL_W = 236, ROW_H = 34, ROW_PAD = 10, COL_GAP = 56, HEADER_H = 34;
+
+  function computeLayout() {
+    COLS = {}; layout = {};
+    var colIndex = 0;
+    domainOrder.forEach(function (d) {
+      var list = entities.filter(function (e) { return e.domain === d; });
+      if (!list.length) return;
+      COLS[d] = { x: colIndex, entities: list };
+      list.forEach(function (e, i) {
+        layout[e.name] = { x: colIndex * (COL_W + COL_GAP), y: HEADER_H + i * (ROW_H + ROW_PAD), w: COL_W, h: ROW_H, domain: d };
+      });
+      colIndex++;
+    });
+    return { w: colIndex * (COL_W + COL_GAP), h: HEADER_H + (colIndex ? 0 : 0) };
+  }
+
+  function visibleInDiagram() {
+    return visibleEntities();
+  }
+
+  function nodeBox(e) { return layout[e.name]; }
+
+  function drawDiagram() {
+    var vis = visibleInDiagram();
+    var visNames = {};
+    vis.forEach(function (e) { visNames[e.name] = true; });
+
+    var svg = '';
+    // Background sizing — fixed 2200x1400 so pan/zoom has room on all screens.
+    var W = 2400, H = 1500;
+    canvas.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+
+    var g = '<g transform="translate(' + transform.x + ',' + transform.y + ') scale(' + transform.k + ')">';
+
+    // Domain column labels + column backgrounds
+    domainOrder.forEach(function (d) {
+      if (!COLS[d]) return;
+      var x = COLS[d].x * (COL_W + COL_GAP);
+      svg += '<rect x="' + (x - 14) + '" y="0" width="' + (COL_W + 28) + '" height="' + H + '"' +
+        ' fill="' + domainColor[d] + '" fill-opacity="0.035" rx="14"/>';
+      svg += '<text class="domain-label" x="' + (x + COL_W / 2) + '" y="20" text-anchor="middle" fill="' + domainColor[d] + '">' +
+        DATA.domains[d] + '</text>';
+    });
+
+    // Edges first (under nodes)
+    relations.forEach(function (r) {
+      if (!visNames[r.child] || !visNames[r.parent]) return;
+      var a = layout[r.child], b = layout[r.parent];
+      if (!a || !b) return;
+      var ax = a.x + a.w / 2, ay = a.y + a.h / 2;
+      var bx = b.x + b.w / 2, by = b.y + b.h / 2;
+      var dx = bx - ax, dy = by - ay;
+      var mx = ax + dx * 0.5, my = ay + dy * 0.5;
+      var off = 0;
+      svg += '<path class="edge" data-child="' + r.child + '" data-parent="' + r.parent + '" d="' +
+        'M ' + ax + ' ' + ay + ' C ' + (mx + off) + ' ' + (my - 60) + ', ' + (mx + off) + ' ' + (my + 60) + ', ' + bx + ' ' + by + '"/>';
+      // mid label
+      svg += '<text class="edge-label" x="' + (mx + off) + '" y="' + (my - 2) + '" text-anchor="middle">' +
+        r.child + '.' + r.column + '</text>';
+    });
+
+    // Node boxes
+    vis.forEach(function (e) {
+      var box = layout[e.name];
+      var cls = 'node' + (state.selected === e.name ? ' active' : '');
+      svg += '<g class="' + cls + '" data-entity="' + e.name + '" transform="translate(' + box.x + ',' + box.y + ')">' +
+        '<rect class="node-bg" width="' + box.w + '" height="' + box.h + '"/>' +
+        '<rect x="0" y="0" width="4" height="' + box.h + '" fill="' + domainColor[e.domain] + '" rx="2"/>' +
+        '<text class="n-name" x="14" y="20">' + e.name + '</text>' +
+        '<text class="n-sub" x="' + (box.w - 10) + '" y="20" text-anchor="end">' +
+        e.columns.length + ' cols' + (e.primaryKeys.length > 1 ? ' · ' + e.primaryKeys.join('+') : '') + '</text>' +
+        '</g>';
+    });
+
+    svg += '</g>';
+    canvas.innerHTML = svg;
+
+    canvas.querySelectorAll('.node').forEach(function (n) {
+      n.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        selectEntity(n.dataset.entity);
+      });
+    });
+    canvas.querySelectorAll('.edge').forEach(function (p) {
+      p.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        selectEntity(p.dataset.child);
+      });
+    });
+  }
+
+  function applyTransform() {
+    var g = canvas.querySelector('g');
+    if (g) g.setAttribute('transform', 'translate(' + transform.x + ',' + transform.y + ') scale(' + transform.k + ')');
+  }
+
+  canvas.addEventListener('pointerdown', function (ev) {
+    isDragging = true; moved = false;
+    dragStart = { x: ev.clientX, y: ev.clientY, tx: transform.x, ty: transform.y };
+    canvas.classList.add('dragging');
+    canvas.setPointerCapture(ev.pointerId);
+  });
+  canvas.addEventListener('pointermove', function (ev) {
+    if (!isDragging) return;
+    var dx = ev.clientX - dragStart.x, dy = ev.clientY - dragStart.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+    transform.x = dragStart.tx + dx;
+    transform.y = dragStart.ty + dy;
+    applyTransform();
+  });
+  canvas.addEventListener('pointerup', function () {
+    isDragging = false;
+    canvas.classList.remove('dragging');
+  });
+  canvas.addEventListener('wheel', function (ev) {
+    ev.preventDefault();
+    var factor = ev.deltaY < 0 ? 1.1 : 1 / 1.1;
+    transform.k = Math.min(2.5, Math.max(0.25, transform.k * factor));
+    applyTransform();
+  }, { passive: false });
+
+  /* ─────────────────────────────────────────────────────────────
+   * Selection + refresh
+   * ───────────────────────────────────────────────────────────── */
+  function selectEntity(name) {
+    state.selected = name;
+    renderDrawer(name);
+    renderList();
+    if (state.view === 'diagram') drawDiagram();
+  }
+
+  function highlightEdges(name) {
+    canvas.querySelectorAll('.edge').forEach(function (p) {
+      p.classList.toggle('hot', p.dataset.child === name || p.dataset.parent === name);
+    });
+    canvas.querySelectorAll('.node').forEach(function (n) {
+      n.classList.toggle('dimmed', n.dataset.entity !== name && !relations.some(function (r) {
+        return r.child === name && r.parent === n.dataset.entity ||
+               r.parent === name && r.child === n.dataset.entity;
+      }));
+    });
+  }
+
+  function refresh() {
+    renderList();
+    if (state.view === 'diagram') drawDiagram();
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+   * View toggle: diagram | table list
+   * ───────────────────────────────────────────────────────────── */
+  function renderTableView() {
+    var wrap = document.getElementById('canvas-wrap');
+    var vis = visibleEntities();
+    var html = '<div class="table-view-wrap">';
+    if (vis.length === 0) html += '<div class="no-results">No entities match your filter.</div>';
+    vis.forEach(function (e) {
+      var fks = e.foreignKeys.map(function (f) { return f.column + ' → ' + f.ref; }).join(', ') || '—';
+      var ops = e.operations.map(function (o) { return o.module; }).join(', ') || '—';
+      html += '<button class="entity-card' + (state.selected === e.name ? ' active' : '') + '" data-entity="' + e.name + '">' +
+        '<div class="ec-head"><span class="ec-name">' + e.name + '</span>' +
+        '<span class="ec-domain" style="color:' + domainColor[e.domain] + '">' + e.domainLabel + '</span></div>' +
+        '<div class="ec-row"><span class="k">columns</span>' + e.columns.length + '</div>' +
+        '<div class="ec-row"><span class="k">foreign keys</span>' + fks + '</div>' +
+        '<div class="ec-row"><span class="k">operations</span>' + ops + '</div>' +
+        '</button>';
+    });
+    html += '</div>';
+    wrap.innerHTML = html;
+    wrap.querySelectorAll('.entity-card').forEach(function (btn) {
+      btn.onclick = function () { selectEntity(btn.dataset.entity); };
+    });
+    // Re-append legend/hint elements
+    var legend = document.getElementById('legend');
+    wrap.appendChild(legend);
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+   * Wire up controls
+   * ───────────────────────────────────────────────────────────── */
+  document.getElementById('search').addEventListener('input', function (ev) {
+    state.query = ev.target.value;
+    state.selected = null;
+    document.getElementById('drawer').className = 'empty';
+    document.getElementById('drawer').innerHTML = 'Select an entity to inspect its schema,<br/>relations and operations logic.';
+    refresh();
+  });
+
+  document.getElementById('view-diagram').addEventListener('click', function () {
+    state.view = 'diagram';
+    document.getElementById('view-diagram').classList.add('active');
+    document.getElementById('view-list').classList.remove('active');
+    buildDiagramUI();
+  });
+  document.getElementById('view-list').addEventListener('click', function () {
+    state.view = 'list';
+    document.getElementById('view-list').classList.add('active');
+    document.getElementById('view-diagram').classList.remove('active');
+    renderTableView();
+  });
+
+  function buildDiagramUI() {
+    var w = document.getElementById('canvas-wrap');
+    w.innerHTML = '';
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('id', 'canvas');
+    w.appendChild(svg);
+    canvas = svg;
+    var legend = document.createElement('div');
+    legend.id = 'legend';
+    w.appendChild(legend);
+    var hint = document.createElement('div');
+    hint.className = 'canvas-hint';
+    hint.textContent = 'Drag to pan · scroll to zoom · click an entity for details';
+    w.appendChild(hint);
+    renderLegend();
+    drawDiagram();
+    attachCanvasEvents();
+  }
+
+  function renderLegend() {
+    var legend = document.getElementById('legend');
+    if (!legend) return;
+    var html = '';
+    domainOrder.forEach(function (d) {
+      html += '<div class="row"><span class="swatch" style="background:' + domainColor[d] + '"></span>' + DATA.domains[d] + '</div>';
+    });
+    html += '<div class="row" style="margin-top:4px;border-top:1px solid var(--hair);padding-top:6px">' +
+      '<code>PK</code> primary key · <code>FK</code> foreign key</div>';
+    legend.innerHTML = html;
+  }
+
+  function attachCanvasEvents() {
+    canvas.addEventListener('pointerdown', function (ev) {
+      isDragging = true; moved = false;
+      dragStart = { x: ev.clientX, y: ev.clientY, tx: transform.x, ty: transform.y };
+      canvas.classList.add('dragging');
+      canvas.setPointerCapture(ev.pointerId);
+    });
+    canvas.addEventListener('pointermove', function (ev) {
+      if (!isDragging) return;
+      var dx = ev.clientX - dragStart.x, dy = ev.clientY - dragStart.y;
+      if (Math.abs(dx) + Math.abs(dy) > 3) moved = true;
+      transform.x = dragStart.tx + dx;
+      transform.y = dragStart.ty + dy;
+      applyTransform();
+    });
+    canvas.addEventListener('pointerup', function () {
+      isDragging = false;
+      canvas.classList.remove('dragging');
+    });
+    canvas.addEventListener('wheel', function (ev) {
+      ev.preventDefault();
+      var factor = ev.deltaY < 0 ? 1.1 : 1 / 1.1;
+      transform.k = Math.min(2.5, Math.max(0.25, transform.k * factor));
+      applyTransform();
+    }, { passive: false });
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+   * Print / PDF export
+   * ───────────────────────────────────────────────────────────── */
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function buildPrintDoc() {
+    var root = document.getElementById('print-root');
+    var html = '';
+
+    // Cover
+    html += '<div class="pr">';
+    html += '<div class="pr-cover"><h1>Formint POS — Database ERD Reference</h1>' +
+      '<div class="sub">SQLite · ' + esc(DATA.source) + ' · generated ' + DATA.generated +
+      ' · source of truth: src-tauri/src/db/schema.rs + src-tauri/src/operations/</div></div>';
+    html += '<div class="pr-stats">' +
+      '<div class="pr-stat"><b>' + DATA.stats.tables + '</b>tables</div>' +
+      '<div class="pr-stat"><b>' + DATA.stats.relations + '</b>foreign-key relations</div>' +
+      '<div class="pr-stat"><b>' + DATA.stats.operationsModules + '</b>operations modules</div>' +
+      '<div class="pr-stat"><b>' + domainOrder.length + '</b>domains</div></div>';
+
+    // Relationship diagram (full extent, one page)
+    html += '<div class="pr-section-title">Relationship diagram</div>';
+    html += '<svg class="pr-mmd" viewBox="0 0 2400 1500" xmlns="http://www.w3.org/2000/svg">';
+    var body = '';
+    domainOrder.forEach(function (d) {
+      if (!COLS[d]) return;
+      var x = COLS[d].x * (COL_W + COL_GAP);
+      body += '<rect x="' + (x - 14) + '" y="0" width="' + (COL_W + 28) + '" height="1500"' +
+        ' fill="' + domainColor[d] + '" fill-opacity="0.05" rx="14"/>';
+      body += '<text x="' + (x + COL_W / 2) + '" y="20" text-anchor="middle"' +
+        ' font-family="Outfit, sans-serif" font-size="14" font-weight="700" letter-spacing="2"' +
+        ' fill="' + domainColor[d] + '" text-transform="uppercase">' + esc(DATA.domains[d].toUpperCase()) + '</text>';
+    });
+    relations.forEach(function (r) {
+      var a = layout[r.child], b = layout[r.parent];
+      if (!a || !b) return;
+      var ax = a.x + a.w / 2, ay = a.y + a.h / 2;
+      var bx = b.x + b.w / 2, by = b.y + b.h / 2;
+      var dx = bx - ax, dy = by - ay;
+      var mx = ax + dx * 0.5, my = ay + dy * 0.5;
+      body += '<path d="M ' + ax + ' ' + ay + ' C ' + mx + ' ' + (my - 60) + ', ' + mx + ' ' + (my + 60) + ', ' + bx + ' ' + by + '"' +
+        ' fill="none" stroke="#b9b0a4" stroke-width="1.2"/>';
+      body += '<text x="' + mx + '" y="' + (my - 3) + '" text-anchor="middle"' +
+        ' font-family="ui-monospace, Menlo, monospace" font-size="9" fill="#8a8176">' +
+        esc(r.child + '.' + r.column) + '</text>';
+    });
+    entities.forEach(function (e) {
+      var box = layout[e.name];
+      if (!box) return;
+      body += '<g>' +
+        '<rect x="' + box.x + '" y="' + box.y + '" width="' + box.w + '" height="' + box.h + '" rx="8"' +
+        ' fill="#ffffff" stroke="#c9c1b4" stroke-width="1"/>' +
+        '<rect x="' + box.x + '" y="' + box.y + '" width="4" height="' + box.h + '" fill="' + domainColor[e.domain] + '"/>' +
+        '<text x="' + (box.x + 14) + '" y="' + (box.y + 21) + '" font-family="ui-monospace, Menlo, monospace"' +
+        ' font-size="12.5" font-weight="650" fill="#241d17">' + esc(e.name) + '</text>' +
+        '<text x="' + (box.x + box.w - 10) + '" y="' + (box.y + 21) + '" text-anchor="end"' +
+        ' font-family="ui-monospace, Menlo, monospace" font-size="10" fill="#8a8176">' +
+        e.columns.length + ' cols</text>' +
+        '</g>';
+    });
+    html += body + '</svg>';
+
+    // Foreign-key relation table
+    html += '<div class="pr-section-title">Foreign-key relations (' + relations.length + ')</div>';
+    html += '<table class="pr-rel-table"><thead><tr><th>#</th><th>Child</th><th>FK column</th><th>Parent</th><th>Kind</th></tr></thead><tbody>';
+    relations.forEach(function (r, i) {
+      html += '<tr><td>' + (i + 1) + '</td><td><code>' + esc(r.child) + '</code></td>' +
+        '<td><code>' + esc(r.column) + '</code></td><td><code>' + esc(r.parent) + '</code></td>' +
+        '<td>' + (r.logical ? 'logical (code-level)' : 'joinable! (Diesel)') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+
+    // Per-domain entity reference
+    html += '<div class="pr-section-title">Entity reference — schema &amp; operations logic</div>';
+    domainOrder.forEach(function (d) {
+      var group = entities.filter(function (e) { return e.domain === d; });
+      if (!group.length) return;
+      html += '<div class="pr-domain"><div class="pr-domain-head">' +
+        '<span class="dot" style="background:' + domainColor[d] + '"></span>' +
+        esc(DATA.domains[d]) + ' (' + group.length + ')</div>';
+      group.forEach(function (e) {
+        var pkHint = e.primaryKeys.length > 1 ? e.primaryKeys.join(' + ') : (e.primaryKeys[0] || '?');
+        html += '<div class="pr-entity">' +
+          '<h4>' + esc(e.name) + ' <span class="pk-hint">PK: ' + esc(pkHint) + '</span></h4>' +
+          '<div class="meta-line">' + e.columns.length + ' columns · ' + e.foreignKeys.length + ' foreign keys · ' +
+          (e.operations.length ? e.operations.map(function (o) { return o.module + '.rs'; }).join(', ') : 'no operations module') + '</div>';
+        if (e.logic) html += '<div class="logic"><b>Operations logic</b>' + esc(e.logic) + '</div>';
+        html += '<table class="pr-table"><thead><tr><th>Column</th><th>Type</th><th>Notes</th></tr></thead><tbody>';
+        e.columns.forEach(function (c) {
+          var notes = [];
+          if (c.pk) notes.push('<span class="pk">PK</span>');
+          var fk = e.foreignKeys.filter(function (f) { return f.column === c.name; })[0];
+          if (fk) notes.push('<span class="fk">FK → ' + esc(fk.ref) + (fk.logical ? ' (logical)' : '') + '</span>');
+          if (c.nullable) notes.push('<span class="null">nullable</span>');
+          html += '<tr><td class="cname">' + esc(c.name) + '</td><td>' + esc(c.type) + '</td><td>' + notes.join(' ') + '</td></tr>';
+        });
+        html += '</tbody></table>';
+        if (e.operations.length) {
+          html += '<div class="pr-ops"><code>' + esc(e.operations.map(function (o) { return o.module + '.rs'; }).join('</code> · <code>')) + '</code>';
+          e.operations.forEach(function (o) {
+            if (o.functions.length) {
+              html += '<br/><code style="color:#1d5f8e">' + esc(o.functions.join('() · ')) + '()</code>';
+            }
+          });
+          html += '</div>';
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+    html += '<div class="pr-footer">Generated by scripts/generate-erd.mjs · Formint POS — ' + DATA.source + ' · ' + DATA.generated + '</div>';
+    html += '</div>';
+    root.innerHTML = html;
+  }
+
+  document.getElementById('btn-print').addEventListener('click', function () {
+    buildPrintDoc();
+    window.print();
+  });
+
+  /* ─────────────────────────────────────────────────────────────
+   * Init
+   * ───────────────────────────────────────────────────────────── */
+  computeLayout();
+  buildDiagramUI();
+  renderList();
+  renderChips();
+})();
+</script>
+</body>
+</html>
