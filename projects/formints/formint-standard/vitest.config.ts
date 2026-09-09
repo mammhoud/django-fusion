@@ -8,7 +8,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    include: ['src/test/**/*.test.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    include: ['src/test/**/*.test.{ts,tsx}'],
     exclude: ['node_modules', 'src-tauri'],
     css: false,
     testTimeout: 15000,

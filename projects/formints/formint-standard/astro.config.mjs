@@ -70,7 +70,14 @@ export default defineConfig({
       },
     },
     server: {
-      fs: { allow: [SHARED_ASSETS] },
+      fs: {
+        allow: [
+          SHARED_ASSETS,
+          // Allow project-local sources so Astro dev and Tauri dev can serve
+          // from inside a monorepo workspace without Vite blocking requests.
+          `${import.meta.dirname}/..`,
+        ],
+      },
       watch: {
         // Don't watch the Rust backend while developing the frontend.
         ignored: ['**/src-tauri/**'],

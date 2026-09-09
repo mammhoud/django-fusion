@@ -18,6 +18,8 @@ import { readFileSync, writeFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+type ExecError = { stdout?: string; status?: number };
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -66,8 +68,9 @@ describe('ERD staleness check (scripts/check-erd-stale.mjs)', () => {
       try {
         runCheck();
       } catch (err) {
-        msg = String(err && err.stdout ? err.stdout : err);
-        code = (err as { status?: number }).status ?? 1;
+        const error = err as ExecError | undefined;
+        msg = error?.stdout != null ? error.stdout : String(err);
+        code = error?.status ?? 1;
       }
       expect(code).not.toBe(0);
       expect(msg).toContain('stale');
@@ -92,8 +95,9 @@ describe('ERD staleness check (scripts/check-erd-stale.mjs)', () => {
       try {
         runCheck();
       } catch (err) {
-        msg = String(err && err.stdout ? err.stdout : err);
-        code = (err as { status?: number }).status ?? 1;
+        const error = err as ExecError | undefined;
+        msg = error?.stdout != null ? error.stdout : String(err);
+        code = error?.status ?? 1;
       }
       expect(code).not.toBe(0);
       expect(msg).toContain('stale');
