@@ -1694,7 +1694,7 @@ pub fn run() {
                     .item(&quit_item)
                     .build()?;
 
-                let img_data = include_bytes!("../../../assets/shared/public/Logo.png");
+                let img_data = include_bytes!("../../assets/shared/public/Logo.png");
                 let img = image::load_from_memory(img_data)
                     .expect("Failed to decode tray icon PNG");
                 let rgba = img.to_rgba8();

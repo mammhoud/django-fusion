@@ -35,7 +35,7 @@
     "homepage": "https://structa.cloud",
     "licenseFile": "../LICENSE",
     "icon": [
-      "../../assets/shared/public/Logo.png",
+      "../assets/shared/public/Logo.png",
       "../../assets/shared/icons/icon.icns",
       "../../assets/shared/icons/icon.ico"
     ],
