@@ -562,13 +562,21 @@ that is not declared via `diesel::joinable!` but is enforced/assumed in code.
 | 39 | `tax_profiles` | Finance & Tax | Named tax rates; products and sales reference one profile; `compute_tax` applies rate per sale totals | `tax_profile`, `tax` |
 | 40 | `sync_queue` | Operations & Sync | Offline→cloud sync FIFO: `tag_for_sync` enqueues mutations, `dispatch_mutation` fans out, `mark_flushed`/`mark_failed` track retries, `flush_pending_sync` pushes on reconnect | `sync_queue`, `dispatcher`, `server_reconnect` |
 
-## Regenerating
+## Regenerating & staleness check
 
 The diagram, data file and this README are generated:
 
 ```bash
-node scripts/generate-erd.mjs
+node scripts/generate-erd.mjs        # regenerate in place
+node scripts/check-erd-stale.mjs     # CI-style: fail (exit 1) if docs/erd is stale
+pnpm check:erd                       # same, via package.json
 ```
+
+`check-erd-stale.mjs` regenerates `erd-data.js`/`erd.mmd` into a temp directory
+and compares them with the committed files, so CI (or pre-push) can fail when
+`src-tauri/src/db/schema.rs` or `src-tauri/src/operations/*.rs` changed but the
+docs were not regenerated. It is covered by Vitest
+(`src/test/scripts/check-erd-stale.test.ts`).
 
 Edit the *source of truth* (`src-tauri/src/db/schema.rs` for tables/columns/FKs,
 the operations modules for function lists) and re-run; do not hand-edit
