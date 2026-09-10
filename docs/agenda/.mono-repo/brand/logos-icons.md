@@ -1,6 +1,7 @@
 ---
 Object type: Page
 Tags: logos, icons
+Status: Active
 
 # Logos & Icons — Brand Assets
 

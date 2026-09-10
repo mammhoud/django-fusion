@@ -124,7 +124,7 @@ stateDiagram-v2
 | جدول الاجتماعات (قوالب) | [./meeting-agenda.md](./meeting-agenda.md) |
 | تتبع الميزات (القرارات تؤثر الميزات) | [./feature-tracking.md](./feature-tracking.md) |
 | تتبع المهام (القرارات تؤثر المهام) | [./task-tracking.md](./task-tracking.md) |
-| سجل الخطط (القرارات الكبيرة تصبح خطط) | [`../plans/README.md`](../plans/README.md) |
+| سجل الخطط (القرارات الكبيرة تصبح خطط) | [`../plans/README.md`](../../plans/README.md) |
 
 ---
 

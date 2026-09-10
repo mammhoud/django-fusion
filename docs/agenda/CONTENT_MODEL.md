@@ -56,7 +56,7 @@ plans stay in `docs/plans/`, and the agenda references them.
 | Where do engineering plans live? | `docs/plans/` (canonical registry: `docs/plans/README.md`) |
 | Where do finished plans get recorded? | `docs/agenda/feature-tracking.md` § ✅ Shipped milestones + `team-notes.md` |
 | Where does day-to-day delivery get tracked? | `docs/agenda/` (features, tasks, sprints, notes, case studies) |
-| Where does the Anytype object schema live? | `docs/agenda/mono-repo/objects/` (`_object-types.md`, `_relations.md`, `_tags.md`, `_templates.md`) |
+| Where does the Anytype object schema live? | `docs/agenda/.mono-repo/objects/` (`_object-types.md`, `_relations.md`, `_tags.md`, `_templates.md`) |
 | Where is the team reference contract? | **This file** — `CONTENT_MODEL.md` |
 
 ---

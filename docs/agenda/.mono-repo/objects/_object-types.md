@@ -1,6 +1,13 @@
 # Object Types — Knowledge Graph Schema
 
 > **Import instruction:** Create these custom types in the Structa Cloud **Channel** (Anytype's container — formerly called a Space), then create the properties and relations described here. Every content object should have `Object type`, `Tags`, and `Status` frontmatter.
+> **Anytype behavior notes (verified via doc.anytype.io, 2026-09-10):** a Type
+> only appears in the Sidebar once at least one Object uses it; changing an
+> Object's Type retains its Properties; Types are Channel-scoped and cannot be
+> synced across Channels (use Import & Export). Set the Channel's **Default
+> Object Type** in Channel Settings → Content Model so new objects start typed.
+> Object formats are Page / View / Chat — this import set uses **Page** objects
+> exclusively (View = database-style organization, Chat = messaging).
 
 ---
 
@@ -341,7 +348,7 @@ Each type below has a dedicated definition file in this directory (`objects/<typ
 
 ---
 
-### 📝 Blog/Post
+### 📝 Blog Post
 **Description:** Published content — tutorials, case studies, announcements, and technical articles. Communicates with the community.
 
 **Workflow:** Posts follow: Draft → Review → Published. Link to features for context and goals for alignment. Authors take ownership.
@@ -374,15 +381,6 @@ Each type below has a dedicated definition file in this directory (`objects/<typ
 **Workflow:** Bookmarks are added when discovered. Link to features for relevance. Categories help with organization.
 
 **Tags:** `#bookmark`, `#reference`, `#external`, `#resource`, `#link`
-
----
-
-### ⚙️ Configuration
-**Description:** Environment variables, build settings, database config, proxy setup, and deployment parameters. Defines system behavior.
-
-**Workflow:** Configuration is documented per environment. Link to guides for setup and features for scope. Versioning tracks changes.
-
-**Tags:** `#configuration`, `#config`, `#environment`, `#settings`, `#deployment`
 
 ---
 

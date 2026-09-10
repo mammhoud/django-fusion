@@ -1,6 +1,6 @@
 ---
 title: Project Agenda
-description: Project agenda, tracking, and completion system — case studies, diagrams, feature tracking, and team notes for Structa Cloud products
+description: Business command center — milestones, sprint tasks, leads, and marketing claims organized as a star schema, with English/Arabic blocks throughout
 navigation:
   title: Agenda
   icon: i-lucide-clipboard-list
@@ -16,9 +16,10 @@ attributes:
 tags:
   - structa-cloud
   - agenda
-  - project-tracking
-  - case-studies
-  - features
+  - business
+  - milestones
+  - star-schema
+  - bilingual
 links:
   - label: "Documentation home"
     to: "/"
@@ -34,222 +35,260 @@ links:
     icon: "i-lucide-list"
 ---
 
-# 📋 Project Agenda — Team Tracking, Case Studies & Completion System
+# 📋 Project Agenda — Business Command Center
 
-> **Purpose:** Complete project agenda system for tracking features, recording team notes, managing tasks, documenting case studies with diagrams, and driving projects to completion across Structa Cloud products.
-> **Created:** 2026-08-31
-> **Status:** Active — team working reference
-
----
-
-## 🎯 What This System Covers
-
-This agenda system is your team's command center for:
-
-| Area | Purpose | Key File |
-|------|---------|----------|
-| **Content model** | Definition, object/markdown packaging, team reference contract (plans → milestones) | [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) |
-| **Anytype object graph** | Package B — type definitions + per-type content objects (projects, editions, sprints, releases, integrations, APIs, components, tools, pipelines, styles, diagrams, reports, dashboards, methodologies, insights, recommendations, repositories, modules, documentation) | [`mono-repo/README.md`](./mono-repo/README.md) |
-| **Project tracking** | Track features from idea → shipped | [`feature-tracking.md`](./feature-tracking.md) |
-| **Case studies** | Document real implementations with diagrams | [`case-studies.md`](./case-studies.md) |
-| **Diagrams** | Rendered SVG assets + mermaid sources — API UML, Django/Rust ERDs, Blinko | [`diagrams/README.md`](./diagrams/README.md) |
-| **Team notes** | Meeting notes, decisions, blockers | [`team-notes.md`](./team-notes.md) |
-| **Task management** | Sprint tasks, completion checklist | [`task-tracking.md`](./task-tracking.md) |
-| **Project completion** | Definition of done, closeout checklist | [`completion-checklist.md`](./completion-checklist.md) |
-| **Agenda meetings** | Sprint planning, review, retrospective | [`meeting-agenda.md`](./meeting-agenda.md) |
+> **English:** This agenda is the team's single map of the business: what we
+> ship, what we are building now, who might buy, what we may say publicly, and
+> what we decided along the way. It tracks outcomes and money — not code.
+>
+> **العربية:** هذه الأجندة هي الخريطة الواحدة لأعمال الفريق: ما أنجزناه، وما
+> نبنيه الآن، ومن قد يشتري، وما يُسمح قولُه علناً، وما قررناه في الطريق. هي
+> تتبّع النتائج والإيرادات — لا التفاصيل التقنية.
+>
+> **Last updated:** 2026-09-10 · **Owner:** Workspace / Product leads
 
 ---
 
-## 🧭 How to Use This Agenda
+## 1. The shape: a business star schema
 
-```
-Team member needs to...
-├── Track a feature → feature-tracking.md
-├── Work with the Anytype schema → mono-repo/README.md (types + per-type objects)
-├── Document a case study → case-studies.md (add entry + mermaid diagram)
-├── Need a diagram → diagrams/README.md (rendered SVGs + render script)
-├── Run a meeting → meeting-agenda.md (pick the template)
-├── Record team notes → team-notes.md (date-stamped entry)
-├── Track sprint tasks → task-tracking.md
-└── Close out a project → completion-checklist.md
-```
+**English.** The hub is organized like a star schema — the shape analysts use
+for reporting. The **facts** are the things that change and get counted:
+milestones shipped, tasks in flight, leads in the pipeline, claims allowed in
+marketing. The **dimensions** are the stable lenses you slice them by:
+products, teams, sprints, and approved plans. Every tracking file below is
+either a fact table or a dimension.
 
-### Quick start
-
-1. **New feature?** Add it to `feature-tracking.md` with status `Proposed`
-2. **Working on something?** Create a task entry in `task-tracking.md`
-3. **Finished something notable?** Write a case study entry with a mermaid diagram
-4. **Have a meeting?** Copy the template from `meeting-agenda.md`
-5. **Project done?** Run through `completion-checklist.md`
-
----
-
-## 🏗️ Architecture: How Docs Connect
+**العربية.** نظّمنا هذا المركز على شكل **المخطط النجمي** — نفس الشكل الذي
+يستخدمه المحللون للتقارير. **الحقائق** هي ما يتغيّر ويُحتسب: المعالم المنجزة،
+والمهام الجارية، والعملاء المحتملون في قائمة البيع، والادعاءات المسموح بها
+تسويقياً. **الأبعاد** هي العدسات الثابتة التي نقطّع بها الأرقام: المنتجات،
+والفرق، والسباقات، والخطط المعتمدة. كل ملف تتبّع أدناه هو إما جدول حقائق أو
+بُعد.
 
 ```mermaid
 graph TB
-    subgraph "Docs/Agenda System"
-        MAIN["📋 MAIN.md — Hub / Index"]
-        FT["🎯 feature-tracking.md — Feature lifecycle"]
-        CS["📊 case-studies.md — Real implementations"]
-        TN["📝 team-notes.md — Meeting/decision logs"]
-        TT["✅ task-tracking.md — Sprint tasks"]
-        CC["🏁 completion-checklist.md — Project closeout"]
-        MA["🗓️ meeting-agenda.md — Meeting templates"]
+    subgraph Dimensions
+        PRODUCTS["Products & Editions<br/>المنتجات والإصدارات"]
+        TEAMS["Teams & Owners<br/>الفرق والمسؤولون"]
+        SPRINTS["Sprints & Quarters<br/>السباقات والأرباع"]
+        PLANS["Approved Plans<br/>الخطط المعتمدة"]
     end
 
-    subgraph "Connected Docs"
-        FR["🗺️ feature-roadmap.md — Priority roadmap"]
-        PLANS["📑 plans/README.md — Plan registry"]
-        FEATURES["🎯 features/README.md — Feature inventory"]
-        RECS["📌 recommendations.md — Prioritized actions"]
+    subgraph Facts
+        MILESTONES(("Milestones<br/>المعالم المنجزة"))
+        TASKS(("Tasks<br/>المهام الجارية"))
+        LEADS(("Leads<br/>العملاء المحتملون"))
+        CLAIMS(("Marketing Claims<br/>الادعاءات التسويقية"))
     end
 
-    MAIN --> FT
-    MAIN --> CS
-    MAIN --> TN
-    MAIN --> TT
-    MAIN --> CC
-    MAIN --> MA
-
-    FT -.-> FR
-    CS -.-> PLANS
-    TN -.-> RECS
-    TT -.-> FR
+    PRODUCTS --- MILESTONES
+    PLANS --- MILESTONES
+    SPRINTS --- MILESTONES
+    TEAMS --- TASKS
+    SPRINTS --- TASKS
+    PRODUCTS --- TASKS
+    LEADS --- PRODUCTS
+    CLAIMS --- PRODUCTS
 ```
 ![Rendered diagram](/agenda/diagrams/MAIN-1.svg)
 
+**English.** Work flows one way: an idea becomes a proposed feature, a plan
+makes it official, tasks deliver it, and at the end only a **milestone**
+remains — the plan file is deleted and the achievement is recorded forever.
+
+**العربية.** يسير العمل في اتجاه واحد: الفكرة تصبح ميزة مقترحة، ثم تجعلها خطة
+معتمدة رسمياً، ثم تُنجزها المهام، وفي النهاية لا يبقى سوى **معلم منجز** — يُحذف
+ملف الخطة ويُسجَّل الإنجاز للأبد.
+
 ```mermaid
 graph LR
-    subgraph "Input"
-        Ideas["Feature ideas"]
-        Meetings["Meeting notes"]
-        Tasks["Sprint tasks"]
-        Shipped["Shipped features"]
-    end
-
-    subgraph "Agenda System"
-        FT["feature-tracking.md<br/>Status: Proposed→In Progress→Review→Shipped"]
-        CS["case-studies.md<br/>Diagrams + lessons learned"]
-        TN["team-notes.md<br/>Decisions + blockers"]
-        TT["task-tracking.md<br/>Assignee + due + status"]
-    end
-
-    subgraph "Output"
-        ROADMAP["feature-roadmap.md<br/>Updated priorities"]
-        PLANS["plans/README.md<br/>New plan entries"]
-        CLOSEOUT["completion-checklist.md<br/>Project sign-off"]
-    end
-
-    Ideas --> FT
-    Meetings --> TN
-    Tasks --> TT
-    Shipped --> CS
-
-    FT --> ROADMAP
-    TN --> PLANS
-    TT --> ROADMAP
-    CS --> CLOSEOUT
+    IDEA["Idea<br/>فكرة"] --> PROPOSED["Proposed feature<br/>ميزة مقترحة"]
+    PROPOSED --> PLAN["Approved plan<br/>خطة معتمدة"]
+    PLAN --> TASKS["Sprint tasks<br/>مهام السباق"]
+    TASKS --> MILESTONE["✅ Shipped milestone<br/>معلم منجز"]
 ```
 ![Rendered diagram](/agenda/diagrams/MAIN-2.svg)
 
 ---
 
-## 📊 Feature Tracking Lifecycle
+## 2. Navigate by business question
 
-See [`feature-tracking.md`](./feature-tracking.md) for the full system.
+**English.** Start from the question, open the one file that answers it.
 
-```mermaid
-stateDiagram-v2
-    [*] --> Proposed: Idea captured
-    Proposed --> Prioritized: Team agrees it's worth doing
-    Prioritized --> InProgress: Work started
-    InProgress --> Review: Implementation complete
-    Review --> Shipped: Deployed and verified
-    Review --> InProgress: Revisions needed
-    InProgress --> Blocked: External dependency
-    Blocked --> InProgress: Blocker resolved
-    Shipped --> [*]
+| The question | The file |
+|---|---|
+| What are we actually shipping? | [`feature-tracking.md`](./feature-tracking.md) § ✅ Shipped |
+| What is everyone doing this sprint? | [`task-tracking.md`](./task-tracking.md) |
+| Who might buy, and where does each deal stand? | [`sales-pipeline.md`](./sales-pipeline.md) |
+| Why did we decide X? | [`team-notes.md`](./team-notes.md) |
+| What does the dev team build next? | [`dev-team-plans.md`](./dev-team-plans.md) |
+| What do we charge? | [`pricing-plans.md`](./pricing-plans.md) |
+| What may we say publicly, and what needs evidence? | [`marketing-plans.md`](./marketing-plans.md) + [`data-analyst-plans.md`](./data-analyst-plans.md) |
+| How do we run meetings and close projects? | [`meeting-agenda.md`](./meeting-agenda.md) + [`completion-checklist.md`](./completion-checklist.md) |
+| How did the whole venture start? | [`startup-story.md`](./startup-story.md) |
+
+**العربية.** ابدأ من السؤال، وافتح الملف الواحد الذي يجيب عنه.
+
+| السؤال | الملف |
+|---|---|
+| ما الذي ننفّذه فعلاً؟ | [`feature-tracking.md`](./feature-tracking.md) § ✅ المعالم المنجزة |
+| ماذا يعمل كل فرد في هذا السباق؟ | [`task-tracking.md`](./task-tracking.md) |
+| من قد يشتري، وأين تقف كل صفقة؟ | [`sales-pipeline.md`](./sales-pipeline.md) |
+| لماذا قررنا كذا؟ | [`team-notes.md`](./team-notes.md) |
+| ماذا يبني فريق التطوير تالياً؟ | [`dev-team-plans.md`](./dev-team-plans.md) |
+| كم نتقاضى؟ | [`pricing-plans.md`](./pricing-plans.md) |
+| ماذا يُسمح قولُه علناً، وما يحتاج أدلة؟ | [`marketing-plans.md`](./marketing-plans.md) + [`data-analyst-plans.md`](./data-analyst-plans.md) |
+| كيف ندير الاجتماعات ونغلق المشاريع؟ | [`meeting-agenda.md`](./meeting-agenda.md) + [`completion-checklist.md`](./completion-checklist.md) |
+| كيف بدأت المشروع كلها؟ | [`startup-story.md`](./startup-story.md) |
+
+---
+
+## 3. Complete file inventory
+
+**English.** Every file in the agenda, grouped by its business role. One file
+= one object; indexes link, they never restate.
+
+**العربية.** كل ملف في الأجندة، مجمّعاً حسب دوره في العمل. ملف واحد = كائن
+واحد؛ الفهارس تربط ولا تُعيد الصياغة.
+
+### 3.1 Start here — definition & hubs
+
+| File | Role (EN) | الدور (عربي) |
+|---|---|---|
+| [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) | ⭐ The contract: packaging + plans→milestones rule | ⭐ العقد: التقسيم وقاعدة الخطط→المعالم |
+| [`MAIN.md`](./MAIN.md) | This hub — the star-schema map | هذا المركز — خريطة المخطط النجمي |
+| [`README.md`](./README.md) | Overview + quick start | نظرة عامة + بداية سريعة |
+| [`SUMMARY.md`](./SUMMARY.md) | Change log of the agenda itself | سجل تغييرات الأجندة نفسها |
+| [`INDEX.md`](./INDEX.md) | Legacy Blinko-style pointer index | فهرس مؤشرات قديم (طريقة Blinko) |
+
+### 3.2 Fact tables — delivery tracking
+
+| File | Fact it counts | الحقيقة التي تُحتسب |
+|---|---|---|
+| [`feature-tracking.md`](./feature-tracking.md) | Milestones shipped & features in flight | المعالم المنجزة والميزات الجارية |
+| [`task-tracking.md`](./task-tracking.md) | Sprint tasks: assignee, status, due | مهام السباق: المسؤول والحالة والموعد |
+| [`sales-pipeline.md`](./sales-pipeline.md) | Leads & deals: stage, source, next step | العملاء المحتملون والصفقات: المرحلة والمصدر والخطوة التالية |
+| [`team-notes.md`](./team-notes.md) | Decisions, blockers, meeting outcomes | القرارات والمعوّقات ونتائج الاجتماعات |
+
+### 3.3 Business dimensions — plans family
+
+| File | Lens | العدسة |
+|---|---|---|
+| [`dev-team-plans.md`](./dev-team-plans.md) | What engineering builds, per product | ما يبنيه فريق التطوير لكل منتج |
+| [`pricing-plans.md`](./pricing-plans.md) | Revenue targets & price points | أهداف الإيرادات ونقاط التسعير |
+| [`marketing-plans.md`](./marketing-plans.md) | Positioning, campaigns, claims | التموضع والحملات والادعاءات |
+| [`data-analyst-plans.md`](./data-analyst-plans.md) | Metrics, evidence levels, pilots | المقاييس ومستويات الأدلة والتجارب |
+| [`startup-story.md`](./startup-story.md) | Founder journey & achievement board | رحلة المؤسس ولوحة الإنجازات |
+| [`backend-plans.md`](./backend-plans.md) | Merged pointer → dev-team-plans | مؤشر بعد الدمج → خطط فريق التطوير |
+
+### 3.4 Rhythm & quality gates
+
+| File | Used for | يُستخدم في |
+|---|---|---|
+| [`meeting-agenda.md`](./meeting-agenda.md) | 6 meeting templates | ٦ قوالب اجتماعات |
+| [`completion-checklist.md`](./completion-checklist.md) | Definition of done + sign-off | تعريف الاكتمال والتوقيع النهائي |
+
+### 3.5 Evidence & memory
+
+| File / folder | Content | المحتوى |
+|---|---|---|
+| [`case-studies.md`](./case-studies.md) + [`case-studies/`](./case-studies/INDEX.md) | Implementation stories with diagrams | قصص التنفيذ مع المخططات |
+| [`diagrams/`](./diagrams/README.md) | Rendered diagram package (SVGs) | حزمة المخططات المصيّرة (SVG) |
+| [`anytype-extensibility.md`](./anytype-extensibility.md) | Knowledge-graph research proposal | مقترح بحثي لنموذج الرسم البياني المعرفي |
+| [`tools-auth-dashboard.md`](./tools-auth-dashboard.md) | Internal tools portal guide | دليل بوابة الأدوات الداخلية |
+
+### 3.6 Package B — knowledge graph
+
+| Folder | Content | المحتوى |
+|---|---|---|
+| [`mono-repo/`](./.mono-repo/README.md) | Object types + per-type business objects (products, editions, projects, goals…) | أنواع الكائنات وكائنات العمل لكل نوع (المنتجات، الإصدارات، المشاريع، الأهداف…) |
+
+> **English.** `task_plan.md` is a completed housekeeping plan kept for
+> reference — an archive candidate at the next closeout.
+>
+> **العربية.** ملف `task_plan.md` خطة تنظيف مكتملة أُبقيت للمرجعية — مرشّحة
+> للأرشفة في الإغلاق القادم.
+
+---
+
+## 4. Business rhythms
+
+**English.** The cadence that keeps the facts truthful:
+
+1. **Every two weeks — sprint planning & review.** Pick tasks from the
+   backlog, then demo what shipped.
+2. **At every completion — record the milestone.** Plan file is deleted, a ✅
+   entry lands in `feature-tracking.md`, the decision is noted in
+   `team-notes.md`.
+3. **Quarterly — claims review.** Every public claim gets its evidence
+   re-checked in `marketing-plans.md`.
+4. **Weekly — leads & pricing check.** Pipeline and price points reviewed
+   against the targets in `pricing-plans.md` — see
+   [`sales-pipeline.md`](./sales-pipeline.md) § 6.
+
+**العربية.** الإيقاع الذي يُبقي الحقائق صادقة:
+
+1. **كل أسبوعين — تخطيط السباق ومراجعته.** نختار المهام من القائمة المعلّقة،
+   ثم نعرض ما اكتمل.
+2. **عند كل إتمام — سجّل المعلم.** يُحذف ملف الخطة، ويُسجَّل إنجاز ✅ في
+   `feature-tracking.md`، ويُدوَّن القرار في `team-notes.md`.
+3. **كل ربع سنة — مراجعة الادعاءات.** يُعاد التحقق من دليل كل ادعاء علني في
+   `marketing-plans.md`.
+4. **كل أسبوع — مراجعة العملاء المحتملين والتسعير.** تُراجع قائمة البيع
+   ونقاط السعر مقابل الأهداف في `pricing-plans.md` — انظر
+   [`sales-pipeline.md`](./sales-pipeline.md) § 6.
+
+---
+
+## 5. How this connects to the rest of docs
+
+```text
+docs/agenda/MAIN.md  (this hub — المركز)
+├── feature-tracking.md ──→ docs/features/feature-roadmap.md   (priorities)
+├── case-studies.md ──────→ docs/plans/README.md               (plan registry)
+├── team-notes.md ────────→ docs/plans/README.md               (major decisions)
+├── dev-team-plans.md ────→ docs/plans/editions|django-fusion  (engineering plans)
+├── marketing-plans.md ───→ docs/plans/marketing-claims.md     (evidence register)
+└── completion-checklist.md → feature-tracking → case-studies  (closeout chain)
 ```
-![Rendered diagram](/agenda/diagrams/MAIN-3.svg)
+
+**English.** The agenda references canonical sources; it never invents plan
+status or prices. Plans live in `docs/plans/`, priorities in
+`docs/features/feature-roadmap.md`, evidence rules in
+`docs/plans/marketing-claims.md`.
+
+**العربية.** الأجندة تحيل إلى المصادر الرسمية ولا تخترع حالة الخطة أو الأسعار.
+الخطط في `docs/plans/`، والأولويات في `docs/features/feature-roadmap.md`،
+وقواعد الأدلة في `docs/plans/marketing-claims.md`.
 
 ---
 
-## 📈 Case Study Template Structure
+## 6. Language policy
 
-Every case study entry includes:
+**English.** Agenda hub and plans-family files carry English content followed
+by Arabic summary blocks in the same file. Case studies stay English-only by
+design (deep technical content). Product documentation parity is maintained
+separately in `docs/ar-content/`.
 
-1. **Context** — What was the problem/situation?
-2. **Architecture diagram** — Mermaid graph of the solution
-3. **Implementation** — What was built, key decisions
-4. **Results** — Metrics, outcomes, what worked
-5. **Lessons** — What you'd do differently
-
-See [`case-studies.md`](./case-studies.md) for examples and the full template.
-
----
-
-## 🏁 Project Completion Checklist
-
-See [`completion-checklist.md`](./completion-checklist.md) for the full checklist.
-
-**Definition of Done:**
-
-- [ ] All features in `feature-tracking.md` marked `Shipped`
-- [ ] Case study written with architecture diagram
-- [ ] Plans registry updated (`plans/README.md`)
-- [ ] Feature roadmap updated (`features/feature-roadmap.md`)
-- [ ] Team notes record the completion decision
-- [ ] Tests passing, checks green
-- [ ] Documentation validated (`npm run validate-content`)
-- [ ] Stakeholders notified
+**العربية.** تحمل ملفات المركز وعائلة الخطط محتوى إنجليزياً يتبعاه ملخّصات
+عربية داخل الملف نفسه. تُكتب دراسات الحالة بالإنجليزية فقط عمداً (محتوى تقني
+عميق). تُدار موازاة وثائق المنتجات على حدة في `docs/ar-content/`.
 
 ---
 
-## 🗓️ Meeting Agenda Templates
+## Maintenance
 
-See [`meeting-agenda.md`](./meeting-agenda.md) for ready-to-use templates:
-
-| Meeting Type | Template | Frequency |
-|--------------|----------|-----------|
-| **Sprint Planning** | Sprint planning template | Every sprint start |
-| **Daily Standup** | Standup template | Daily |
-| **Sprint Review** | Review template | Every sprint end |
-| **Retrospective** | Retro template | Every sprint end |
-| **Feature Review** | Feature review template | Per feature completion |
-| **Project Closeout** | Closeout template | Per project completion |
-
----
-
-## 🔗 Related Documentation
-
-| Topic | Path |
-|-------|------|
-| Feature roadmap (priorities) | [`features/feature-roadmap.md`](../features/feature-roadmap.md) |
-| Feature inventory | [`features/README.md`](../features/README.md) |
-| Plans registry (canonical) | [`plans/README.md`](../plans/README.md) |
-| Recommendations (work order) | [`recommendations.md`](../recommendations.md) |
-| Architecture overview | [`ARCHITECTURE.md`](../ARCHITECTURE.md) |
-| Document lifecycle | [`plans/document-lifecycle.md`](../plans/document-lifecycle.md) |
-| Marketing claims | [`plans/marketing-claims.md`](../plans/marketing-claims.md) |
-
----
-
-## 🔄 Maintenance
-
-- **Owner:** Workspace / Product leads
-- **Review cadence:** Per sprint + major release gates
-- **Update triggers:** New feature, shipped feature, case study completed, project closed
-- **Archive policy:** Follow `docs/plans/document-lifecycle.md`
+- **Owner:** Workspace / Product leads · **Cadence:** per sprint + release gates
+- **Update when:** a feature ships, a task closes, a meeting happens, a decision is made
+- **Archive per:** `docs/plans/document-lifecycle.md`
 
 ---
 
 ## Remarks & Notes
 
-- This agenda system is a **working tool**, not a replacement for the canonical plans registry at `docs/plans/README.md`
-- Case studies with mermaid diagrams are the most valuable output — invest in them when features ship
-- Feature tracking should mirror the priority roadmap; keep them in sync
-- Team notes are the memory of the project — write them even when things are going well
-- The completion checklist is the gate between "done coding" and "project closed"
+- The star-schema framing is a thinking tool, not a database — the tables are markdown on purpose
+- If a tracking table stops being read, shrink it; stale tracking is worse than none
+- Milestones are the only durable record of finished plans — keep them rich
+- Every lead, claim, and price should trace back to a product and a plan
 
 <!-- AI-generated: review needed -->

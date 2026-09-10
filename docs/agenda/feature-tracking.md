@@ -33,7 +33,7 @@ links:
 # 🎯 Feature Tracking — Lifecycle from Idea to Shipped
 
 > **Purpose:** Track every feature through its full lifecycle: Proposed → Prioritized → In Progress → Review → Shipped. Aligns with the priority roadmap and plans registry.
-> **Last updated:** 2026-09-01
+> **Last updated:** 2026-09-10
 
 ---
 
@@ -94,7 +94,8 @@ stateDiagram-v2
 - [ ] Criterion 2
 - [ ] Criterion 3
 
-**Notes:** Lessons, decisions, links to plans, case study reference.```
+**Notes:** Lessons, decisions, links to plans, case study reference.
+```
 
 ---
 
@@ -133,7 +134,7 @@ stateDiagram-v2
 
 ---
 
-**API Token Management
+**API Token Management**
 
 | Field | Value |
 |-------|-------|
@@ -162,7 +163,7 @@ stateDiagram-v2
 
 ---
 
-**Customer Dashboard
+**Customer Dashboard**
 
 | Field | Value |
 |-------|-------|
@@ -979,7 +980,35 @@ stateDiagram-v2
 
 No P2 features currently planned for Formint POS. The launch scope is complete.
 
-### LMS (Learning Management System)
+### Precis (precis-main) — LMS
+
+> Was "LMS (Learning Management System)" — renamed 2026-09-10 after the precis-landing + precis-lms merge into `projects/precis/precis-main/`.
+
+#### ✅ Shipped — Core Platform
+
+**Unified Precis platform (LMS + landing merge)**
+
+| Field | Value |
+|-------|-------|
+| **Status** | ✅ Shipped |
+| **Priority** | P0 |
+| **Product** | Precis (LMS) |
+| **Owner** | — |
+| **Target** | Done |
+| **Depends on** | — |
+
+**Why it matters:** One product instead of two: courses, enrollment, progress, and profile run on a shared backend with the marketing/catalog shell in front.
+
+**Scope:** Wagtail content/pages, LMS backend (courses/enrollment/progress/profile), django-fusion routing, Astro marketing shell.
+
+**Acceptance criteria:**
+- [x] Courses, enrollment, and progress served from the unified backend
+- [x] Marketing/catalog shell renders from the same product
+- [x] django-fusion routing in place
+
+**Notes:** Backend implemented per the 2026-09-06 truth table in [`dev-team-plans.md`](./dev-team-plans.md); deployment/CI gates and builder/data surfaces remain open work below.
+
+---
 
 #### P1 — Next Up (Q4 2026)
 
@@ -989,7 +1018,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P1 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q4 2026 |
 | **Depends on** | — |
@@ -1016,7 +1045,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P1 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q4 2026 |
 | **Depends on** | — |
@@ -1043,7 +1072,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P1 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q4 2026 |
 | **Depends on** | — |
@@ -1070,7 +1099,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P1 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q4 2026 |
 | **Depends on** | — |
@@ -1097,7 +1126,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P1 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q4 2026 |
 | **Depends on** | — |
@@ -1126,7 +1155,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P2 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q1 2027 |
 | **Depends on** | Video Hosting |
@@ -1153,7 +1182,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P2 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q1 2027 |
 | **Depends on** | — |
@@ -1180,7 +1209,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P2 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q1 2027 |
 | **Depends on** | Quizzes & Assessments |
@@ -1207,7 +1236,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P2 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q1 2027 |
 | **Depends on** | Progress Tracking |
@@ -1234,7 +1263,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P2 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Q1 2027 |
 | **Depends on** | — |
@@ -1263,7 +1292,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P3 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Backlog |
 | **Depends on** | — |
@@ -1289,7 +1318,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P3 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Backlog |
 | **Depends on** | — |
@@ -1315,7 +1344,7 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 |-------|-------|
 | **Status** | ⚪ Proposed |
 | **Priority** | P3 |
-| **Product** | LMS |
+| **Product** | Precis (LMS) |
 | **Owner** | TBD |
 | **Target** | Backlog |
 | **Depends on** | — |
@@ -1333,7 +1362,88 @@ No P2 features currently planned for Formint POS. The launch scope is complete.
 
 **Notes:** B2B tier feature.
 
-### Portfolio (Resume Builder)
+### Precis Landing
+
+#### ✅ Shipped — Live Site
+
+**Public marketing & catalog site**
+
+| Field | Value |
+|-------|-------|
+| **Status** | ✅ Shipped |
+| **Priority** | P0 |
+| **Product** | Precis Landing |
+| **Owner** | — |
+| **Target** | Done |
+| **Depends on** | — |
+
+**Why it matters:** The public face of Precis: course catalog, SEO, and lead capture that feeds the LMS.
+
+**Scope:** Catalog pages, search, lead collection, SEO-optimized public content.
+
+**Acceptance criteria:**
+- [x] Catalog browsable and searchable
+- [x] Lead capture working
+- [x] SEO metadata on public pages
+
+**Notes:** Site is live; kept as a legacy copy — the unified product at `projects/precis/precis-main/` supersedes it for new feature work. Ongoing content work continues under the P0 content priority in [`dev-team-plans.md`](./dev-team-plans.md).
+
+---
+
+### CTC Research Center
+
+#### ✅ Shipped — Live Site
+
+**Multi-language research publication site**
+
+| Field | Value |
+|-------|-------|
+| **Status** | ✅ Shipped |
+| **Priority** | P0 |
+| **Product** | CTC Research |
+| **Owner** | — |
+| **Target** | Done |
+| **Depends on** | — |
+
+**Why it matters:** The medical research center's public publications reach readers in their own language — the core promise of the site.
+
+**Scope:** Multi-language publication catalogs (Spanish/Swedish/Portuguese-BR), media delivery, internationalized fixtures.
+
+**Acceptance criteria:**
+- [x] Publications available in es/sv/pt-br
+- [x] Media (images/documents) served reliably
+- [x] Language switching works across the site
+
+#### P1 — Next Up
+
+**Publish gates: email parity & redeploy validation**
+
+| Field | Value |
+|-------|-------|
+| **Status** | 🟡 In Progress |
+| **Priority** | P1 |
+| **Product** | CTC Research |
+| **Owner** | TBD |
+| **Target** | Q4 2026 |
+| **Depends on** | Deployed stack |
+
+**Why it matters:** Nothing ships to the public site until notification emails match the site's languages and the redeploy path is proven safe.
+
+**Scope:** Email parity end-to-end checks, `make redeploy` validation runbook.
+
+**Out of scope:** New public features.
+
+**Acceptance criteria:**
+- [ ] Notification emails verified per language
+- [ ] Redeploy validation passes on the deployed stack
+
+**Notes:** From the 2026-09-06 truth table — deploy-gated, not code work. Demo blog templates with placeholder content are tracked for removal in [`task-tracking.md`](./task-tracking.md) backlog.
+
+---
+
+### Portfolio (Resume Builder) — Legacy
+
+> Legacy planning (2026-08-31) for a resume-builder product; `projects/portfolio` is not an active product path in the current checkout. Entries kept for reference only — no active work links here. Do not add new features to this section.
 
 #### P1 — Next Up (Q4 2026)
 

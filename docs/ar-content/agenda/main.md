@@ -218,13 +218,13 @@ stateDiagram-v2
 
 | الموضوع | المسار |
 |---------|--------|
-| خارطة ميزات (الأولويات) | [`features/feature-roadmap.md`](../features/feature-roadmap.md) |
-| جرد الميزات | [`features/README.md`](../features/README.md) |
-| سجل الخطط (الكانيكي) | [`plans/README.md`](../plans/README.md) |
+| خارطة ميزات (الأولويات) | [`features/feature-roadmap.md`](../../features/feature-roadmap.md) |
+| جرد الميزات | [`features/README.md`](../../features/README.md) |
+| سجل الخطط (الكانيكي) | [`plans/README.md`](../../plans/README.md) |
 | التوصيات (ترتيب العمل) | [`recommendations.md`](../recommendations.md) |
 | نظرة عامة على العمارة | [`ARCHITECTURE.md`](../ARCHITECTURE.md) |
-| دورة حياة التوثيق | [`plans/document-lifecycle.md`](../plans/document-lifecycle.md) |
-| ادعاءات التسويق | [`plans/marketing-claims.md`](../plans/marketing-claims.md) |
+| دورة حياة التوثيق | [`plans/document-lifecycle.md`](../../plans/document-lifecycle.md) |
+| ادعاءات التسويق | [`plans/marketing-claims.md`](../../plans/marketing-claims.md) |
 
 ---
 

@@ -16,32 +16,29 @@ Tags: guide, navigation, repository
 
 ## Repository layout
 
-### Projects (Django sites + POS editions)
+### Projects (current tree, normalized 2026-09-10)
 
 | Path | Purpose |
 |------|---------|
 | projects/configs/ | Shared Django configuration |
-| projects/assets/ | Shared templates, static files |
-| projects/www/ | Shared Django code |
-| projects/lms/ | LMS Demo |
-| projects/ctc-research/ | CTC Research |
-| projects/portfolio/ | VResume |
-| projects/cypercloud/ | CyperCloud |
-| projects/pos/ | POS editions (mini, solo, full) |
+| projects/assets/ | Shared assets and media |
+| projects/precis/precis-main/ | Precis unified (LMS + landing) |
+| projects/precis/precis-ctc/ | CTC Research |
+| projects/syntara/ | Syntara AI chat customizer |
+| projects/loop-crm/ | Loop-CRM |
+| projects/formints/ | POS editions (community, standard, professional, cloud, client) |
 
 ### Libraries and infrastructure
 
 | Path | Purpose |
 |------|---------|
 | libs/django-fusion/ | Component system |
-| libs/ceptor-ai/ | AI chat client + MCP |
-| applications/proxy/ | Traefik + Nginx |
-| applications/databases/ | PostgreSQL + Redis |
-| applications/compose/ | Docker Compose orchestration |
-| docs/ | MkDocs documentation |
+| libs/ceptor-ai/ | AI chat client + MCP (submodule, pending init) |
+| libs/django-bolt/ | Rust-backed API framework (submodule, pending init) |
+| application/ | Compose, databases, proxy, deployment tooling |
+| docs/ | Documentation site |
 | tests/ | Workspace test suite |
-| Build scripts | Root dispatcher |
-| docker-compose.yml | Root orchestration |
+| Makefile / Justfile | Root dispatchers |
 
 ---
 

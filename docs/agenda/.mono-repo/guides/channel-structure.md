@@ -34,7 +34,9 @@ This repository's focused Anytype set (`docs/agenda/mono-repo/`) is imported as 
 
 ## Home types
 
-Anytype lets a Channel choose what members see first. Pick by the Channel's job:
+Anytype lets a Channel choose what members see first. Object formats are
+**Page / View / Chat** (verified via doc.anytype.io, 2026-09-10); the Home
+picker builds on these. Pick by the Channel's job:
 
 | Home | Best for | This repo's use |
 |---|---|---|
@@ -83,6 +85,7 @@ Keep `Person` objects minimal and private-safe: link `Person → Member Of → T
 1. Create the Channel (Channel name + icon; choose **Page** as Home).
 2. Set `README.md` as the Homepage in **Channel Settings → General → Homepage**.
 3. Build the Content Model from `objects/_object-types.md` (Types), `objects/_relations.md` (Relations), `objects/_tags.md` (Tags), and `objects/_templates.md` (Templates).
+4. Set the Channel's **Default Object Type** to `Page` (Channel Settings → Content Model) so new objects start typed; a Type appears in the Sidebar only after its first Object exists — the per-type directories below seed each Type immediately.
 4. Invite members from `objects/people/*` and assign roles.
 5. Import content Objects by family and assign their exact `Object type`.
 6. Pin `objects/_index.md` and `guides/_index.md` to the Sidebar as Widgets/Links.

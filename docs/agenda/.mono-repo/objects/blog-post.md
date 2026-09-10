@@ -1,13 +1,13 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
-Object type: Blog/Post
+Object type: Blog Post
 Tags: blog
 Status: Published
 ---
 
-# Blog/Post — Articles, Tutorials & Announcements
+# Blog Post — Articles, Tutorials & Announcements
 
-> **Type:** Blog/Post 📝
+> **Type:** Blog Post 📝
 > **Layout:** Page
 > **Description:** Published content — tutorials, case studies, announcements, and technical articles documenting progress and product updates.
 

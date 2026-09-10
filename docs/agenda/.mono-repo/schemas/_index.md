@@ -1,3 +1,9 @@
+---
+Object type: Reference
+Tags: schemas, validation, frontmatter
+Status: Active
+---
+
 # Schemas — JSON Schema Definitions
 
 > JSON schema files for AnyType object type validation.

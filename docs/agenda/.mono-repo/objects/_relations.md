@@ -104,18 +104,69 @@
 | `Dependencies` | Module → Module | many | Required modules |
 | `Related Architecture` | Documentation/Guide → Architecture | many | System context |
 
+## Sales and leads (added 2026-09-10)
+
+> Grounds the sales pipeline (`docs/agenda/sales-pipeline.md`) in the graph.
+> Property formats follow Anytype's current set: Text, Number, Date, Select,
+> Multi-select, Email/Phone/URL, Checkbox, File & Media, Object (relation).
+
+| Name | Source → Target | Format | Cardinality | Use |
+|---|---|---|---:|---|
+| `Stage` | Lead → Select | Select | one | Lead, Qualified, Demo/Trial, Proposal, Negotiation, Won, Lost |
+| `Related Product` | Lead → Product | Object | one | What the lead may buy |
+| `Source` | Lead → Integration | Object | one | Where the lead came from |
+| `Owner` | Lead → Person | Object | one | Accountable salesperson |
+| `Next Step` | Lead → Text | Text | one | Single next action, always with a date |
+| `Next Step Date` | Lead → Date | Date | one | When the next step is due |
+| `Deal Value` | Lead → Number | Number | one | Expected revenue (targets currency of `pricing-plans.md`) |
+| `Converted To` | Lead → Edition | Object | one | Edition won on `Stage` = Won |
+| `Lost Reason` | Lead → Select | Select | one | Price, Timing, Competitor, No decision, Other |
+| `Captured` | Lead → Date | Date | one | Entry date into the pipeline |
+
+**Cardinality rule extension:** a Lead sits in exactly one `Stage` at any time;
+history is kept by moving the row to the closed/lost log (never by duplicating
+the object).
+
+## Assignment and accountability (added 2026-09-10)
+
+> Complements the existing `Owner`/`Lead`/`Member Of` relations: who assigns
+> what to whom, so any object's accountability chain is queryable.
+
+| Name | Source → Target | Cardinality | Use |
+|---|---|---|---:|
+| `Assigned To` | Task/Feature → Person | one | Doer — complements `Owner` (accountable) |
+| `Reviewer` | Task/Release/Decision → Person | one | Verification gate |
+| `Blocked By` | Task/Feature → Task | many | Cross-object blocker, with reason in Notes |
+| `Reported In` | Task/Feature → Sprint | one | Sprint the work was logged in |
+| `Sign-off By` | Project/Plan → Person | one | Closeout approver (completion checklist) |
+
+## Marketing claims evidence (added 2026-09-10)
+
+> Grounds the claims register (`docs/plans/marketing-claims.md`, evidence
+> levels in `data-analyst-plans.md`) in the graph.
+
+| Name | Source → Target | Format | Cardinality | Use |
+|---|---|---|---:|---|
+| `Evidence Level` | Market Research/Claim → Select | Select | one | Capability, Pilot, Measured, Regulated |
+| `Evidence Source` | Claim → Any | Object | many | Test, pilot, benchmark, or legal review backing it |
+| `Review Date` | Claim → Date | Date | one | Quarterly claims gate |
+| `Approved By` | Claim → Person | Object | one | Evidence reviewer |
+| `Safe Wording` | Claim → Text | Text | one | Approved public phrasing |
+
 ## POS graph
 
 | Path | Flow |
 |------|------|
 | Products | Workspace → Project → Product → Edition → Feature → Release; Product → Campaign → Channel, Sales → Commerce, Team → Person |
 | Delivery | Workspace → Plan → Goal → Milestone → Task; Plan → Market Research → Decision |
+| Sales | Source (Integration) → Lead → Product/Edition → Won (Revenue → pricing-plans targets) |
 | Analysis | Report → Methodology → Insight → Recommendation → Task; Dashboard → Related Reports |
 | Structure | Repository → Project/Module → Documentation → Guide |
 
 ## Related
 
 - → `_object-types.md` — Type definitions
-- → `_templates.md` — Object templates
+- → `_templates.md` — Object templates + assignment matrix
+- → `_tags.md` — Shared tag vocabulary
 - → `../guides/pos-documentation-system.md` — Import method
 - → `../README.md` — Master index

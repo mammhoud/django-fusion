@@ -80,7 +80,7 @@ Status: Published
 > means code-backed in the current tree; "Not yet" is planned/missing;
 > "Couldn't add" records work intentionally deferred or blocked. Cross-product
 > component evidence lives in
-> [`docs/audit/frontend-components-2026-09-06.md`](../../audit/frontend-components-2026-09-06.md).
+> [`docs/audit/frontend-components-2026-09-06.md`](../audit/frontend-components-2026-09-06.md).
 
 | Product | Backend — implemented | Backend — not yet / couldn't add | Frontend — implemented | Frontend — not yet / flagged |
 |---------|-----------------------|---------------------------------|------------------------|------------------------------|
@@ -98,8 +98,37 @@ Status: Published
 - **Loop-CRM live provider publishing** — connectors + OAuth exist and are tested, but no real provider credentials are configured anywhere; verification requires the deployed stack (`crm.structa.cloud`) and secrets. Not a code gap.
 - **Loop-CRM realtime on deploy** — Channels/SSE path is dev-verified; production Redis/channel-layer hardening is a deploy gate.
 - **CTC publish gates** — content/component audit + i18n + media proxy shipped; email parity + `make redeploy` validation remain deploy-blocked.
-- ~~Formint Pro create forms~~ — resolved 2026-09-06: suppliers, HR roles/schedules/payroll, admin notes and kitchen recipes/ingredients now open real create/edit modals wired to the Django server API (see [`docs/audit/frontend-components-2026-09-06.md`](../../audit/frontend-components-2026-09-06.md) § 2.3).
-- **ERD PNGs for Loop-CRM** — tooling added (2026-09-06); DOT graphs generated and PNGs rendered after installing `graphviz` locally. PNGs stay git-ignored derived assets (repo convention); the committed contract is the `docs/erd` README + DOT. Formint-cloud re-render remains blocked in this sandbox by the missing optional `django_bolt` package (present in its Docker image).
+- ~~Formint Pro create forms~~ — resolved 2026-09-06: suppliers, HR roles/schedules/payroll, admin notes and kitchen recipes/ingredients now open real create/edit modals wired to the Django server API (see [`docs/audit/frontend-components-2026-09-06.md`](../audit/frontend-components-2026-09-06.md) § 2.3).
+- **ERD PNGs for Loop-CRM** — tooling added (2026-09-06); DOT graphs generated and PNGs rendered after installing `graphviz` locally. PNGs stay git-ignored derived assets (repo convention); the committed contract is the `docs/erd` README + DOT. Formint-cloud re-render remains blocked in this sandbox by the missing optional `django_bolt` package (present in its Docker image).---
+
+## 🧱 Backend delivery workstreams (merged from backend-plans.md, 2026-09-10)
+
+### Formint invoicing & reports — P1
+
+| Task | Target Editions | Status |
+|------|-----------------|--------|
+| Invoicing API — wizard form backend | Pro, Cloud | Planned |
+| Invoice editing and choices API | Pro, Cloud | Planned |
+| Reports API — sales, tax, inventory | Pro, Cloud | Planned |
+| Unified theme attributes API | All editions | Planned |
+| Cross-team data change coordination | All editions | Planned |
+| Client onboarding funnel API | Standard, Pro, Cloud | Planned |
+| Payment gateway integration (Stripe/PayPal) | Pro, Cloud | Planned |
+
+### Precis LMS backend gates — P1
+
+Contact collection backend, workspace provisioning + billing, and AI design-chat token metering are the open LMS backend deliverables (see truth table above).
+
+### Recurring delivery cadence
+
+| Review | Cadence | Team |
+|--------|---------|------|
+| API contract review | Weekly | Backend |
+| Database migration review | Weekly | Backend |
+| Schema backward-compatibility check | Bi-weekly | Backend |
+| Performance and query review | Bi-weekly | Backend |
+| Security dependency audit | Weekly | Engineering |
+| Cross-team data impact review | Monthly | Backend + Product |
 
 ---
 
@@ -163,3 +192,39 @@ Status: Published
 - Completed plans are deleted once superseded; git history is the archive
 
 <!-- AI-generated: review needed -->
+
+---
+
+## 🇸🇦 ملخّص عربي — خطط فريق التطوير
+
+> **النطاق:** كل خطط هندسة المنتجات عبر Structa Cloud، مرتّبة بالأولوية.
+
+### سلاسل المنتجات النشطة
+
+| المنتج | الحالة | البوابة التالية |
+|---|---|---|
+| سلسلة إصدارات Formint | المجتمع والقياسي والعميل مكتملة؛ الاحترافي جارٍ | مزامنة الواجهة الخلفية والفوترة |
+| Precis الموحّد (نظام التعلّم + صفحة الهبوط) | نشط | بوابات النشر والبناء |
+| Precis Landing | موقع حيّ (نسخة قديمة تُخدم) | عمل محتوى مستمر |
+| مركز CTC البحثي | نشط | بوابات النشر: تكافؤ البريد والنشر المعاد |
+| Syntara (Cypercloud) | نشط | مفاتيح مزوّدي الذكاء الاصطناعي للاتصال الحيّ |
+| Loop-CRM | اكتمل على مستوى الميزات | بوابات تشغيلية: بيانات مزوّدي OAuth الحيّة، والتحقق من حالة العرض على الخادم |
+| django-fusion (الإطار المشترك) | نشط | تكامل المهام وMCP وتوحيد التوجيه |
+
+### جدول الحقيقة (2026-09-06)
+
+- "منفَّذ" يعني مدعوماً بالكود في الشجرة الحالية؛ "ليس بعد" مخطط أو ناقص؛
+  و"تعذّر الإضافة" يسجّل العمل المؤجَّل عمداً أو المعطول مع السبب.
+- البنود المفتوحة الرئيسية: بيانات اعتماد OAuth الحيّة لـ Loop-CRM (تحتاج
+  نشراً حقيقياً)، تحصين الوقت الفعلي عند النشر، بوابات نشر CTC، وبوابات النشر
+  والبناء لـ Precis.
+
+### أعمال الواجهة الخلفية (بعد دمج backend-plans.md في 2026-09-10)
+
+- فوترة وفواتير Formint (احترافي/سحابي): API الفواتير والتحرير والتقارير —
+  مخطط له.
+- بوابات نظام التعلّم Precis: جمع جهات الاتصال، وتجهيز مساحات العمل مع
+  الفوترة، وقياس توكن المحادثة — ليس بعد.
+- إيقاع المراجعة الأسبوعي: عقود API، ومراجعات الترحيل، وتدقيق الأمان.
+
+> المصدر الرسمي لسجل الخطط: `docs/plans/README.md` — لا تخترع حالة الخطة هنا.

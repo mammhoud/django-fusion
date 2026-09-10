@@ -194,8 +194,8 @@ graph TD
 | تتبع المهام (تحقّق جميع Done) | [./task-tracking.md](./task-tracking.md) |
 | جدول الاجتماعات (قالب إغلاق المشروع) | [./meeting-agenda.md](./meeting-agenda.md) |
 | ملاحظات الفريق (سجّل القرار) | [./team-notes.md](./team-notes.md) |
-| سجل الخطplans (تحديث بالنتيجة) | [`../plans/README.md`](../plans/README.md) |
-| دورة حياة التوثيق (سياسة الأرشيف) | [`../plans/document-lifecycle.md`](../plans/document-lifecycle.md) |
+| سجل الخطplans (تحديث بالنتيجة) | [`../plans/README.md`](../../plans/README.md) |
+| دورة حياة التوثيق (سياسة الأرشيف) | [`../plans/document-lifecycle.md`](../../plans/document-lifecycle.md) |
 
 ---
 

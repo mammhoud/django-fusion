@@ -38,6 +38,55 @@ Use these lifecycle values consistently:
 - `Planned` — approved direction, not delivered
 - `Completed` — finished historical work
 - `Archived` — preserved but no longer active
+
+## Assignments — who assigns what to whom (added 2026-09-10)
+
+> Per anytype.io: Types are blueprints of Properties; Object-format Properties
+> connect objects ("Connect Objects — link an Object to another through a
+> Property, such as Assigned To → Alex"). The matrix below is the standard
+> accountability wiring: every object type gets exactly one accountable
+> relation and, where work is done, one doer relation.
+
+| Object type | Accountable (one) | Doer / assigned (one) | Verifier (one) | Feeds into |
+|---|---|---|---|---|
+| **Task** | `Owner` → Person | `Assigned To` → Person | `Reviewer` → Person | Feature, Sprint |
+| **Feature** | `Owner` → Person | `Assigned To` → Person | `Reviewer` → Person | Milestone, Release |
+| **Sprint** | `Lead` → Person | `Assigned To` → Person (via Tasks) | `Reviewer` → Person | Plan |
+| **Plan** | `Owner` → Person | `Related Teams` → Team | `Sign-off By` → Person | Goal, Project |
+| **Milestone** | `Owner` → Person | `Related Tasks` → Task | `Sign-off By` → Person | Goal |
+| **Project** | `Owner` → Person | `Related Teams` → Team | `Sign-off By` → Person | Workspace |
+| **Release** | `Owner` → Person | `Related Pipelines` → Pipeline | `Reviewer` → Person | Changelog |
+| **Decision** | `Owner` → Person | — | `Reviewer` → Person | Architecture |
+| **Lead** (sales) | `Owner` → Person | — | `Reviewer` → Person | Product, Edition |
+| **Claim** (marketing) | `Approved By` → Person | `Evidence Source` → Any | `Approved By` → Person | Market Research |
+| **Guide / Reference** | `Owner` → Person | — | `Reviewer` → Person | Documentation |
+| **Report / Insight** | `Owner` → Person | `Methodology` → Methodology | `Reviewer` → Person | Recommendation |
+
+**Rules:**
+
+1. `Owner` = accountable (exactly one Person, never a Team).
+2. `Assigned To` = the doer; omit for review-type objects.
+3. `Reviewer` / `Sign-off By` = the verification gate; must differ from `Assigned To` where both exist.
+4. Unassigned objects are visible in the type's default "Unowned" view and are reviewed at sprint planning — an object with no `Owner` is a proposal, not a commitment.
+
+## Default views per type (added 2026-09-10)
+
+> Per doc.anytype.io: Views live on a Type, Query, or Collection and combine
+> layout + filters + sorts (multiple sorts apply in order, first takes
+> precedence). Queries are rule-driven and aggregate across Types; Collections
+> are hand-curated. Save recurring filter sets as Views rather than new
+> queries. Define each repeated filter once, as the Type's default view,
+> instead of restating it in files.
+
+| Type | Default view | Filter | Sort |
+|---|---|---|---|
+| Task | Board by status | `Status` ≠ Archived | `Priority`, `Due Date` |
+| Feature | Board by lifecycle | — | `Priority` |
+| Plan | Board: Active | `Status` = Active | `Target Date` |
+| Lead | Table by stage | `Stage` ∈ {Lead…Negotiation} | `Next Step Date` |
+| Milestone | Timeline | — | `Target Date` |
+| Claim | Table: due for review | `Review Date` ≤ quarter end | `Review Date` |
+| Unowned (all types) | Table: no owner | `Owner` is empty | `Created` |
 - `Deprecated` — replaced; link the replacement
 
 ## Workspace

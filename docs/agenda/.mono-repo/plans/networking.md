@@ -33,7 +33,7 @@ Related Goals: growth-goal
 | **Payment Processors** | Stripe, Square integration | Transaction revenue |
 | **EdTech Platforms** | Content distribution | Market access |
 | **Digital Agencies** | White-label deployments | Implementation revenue |
-| **Hiring Partners** | VResume integration | Talent marketplace |
+| **Integration Partners** | Formint Cloud + Loop-CRM API access | Marketplace revenue |
 
 ## 3. Advisory Board
 

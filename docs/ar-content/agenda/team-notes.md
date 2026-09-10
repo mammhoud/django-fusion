@@ -65,10 +65,10 @@ links:
 - وصف العائق — المالك: @فرد
 
 **الروابط:**
-- ميزة ذات صلة: [`feature-tracking.md`](../feature-tracking.md) § اسم الميزة
-- مهمة ذات صلة: [`task-tracking.md`](../task-tracking.md) § عنوان المهمة
-- خطة ذات صلة: [`plans/path.md`](../plans/path.md)
-- جدول الاجتماع: [`meeting-agenda.md`](../meeting-agenda.md)
+- ميزة ذات صلة: [`feature-tracking.md`](./feature-tracking.md) § اسم الميزة
+- مهمة ذات صلة: [`task-tracking.md`](./task-tracking.md) § عنوان المهمة
+- خطة ذات صلة: [`plans/path.md`](../../plans/path.md)
+- جدول الاجتماع: [`meeting-agenda.md`](./meeting-agenda.md)
 ```
 
 ---
@@ -104,7 +104,7 @@ links:
 | جدول الاجتماعات (قوالب) | [./meeting-agenda.md](./meeting-agenda.md) |
 | تتبع الميزات (القرارات تؤثر الميزات) | [./feature-tracking.md](./feature-tracking.md) |
 | تتبع المهام (القرارات تؤثر المهام) | [./task-tracking.md](./task-tracking.md) |
-| سجل الخطط (القرارات الكبيرة تصبح خطط) | [`../plans/README.md`](../plans/README.md) |
+| سجل الخطط (القرارات الكبيرة تصبح خطط) | [`../plans/README.md`](../../plans/README.md) |
 
 ---
 

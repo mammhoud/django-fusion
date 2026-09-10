@@ -80,9 +80,9 @@ Template customisation acts as a bridge: developers maintain control over core a
 
 | Segment | Pain Points | Value Proposition | Market Size |
 |---------|-------------|-------------------|:-----------:|
-| **EdTech Companies** | Need combined CMS + LMS | CTC Research + LMS Demo | 2,500+ companies |
-| **Professional Service Firms** | Research publication, portfolios | CTC Research + VResume | $1.5T+ market |
-| **Corporate Training** | Internal training, brand consistency | LMS Demo + Tinker | 70%+ of orgs |
+| **EdTech Companies** | Need combined CMS + LMS | Precis unified (LMS + catalog) | 2,500+ companies |
+| **Professional Service Firms** | Research publication | CTC Research | $1.5T+ market |
+| **Corporate Training** | Internal training, brand consistency | Precis LMS | 70%+ of orgs |
 | **Digital Agencies** | Multi-client management | Complete platform with django-fusion | 45,000+ agencies |
 
 ### 3.2 Secondary Segments

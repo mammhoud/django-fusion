@@ -65,6 +65,10 @@ This hub imports as **one Anytype Channel** (Vault → Channel → Objects). All
 - **stories/** — Founder journeys and project narratives
 - **goals/** — Goals, objectives, and the achievement board
 - **objects/** — Object types, relations, tags, and templates (schema)
+- **schemas/** — JSON schemas for frontmatter validation (`# yaml-language-server`)
+- **blog/** — Published articles, tutorials, and announcements (Blog Post objects)
+- **references/** — Authoritative facts and curated industry learnings
+- **changelogs/** — Version history and migration notes (Changelog objects)
 - **guides/** — Import, channel-structure, and working methods
 - **decisions/** — Durable architecture decisions
 
@@ -73,7 +77,7 @@ This hub imports as **one Anytype Channel** (Vault → Channel → Objects). All
 - Every file is a **complete document**: frontmatter → H1 → one-line description → body → `Related` links (anatomy in `objects/_templates.md`)
 - Use one focused document per decision or product concern
 - Use minimal kebab-case names; do not create suffixed duplicates
-- Put `Object type`, `Tags`, and `Status` in frontmatter
+- Put `Object type`, `Tags`, and `Status` in frontmatter (see `objects/_templates.md` for the per-type assignment matrix and default views; valid `Object type` values are the `###` sections in `objects/_object-types.md`)
 - Describe a tool by its responsibility, method, and user use case; do not paste implementation code
 - Keep repository plans as the detailed engineering source; Anytype copies are concise knowledge-graph objects
 - Treat `pos-solo`, `pos-full`, and Forge as migration labels, not new product editions

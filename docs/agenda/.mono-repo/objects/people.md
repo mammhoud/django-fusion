@@ -19,7 +19,7 @@ Status: Active
 | `Assigned Tasks` | Relation → Task | Assigned delivery work |
 | `Owned Plans` | Relation → Plan | Accountable plans |
 | `Owned Products` | Relation → Product | Product responsibility |
-| `Authored Posts` | Relation → Blog/Post | Published content |
+| `Authored Posts` | Relation → Blog Post | Published content |
 | `Made Decisions` | Relation → Decision | Architecture or product decisions |
 | `Tags` | Multi-select | Role and organization labels |
 

@@ -1,9 +1,9 @@
 ---
 Object type: Workspace
-Tags: workspace, projects, planning, repository, portfolio
+Tags: workspace, projects, planning, repository
 Status: Active
-Related Projects: ctc-research, lms, portfolio, cypercloud, formint-pos
-Related Products: formint-pos
+Related Projects: precis-main, precis-ctc, syntara, loop-crm, formint-editions-chain
+Related Products: formint-pos, precis-lms
 Related Plans: project-workspace, product-development
 Related Teams: product, engineering
 ---
@@ -11,18 +11,25 @@ Related Teams: product, engineering
 # Projects — Directory & Repository Workspace
 
 > **Description:** Navigation hub for Structa Cloud sites, libraries, infrastructure, and the current Formint product workspace. Combines directory navigation with detailed site and application references.
+> **Paths normalized 2026-09-10** to the current tree (see repo `AGENTS.md` migration rules).
 
 ## Current web and platform projects
 
 | Project | Path | Purpose | Responsibility | Status |
 |---|---|---|---|---|
-| CTC Research | `projects/ctc-research/` | Research and training site | Research publication and training workflows | Active |
-| LMS Demo | `projects/lms/` | Learning management demonstration | Course creation, enrollment, and learner dashboards | Active |
-| Portfolio | `projects/portfolio/` | Portfolio and resume site | Portfolio and resume presentation | Active |
-| CyperCloud | `projects/cypercloud/` | AI chat customization platform | AI chat customization and model configuration | In Development |
-| Formint POS | `projects/pos/` | Restaurant POS product workspace | Restaurant operations product workspace | In Development |
+| Precis (unified) | `projects/precis/precis-main/` | LMS + marketing catalog (merged) | Courses, enrollment, progress, catalog, SEO | Active |
+| CTC Research | `projects/precis/precis-ctc/` | Research and training site | Research publication and training workflows | Active |
+| Syntara (Cypercloud) | `projects/syntara/` | AI chat customization platform | AI chat customization and model configuration | In Development |
+| Loop-CRM | `projects/loop-crm/` | CRM + social scheduling | Pipelines, campaigns, finance, AI hub | Active |
+| Formint POS | `projects/formints/` | Restaurant POS product workspace | Restaurant operations product workspace | In Development |
 | django-fusion | `libs/django-fusion/` | Shared Django component and routing library | Component routing, generic views, forms, tables, and fragments | Active |
-| ceptor-ai | `libs/ceptor-ai/` | AI client and MCP tooling | AI client, MCP server, and generation helpers | Active |
+| ceptor-ai | `libs/ceptor-ai/` (submodule, pending init) | AI client and MCP tooling | AI client, MCP server, and generation helpers | Active (external) |
+
+> Retired paths — `projects/lms` (merged into precis-main), `projects/portfolio`
+> (VResume, not pursued), `projects/tinker` (superseded by Syntara),
+> `projects/pos` (now `projects/formints/`), `projects/cypercloud` (now
+> `projects/syntara/`), `projects/ctc-research` (now under `projects/precis/`).
+> Git history is the archive.
 
 ## Formint POS workspace
 

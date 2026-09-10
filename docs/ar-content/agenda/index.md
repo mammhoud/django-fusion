@@ -58,6 +58,7 @@ links:
 | **تتبع الميزات** | دورة الحياة: Proposed → Shipped | [`feature-tracking.md`](./feature-tracking.md) |
 | **دراسات الحالة** | تنفيذات حقيقية مع مخططات mermaid | [`case-studies.md`](./case-studies.md) |
 | **تتبع المهام** | لوحة مهام السبرينت — المسؤولين، الحالة، المواعيد | [`task-tracking.md`](./task-tracking.md) |
+| **خط البيع** | العملاء المحتملون والصفقات — المراحل والمصادر والخطوة التالية | [`sales-pipeline.md`](./sales-pipeline.md) |
 | **ملاحظات الفريق** | ملاحظات اجتماعات، قرارات، عقبات | [`team-notes.md`](./team-notes.md) |
 | **جدول الاجتماعات** | قوالب لكل أنواع الاجتماعات | [`meeting-agenda.md`](./meeting-agenda.md) |
 | **قائمة الإتمام** | إغلاق المشروع — تعريف "مكتمل" | [`completion-checklist.md`](./completion-checklist.md) |
@@ -66,13 +67,20 @@ links:
 
 ## 📂 خطط الفريق (ملاحظات Blinko القديمة)
 
-- **startup-story.md** — قصة رحلة المؤسس + تتبع الأهداف كإنجازات
-- **dev-team-plans.md** — قطاعات المنتج العمودية، سلاسل الإصدارات، مهام الهندسية
-- **backend-plans.md** — عمارة الواجهة الخلفية، تصميم API، تخطيط قاعدة البيانات
-- **pricing-plans.md** — استراتيجية التسعير، أهداف الإيراد، تسعير قائم على الميزات
-- **data-analyst-plans.md** — مقاييس، تتبع الأدلة، تحقق التجارب
-- **marketing-plans.md** — التوضع، سجل الادعاءات، حملات الإطلاق
-- **tools-auth-dashboard.md** — لوحة الأدوات وم 구현에 المصادقة
+- **startup-story.md** — قصة رحلة المؤسس + تتبع الأهداف كإنجازات (العربي: [`startup-story.md`](./startup-story.md))
+- **dev-team-plans.md** — جميع خطط الهندسة بما فيها أعمال الواجهة الخلفية (دُمج backend-plans.md في 2026-09-10؛ العربي: [`dev-team-plans.md`](./dev-team-plans.md))
+- **pricing-plans.md** — استراتيجية التسعير، أهداف الإيراد، تسعير قائم على الميزات (العربي: [`pricing-plans.md`](./pricing-plans.md))
+- **data-analyst-plans.md** — مقاييس، تتبع الأدلة، تحقق التجارب (العربي: [`data-analyst-plans.md`](./data-analyst-plans.md))
+- **marketing-plans.md** — التموضع، سجل الادعاءات، حملات الإطلاق (العربي: [`marketing-plans.md`](./marketing-plans.md))
+- **tools-auth-dashboard.md** — لوحة الأدوات وبوابة المصادقة (إنجليزي فقط)
+
+---
+
+## 📂 ملفات الأجندة الجديدة (2026-09-10)
+
+- **[content-model.md](./content-model.md)** — ⭐ عقد الأجندة: مسرد Anytype، الحزم الأربع، قاعدة الخطط → المعالم (مترجم من CONTENT_MODEL.md)
+- **[summary.md](./summary.md)** — سجل تغييرات الأجندة نفسها (مترجم من SUMMARY.md)
+- **[backend-plans.md](./backend-plans.md)** — مؤشر بعد الدمج → dev-team-plans
 
 ---
 

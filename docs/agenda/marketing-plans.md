@@ -7,7 +7,7 @@ Status: Published
 # Marketing Plans
 
 > **Scope:** Product positioning, launch campaigns, content strategy, and evidence-backed marketing claims across Structa Cloud products
-> **Updated:** 2026-09-06
+> **Updated:** 2026-09-10
 
 ---
 
@@ -28,16 +28,50 @@ Tauri, Django, Astro, HTMX, cloud transport are supporting details. The marketin
 
 ---
 
+## 🇸🇦 ملخّص عربي — الخطط التسويقية
+
+> **النطاق:** تموضع المنتجات، وحملات الإطلاق، وادعاءات التسويق المدعومة
+> بالأدلة.
+
+### مبدأ التموضع
+
+نقود **نتائج العميل** لا قوائم التقنيات: خدمة أقل انقطاعاً (العمل دون اتصال)،
+وتنسيق أوضح في المطبخ (KDS)، وخدمة عربية/ثنائية أسهل (RTL أولاً)، وفروع
+مسيطَر عليها، ومكافآت قابلة للتتبع، وتكامل آمن عبر API مُصدَّر.
+
+### الإطلاقات
+
+| المنتج | الحالة | بوابة الإطلاق |
+|---|---|---|
+| Formint مجتمعي / قياسي / عميل | ✅ مطلق | — |
+| Formint احترافي | 🔄 قبل الإطلاق | استقرار الخادم + موثوقية المزامنة > 99.9% + أدلة تجربة |
+| Formint سحابي | 📋 مخطط (أُعيدت الخطط إلى 2027-Q1) | تعدد المستأجرين + توسّع الزمن الفعلي + أدلة KDS والفروع وRTL والامتثال |
+| Precis نظام التعلّم | 🔄 نشط | استقرار البناء + بوابات النشر + تكامل CMS + SEO |
+| Precis Landing | ✅ حيّ | — |
+
+### الادعاءات والأدلة
+
+- كل ادعاء علني يحتاج مستوى دليل قبل النشر: قدرة → أدلة تجربة → قياس منشور →
+  ادعاء منظَّم (مراجعة قانونية).
+- عُيدت جدولة مراجعات الادعاءات المتأخرة إلى ربع 2026-Q4 (انظر الجدول أعلاه).
+- الصياغة الآمنة لكل ادعاء مدونة في `data-analyst-plans.md`.
+
+---
+
 ## 📋 Approved Claims & Evidence Status
+
+> **Re-baselined 2026-09-10:** All "Planned" claims had review dates in
+> 2026-Q1/Q2 that lapsed without review — reset to 2026-Q4. No claim advanced
+> evidence level since the last pass; next evidence review is the Q4 gate.
 
 | Claim | Product | Audience | Evidence Level | Status | Review Date |
 |-------|---------|----------|----------------|--------|-------------|
 | Arabic-first | Formint (all) | MENA operators | Capability → Pilot needed | In progress | 2026-Q4 |
 | Offline-first | Community, Pro | Unstable connectivity | Pilot (3 restaurants) | In progress | 2026-Q4 |
-| KDS routing | Pro, Cloud | Restaurant operators | Capability | Planned | 2026-Q1 |
-| Multi-branch | Cloud | Chains/franchises | Capability | Planned | 2026-Q1 |
-| Loyalty ledger | Pro, Cloud | Customer-focused | Capability | Planned | 2026-Q2 |
-| API access | Cloud | Partners/developers | Capability | Planned | 2026-Q2 |
+| KDS routing | Pro, Cloud | Restaurant operators | Capability | Planned | 2026-Q4 |
+| Multi-branch | Cloud | Chains/franchises | Capability | Planned | 2026-Q4 |
+| Loyalty ledger | Pro, Cloud | Customer-focused | Capability | Planned | 2026-Q4 |
+| API access | Cloud | Partners/developers | Capability | Planned | 2026-Q4 |
 | Local-to-cloud | All editions | Growing operators | Pilot (migration) | Planned | Quarterly |
 
 ---
@@ -78,7 +112,7 @@ Tauri, Django, Astro, HTMX, cloud transport are supporting details. The marketin
   - [ ] Arabic RTL pilot evidence
   - [ ] Compliance evidence (ZATCA, VAT)
   - [ ] Pricing validated against costs
-- **Target Launch:** 2026-Q1
+- **Target Launch:** 2027-Q1 (re-baselined 2026-09-10; original 2026-Q1 target lapsed unmet — Cloud is still Planned in the edition chain)
 
 ### Formint Client (✅ Launched)
 - **Position:** "Lightweight Vue 3 + Tauri POS client for Cloud"

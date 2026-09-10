@@ -78,7 +78,7 @@ Every object type has a definition file in this directory. Core set:
 | Type | File | | Type | File |
 |---|---|---|---|---|
 | Workspace | `workspace.md` | | Project | `project.md` |
-| Plan | `plan.md` (templates) | | Goal | `goal.md` |
+| Plan | `plan.md` | | Goal | `goal.md` |
 | Milestone | `milestone.md` | | Task | `task.md` |
 | Sprint | `sprint.md` | | Product | `product.md` |
 | Edition | `edition.md` | | Team | `team.md` |
@@ -87,7 +87,7 @@ Every object type has a definition file in this directory. Core set:
 | Component | `component.md` | | API | `api.md` |
 | Release | `release.md` | | Decision | `decision.md` |
 | Pipeline | `pipeline.md` | | Style | `style.md` |
-| Blog/Post | `blog-post.md` | | Page | `page.md` |
+| Blog Post | `blog-post.md` | | Page | `page.md` |
 | Note | `note.md` | | Bookmark | `bookmark.md` |
 | Configuration | `configuration.md` | | Story | `story.md` |
 | Architecture | `architecture.md` | | Guide | `guide.md` |
@@ -97,6 +97,11 @@ Every object type has a definition file in this directory. Core set:
 | Methodology | `methodology.md` | | Insight | `insight.md` |
 | Recommendation | `recommendation.md` | | Repository | `repository.md` |
 | Module | `module.md` | | Documentation | `documentation.md` |
+| Market Research | `market-research.md` | | Plan | `plan.md` |
+
+> Schema validation: frontmatter of definition files validates against
+> [`../schemas/`](../schemas/_index.md) JSON schemas via the
+> `# yaml-language-server` directive.
 
 ## Related
 

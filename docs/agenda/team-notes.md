@@ -65,15 +65,111 @@ Every entry should be date-stamped and categorized:
 - Blocker description — owner: @member
 
 **Links:**
-- Related feature: [`feature-tracking.md`](../feature-tracking.md) § Feature Name
-- Related task: [`task-tracking.md`](../task-tracking.md) § Task Title
-- Related plan: [`plans/path.md`](../plans/path.md)
-- Meeting agenda: [`meeting-agenda.md`](../meeting-agenda.md)
+- Related feature: [`feature-tracking.md`](./feature-tracking.md) § Feature Name
+- Related task: [`task-tracking.md`](./task-tracking.md) § Task Title
+- Related plan: [`plans/path.md`](../plans/README.md)
+- Meeting agenda: [`meeting-agenda.md`](./meeting-agenda.md)
 ```
 
 ---
 
 ## 🗓️ Meeting Notes Log
+
+### 2026-09-10 — Kickoff Meeting — Agenda System Adoption (CONTENT_MODEL § 5)
+
+**Attendees:** Workspace team — @mammhoud (Founder, presiding), @moustafa (Product), @mahmoud, @asmaa, @yahia (Engineering), @dariia (Contributor)
+
+**Topic / Agenda:** First team meeting on the agenda system, walked in the order defined in [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) § 5. Held ahead of the 2026-09-16 due date.
+
+**Key points (per agenda item):**
+1. **Content model (CONTENT_MODEL.md)** — reviewed the four packages (A team delivery, B Anytype import set, C canonical plans, D product docs) and the separation rules. Team aligned: the agenda is the working memory; `docs/plans/` stays the only plan source.
+2. **Hub (MAIN.md)** — walked the business star schema: facts (milestones, tasks, leads, claims) × dimensions (products, teams, sprints, plans). The sales pipeline file completes the fact set — no objections.
+3. **Meeting templates (meeting-agenda.md)** — adopted the 6 templates as standing practice; Sprint 2 opens with sprint planning on 2026-09-15 using template 1.
+4. **Finished-milestone log (feature-tracking.md § ✅ Shipped)** — reviewed the closed plans (Loop-CRM finance integration, demo state, Twenty/Postiz research, AI hub/locale/connectors, POS launch scope, unified Precis). Confirmed: no dangling links to deleted plan files.
+5. **Anytype concepts (anytype-extensibility.md + CONTENT_MODEL § 2)** — shared vocabulary: Objects/Types/Properties/Views/Queries/Collections; the assignment matrix (Owner → Assigned To → Reviewer) and the 9 property formats in `_relations.md`.
+6. **Owner assignment (task-tracking.md)** — initial executors assigned to all Sprint 2 tasks from the people roster (see below); feature-owner decisions for the 3 P0 Syntara features stay with Product during the sprint.
+
+**Decisions made:**
+- The agenda content model is adopted as the **team-wide working contract** from this meeting forward.
+- The plans → milestones reference contract is binding: no plan closeout without a ✅ milestone entry, a team-notes decision record, and reference updates.
+- Sprint 2 is confirmed as defined (goal + 11 tasks, window 2026-09-15 → 09-28); executors assigned at this meeting may be adjusted at sprint planning.
+- Sales-pipeline ownership defaults to the Founder until a dedicated sales owner exists (roster currently has none).
+
+**Action items:**
+- [x] Hold the first agenda meeting — Done (this entry)
+- [x] Record initial Sprint 2 executors in task-tracking.md — Done (2026-09-10)
+- [ ] @moustafa — Run sprint planning for Sprint 2 with template 1 (capacity check + commitment) — due 2026-09-15
+- [ ] @moustafa — Assign feature owners to the 3 P0 Syntara features — due 2026-09-22
+- [ ] @mahmoud — Run `npm run validate-content` + link check across the agenda — due 2026-09-19
+- [ ] @mahmoud — Configure Loop-CRM live OAuth credentials + publish E2E (deploy-gated) — due 2026-09-26
+- [ ] @mahmoud — Verify demo-state server half on the deployed stack — due 2026-09-26
+- [ ] @asmaa — Review all 8 case studies for completeness (Context → Lessons) — due 2026-09-18
+- [ ] @yahia — Confirm every ✅ Shipped feature entry links its case study — due 2026-09-19
+- [ ] @mammhoud — Seed sales pipeline: owners + convert-pilot plan for the 3 restaurant rows — due 2026-09-22
+- [ ] @moustafa — Backlog refinement: schedule the 11 remaining rows → Sprint 3 or Parked — due 2026-09-24
+
+**Blockers / Risks:**
+- Loop-CRM verification tasks (@mahmoud) need the deployed `crm.structa.cloud` stack + provider secrets — if the deploy slips these become Sprint 3 carry-overs.
+- No dedicated sales/marketing person on the roster; pipeline execution capacity is a single-person risk on the Founder.
+- @dariia has no Sprint 2 assignment (contributor role) — product to propose content-work tasks at sprint planning.
+
+**Links:**
+- Related definition: [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) § 5 (this meeting's source agenda)
+- Related task board: [`task-tracking.md`](./task-tracking.md) § Sprint 2
+- Related roster: [`mono-repo/objects/people/`](./mono-repo/objects/people.md)
+- Meeting folder: <https://drive.google.com/drive/folders/1-A0MxVvAUpaOc56Nr9t2672DkrvgILb0>
+
+---
+
+### 2026-09-10 — Sprint Planning — Sprint 2 Defined (2026-09-15 → 09-28)
+
+**Attendees:** Workspace team (agent session, planning pass)
+
+**Topic / Agenda:** Define Sprint 2 using the sprint-planning template:
+carry open Sprint 1.5 items forward, pull prioritized backlog rows, and commit
+the sprint goal.
+
+**Key points:**
+- Sprint 1.5 closed at 36/41 (88%); its 5 open rows were carried into Sprint 2
+  with updated due dates rather than dropped.
+- Sprint 2 mixes three kinds of work: agenda open loops (meeting, validation,
+  case-study review), deploy-gated Loop-CRM verifications (OAuth credentials +
+  demo-state server half), and first sales-pipeline actions (pilot conversion
+  plan, P0 owner assignments).
+- Backlog pruned from 15 to 11 rows: the promoted rows left, conditional
+  case-study rows re-baselined to their triggering events, and the Arabic
+  case-studies row flagged for a policy decision first (they are EN-only by
+  design — see INDEX.md).
+- Sprint 3 seed pre-marked: goal definition at the Sprint 2 review (2026-09-28).
+
+**Decisions made:**
+- Sprint 2 window: **2026-09-15 → 2026-09-28**
+- Sprint 2 goal: close the agenda's open loops (kickoff meeting, docs
+  validation, Loop-CRM deploy-gated verifications) while seeding the sales
+  pipeline for the Formint Professional launch.
+- 11 tasks committed (4× P0, 6× P1, 1× P2); backlog refined in the same pass.
+
+**Action items:**
+- [x] Hold the first agenda meeting — Done (2026-09-10, held early; see Kickoff Meeting entry above)
+- [ ] @mahmoud — Configure Loop-CRM live OAuth credentials + publish E2E — due 2026-09-26
+- [ ] @mahmoud — Verify demo-state server half on deployed stack — due 2026-09-26
+- [ ] @mammhoud — Seed sales pipeline owners + pilot conversion plan — due 2026-09-22
+- [x] Define Sprint 2 goal and seed tasks — Done (2026-09-10)
+
+**Blockers / Risks:**
+- Loop-CRM verification tasks are deploy-gated: they need the live
+  `crm.structa.cloud` stack + provider secrets; if the deploy slips, these
+  become the first Sprint 3 carry-over candidates.
+- All Sprint 2 tasks lack assignees — owner assignment is itself a committed
+  task; until then every row is unowned.
+
+**Links:**
+- Related task board: [`task-tracking.md`](./task-tracking.md) § Sprint 2
+- Related backlog: [`task-tracking.md`](./task-tracking.md) § Backlog
+- Related template: [`meeting-agenda.md`](./meeting-agenda.md) § Sprint Planning
+- Related pipeline: [`sales-pipeline.md`](./sales-pipeline.md) § 2 Targets
+
+---
 
 ### 2026-08-31 — Project Kickoff — Agenda System Setup
 

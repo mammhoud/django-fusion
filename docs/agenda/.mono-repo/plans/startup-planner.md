@@ -19,13 +19,19 @@ Related Goals: business-goal, growth-goal
 
 ### Web Applications & Sites
 
+> Paths normalized 2026-09-10 to the current tree — see `AGENTS.md` name-migration rules.
+
 | Project | Path | Domain | Purpose |
 |---------|------|--------|---------|
-| **LMS Demo** | `projects/lms/` | structa.cloud | Learning management demo |
-| **CTC Research** | `projects/ctc-research/` | ctc-research.com | Research publishing |
-| **VResume** | `projects/portfolio/` | vresume.structa.cloud | Portfolio builder |
-| **Tinker** | `projects/tinker/` | — | Template customizer |
-| **CyperCloud** | `projects/cypercloud/` | — | AI chat customizer |
+| **Precis (LMS + landing, unified)** | `projects/precis/precis-main/` | structa.cloud | Learning management + marketing catalog |
+| **CTC Research** | `projects/precis/precis-ctc/` | ctc-research.com | Research publishing |
+| **Syntara (Cypercloud)** | `projects/syntara/` | — | AI chat customizer (runtime alias `cypercloud`) |
+| **Loop-CRM** | `projects/loop-crm/` | crm.structa.cloud | CRM + social scheduling |
+
+> Retired legacy projects — `projects/lms` (merged into precis-main),
+> `projects/portfolio` / VResume (not in checkout; resume builder not pursued),
+> `projects/tinker` (superseded by Syntara's customizer) — remain in git
+> history only.
 
 ### Shared Libraries
 

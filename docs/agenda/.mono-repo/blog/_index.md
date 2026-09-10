@@ -32,6 +32,6 @@ Status: Published
 
 ## Related
 
-- → `../objects/blog-post.md` — Blog/Post object type definition
+- → `../objects/blog-post.md` — Blog Post object type definition
 - → `../objects/people/me.md` — Author profile
 - → `../README.md` — Master index
