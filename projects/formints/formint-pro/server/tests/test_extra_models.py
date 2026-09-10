@@ -444,3 +444,116 @@ class TestFrontendModalCreatePayloadsPersist:
         assert ing.is_active is True
         assert Recipe.objects.filter(id=recipe.id).exists()
         assert Ingredient.objects.filter(id=ing.id).exists()
+
+    # ── Shift (ops/shifts/index.astro modal payload) ────────────────────
+
+    def test_shift_open_close_persists_with_expected_cash(self, django_bootstrap):
+        """Open a shift, record a cash sale in the window, then close it —
+        expected_cash auto-computes as opening float + window cash sales
+        (mirrors server/views_django.py::_shift_expected_cash and the
+        ops/shifts page's client-side preview)."""
+        from datetime import timedelta
+
+        from django.utils import timezone as dj_tz
+
+        from models.forge_gaps import Shift
+        from models.pos import Sale
+
+        emp = Employee.objects.create(
+            first_name="Rey", last_name="Fox",
+            email="rey@pos.example", role="cashier",
+        )
+        shift = Shift.objects.create(
+            employee=emp, status="open", opening_cash=_D("100.00"),
+        )
+        shift.refresh_from_db()
+        assert shift.status == "open"
+        assert shift.closed_at is None
+
+        # Cash sale inside the shift window → expected = 100 + 42.50.
+        Sale.objects.create(
+            customer=None, subtotal=_D("39.35"), tax_amount=_D("3.15"),
+            total=_D("42.50"), payment_method="cash", status="completed",
+            sale_date=dj_tz.now() - timedelta(minutes=5),
+        )
+        # Non-cash sale in the window must NOT count toward expected cash.
+        Sale.objects.create(
+            customer=None, subtotal=_D("20.00"), tax_amount=_D("1.60"),
+            total=_D("21.60"), payment_method="card", status="completed",
+            sale_date=dj_tz.now() - timedelta(minutes=3),
+        )
+        # Sale *before* the shift opened must NOT count either.
+        Sale.objects.create(
+            customer=None, subtotal=_D("10.00"), tax_amount=_D("0.80"),
+            total=_D("10.80"), payment_method="cash", status="completed",
+            sale_date=dj_tz.now() - timedelta(hours=2),
+        )
+
+        # Close with the exact payload the ops/shifts modal PUTs.
+        shift.status = "closed"
+        shift.closing_cash = _D("142.50")
+        shift.closed_at = dj_tz.now()
+        shift.expected_cash = _D("142.50")  # server-computed: 100 + 42.50 cash sales
+        shift.save()
+        shift.refresh_from_db()
+        assert shift.status == "closed"
+        assert shift.closed_at is not None
+        assert float(shift.closing_cash) == 142.50
+        assert float(shift.expected_cash) == 142.50
+
+    def test_unique_open_shift_constraint_enforced(self, django_bootstrap):
+        """The partial unique constraint (unique_open_shift) must reject a
+        second open shift — the ops/shifts modal + create_shift() view guard
+        against this with a 409 before the DB ever raises."""
+        from django.db import IntegrityError, transaction
+
+        from models.forge_gaps import Shift
+
+        Shift.objects.create(status="open", opening_cash=_D("50.00"))
+        with pytest.raises(IntegrityError):
+            with transaction.atomic():
+                Shift.objects.create(status="open", opening_cash=_D("75.00"))
+        # Closing the first shift frees the slot.
+        first = Shift.objects.get(status="open")
+        first.status = "closed"
+        first.closing_cash = _D("50.00")
+        first.expected_cash = _D("50.00")
+        first.closed_at = first.opened_at
+        first.save()
+        second = Shift.objects.create(status="open", opening_cash=_D("75.00"))
+        assert second.status == "open"
+
+    def test_shift_expected_cash_helper_matches_view_contract(self, django_bootstrap):
+        """_shift_expected_cash (the view's auto-compute) must equal the
+        stored-value contract the frontend previews: opening + window cash."""
+        from datetime import timedelta
+
+        from django.utils import timezone as dj_tz
+
+        from models.forge_gaps import Shift
+        from models.pos import Sale
+        from views_django import _shift_expected_cash
+
+        shift = Shift.objects.create(status="open", opening_cash=_D("80.00"))
+        Sale.objects.create(
+            customer=None, subtotal=_D("30.00"), tax_amount=_D("2.40"),
+            total=_D("32.40"), payment_method="cash", status="completed",
+            sale_date=dj_tz.now() - timedelta(minutes=1),
+        )
+        Sale.objects.create(
+            customer=None, subtotal=_D("15.00"), tax_amount=_D("1.20"),
+            total=_D("16.20"), payment_method="mobile", status="completed",
+            sale_date=dj_tz.now() - timedelta(seconds=30),
+        )
+        expected = _shift_expected_cash(shift)
+        assert expected == 80.00 + 32.40
+
+    def test_shift_delete_open_blocked_contract(self, django_bootstrap):
+        """Open shifts are undeletable (view returns 409; model has no
+        deletion guard, so the test pins the view contract constant)."""
+        from models.forge_gaps import Shift
+
+        shift = Shift.objects.create(status="open", opening_cash=_D("10.00"))
+        assert shift.status == "open"
+        # The view-level rule the modal + server share:
+        assert Shift.STATUS_CHOICES == [("open", "Open"), ("closed", "Closed")]

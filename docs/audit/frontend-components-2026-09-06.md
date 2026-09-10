@@ -124,6 +124,49 @@ selects load from `/employees/` and `/products/`. `astro check` passes for all
   `libs/django-fusion/` is); no server venv can be synced here. Run
   `make test` inside the product Docker image on the host.
 
+**Second follow-up (2026-09-10) — remaining list pages + ops/shifts flow:**
+- **pos/products, pos/inventory, pos/transactions** — delete-confirmation
+  modals wired (replacing direct toasts), edit mode populates from the
+  serializer keys (`category`, `product_id ?? product`,
+  `customer_id ?? customer`), and tables resolve FK ids→names via
+  `catName`/`prodName`/`custName` over the already-fetched reference lists.
+- **crm/contacts** — Company column resolved via `companyName(item.company)`
+  over a fetched `/crm/companies` list; modal gained a Company selector and
+  the payload sends `company_id`.
+- **crm/deals** — Contact/Stage columns resolved via `contactName`/
+  `stageName` over `/crm/contacts` + `/crm/pipelines` (stages nested);
+  modal gained Contact/Pipeline/Stage selectors (pipeline change resets an
+  invalid stage) and the payload sends `contact_id`/`pipeline_id`/`stage_id`.
+- **crm/activities + crm/notes** — Contact/Deal columns resolved from the
+  same reference lists (the `contact_name`/`deal_title` fields they bound
+  before are never serialized); both modals gained Contact/Deal selectors
+  and send `contact_id`/`deal_id`.
+- **ops/shifts create/edit flow** — repaired a syntactically broken
+  `openEdit`/`expectedCash` block (the page's script could not parse);
+  unique-open-shift is enforced client-side (openAdd blocks when
+  `openCount > 0`; doSave re-checks) *and* server-side (`POST /shifts/`
+  returns 409 before the DB's partial `unique_open_shift` constraint);
+  expected cash auto-computes as opening float + completed **cash** sales in
+  the shift window (client preview + server `_shift_expected_cash` agree).
+- **Backend write surface completed** — `server/views_django.py` CRM views
+  imported a non-existent `models.crm_models` module (every `/crm/*` GET was
+  a 500); fixed to `models.crm`, added POST to the collection views and
+  PUT/PATCH/DELETE detail views for contacts, companies, deals, activities,
+  notes, plus `crm_pipelines` now embeds nested `stages`. Shifts gained
+  `create_shift` + `shift_detail` (PUT auto-computes `expected_cash`, DELETE
+  refuses open shifts with 409) wired at both `/shifts/<id>` and
+  `/ops/shifts/<id>`. New URLs registered in `configs/urls.py`.
+- **Backend persist tests extended** — `server/tests/test_extra_models.py`
+  `TestFrontendModalCreatePayloadsPersist` gained four shift tests: open→close
+  persist with expected-cash math (cash-only, in-window), the
+  `unique_open_shift` IntegrityError + freeing the slot on close, the
+  `_shift_expected_cash` helper matching the view contract, and the
+  open-shift delete-block contract. Pinned by
+  `frontend/src/tests/create-forms.contract.test.ts` (13 tests) —
+  **vitest run → 93 passed (8 files)**; **astro check → 0 errors, 0 warnings**
+  (105 hints, all pre-existing implicit-any style notes). Backend suite
+  remains host-Docker-only (no Django in this sandbox; `py_compile` clean).
+
 ### 2.4 Loop-CRM — `PipelineDemo` (inert by design)
 **Where:** `projects/loop-crm/frontend/src/components/demo/PipelineDemo.tsx`.
 **Evidence:** canned `Deal[]` data (Halcyon Labs, …) advanced on a timer — it

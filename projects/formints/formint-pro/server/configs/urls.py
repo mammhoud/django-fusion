@@ -93,10 +93,12 @@ from views_django import (
     webhook_receive, webhook_list, webhook_stats,
     config_cloud_link_test, config_master_sync,
     crm_dashboard, crm_contacts, crm_contact_detail, crm_contact_create,
-    crm_companies, crm_deals, crm_deal_create, crm_pipelines,
-    crm_activities, crm_notes,
+    crm_companies, crm_company_detail, crm_deals, crm_deal_create,
+    crm_deal_detail, crm_pipelines, crm_activities, crm_activity_detail,
+    crm_notes, crm_note_detail,
     report_sales, report_inventory,
     list_coupons, list_delivery_types, list_delivery_zones, list_shifts,
+    create_shift, shift_detail,
 )
 
 from htmx_views import (
@@ -303,10 +305,14 @@ urlpatterns += [
     path("crm/contacts", crm_contacts, name="crm-contacts"),
     path("crm/contacts/<int:contact_id>", crm_contact_detail, name="crm-contact-detail"),
     path("crm/companies", crm_companies, name="crm-companies"),
+    path("crm/companies/<int:company_id>", crm_company_detail, name="crm-company-detail"),
     path("crm/deals", crm_deals, name="crm-deals"),
+    path("crm/deals/<int:deal_id>", crm_deal_detail, name="crm-deal-detail"),
     path("crm/pipelines", crm_pipelines, name="crm-pipelines"),
     path("crm/activities", crm_activities, name="crm-activities"),
+    path("crm/activities/<int:activity_id>", crm_activity_detail, name="crm-activity-detail"),
     path("crm/notes", crm_notes, name="crm-notes"),
+    path("crm/notes/<int:note_id>", crm_note_detail, name="crm-note-detail"),
 
     # Reports
     path("reports/sales", report_sales, name="report-sales"),
@@ -317,12 +323,14 @@ urlpatterns += [
     path("delivery-types/", list_delivery_types, name="delivery-types-list"),
     path("delivery-zones/", list_delivery_zones, name="delivery-zones-list"),
     path("shifts/", list_shifts, name="shifts-list"),
+    path("shifts/<int:shift_id>", shift_detail, name="shifts-detail"),
 
     # ── Module-prefixed aliases (Operations: /ops/*) ─────────────────
     path("ops/coupons/", list_coupons, name="ops-coupons-list"),
     path("ops/delivery-types/", list_delivery_types, name="ops-delivery-types-list"),
     path("ops/delivery-zones/", list_delivery_zones, name="ops-delivery-zones-list"),
     path("ops/shifts/", list_shifts, name="ops-shifts-list"),
+    path("ops/shifts/<int:shift_id>", shift_detail, name="ops-shifts-detail"),
     path("ops/sync/status", sync_status, name="ops-sync-status"),
     path("ops/sync/config", sync_config, name="ops-sync-config"),
     path("ops/sync/log", sync_log, name="ops-sync-log"),
