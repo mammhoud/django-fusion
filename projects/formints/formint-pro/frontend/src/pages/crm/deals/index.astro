@@ -67,9 +67,9 @@ import Icon from '../../../components/ui/Icon.astro';
             <tr class="cursor-pointer hover:bg-[var(--color-surface-hover)]" @click="openEdit(item)">
               <td class="px-3 py-2"><span class="text-xs tabular-nums" x-text="item.id"></span></td>
               <td class="px-3 py-2"><span class="text-xs font-medium" x-text="item.title"></span></td>
-              <td class="px-3 py-2"><span class="text-xs" x-text="item.contact_name || '-'"></span></td>
+              <td class="px-3 py-2"><span class="text-xs" x-text="contactName(item.contact) || contactName(item.contact_id) || '-'"></span></td>
               <td class="px-3 py-2">
-                <span class="badge" :class="{ 'badge-soft-success': item.is_won, 'badge-soft-error': item.is_closed && !item.is_won, 'badge-soft-info': !!item.stage_name && !item.is_won && !item.is_closed, 'badge-soft-neutral': !item.stage_name && !item.is_won && !item.is_closed }" x-text="item.stage_name || (item.is_won ? 'Won' : item.is_closed ? 'Lost' : 'New')"></span>
+                <span class="badge" :class="{ 'badge-soft-success': item.is_won, 'badge-soft-error': item.is_closed && !item.is_won, 'badge-soft-info': !!(stageName(item.stage) || stageName(item.stage_id)) && !item.is_won && !item.is_closed, 'badge-soft-neutral': !(stageName(item.stage) || stageName(item.stage_id)) && !item.is_won && !item.is_closed }" x-text="stageName(item.stage) || stageName(item.stage_id) || (item.is_won ? 'Won' : item.is_closed ? 'Lost' : 'New')"></span>
               </td>
               <td class="px-3 py-2"><span class="text-xs tabular-nums font-medium" x-text="'$' + Number(item.value||0).toFixed(2)"></span></td>
               <td class="px-3 py-2">
@@ -134,6 +134,33 @@ import Icon from '../../../components/ui/Icon.astro';
             <input type="text" x-model="form.title" class="input w-full" placeholder="e.g. Enterprise License Deal" required />
           </div>
           <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Contact</label>
+            <select x-model="form.contact_id" class="input w-full">
+              <option value="">- None -</option>
+              <template x-for="c in contactList" :key="c.id">
+                <option :value="c.id" x-text="(c.first_name||'') + ' ' + (c.last_name||'')"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Pipeline *</label>
+            <select x-model="form.pipeline_id" class="input w-full" required @change="onPipelineChange()">
+              <option value="">- Select pipeline -</option>
+              <template x-for="p in pipelineList" :key="p.id">
+                <option :value="p.id" x-text="p.name"></option>
+              </template>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-medium opacity-70 mb-1 block">Stage</label>
+            <select x-model="form.stage_id" class="input w-full" :disabled="!form.pipeline_id">
+              <option value="">- Select stage -</option>
+              <template x-for="s in activeStages()" :key="s.id">
+                <option :value="s.id" x-text="s.name"></option>
+              </template>
+            </select>
+          </div>
+          <div>
             <label class="text-xs font-medium opacity-70 mb-1 block">Value ($) *</label>
             <input type="number" x-model="form.value" class="input w-full" step="0.01" min="0" placeholder="0.00" required />
           </div>
@@ -192,13 +219,41 @@ import Icon from '../../../components/ui/Icon.astro';
   import Alpine from 'alpinejs';
   document.addEventListener('alpine:init', () => {
     Alpine.data('crmDeals', () => ({
-      items: [], loading: true, search: '', page: 1, perPage: 20,
+      items: [], contactList: [], pipelineList: [], loading: true, search: '', page: 1, perPage: 20,
       deleteTarget: null,
       formOpen: false, formSaving: false, editingItem: null,
       form: {
-        title: '', value: '', currency: 'USD', probability: '10',
+        title: '', contact_id: '', pipeline_id: '', stage_id: '',
+        value: '', currency: 'USD', probability: '10',
         expected_close_date: '', description: '',
         is_won: false, is_closed: false, is_active: true,
+      },
+
+      // ── id → name resolution over loaded reference lists ──
+      contactName(id: any) {
+        if (id === null || id === undefined || id === '') return '';
+        const c = (this.contactList || []).find((x: any) => String(x.id) === String(id));
+        return c ? ((c.first_name || '') + ' ' + (c.last_name || '')).trim() : '';
+      },
+      stagesOf(pipelineId: any): any[] {
+        const p = (this.pipelineList || []).find((x: any) => String(x.id) === String(pipelineId));
+        return p ? (p.stages || []) : [];
+      },
+      activeStages() { return this.stagesOf(this.form.pipeline_id); },
+      stageName(id: any) {
+        // Stages live nested under each pipeline's `stages` array; scan all.
+        if (id === null || id === undefined || id === '') return '';
+        for (const p of (this.pipelineList || [])) {
+          const s = (p.stages || []).find((x: any) => String(x.id) === String(id));
+          if (s) return s.name;
+        }
+        return '';
+      },
+      onPipelineChange() {
+        // A stage belongs to a pipeline; reset the stage when it changes.
+        const stillValid = this.stagesOf(this.form.pipeline_id)
+          .some((s: any) => String(s.id) === String(this.form.stage_id));
+        if (!stillValid) this.form.stage_id = '';
       },
 
       get total() { return this.items.length; },
@@ -223,15 +278,22 @@ import Icon from '../../../components/ui/Icon.astro';
       async load() {
         this.loading = true;
         try {
-          const res = await fetch('/crm/deals');
+          const [res, c, p] = await Promise.all([
+            fetch('/crm/deals'),
+            fetch('/crm/contacts').then((r) => (r.ok ? r.json() : { data: [] })),
+            fetch('/crm/pipelines').then((r) => (r.ok ? r.json() : { data: [] })),
+          ]);
           if (res.ok) { const d = await res.json(); this.items = d.data || d || []; }
+          this.contactList = c.data || c || [];
+          this.pipelineList = p.data || p || [];
         } catch (e) { console.error(e); }
         finally { this.loading = false; }
       },
 
       resetForm() {
         this.form = {
-          title: '', value: '', currency: 'USD', probability: '10',
+          title: '', contact_id: '', pipeline_id: '', stage_id: '',
+          value: '', currency: 'USD', probability: '10',
           expected_close_date: '', description: '',
           is_won: false, is_closed: false, is_active: true,
         };
@@ -244,6 +306,9 @@ import Icon from '../../../components/ui/Icon.astro';
         this.resetForm(); this.editingItem = item;
         this.form = {
           title: item.title || '',
+          contact_id: item.contact ?? item.contact_id ?? '',
+          pipeline_id: item.pipeline ?? item.pipeline_id ?? '',
+          stage_id: item.stage ?? item.stage_id ?? '',
           value: item.value ?? '',
           currency: item.currency || 'USD',
           probability: item.probability ?? '10',
@@ -263,9 +328,16 @@ import Icon from '../../../components/ui/Icon.astro';
           this.$store.ui.toast('Title and value are required', 'error');
           return;
         }
+        if (!this.form.pipeline_id) {
+          this.$store.ui.toast('Pipeline is required', 'error');
+          return;
+        }
         this.formSaving = true;
         const payload = {
           title: this.form.title,
+          contact_id: this.form.contact_id ? parseInt(String(this.form.contact_id)) : null,
+          pipeline_id: parseInt(String(this.form.pipeline_id)),
+          stage_id: this.form.stage_id ? parseInt(String(this.form.stage_id)) : null,
           value: parseFloat(String(this.form.value)) || 0,
           currency: this.form.currency,
           probability: parseInt(String(this.form.probability)) || 10,

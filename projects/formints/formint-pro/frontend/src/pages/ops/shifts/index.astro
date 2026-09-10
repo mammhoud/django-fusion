@@ -75,22 +75,63 @@ import Icon from '../../../components/ui/Icon.astro';
   </div>
 </Layout>
 
-<script>import Alpine from 'alpinejs';document.addEventListener('alpine:init',()=>{Alpine.data('opsShifts',()=>({items:[],employeeList:[],loading:true,search:'',page:1,perPage:20,deleteTarget:null,formOpen:false,formSaving:false,editingItem:null,form:{employee_id:'',status:'open',opening_cash:'',closing_cash:'',expected_cash:'',notes:''},      get total(){return this.items.length},get filteredItems(){let l=this.items;if(this.search){const q=this.search.toLowerCase();l=l.filter((i:any)=>Object.values(i).some(v=>String(v).toLowerCase().includes(q)))}return l},pagedItems(){const s=(this.page-1)*this.perPage;return this.filteredItems.slice(s,s+this.perPage)},      empName(id:any){const e=this.employeeList.find((x:any)=>String(x.id)===String(id));return e?((e.first_name||'')+' '+(e.last_name||'')).trim():''},shiftDuration(item:any){if(!item)return '-';if(item.status==='closed'&&item.closed_at){const d=new Date(item.closed_at).getTime()-new Date(item.opened_at).getTime();if(!isNaN(d))return (Math.max(d,0)/3600000).toFixed(1)+'h'}return 'Ongoing'},expectedCash(shift:any){if(!shift||shift.status!=='open')return 0;const opened=new Date(String(shift.opened_at)).getTime();const windowStart=new Date(opened.getTime()-86400000).toISOString().slice(0,19).replace('T',' ');const windowEnd=new Date(opened.getTime()+86400000).toISOString().slice(0,19).replace('T',' ');return this._expectedCache?.(shift.id)?.[windowStart+'|'+windowEnd]??0},async load(){this.loading=true;this.shiftError=null;this._expectedCache={};try{const[r,e]=await Promise.all([fetch('/ops/shifts/'),fetch('/employees/')]);if(r.ok){const d=await r.json();this.items=d.data||d||[]}if(e.ok){const d=await e.json();this.employeeList=d.data||d||[]}}catch(e){console.error(e)}finally{this.loading=false}},resetForm(){this.form={employee_id:'',status:'open',opening_cash:'',closing_cash:'',expected_cash:'',notes:''};this.editingItem=null},openAdd(){this.resetForm();this.formOpen=true},      async openEdit(item:any){this.resetForm();this.editingItem=item;this.form={employee_id:item.employee_id??item.employee??'',status:item.status||'open',opening_cash:item.opening_cash??'',closing_cash:item.closing_cash??'',expected_cash:item.expected_cash?Number(item.expected_cash):'',notes:item.notes||''};this.formOpen=true;this.shiftError=null;if(item.status==='open'){this._expectedCache={};try{const r=await fetch('/sales/',{headers:{'X-Shift-Expected':'1'}});if(r.ok){this._expectedCache[item.id]={total:await r.json().then?.(j=>j.data?.total??0)}catch(e){0}}catch(e){this._expectedCache[item.id]={total:0}}},closeForm(){if(this.formSaving)return;this.formOpen=false;this.resetForm()},      async doSave(){
-        if(!this.form.opening_cash){
-          this.$store.ui.toast('Opening cash is required','error');
-          return
-        }
-        this.shiftError=null;
-        if(this.form.status==='closed'&&!this.form.closing_cash){
-          this.$store.ui.toast('Closing cash is required to close a shift','error');
-          return
-        }
-        if(this.form.status==='closed'){
-          const expected=parseFloat(String(this.form.expected_cash))||0;
-          if(this.form.closing_cash!==''&&Math.abs(parseFloat(String(this.form.closing_cash))-expected)>0.005){
-            this.shiftError='Closing cash differs from expected by $'+(Math.abs(parseFloat(String(this.form.closing_cash))-expected).toFixed(2));
-          }
-        }
-        if(this.shiftError)return;
-        this.formSaving=true;
-        const p={employee_id:this.form.employee_id?parseInt(String(this.form.employee_id)):null,status:this.form.status,opening_cash:parseFloat(String(this.form.opening_cash))||0,closing_cash:this.form.closing_cash!==''?parseFloat(String(this.form.closing_cash)):null,expected_cash:this.form.expected_cash!==''?parseFloat(String(this.form.expected_cash)):null,notes:this.form.notes};try{let r;if(this.editingItem){r=await fetch('/ops/shifts/'+this.editingItem.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}else{r=await fetch('/ops/shifts/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}if(r.ok){this.$store.ui.toast(this.editingItem?'Shift updated':'Shift opened','success');this.closeForm();await this.load()}else{const e=await r.text();this.$store.ui.toast('Save failed: '+(e||r.status),'error')}}catch(e){this.$store.ui.toast('Network error','error')}finally{this.formSaving=false}},      confirmDelete(item:any){this.deleteTarget=item},async doDelete(){if(!this.deleteTarget)return;if(this.deleteTarget.status==='open'){this.$store.ui.toast('Cannot delete an open shift; close it first','error');this.deleteTarget=null;return}const id=this.deleteTarget.id;this.deleteTarget=null;try{await fetch('/ops/shifts/'+id,{method:'DELETE'});this.items=this.items.filter((i:any)=>i.id!==id);this.$store.ui.toast('Deleted','success')}catch(e){this.$store.ui.toast('Failed','error')}}}))});</script>
+<script>import Alpine from 'alpinejs';document.addEventListener('alpine:init',()=>{Alpine.data('opsShifts',()=>({items:[],employeeList:[],loading:true,search:'',page:1,perPage:20,deleteTarget:null,formOpen:false,formSaving:false,editingItem:null,shiftError:null,openCount:0,expectedToday:0,form:{employee_id:'',status:'open',opening_cash:'',closing_cash:'',expected_cash:'',notes:''},
+get total(){return this.items.length},
+get openShift(){return this.items.find((i:any)=>i.status==='open')||null},
+get filteredItems(){let l=this.items;if(this.search){const q=this.search.toLowerCase();l=l.filter((i:any)=>Object.values(i).some(v=>String(v).toLowerCase().includes(q)))}return l},
+pagedItems(){const s=(this.page-1)*this.perPage;return this.filteredItems.slice(s,s+this.perPage)},
+empName(id:any){const e=this.employeeList.find((x:any)=>String(x.id)===String(id));return e?((e.first_name||'')+' '+(e.last_name||'')).trim():''},
+shiftDuration(item:any){if(!item)return '-';if(item.status==='closed'&&item.closed_at){const d=new Date(item.closed_at).getTime()-new Date(item.opened_at).getTime();if(!isNaN(d))return (Math.max(d,0)/3600000).toFixed(1)+'h'}return 'Ongoing'},
+// Sum of cash sales completed inside the shift window (opened_at → now/closed_at).
+// Kept client-side: the Shift model exposes expected_cash as a stored column the
+// server fills on close; here we preview it from the /sales/ rows already loaded.
+cashSalesBetween(startIso:string,endIso:string){const s=new Date(startIso).getTime(),e=new Date(endIso||new Date().toISOString()).getTime();return (this.salesCache||[]).filter((sale:any)=>{if((sale.payment_method||'').toLowerCase()!=='cash')return 0;const t=new Date(sale.sale_date||sale.created_at||0).getTime();return t>=s&&t<=e}).reduce((sum:number,sale:any)=>sum+Number(sale.total||0),0)},
+async refreshOpenCount(){const r=await fetch('/ops/shifts/');if(r.ok){const d=await r.json();const all=d.data||d||[];this.openCount=all.filter((s:any)=>s.status==='open').length;this.expectedToday=all.filter((s:any)=>s.status==='open').reduce((sum:number,s:any)=>sum+Number(s.expected_cash||0),0)}},
+async load(){this.loading=true;this.shiftError=null;try{const[r,e]=await Promise.all([fetch('/ops/shifts/'),fetch('/employees/')]);if(r.ok){const d=await r.json();this.items=d.data||d||[]}if(e.ok){const d=await e.json();this.employeeList=d.data||d||[]}try{const s=await fetch('/sales/');if(s.ok){const d=await s.json();this.salesCache=d.data||d||[]}}catch(_e){/* sales cache is optional */}this.openCount=this.items.filter((s:any)=>s.status==='open').length;this.expectedToday=this.items.filter((s:any)=>s.status==='open').reduce((sum:number,s:any)=>sum+Number(s.expected_cash||0),0)}catch(e){console.error(e)}finally{this.loading=false}},
+resetForm(){this.form={employee_id:'',status:'open',opening_cash:'',closing_cash:'',expected_cash:'',notes:''};this.editingItem=null},
+openAdd(){
+  // Unique-open-shift guard: only one shift may be open at a time.
+  if(this.openCount>0){this.$store.ui.toast('A shift is already open — close it before opening a new one','error');return}
+  this.resetForm();this.formOpen=true;this.shiftError=null;
+  // Pre-fill expected cash preview from cached sales (open-shift window = now).
+  this.form.expected_cash='';
+},
+async openEdit(item:any){
+  this.resetForm();this.editingItem=item;
+  this.form={employee_id:item.employee??item.employee_id??'',status:item.status||'open',opening_cash:item.opening_cash??'',closing_cash:item.closing_cash??'',expected_cash:item.expected_cash?Number(item.expected_cash):'',notes:item.notes||''};
+  this.formOpen=true;this.shiftError=null;
+  // Auto-compute expected cash for an open shift: opening float + cash sales since open.
+  if(item.status==='open'&&!item.expected_cash){
+    const cashSales=this.cashSalesBetween(item.opened_at,new Date().toISOString());
+    this.form.expected_cash=(Number(item.opening_cash||0)+cashSales).toFixed(2);
+  }
+},
+closeForm(){if(this.formSaving)return;this.formOpen=false;this.resetForm()},
+async doSave(){
+  if(!this.form.opening_cash){this.$store.ui.toast('Opening cash is required','error');return}
+  this.shiftError=null;
+  // Unique-open-shift: when creating an open shift (or re-opening one) while
+  // another open shift exists, block before hitting the DB constraint.
+  if(this.form.status==='open'&&(!this.editingItem||this.editingItem.status!=='open')&&this.openCount>0){
+    this.shiftError='Another shift is already open — only one open shift is allowed';
+    return;
+  }
+  if(this.form.status==='closed'&&!this.form.closing_cash){
+    this.$store.ui.toast('Closing cash is required to close a shift','error');return;
+  }
+  if(this.form.status==='closed'){
+    const expected=parseFloat(String(this.form.expected_cash))||0;
+    if(this.form.closing_cash!==''&&Math.abs(parseFloat(String(this.form.closing_cash))-expected)>0.005){
+      this.shiftError='Closing cash differs from expected by $'+(Math.abs(parseFloat(String(this.form.closing_cash))-expected)).toFixed(2);
+    }
+  }
+  if(this.shiftError)return;
+  this.formSaving=true;
+  const p={employee_id:this.form.employee_id?parseInt(String(this.form.employee_id)):null,status:this.form.status,opening_cash:parseFloat(String(this.form.opening_cash))||0,closing_cash:this.form.closing_cash!==''?parseFloat(String(this.form.closing_cash)):null,expected_cash:this.form.expected_cash!==''?parseFloat(String(this.form.expected_cash)):null,notes:this.form.notes};
+  try{let r;if(this.editingItem){r=await fetch('/ops/shifts/'+this.editingItem.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}else{r=await fetch('/ops/shifts/',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}
+  if(r.ok){this.$store.ui.toast(this.editingItem?'Shift updated':'Shift opened','success');this.closeForm();await this.load()}else{const e=await r.text();this.$store.ui.toast('Save failed: '+(e||r.status),'error')}}catch(e){this.$store.ui.toast('Network error','error')}finally{this.formSaving=false}},
+confirmDelete(item:any){this.deleteTarget=item},
+async doDelete(){if(!this.deleteTarget)return;
+  if(this.deleteTarget.status==='open'){this.$store.ui.toast('Cannot delete an open shift; close it first','error');this.deleteTarget=null;return}
+  const id=this.deleteTarget.id;this.deleteTarget=null;try{await fetch('/ops/shifts/'+id,{method:'DELETE'});this.items=this.items.filter((i:any)=>i.id!==id);this.openCount=this.items.filter((s:any)=>s.status==='open').length;this.$store.ui.toast('Deleted','success')}catch(e){this.$store.ui.toast('Failed','error')}}
+}))});</script>

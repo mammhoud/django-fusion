@@ -2302,7 +2302,7 @@ def config_master_sync(request: HttpRequest, pk: int) -> JsonResponse:
 # ═══════════════════════════════════════════════════════════════════════════
 
 def crm_dashboard(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Company, Contact, Deal
+    from models.crm import Company, Contact, Deal
     return _json({
         "companies": Company.objects.count(),
         "contacts": Contact.objects.count(),
@@ -2311,55 +2311,198 @@ def crm_dashboard(request: HttpRequest) -> JsonResponse:
 
 
 def crm_contacts(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Contact
+    from models.crm import Contact
+    if request.method == "POST":
+        return crm_contact_create(request)
     return _json([_ser_model(c) for c in Contact.objects.all()[:100]])
 
 
 def crm_contact_detail(request: HttpRequest, contact_id: int) -> JsonResponse:
-    from models.crm_models import Contact
+    from models.crm import Contact
     try:
-        return _json(_ser_model(Contact.objects.get(id=contact_id)))
+        contact = Contact.objects.get(id=contact_id)
     except Contact.DoesNotExist:
         return _error(404, "Contact not found")
+    if request.method == "PUT" or request.method == "PATCH":
+        body = json.loads(request.body) if request.body else {}
+        for key, value in body.items():
+            if key == "company_id":
+                setattr(contact, "company_id", value or None)
+            elif key != "id":
+                setattr(contact, key, value)
+        contact.save()
+    elif request.method == "DELETE":
+        contact.delete()
+        return _json({"status": "deleted", "id": contact_id})
+    return _json(_ser_model(contact))
 
 
 def crm_contact_create(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Contact
+    from models.crm import Contact
     body = json.loads(request.body) if request.body else {}
+    if not body.get("first_name") or not body.get("last_name"):
+        return _error(400, "first_name and last_name are required")
+    if "company_id" in body:
+        body["company_id"] = body["company_id"] or None
+    body.pop("id", None)
     contact = Contact.objects.create(**body)
     return _json(_ser_model(contact), status=201)
 
 
 def crm_companies(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Company
+    from models.crm import Company
+    if request.method == "POST":
+        body = json.loads(request.body) if request.body else {}
+        if not body.get("name"):
+            return _error(400, "name is required")
+        body.pop("id", None)
+        company = Company.objects.create(**body)
+        return _json(_ser_model(company), status=201)
     return _json([_ser_model(c) for c in Company.objects.all()[:100]])
 
 
+def crm_company_detail(request: HttpRequest, company_id: int) -> JsonResponse:
+    from models.crm import Company
+    try:
+        company = Company.objects.get(id=company_id)
+    except Company.DoesNotExist:
+        return _error(404, "Company not found")
+    if request.method == "PUT" or request.method == "PATCH":
+        body = json.loads(request.body) if request.body else {}
+        for key, value in body.items():
+            if key != "id":
+                setattr(company, key, value)
+        company.save()
+    elif request.method == "DELETE":
+        company.delete()
+        return _json({"status": "deleted", "id": company_id})
+    return _json(_ser_model(company))
+
+
 def crm_deals(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Deal
+    from models.crm import Deal
+    if request.method == "POST":
+        return crm_deal_create(request)
     return _json([_ser_model(d) for d in Deal.objects.all()[:100]])
 
 
+def crm_deal_detail(request: HttpRequest, deal_id: int) -> JsonResponse:
+    from models.crm import Deal
+    try:
+        deal = Deal.objects.get(id=deal_id)
+    except Deal.DoesNotExist:
+        return _error(404, "Deal not found")
+    if request.method == "PUT" or request.method == "PATCH":
+        body = json.loads(request.body) if request.body else {}
+        fk_map = {
+            "contact_id": "contact_id", "company_id": "company_id",
+            "pipeline_id": "pipeline_id", "stage_id": "stage_id",
+        }
+        for key, value in body.items():
+            if key in fk_map:
+                setattr(deal, fk_map[key], value or None)
+            elif key != "id":
+                setattr(deal, key, value)
+        deal.save()
+    elif request.method == "DELETE":
+        deal.delete()
+        return _json({"status": "deleted", "id": deal_id})
+    return _json(_ser_model(deal))
+
+
 def crm_deal_create(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Deal
+    from models.crm import Deal
     body = json.loads(request.body) if request.body else {}
+    if not body.get("title"):
+        return _error(400, "title is required")
+    if not body.get("pipeline_id"):
+        return _error(400, "pipeline_id is required")
+    body.pop("id", None)
+    for key in ("contact_id", "company_id", "stage_id"):
+        if key in body:
+            body[key] = body[key] or None
     deal = Deal.objects.create(**body)
     return _json(_ser_model(deal), status=201)
 
 
 def crm_pipelines(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Pipeline
-    return _json([_ser_model(p) for p in Pipeline.objects.all()])
+    from models.crm import Pipeline
+    pipelines = []
+    for p in Pipeline.objects.all().prefetch_related("stages"):
+        data = _ser_model(p)
+        data["stages"] = [_ser_model(s) for s in p.stages.all().order_by("display_order")]
+        pipelines.append(data)
+    return _json(pipelines)
 
 
 def crm_activities(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import Activity
+    from models.crm import Activity
+    if request.method == "POST":
+        body = json.loads(request.body) if request.body else {}
+        if not body.get("subject"):
+            return _error(400, "subject is required")
+        body.pop("id", None)
+        for key in ("contact_id", "deal_id"):
+            if key in body:
+                body[key] = body[key] or None
+        activity = Activity.objects.create(**body)
+        return _json(_ser_model(activity), status=201)
     return _json([_ser_model(a) for a in Activity.objects.all()[:100]])
 
 
+def crm_activity_detail(request: HttpRequest, activity_id: int) -> JsonResponse:
+    from models.crm import Activity
+    try:
+        activity = Activity.objects.get(id=activity_id)
+    except Activity.DoesNotExist:
+        return _error(404, "Activity not found")
+    if request.method == "PUT" or request.method == "PATCH":
+        body = json.loads(request.body) if request.body else {}
+        for key, value in body.items():
+            if key in ("contact_id", "deal_id"):
+                setattr(activity, key, value or None)
+            elif key != "id":
+                setattr(activity, key, value)
+        activity.save()
+    elif request.method == "DELETE":
+        activity.delete()
+        return _json({"status": "deleted", "id": activity_id})
+    return _json(_ser_model(activity))
+
+
 def crm_notes(request: HttpRequest) -> JsonResponse:
-    from models.crm_models import CRMNote
+    from models.crm import CRMNote
+    if request.method == "POST":
+        body = json.loads(request.body) if request.body else {}
+        if not body.get("content"):
+            return _error(400, "content is required")
+        body.pop("id", None)
+        for key in ("contact_id", "deal_id"):
+            if key in body:
+                body[key] = body[key] or None
+        note = CRMNote.objects.create(**body)
+        return _json(_ser_model(note), status=201)
     return _json([_ser_model(n) for n in CRMNote.objects.all()[:100]])
+
+
+def crm_note_detail(request: HttpRequest, note_id: int) -> JsonResponse:
+    from models.crm import CRMNote
+    try:
+        note = CRMNote.objects.get(id=note_id)
+    except CRMNote.DoesNotExist:
+        return _error(404, "Note not found")
+    if request.method == "PUT" or request.method == "PATCH":
+        body = json.loads(request.body) if request.body else {}
+        for key, value in body.items():
+            if key in ("contact_id", "deal_id"):
+                setattr(note, key, value or None)
+            elif key != "id":
+                setattr(note, key, value)
+        note.save()
+    elif request.method == "DELETE":
+        note.delete()
+        return _json({"status": "deleted", "id": note_id})
+    return _json(_ser_model(note))
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -2513,7 +2656,103 @@ def list_delivery_zones(request: HttpRequest) -> JsonResponse:
     return _json([_ser_model(z) for z in DeliveryZone.objects.all().order_by("name")])
 
 def list_shifts(request: HttpRequest) -> JsonResponse:
+    if request.method == "POST":
+        return create_shift(request)
     return _json([_ser_model(s) for s in Shift.objects.all().order_by("-opened_at")])
+
+
+def _shift_expected_cash(shift: Shift) -> float:
+    """Auto-compute expected closing cash for a shift window.
+
+    Opening float + sum of completed cash sales between ``opened_at`` and
+    ``closed_at`` (or now for an open shift).
+    """
+    end = shift.closed_at or dj_timezone.now()
+    cash_total = (
+        Sale.objects.filter(
+            status="completed",
+            payment_method="cash",
+            sale_date__gte=shift.opened_at,
+            sale_date__lte=end,
+        ).aggregate(s=Sum("total"))["s"]
+        or 0
+    )
+    return float(shift.opening_cash or 0) + float(cash_total)
+
+
+def create_shift(request: HttpRequest) -> JsonResponse:
+    """POST /shifts/ (and /ops/shifts/) — open a new register shift.
+
+    Enforces the model's partial unique constraint (``unique_open_shift``)
+    up front so the client sees a clean 409 instead of an IntegrityError.
+    """
+    body = json.loads(request.body) if request.body else {}
+    if body.get("status", "open") == "open":
+        if Shift.objects.filter(status="open").exists():
+            return _error(409, "Another shift is already open — only one open shift is allowed")
+    body.pop("id", None)
+    if "employee_id" in body:
+        body["employee_id"] = body["employee_id"] or None
+    # Server-side truth: expected cash is computed, never client-supplied.
+    body.pop("expected_cash", None)
+    try:
+        shift = Shift.objects.create(**body)
+    except Exception as exc:
+        return _error(400, f"invalid shift payload: {exc}")
+    return _json(_ser_model(shift), status=201)
+
+
+def shift_detail(request: HttpRequest, shift_id: int) -> JsonResponse:
+    """GET/PUT/DELETE /shifts/<id> (and /ops/shifts/<id>) — shift CRUD.
+
+    PUT closing a shift auto-computes ``expected_cash`` when the client did
+    not send it, mirroring the model contract (expected = opening float +
+    completed cash sales in the window).
+    """
+    try:
+        shift = Shift.objects.get(id=shift_id)
+    except Shift.DoesNotExist:
+        return _error(404, "Shift not found")
+
+    if request.method == "PUT" or request.method == "PATCH":
+        body = json.loads(request.body) if request.body else {}
+        closing = body.get("status") == "closed" or "closing_cash" in body
+        if body.get("status") == "open" and shift.status != "open":
+            if Shift.objects.filter(status="open").exclude(id=shift.id).exists():
+                return _error(409, "Another shift is already open — only one open shift is allowed")
+        if "employee_id" in body:
+            shift.employee_id = body["employee_id"] or None
+        if "status" in body:
+            shift.status = body["status"]
+        if "opening_cash" in body:
+            shift.opening_cash = body["opening_cash"] or 0
+        if "closing_cash" in body:
+            shift.closing_cash = body["closing_cash"] if body["closing_cash"] is not None else None
+        if "notes" in body:
+            shift.notes = body["notes"] or ""
+        if closing and shift.status == "closed":
+            if shift.closed_at is None:
+                shift.closed_at = dj_timezone.now()
+            # Auto-compute expected cash unless the client supplied one.
+            if body.get("expected_cash") is not None:
+                shift.expected_cash = body["expected_cash"]
+            else:
+                shift.expected_cash = _shift_expected_cash(shift)
+        shift.save()
+        data = _ser_model(shift)
+        data["expected_cash_computed"] = _shift_expected_cash(shift)
+        return _json(data)
+
+    if request.method == "DELETE":
+        if shift.status == "open":
+            return _error(409, "Cannot delete an open shift; close it first")
+        shift.delete()
+        return _json({"status": "deleted", "id": shift_id})
+
+    data = _ser_model(shift)
+    if shift.status == "open":
+        data["expected_cash_computed"] = _shift_expected_cash(shift)
+    return _json(data)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
