@@ -20,6 +20,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Precis Landing | [`precis-landing.md`](precis-landing.md) | Landing site architecture, content, and frontend work |
 | Loop-CRM | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | Loop-CRM Wagtail landing + billing + webapp | [`loop-crm/wagtail-landing-plan.md`](loop-crm/wagtail-landing-plan.md) | Wagtail-managed public landing (precis-landing pattern), Stripe subscriptions, sidenav/guided UX, employees + report catalog, shared-locale i18n, license removal |
+| **Workspace CRM program** | [`workspace-crm/README.md`](workspace-crm/README.md) | Six milestone plans extending Loop-CRM: schema-per-tenant domains + methodology, unified workspace session via proxy middleware, Unfold + Wagtail admin, landing subscriptions, per-project theme files, 20 landing samples, ThemeForest pack |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Config cascade (all Django products) | [`django-fusion/config-cascade-plan.md`](django-fusion/config-cascade-plan.md) | Layered config cascade (`config.project`), project `configs/` dirs (Precis Main/CTC, Loop-CRM, Syntara, Formint Cloud), base-URL priority resolution, Docker env cascade, static-files read/output/deploy reference |
 | Startup docs enhancement | [`repository/startup-docs-enhancement-plan.md`](repository/startup-docs-enhancement-plan.md) | Progressive plan folding the 14-doc startup pack into `docs/startup/` — gap analysis, added/not-added remarks, phased linking |
@@ -50,6 +51,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Precis Landing | Active | [`precis-landing.md`](precis-landing.md) |
 | Loop-CRM merge | Foundation + tenancy/auth + tenant-scoped CRUD + channels + allauth + real screens shipped; AI hub & remaining adapters next | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) |
 | Precis Dev multi-tenant platform | Proposed | [`repository/precis-dev-multitenant.md`](repository/precis-dev-multitenant.md) |
+| Workspace CRM program (M1–M6) | Proposed | [`workspace-crm/README.md`](workspace-crm/README.md) |
 | CTC Research publish | Active | [`repository/ctc-research-publish-2026-08-18.md`](repository/ctc-research-publish-2026-08-18.md) |
 | Precis Dev multi-tenant | [`repository/precis-dev-multitenant.md`](repository/precis-dev-multitenant.md) | Schema-per-tenant via django-tenants, role-based auth (LMS/CRM manager), per-tenant Wagtail CMS landing pages, Dramatiq lifecycle workflows |
 | CTC Research MCP + django-fusion Integration | Proposed | [`repository/precis-ctc-mcp-django-fusion-integration.md`](repository/precis-ctc-mcp-django-fusion-integration.md) |
@@ -86,6 +88,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 
 | Analyzer + Skeleton + Asset APIs plan created | 2026-08-10 | Dynamic skeleton loading, per-page ordered components, component-level asset APIs, Astro minimal JS bridge |
 | Loop-CRM Wagtail landing + billing + shared locale plan | 2026-08-18 | Proposed — Wagtail landing (precis-landing pattern), Stripe billing, sidenav/guided UX, employees/reports, `projects/assets/locale` consolidation |
+| Workspace CRM program created | 2026-09-12 | Proposed — 6 milestone plans under `workspace-crm/`: multi-tenant domain schemas, workspace session + proxy middleware, Unfold/Wagtail admin + landing subscriptions, theme files + components, 20-sample landing library, theme guidelines + ThemeForest pack. Extends Loop-CRM; reuses `precis-dev-multitenant` and `THEME_DIRECTORY_STRATEGY` |
 | Config cascade plan | 2026-08-20 | Active — `django_fusion.config.project` module (base-URL priority), `configs/` dirs for Precis Main/CTC, Loop-CRM, Syntara, Formint Cloud; frontend wire (`make config-front`), Docker override, `make config-show`/`config-check`, static-files read/output/deploy reference |
 | Startup docs enhancement plan created | 2026-08-20 | Analyzed the 14-doc startup pack vs the monorepo; added `startup/company-profile.md`, `startup/product-profiles.md`, `startup/revenue-model.md`, `startup/presentation.md`, module price book (`PRICING.md` §6); declined the pack's fictional `fusion.*` django-fusion package guide |
 | CTC Research publish plan | 2026-08-18 | Active — full content/component audit, es/sv/pt-br catalogs, media/bundles proxy, email parity + test, `make redeploy`, Nx, cross-module workflows |
@@ -113,6 +116,7 @@ docs/plans/
 ├── repository/               # Cross-repository plans
 ├── editions/                 # Formint edition execution chain
 ├── loop-crm/                 # Loop-CRM merge plan (Twenty + Postiz)
+├── workspace-crm/            # Workspace CRM program (M1–M6: tenancy, session, admin, themes, samples, publish)
 ├── django-fusion/            # Shared framework plans
 ├── precis-landing.md         # Precis Landing plans (was `precis-landing/`)
 ├── document-lifecycle.md

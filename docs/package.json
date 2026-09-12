@@ -5,6 +5,8 @@
   "scripts": {
     "prepare-content": "node scripts/prepare-content.mjs",
     "validate-content": "node scripts/validate-content.mjs",
+    "agenda-relations": "node agenda/scripts/link-agenda-relations.mjs",
+    "agenda-relations:check": "node agenda/scripts/link-agenda-relations.mjs --check",
     "dev": "npm run prepare-content && nuxt dev",
     "build": "npm run prepare-content && nuxt build",
     "build:static": "npm run prepare-content && nuxt generate",

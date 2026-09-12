@@ -106,6 +106,27 @@ Review the AnyType documentation for consistency:
 3. Check for orphaned files (no backlinks from other docs)
 4. Report any duplicate or deprecated content
 
+### Filling role ↔ project relations
+
+> Runs offline; writes only inside `<!-- agenda-relations:… -->` blocks, so it is
+> safe to re-run after any edit to the fact tables.
+
+Fill the roles named in the agenda fact tables back into the graph
+the same way the Anytype client attaches relation properties to objects:
+
+1. `node agenda/scripts/link-agenda-relations.mjs` (from `docs/`) — scans
+   `task-tracking.md`, `feature-tracking.md`, `sales-pipeline.md`, the plans
+   family and `case-studies/`, then fills `## Assigned Objects (generated)` on
+   Person objects and `## Related Roles / Related Documents / Related Features`
+   on Project objects, plus a missing `Owner:` from the explicit owner map.
+   `--check` (CI) fails on drift; `--dry-run` reports only; `--emit-anytype`
+   writes the payload in `anytype-client` shape for a later push.
+2. Resolve anything it reports: unknown `@handles` (create the Person object or
+   add a `HANDLE_ALIASES` entry) and non-person owners (teams, `TBD`) — the
+   script never invents a Person or an accountable `Owner`.
+3. Re-run `--check` after hand-editing an object so the generated block and the
+   authored relations stay consistent.
+
 ### Updating relations
 
 > ✅ Completed — `objects/_relations.md` now includes the data-analysis and
