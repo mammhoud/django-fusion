@@ -245,7 +245,7 @@ them should be customized as follows:
 ## 6. Related
 
 - [`docs/agenda/dev-team-plans.md`](../agenda/dev-team-plans.md) — status-truth matrix and "couldn't add" register
-- [`docs/agenda/feature-tracking.md`](../agenda/feature-tracking.md) § Loop-CRM — AI hub/locale/connectors milestone
+- [`docs/agenda/feature-tracking/loop-crm.md`](../agenda/feature-tracking/loop-crm.md) — AI hub/locale/connectors milestone
 - [`docs/loop-crm/README.md`](../loop-crm/README.md) — Loop-CRM data roads
 - [`projects/loop-crm/frontend/DESIGN.md`](../../projects/loop-crm/frontend/DESIGN.md) — Tactical Telemetry token map
 

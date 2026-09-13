@@ -50,9 +50,11 @@ Campaign, sales, commerce, social, team, and product development objects use `Ob
 
 | Team | Members | Lead |
 |---|---|---|
-| Product | Moustafa, Mammhoud | Mammhoud |
-| Engineering | Yahia, Asmaa, Mahmoud | Mammhoud |
-| Support | Dariia | Mammhoud |
+| Leadership | Mahmoud | Mahmoud |
+| Product & PM | Moustafa | Moustafa |
+| Front-end & UX | Yahia | Yahia |
+| Data & Reporting | Asmaa | Asmaa |
+| Support | Dariia | Moustafa |
 
 Each person is an object in `people/`. Link a person to their Team, Owned Plans, Assigned Tasks, Owned Products, Authored Posts, and Made Decisions.
 

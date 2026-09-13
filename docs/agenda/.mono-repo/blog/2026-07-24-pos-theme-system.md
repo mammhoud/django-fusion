@@ -11,7 +11,7 @@ Author: mammhoud
 > **Excerpt:** Five production-ready themes for the POS desktop app — Default, Corporate, Luxury, Pastel, and Perplexity.
 
 - **Published:** 2026-07-24
-- **Author:** → `../objects/people/me.md`
+- **Author:** → `../objects/people/mahmoud.md`
 - **Category:** Announcement
 - **Tags:** `#pos-solo` `#pos-full` `#theme-default` `#theme-corporate` `#theme-luxury` `#theme-pastel` `#theme-perplexity`
 

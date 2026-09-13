@@ -26,7 +26,7 @@ links:
     to: "/agenda/main"
     icon: "i-lucide-clipboard-list"
   - label: "Feature Tracking — QR Menu"
-    to: "/agenda/feature-tracking"
+    to: "/agenda/feature-tracking/formint-pos"
     icon: "i-lucide-target"
   - label: "Case study — Multi-terminal Sync"
     to: "/agenda/case-studies/pos-multi-terminal-sync"
@@ -40,7 +40,7 @@ links:
 
 > **Date:** 2026-08-31 | **Status:** Active
 > **Scope:** Versioned localized menu, preview/publish workflow, branch/table QR code generation
-> **Feature tracking:** [`feature-tracking.md`](../feature-tracking.md) § QR Menu
+> **Feature tracking:** [`feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § QR Menu
 > **Related:** [`pos-multi-terminal-sync.md`](./pos-multi-terminal-sync.md), [`pos-offline-queue.md`](./pos-offline-queue.md)
 
 ---
@@ -263,7 +263,7 @@ Translating every menu item into every language is expensive and often unnecessa
 
 | Document | Path |
 |----------|------|
-| Feature tracking — QR Menu | [`../feature-tracking.md`](../feature-tracking.md) § QR Menu |
+| Feature tracking — QR Menu | [`../feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § QR Menu |
 | Case study — Multi-terminal Sync | [./pos-multi-terminal-sync.md](./pos-multi-terminal-sync.md) |
 | Case study — Offline Queue | [./pos-offline-queue.md](./pos-offline-queue.md) |
 | Case study — DataToken Sync Tagging | [./data-token-sync-tagging.md](./data-token-sync-tagging.md) |

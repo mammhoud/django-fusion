@@ -25,7 +25,7 @@ Cross-project repository-level implementation and migration plans.
 
 | Plan | Milestone record |
 |------|-----------------|
-| `ctc-research-ceptor-ai-migration.md` — ceptor-ai removal (✅ code-level complete) | [`docs/agenda/feature-tracking.md`](../../agenda/feature-tracking.md) § CTC Research — ceptor-ai migration |
+| `ctc-research-ceptor-ai-migration.md` — ceptor-ai removal (✅ code-level complete) | [`docs/agenda/feature-tracking/ctc-research.md`](../../agenda/feature-tracking/ctc-research.md) — ceptor-ai migration |
 
 Completed plans are deleted from this directory; git history is the archive.
 

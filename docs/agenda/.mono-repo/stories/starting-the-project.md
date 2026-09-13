@@ -2,7 +2,7 @@
 Object type: Story
 Tags: story, narrative, journey, founder, origin, django, platform, startup
 Status: Published
-Author: people/me.md
+Author: people/mahmoud.md
 Phase: Enterprise
 Related Plans: startup-planner, product-development, project-workspace
 Related Products: formint-pos

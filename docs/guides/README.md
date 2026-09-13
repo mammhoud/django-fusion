@@ -49,6 +49,7 @@ links:
 | ✅ **08** | [Best Practices](08-best-practices.md) | Patterns to adopt, anti-patterns to avoid, code review checklist | All engineers |
 | 📝 **09** | [Docus Implementation](09-docus.md) | Docus/Nuxt config, i18n, content pipeline, validation | Docs maintainers |
 | 💊 **10** | [Fusion Assets Health](10-fusion-assets-health.md) | Static asset pipeline, CSS/JS health checks, bundle analysis | Frontend engineers |
+| 🛠 **11** | [Tools Dashboard & Auth](11-tools-dashboard-auth.md) | Internal tools portal: dashboard listing, sign-in modal, unlock gate, sessions | Operators, workspace tooling |
 
 ---
 
@@ -58,7 +59,7 @@ links:
 |---------|------------|------|
 | **New engineer** | 00 → 01 → 02 | 03, 04, 05 |
 | **Coding agent (AI)** | 00 → 02 (project table) | Relevant product guide |
-| **Operator / DevOps** | 00 → 01 → 05 | 10 (asset health) |
+| **Operator / DevOps** | 00 → 01 → 05 | 10 (asset health), 11 (tools portal) |
 | **Frontend dev** | 00 → 02 → 04 | 06, 10 |
 | **Backend dev** | 00 → 02 → 03 | 04, 08 |
 | **Docs maintainer** | 00 → 09 | 08 |

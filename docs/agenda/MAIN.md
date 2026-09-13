@@ -45,7 +45,7 @@ links:
 > نبنيه الآن، ومن قد يشتري، وما يُسمح قولُه علناً، وما قررناه في الطريق. هي
 > تتبّع النتائج والإيرادات — لا التفاصيل التقنية.
 >
-> **Last updated:** 2026-09-10 · **Owner:** Workspace / Product leads
+> **Last updated:** 2026-09-12 · **Owner:** Workspace / Product leads
 
 ---
 
@@ -165,7 +165,7 @@ graph LR
 
 | File | Fact it counts | الحقيقة التي تُحتسب |
 |---|---|---|
-| [`feature-tracking.md`](./feature-tracking.md) | Milestones shipped & features in flight | المعالم المنجزة والميزات الجارية |
+| [`feature-tracking.md`](./feature-tracking.md) + `feature-tracking/` (9 product files) | Milestones shipped & features in flight | المعالم المنجزة والميزات الجارية |
 | [`task-tracking.md`](./task-tracking.md) | Sprint tasks: assignee, status, due | مهام السباق: المسؤول والحالة والموعد |
 | [`sales-pipeline.md`](./sales-pipeline.md) | Leads & deals: stage, source, next step | العملاء المحتملون والصفقات: المرحلة والمصدر والخطوة التالية |
 | [`team-notes.md`](./team-notes.md) | Decisions, blockers, meeting outcomes | القرارات والمعوّقات ونتائج الاجتماعات |
@@ -179,7 +179,7 @@ graph LR
 | [`marketing-plans.md`](./marketing-plans.md) | Positioning, campaigns, claims | التموضع والحملات والادعاءات |
 | [`data-analyst-plans.md`](./data-analyst-plans.md) | Metrics, evidence levels, pilots | المقاييس ومستويات الأدلة والتجارب |
 | [`startup-story.md`](./startup-story.md) | Founder journey & achievement board | رحلة المؤسس ولوحة الإنجازات |
-| [`backend-plans.md`](./backend-plans.md) | Merged pointer → dev-team-plans | مؤشر بعد الدمج → خطط فريق التطوير |
+| [`roles/`](./roles/README.md) | One minimal plan per person: tasks + validators | خطة مختصرة لكل فرد: المهام والمتحققون |
 
 ### 3.4 Rhythm & quality gates
 
@@ -195,7 +195,14 @@ graph LR
 | [`case-studies.md`](./case-studies.md) + [`case-studies/`](./case-studies/INDEX.md) | Implementation stories with diagrams | قصص التنفيذ مع المخططات |
 | [`diagrams/`](./diagrams/README.md) | Rendered diagram package (SVGs) | حزمة المخططات المصيّرة (SVG) |
 | [`anytype-extensibility.md`](./anytype-extensibility.md) | Knowledge-graph research proposal | مقترح بحثي لنموذج الرسم البياني المعرفي |
-| [`tools-auth-dashboard.md`](./tools-auth-dashboard.md) | Internal tools portal guide | دليل بوابة الأدوات الداخلية |
+
+> **English.** The internal tools portal guide is now an engineering guide:
+> [`../guides/11-tools-dashboard-auth.md`](../guides/11-tools-dashboard-auth.md).
+> This directory holds business agenda records only.
+>
+> **العربية.** دليل بوابة الأدوات الداخلية أصبح دليل هندسي:
+> [`../guides/11-tools-dashboard-auth.md`](../guides/11-tools-dashboard-auth.md).
+> هذا الدليل يحتوي سجلات أجندة الأعمال فقط.
 
 ### 3.6 Package B — knowledge graph
 
@@ -244,7 +251,8 @@ graph LR
 
 ```text
 docs/agenda/MAIN.md  (this hub — المركز)
-├── feature-tracking.md ──→ docs/features/feature-roadmap.md   (priorities)
+├── feature-tracking.md ──→ feature-tracking/*.md               (per product)
+│                            → docs/features/feature-roadmap.md (priorities)
 ├── case-studies.md ──────→ docs/plans/README.md               (plan registry)
 ├── team-notes.md ────────→ docs/plans/README.md               (major decisions)
 ├── dev-team-plans.md ────→ docs/plans/editions|django-fusion  (engineering plans)

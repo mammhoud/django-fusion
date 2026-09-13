@@ -662,7 +662,7 @@ override the user's design system.
 | `libs/django-fusion/docs/10-wagtail-integration.md` + `18-render-contract.md` | Wagtail integration + render contract for Phases 1–3 |
 | `docs/plans/precis-landing.md` | Landing plan pattern (checks-before-blocks, plan dir conventions) |
 | `docs/plans/loop-crm/merge-plan.md` | The Loop-CRM merge roadmap this plan extends (license header, adapters, AI hub) |
-| `docs/agenda/feature-tracking.md` § Loop-CRM — Formint finance integration | Formint↔Loop-CRM finance + workflow expansion (completed — the plan file was deleted; git history is the archive) |
+| `docs/agenda/feature-tracking/loop-crm.md` — Formint finance integration | Formint↔Loop-CRM finance + workflow expansion (completed — the plan file was deleted; git history is the archive) |
 | `docs/plans/editions/08-tenant-schemas.md` | django-tenants migration pattern reference (§6) |
 | `docs/plans/repository/locale-fixture-audit-2026-07-31.md` | Wagtail content-locale audit (distinct from `.po` catalogs; both matter for §16) |
 | `docs/plans/repository/active-monorepo-consolidation-2026-08-14.md` | Monorepo consolidation context (workers, Nx, dev-workspace) |

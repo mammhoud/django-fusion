@@ -26,7 +26,7 @@ links:
     to: "/agenda/main"
     icon: "i-lucide-clipboard-list"
   - label: "Feature Tracking"
-    to: "/agenda/feature-tracking"
+    to: "/agenda/feature-tracking/formint-pos"
     icon: "i-lucide-target"
   - label: "Plans Registry"
     to: "/plans"
@@ -41,7 +41,7 @@ links:
 > **Date:** 2026-07-26 | **Updated:** 2026-08-31
 > **Status:** Active — historical record with current relevance
 > **Scope:** Analysis of django-bolt API patterns across Structa Cloud websites and POS editions
-> **Related feature:** API Access (Formint POS), feature-tracking.md § API Access
+> **Related feature:** API Access (Formint POS), [`feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § API Access
 
 ---
 
@@ -318,7 +318,7 @@ The `FusionDecoder` TypeScript counterpart, `FusionProxy` component, and the dua
 
 | Document | Path |
 |----------|------|
-| Feature tracking — API Access (Formint POS) | [`../feature-tracking.md`](../feature-tracking.md) § API Access |
+| Feature tracking — API Access (Formint POS) | [`../feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § API Access |
 | Feature roadmap — Syntara platform | [`../../features/feature-roadmap.md](../../features/feature-roadmap.md) |
 | Plans registry — canonical plans | [`../../plans/README.md`](../../plans/README.md) |
 | Original Django-Bolt case study (historical) | [`../../plans/DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../plans/DJANGO_BOLT_FUSION_CASE_STUDY.md) |

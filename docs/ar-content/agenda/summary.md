@@ -47,7 +47,7 @@ links:
 | **دورة حياة الميزات** | `agenda/feature-tracking.md` |
 | **دراسات الحالة مع المخططات** | `agenda/case-studies.md` + `case-studies/` |
 | **المخططات المصيّرة** (API UML، ERDs، Blinko) | `agenda/diagrams/README.md` — الصور في `docs/public/agenda/diagrams/` |
-| **الرسم المعرفي Anytype** (أنواع + محتوى لكل نوع) | `agenda/mono-repo/README.md` — أنواع الكائنات، 20 مجلد محتوى، سجل المطالبات |
+| **الرسم المعرفي Anytype** (أنواع + محتوى لكل نوع) | `agenda/.mono-repo/README.md` — أنواع الكائنات، 20 مجلد محتوى، سجل المطالبات |
 | **مهام السباق** | `agenda/task-tracking.md` |
 | **ملاحظات الفريق / القرارات** | `agenda/team-notes.md` |
 | **قوالب الاجتماعات** | `agenda/meeting-agenda.md` |
@@ -76,7 +76,7 @@ links:
   `dev-team-plans.md`؛ نشر تدقيق مكونات الواجهة عبر المنتجات؛ إضافة اتفاقية
   ERD لنماذج Loop-CRM؛ تنفيذ نوافذ إنشاء/تحرير Formint Pro التي أشار إليها
   التدقيق والتحقق منها (Vitest 86/86، astro check 0/0).
-- **2026-09-05** — إكمال مخطط Anytype في `mono-repo/`: 15 تعريف نوع + 20 مجلد
+- **2026-09-05** — إكمال مخطط Anytype في `.mono-repo/`: 15 تعريف نوع + 20 مجلد
   محتوى مرتبطاً بالمستودع الحقيقي (87 ملفاً)؛ إكمال كل سير عمل `_prompts.md`.
 - **2026-09-05** — إزالة تكرار وثائق المستوى الأعلى، وإصلاح مراجع صور mono-repo
   المعلقة، وإضافة **حزمة المخططات** (`diagrams/`) بصور SVG مصيّرة (59 صورة) +

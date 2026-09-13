@@ -76,7 +76,7 @@ links:
 1. Copy the template from [`../case-studies.md`](../case-studies.md)
 2. Add at least one mermaid diagram (architecture or flow)
 3. Include: Context → Architecture → Implementation → Results → Lessons
-4. Link from `feature-tracking.md` when the feature ships
+4. Link from the product's file in `../feature-tracking/` when the feature ships
 5. Add entry to this index
 6. Re-render the diagram images: `node docs/scripts/render-agenda-diagrams.mjs`
    (rendered SVGs land in `docs/public/agenda/diagrams/` — see

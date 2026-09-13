@@ -16,7 +16,7 @@ Related Goals: documentation-goals
 
 - Keeps `docs/plans/` canonical and current — no dead plan files
 - Git history remains the archive
-- Every completed plan has a backward pointer (feature-tracking § milestone)
+- Every completed plan has a backward pointer (feature-tracking/<product>.md § milestone)
 
 ## Implementation
 
@@ -26,5 +26,5 @@ Related Goals: documentation-goals
 ## Related
 
 - → `../../CONTENT_MODEL.md` — Reference contract
-- → `../../feature-tracking.md` — Milestone log
+- → `../../feature-tracking/` — Milestone logs, one file per product (hub: `../../feature-tracking.md`)
 - → `../objects/recommendation.md` — Recommendation object type

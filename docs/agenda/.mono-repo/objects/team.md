@@ -44,22 +44,22 @@ Each Team object may link a set of `Periodic Tasks` (weekly, bi-weekly, monthly,
 
 | Team | Members | Lead |
 |---|---|---|
-| Product | Moustafa, Mammhoud | Mammhoud |
-| Engineering | Yahia, Asmaa, Mahmoud | Mammhoud |
-| Marketing | — | Mammhoud |
-| Sales | — | Mammhoud |
-| Support | Dariia | Mammhoud |
+| Leadership | Mahmoud | Mahmoud |
+| Product & PM | Moustafa | Moustafa |
+| Front-end & UX | Yahia | Yahia |
+| Data & Reporting | Asmaa | Asmaa |
+| Marketing | Moustafa | Moustafa |
+| Support | Dariia | Moustafa |
 
 ## Related
 
 - → `_object-types.md` — Type definitions
 - → `_relations.md` — Relation guide
 - → `people.md` — Person object type
-- → `people/me.md` — Mammhoud
-- → `people/moustafa.md` — Moustafa
-- → `people/yahia.md` — Yahia
-- → `people/asmaa.md` — Asmaa
-- → `people/mahmoud.md` — Mahmoud
-- → `people/dariia.md` — Dariia
+- → `people/mahmoud.md` — Mahmoud (General Manager)
+- → `people/moustafa.md` — Moustafa (Product Manager)
+- → `people/yahia.md` — Yahia (Front-end + UX)
+- → `people/asmaa.md` — Asmaa (Data Development)
+- → `people/dariia.md` — Dariia (Contributor)
 - → `../plans/team.md` — Team operating plan
 - → `../plans/project-workspace.md` — Workspace and project map

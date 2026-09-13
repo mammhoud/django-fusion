@@ -31,4 +31,4 @@ Related Features: crm-core-features
 
 - → `design-tokens.md` — Shared token system
 - → `../objects/style.md` — Style object type
-- → `../../feature-tracking.md` § Loop-CRM — Twenty/Postiz DNA milestone
+- → `../../feature-tracking/loop-crm.md` — Twenty/Postiz DNA milestone

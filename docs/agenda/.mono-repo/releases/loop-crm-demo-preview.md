@@ -24,5 +24,5 @@ Related Milestones: demo-state-gap-fixing, formint-finance-integration
 
 ## Related
 
-- → `../../feature-tracking.md` § Loop-CRM — Demo state & auth gap fixing milestone
+- → `../../feature-tracking/loop-crm.md` — Demo state & auth gap fixing milestone
 - → `../objects/release.md` — Release object type

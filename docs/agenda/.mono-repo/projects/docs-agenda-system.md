@@ -2,7 +2,7 @@
 Object type: Project
 Tags: project, docs, agenda, docus, diagrams, knowledge-graph
 Status: Active
-Owner: Mammhoud
+Owner: Mahmoud
 Related Workspace: workspace
 Related Products: documentation
 Related Teams: product, engineering
@@ -33,8 +33,7 @@ Documentation is current, de-duplicated, EN/AR parity preserved, every finished 
 
 | Person | Role | Relation | Source |
 |---|---|---|---|
-| → `../objects/people/mahmoud.md` — Mahmoud | Developer | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
-| → `../objects/people/me.md` — Mammhoud | Founder | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
+| → `../objects/people/mahmoud.md` — Mahmoud | General Manager | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
 
 ## Related Documents (generated)
 
@@ -50,12 +49,13 @@ Documentation is current, de-duplicated, EN/AR parity preserved, every finished 
 | → `../../case-studies/stripe-billing.md` — case-studies/stripe-billing.md | `2.1 Billing Flow Overview` · `2.2 Subscription Lifecycle` · `2.3 Usage Metering` · `6. Related Documentation` |
 | → `../../completion-checklist.md` — completion-checklist.md | `3. Documentation` · `Before a project closeout meeting` · `✅ Definition of Done` · `📊 Completion Checklist Flow` · +1 more |
 | → `../../data-analyst-plans.md` — data-analyst-plans.md | `Cross-Product Metrics` |
-| → `../../feature-tracking.md` — feature-tracking.md | `P1 — Next Up (Q4 2026)` · `🔄 Feature Status Lifecycle` |
+| → `../../dev-team-plans.md` — dev-team-plans.md | `Development Team Plans` |
+| → `../../feature-tracking/django-fusion.md` — feature-tracking/django-fusion.md | `P1 — Next Up (Q4 2026)` |
 | → `../../marketing-plans.md` — marketing-plans.md | `Documentation as Marketing` · `Formint Professional (🔄 Pre-Launch)` |
 | → `../../meeting-agenda.md` — meeting-agenda.md | `Agenda` · `📋 How to Use These Templates` · `🔗 Related` · `🗓️ Meeting Agenda — Templates for Every Meeting Type` |
 | → `../../sales-pipeline.md` — sales-pipeline.md | `1. Pipeline stages` · `3. Active pipeline` · `👥 Sales Pipeline — Leads & Deal Tracking` |
 | → `../../task-tracking.md` — task-tracking.md | `Backlog (post Sprint-2 refinement)` · `Current Sprint — Sprint 1 (2026-09-01 to 2026-09-14)` · `Sprint 1.5 — interim (2026-09-03 → 2026-09-10)` · `Sprint 2 — 2026-09-15 to 2026-09-28` · +3 more |
-| → `../../team-notes.md` — team-notes.md | `2026-08-31 — Project Kickoff — Agenda System Setup` · `2026-09-03 — Infrastructure & Docs Workstreams — Worker Assets, Coder Deploy, Shared Assets, Anytype Research` · `2026-09-05 — Agenda System — Content Model Definition & First Meeting` · `2026-09-05 — Agenda — De-dup, Content Update & Diagram Package (Rendered Images)` · +7 more |
+| → `../../team-notes.md` — team-notes.md | `2026-08-31 — Project Kickoff — Agenda System Setup` · `2026-09-03 — Infrastructure & Docs Workstreams — Worker Assets, Coder Deploy, Shared Assets, Anytype Research` · `2026-09-05 — Agenda System — Content Model Definition & First Meeting` · `2026-09-05 — Agenda — De-dup, Content Update & Diagram Package (Rendered Images)` · +8 more |
 
 ## Related Features (generated)
 

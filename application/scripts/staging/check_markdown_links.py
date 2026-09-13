@@ -1,4 +1,4 @@
-"""CI script: validate every Markdown link under ``libs/**/docs/``.
+r"""CI script: validate Markdown links under a directory (default: ``libs/``).
 
 Two link classes are validated:
 
@@ -20,9 +20,9 @@ Exit codes
 * ``0`` — every link resolved.
 * ``1`` — at least one broken link, or a fatal scan error.
 
-The CI workflow in ``.github/workflows/check-links.yml`` runs this script on PRs and
-pushes that touch Markdown under ``libs/**/docs/`` so the legacy-README
-class of bug cannot regress silently.
+The CI workflow in ``.github/workflows/deploy-ci.yml`` runs this script on PRs and
+pushes that touch Markdown so the legacy-README class of bug cannot regress
+silently. Pass ``--scope`` to widen the scan; the default scope is ``libs/``.
 """
 from __future__ import annotations
 
@@ -33,8 +33,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# This script lives at application/scripts/check_markdown_links.py.
-# The repo root is two directories up.
+# This script lives at application/scripts/staging/check_markdown_links.py.
+# The repo root is three directories up.
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_SCOPE = REPO_ROOT / "libs"
 

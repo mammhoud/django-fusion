@@ -26,7 +26,7 @@ links:
     to: "/agenda/main"
     icon: "i-lucide-clipboard-list"
   - label: "Feature Tracking — Stripe Billing"
-    to: "/agenda/feature-tracking"
+    to: "/agenda/feature-tracking/syntara"
     icon: "i-lucide-target"
   - label: "Case Study — API Token Management"
     to: "/agenda/case-studies/api-token-management"
@@ -40,7 +40,7 @@ links:
 
 > **Date:** 2026-08-31 | **Status:** Active | **Priority:** P0
 > **Scope:** Subscription plan model (Free/Pro/Enterprise), Stripe integration, usage metering, invoice generation
-> **Feature tracking:** [`feature-tracking.md`](../feature-tracking.md) § Stripe Billing
+> **Feature tracking:** [`feature-tracking/syntara.md`](../feature-tracking/syntara.md) § Stripe Billing
 
 ---
 
@@ -232,7 +232,7 @@ Upgrades/downgrades may prorate. The platform must handle prorated charges corre
 
 | Document | Path |
 |----------|------|
-| Feature tracking — Stripe Billing | [`../feature-tracking.md`](../feature-tracking.md) § Stripe Billing |
+| Feature tracking — Stripe Billing | [`../feature-tracking/syntara.md`](../feature-tracking/syntara.md) § Stripe Billing |
 | Case study — API Token Management | [./api-token-management.md](./api-token-management.md) |
 | Feature roadmap — Syntara | [`../../features/feature-roadmap.md`](../../features/feature-roadmap.md) |
 | Syntara product docs | [`../../projects/syntara/`](../../projects/syntara/) |

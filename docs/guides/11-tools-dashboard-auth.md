@@ -1,15 +1,36 @@
 ---
-Object type: Guide
-Tags: tools, auth, dashboard
-Status: Published
----
+title: Tools Dashboard & Auth
+description: Self-hosted internal tools portal — dashboard listing, sign-in modal, per-tool unlock gate, session cookies, and API endpoints.
+navigation:
+  title: Tools Dashboard & Auth
+  icon: i-lucide-wrench
+object:
+  type: "guide"
+  id: "guide.tools-dashboard-auth"
+attributes:
+  source_path: "guides/11-tools-dashboard-auth.md"
+  canonical_route: "/docs/en/guides/11-tools-dashboard-auth"
+  source_of_truth: "repository-markdown"
+  audience: "engineers, operators, and coding agents"
+  status: "maintained"
+  owner: "workspace"
+tags:
+  - structa-cloud
+  - tools
+  - auth
+links:
+  - label: "Deploy"
+    to: "/guides/05-deploy"
+    icon: "i-lucide-rocket"
+  - label: "Reverse Proxy"
+    to: "/guides/05-deploy"
+    icon: "i-lucide-network"
 
-# Tools Dashboard (tools-web)
+# Tools Dashboard & Auth
 
-> **Status:** Active implementation
-> **Created:** 2026-08-25 · **Rewritten:** 2026-08-26
-> **Path:** application/tools/tools-web/
-> **Port:** 4321 (internal), proxied via tools.structa.cloud
+> **Owner:** Workspace tooling · **Scope:** internal portal
+> **Source path:** `application/tools/tools-web/`
+> **Last updated:** 2026-09-12
 
 ---
 

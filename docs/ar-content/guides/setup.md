@@ -20,13 +20,13 @@ navigation:
 - `.github/actions/deploy-preflight/**`
 - `**/docker-compose*.yml` و`*.yaml`
 - `libs/**/*.md`
-- `application/scripts/check_markdown_links.py`
+- `application/scripts/staging/check_markdown_links.py`
 
 الوظائف:
 
 1. **preflight** — يشغّل الإجراء المركّب المحلي `.github/actions/deploy-preflight`
    للتحقق من Docker daemon و`make deploy-ci`.
-2. **markdown-links** — يشغّل `application/scripts/check_markdown_links.py`
+2. **markdown-links** — يشغّل `application/scripts/staging/check_markdown_links.py`
    للتحقق من الروابط المتقاطعة في Markdown.
 
 ### `check-extras.yml`

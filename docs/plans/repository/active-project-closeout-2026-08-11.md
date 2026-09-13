@@ -124,7 +124,7 @@ cd ../frontend && npm run check && npm run build
 
 # Repository documentation hygiene
 cd /home/structa.cloud
-python application/scripts/check_markdown_links.py
+python application/scripts/staging/check_markdown_links.py
 ```
 
 ## Related
@@ -132,6 +132,6 @@ python application/scripts/check_markdown_links.py
 - [`../README.md`](../README.md)
 - [`../document-lifecycle.md`](../document-lifecycle.md)
 - [`../deletion-manifest.md`](../deletion-manifest.md)
-- [`../../../projects/precis/precis-lms/README.md`](../../../projects/precis/precis-lms/README.md)
-- [`../../../projects/precis/landi/README.md`](../../../projects/precis/landi/README.md)
+- [`../../../projects/precis/precis-main/README.md`](../../../projects/precis/precis-main/README.md)
+- [`../../../projects/precis/precis-landing/`](../../../projects/precis/precis-landing/)
 - [`../../../libs/django-fusion/CHANGELOG.md`](../../../libs/django-fusion/CHANGELOG.md)

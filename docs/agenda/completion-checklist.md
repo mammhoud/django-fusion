@@ -46,7 +46,7 @@ links:
 A project or feature set is **Done** when:
 
 1. All planned features are marked **Shipped** in `feature-tracking.md`
-2. All tasks are marked **Done** in `task-tracking.md`
+2. All tasks are marked **Done** in `task-tracking.md` — each validated by someone other than its assignee, with the evidence recorded (see [`task-tracking.md`](task-tracking.md) § Validating Tasks with the Team)
 3. A case study exists in `case-studies.md` with at least one mermaid diagram
 4. The plans registry (`plans/README.md`) is updated with the outcome
 5. The feature roadmap (`features/feature-roadmap.md`) reflects the shipped state
@@ -71,6 +71,7 @@ A project or feature set is **Done** when:
 | Check | Status | Notes |
 |-------|:------:|-------|
 | All tasks marked **Done** in `task-tracking.md` | ⬜ / ✅ | |
+| Every task validated by someone other than its assignee | ⬜ / ✅ | Validator named in the task row + evidence recorded |
 | No tasks left in **In Progress** or **Review** | ⬜ / ✅ | If any remain, why? |
 | Blocked tasks resolved or explicitly deferred | ⬜ / ✅ | |
 | Action items from retrospectives addressed | ⬜ / ✅ | |
@@ -85,7 +86,7 @@ A project or feature set is **Done** when:
 | Plans registry updated (`plans/README.md`) | ⬜ / ✅ | Add entry or update status |
 | Related plan documents updated | ⬜ / ✅ | |
 | Team notes record the completion decision | ⬜ / ✅ | Entry in `team-notes.md` |
-| Frontmatter valid on all new/updated docs | ⬜ / ✅ | Run `npm run validate-content` |
+| Frontmatter valid on all new/updated docs | ⬜ / ✅ | Run the documentation validation check |
 
 ### 4. Quality Verification
 

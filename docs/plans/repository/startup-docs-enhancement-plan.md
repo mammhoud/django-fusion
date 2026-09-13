@@ -32,7 +32,7 @@ dumped in as 14 standalone files.
 | 5 | Precis CMS profile | 🔴 **Not present** | No standalone CMS product (marketing/catalog shell lives inside precis-main) | 🔀 Merge into `product-profiles.md` (marked 🔴 vision) |
 | 6 | Precis Builder profile | 🔴 **Not present** | No builder product exists in the monorepo | 🔀 Merge into `product-profiles.md` (marked 🔴 vision) |
 | 7 | Precis LMS profile | 🟡 Partial | [`docs/precis/courses.md`](../../precis/courses.md) + [`startup/precis.md`](../../startup/precis.md) | 🔀 Merge feature catalog into `product-profiles.md` (🟢 live) |
-| 8 | Precis Research profile | 🟡 Partial | CTC research-center site docs: [`docs/precis-ctc/`](../../precis-ctc/README.md) | 🔀 Merge into `product-profiles.md` (CTC 🟢, platform 🔴 vision) |
+| 8 | Precis Research profile | 🟡 Partial | CTC research-center site docs: [`projects/precis/precis-ctc/`](../../../projects/precis/precis-ctc/README.md) | 🔀 Merge into `product-profiles.md` (CTC 🟢, platform 🔴 vision) |
 | 9 | Django Fusion framework | 🟡 Partial | [`docs/libs/django-fusion.md`](../../libs/django-fusion.md) + [`plans/django-fusion/README.md`](../django-fusion/README.md) | 🔀 Merge corrected package reality into `product-profiles.md` |
 | 10 | Django Fusion package guide | ⛔ **Not added (rejected as-is)** | Real API differs from the pack (see below) | 🚫 Decline — rewrite required; canonical guides exist |
 | 11 | Headless + MCP + generated projects | 🟢 Already covered | [`docs/ai/mcp-integration.md`](../../ai/mcp-integration.md) · [`plans/django-fusion/django-fusion-tasks-mcp-plan.md`](../django-fusion/django-fusion-tasks-mcp-plan.md) · [`precis-landing/backend-api.md`](../../precis/precis-landing/backend-api.md) | ✋ No new file; remark only |

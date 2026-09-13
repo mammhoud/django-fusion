@@ -15,10 +15,10 @@ The agenda is the team's delivery + memory layer:
 | **Definition** (packages, glossary, reference contract) | [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) — read first |
 | **Overview + quick start** | [`README.md`](./README.md) |
 | **Hub / how everything connects** | [`MAIN.md`](./MAIN.md) |
-| **Feature lifecycle** | [`feature-tracking.md`](./feature-tracking.md) |
+| **Feature lifecycle** | [`feature-tracking.md`](./feature-tracking.md) — hub; 9 per-product files in `feature-tracking/` |
 | **Case studies with diagrams** | [`case-studies.md`](./case-studies.md) + [`case-studies/`](./case-studies/INDEX.md) |
 | **Rendered diagrams** (API UML, ERDs, Blinko) | [`diagrams/README.md`](./diagrams/README.md) — SVGs in `docs/public/agenda/diagrams/` |
-| **Anytype object graph** (types + per-type content) | [`mono-repo/README.md`](./mono-repo/README.md) — object types, 20 content dirs, prompt ledger |
+| **Anytype object graph** (types + per-type content) | [`.mono-repo/README.md`](./.mono-repo/README.md) — object types, 20 content dirs, prompt ledger |
 | **Sprint tasks** | [`task-tracking.md`](./task-tracking.md) |
 | **Team notes / decisions** | [`team-notes.md`](./team-notes.md) |
 | **Meeting templates** | [`meeting-agenda.md`](./meeting-agenda.md) |
@@ -27,11 +27,71 @@ The agenda is the team's delivery + memory layer:
 
 ## Change log
 
+- **2026-09-13** — **Render pipeline + plan-link repair.** (1) `render-agenda-diagrams.mjs`
+  slugged the dot-directory to `-mono-repo-*`, so its skip-check never matched the
+  eight checked-in `mono-repo-*` SVGs and every run re-rendered and re-inserted them
+  as duplicates. `slugFor()` now trims leading separators after sanitizing; a full
+  run is idempotent (`0 rendered, 60 skipped, 0 failed`) and writes no files. (2)
+  Fourteen unresolved relative links in `docs/plans/` were repointed: `precis-lms`
+  and `landi` targets now resolve to `projects/precis/precis-main/` and
+  `projects/precis/precis-landing/`, the `pos-e2e` links gained their missing
+  directory level, the deleted `docs/plans/pos/cloud-plan.md` and
+  `precis-lms`/`cms-fusion` migration plans are de-linked with their removal date,
+  and the CTC profile points at `projects/precis/precis-ctc/README.md`.
+
+- **2026-09-13** — **Agenda defect sweep.** Three pre-existing defects fixed. (1)
+  Every `mono-repo/…` path reference now names the real directory, `.mono-repo/`
+  (EN + AR: `team-notes`, `task-tracking`, `CONTENT_MODEL`, `startup-story`,
+  `anytype-extensibility`, `summary`, `content-model`, `document-lifecycle`,
+  `deletion-manifest`). Prose mentions of "the mono-repo" as a name are
+  unchanged. (2) The QR Menu entry in `feature-tracking/formint-pos.md` pointed
+  its case-study link at `pos-multi-terminal-sync.md`; it now points at
+  `pos-qr-menu.md`. (3) The feature-lifecycle state diagram had two transitions
+  collapsed onto one line (`Prioritized --> [*]: Deprioritized    Shipped -->
+  [*]: Complete`), so `Shipped → Complete` never rendered — the SVG carried the
+  whole string as one label. Split into two lines and re-rendered
+  `public/agenda/diagrams/feature-tracking-1.svg` via
+  `render-agenda-diagrams.mjs`. A fourth defect was found and backlogged rather
+  than fixed at the time: the renderer's slug for the dot-directory (`-mono-repo-*`)
+  missed the checked-in `mono-repo-*` SVGs, so each run duplicated 8 diagrams —
+  **fixed 2026-09-13** (see the entry above).
+
+- **2026-09-13** — **Feature tracking split per product.** `feature-tracking.md`
+  was a single 2,282-line file holding nine products' feature tables. It is now
+  a 208-line hub (lifecycle, status definitions, entry template, per-product
+  index, shipped roll-up) plus nine files under `feature-tracking/`:
+  `syntara`, `formint-pos`, `precis-main`, `precis-landing`, `ctc-research`,
+  `portfolio` (legacy), `infrastructure`, `django-fusion`, `loop-crm`. The hub
+  keeps a heading per product so existing `feature-tracking.md § <Product>`
+  references still resolve. Verified as a pure move: every content line of the
+  nine source sections is present in its new file. The relations script now
+  scans `feature-tracking/` as a source directory, and the maps in `README.md`,
+  `MAIN.md`, `INDEX.md`, `CONTENT_MODEL.md`, and `diagrams/README.md` point at
+  the new structure.
+
+- **2026-09-12** — **Roles, validation gates, and a de-coded agenda.** (1) The
+  duplicate person objects `people/me.md` ("Mammhoud") and `people/mahmoud.md`
+  were confirmed to be the same individual and **merged** into one Mahmoud
+  object, now **General Manager + Full Stack**; `@mammhoud` remains an alias and
+  all references (projects, stories, blog, plans, team objects, task rows) were
+  repointed. (2) **Role descriptions and collaborations** added for the whole
+  team: Moustafa — Product Manager + Marketing Specialist; Yahia — Front-end
+  Developer + UX Designer (design drafts); Asmaa — Data Development; Mahmoud —
+  General Manager + Full Stack. Team objects, the team operating plan, and the
+  people/team indexes were restructured to match. (3) A **task-validation
+  workflow** was added to `task-tracking.md` — four gates, a validator matrix,
+  and a rule that the assignee never validates their own work; the definition of
+  done and the task template carry the new fields. (4) **Technical content
+  removed**: commands, framework names, file paths, and code identifiers are out
+  of the business agenda files; the internal tools portal guide was relocated to
+  `docs/guides/`. (5) Broken `.mono-repo/…` references (11) fixed. (6) Per-role
+  minimal plans added, and the workspace-CRM plans trimmed.
+
 - **2026-09-10 (5)** — **Kickoff meeting held and recorded.** The first team
   meeting on the agenda system ran through the CONTENT_MODEL § 5 agenda
   (content model → star-schema hub → meeting templates → milestone log →
   Anytype concepts → owner assignment) with the full roster
-  (mammhoud/moustafa/mahmoud/asmaa/yahia/dariia). Outcomes: content model
+  (mahmoud — merged GM, moustafa, yahia, asmaa, dariia). Outcomes: content model
   adopted as the team-wide working contract; plans → milestones rule binding;
   Sprint 2 confirmed as defined; executors assigned to all 11 Sprint 2 tasks
   from the people roster (mahmoud 4, moustafa 3, mammhoud 2, asmaa 1,
@@ -115,7 +175,7 @@ The agenda is the team's delivery + memory layer:
   headers corrected. (7) Clarified the Arabic-parity policy in `INDEX.md`.
 - **2026-09-06** — Recorded the un-tracked Loop-CRM AI-hub/locale/connectors work as a ✅ Shipped milestone; added an implementation-status truth table (backend × frontend, incl. "couldn't add") to `dev-team-plans.md`; published the cross-product frontend component audit (`docs/audit/frontend-components-2026-09-06.md`); added the Loop-CRM model-ERD convention (`django_extensions` + `make erd`/`erd-all`, `projects/loop-crm/docs/erd/README.md`), rendering per-team PNGs including the marketing and sales (crm) domain graphs; implemented the Formint Pro create/edit modals that the audit flagged (suppliers, HR roles/schedules/payroll, admin notes, kitchen recipes/ingredients); and verified them — stale `*_name` display bindings replaced with client-side FK resolution, new Vitest payload contract tests (`vitest` 86/86, `astro check` 0/0), backend suite deferred to the product image (`libs/django-bolt` absent from this checkout).
 - **2026-09-10** — Completed the remaining Formint Pro list pages + ops/shifts flow: pos/products, pos/inventory and pos/transactions gained delete confirmations and FK-name resolution; crm/contacts, crm/deals, crm/activities and crm/notes now resolve company/contact/stage/deal names from fetched reference lists and their modals send the real FK ids; ops/shifts got its broken script repaired with unique-open-shift enforcement (client + server 409) and auto-computed expected cash. Backend: fixed the non-existent `models.crm_models` imports (all `/crm/*` GETs 500'd), added CRM write views/URLs and shift create/close/detail endpoints, and extended the server persist suite with four shift tests (`vitest` 93/93, `astro check` 0/0; backend suite host-Docker-only).
-- **2026-09-05** — Completed the Anytype schema in `mono-repo/`: 15 object type definitions + 20 per-type directories (projects, editions, sprints, releases, integrations, apis, components, tools, pipelines, styles, diagrams, reports, dashboards, data-pipelines, methodologies, insights, recommendations, repositories, modules, documentation) with content tied to the real repo (87 files); all `_prompts.md` workflows marked complete.
+- **2026-09-05** — Completed the Anytype schema in `.mono-repo/`: 15 object type definitions + 20 per-type directories (projects, editions, sprints, releases, integrations, apis, components, tools, pipelines, styles, diagrams, reports, dashboards, data-pipelines, methodologies, insights, recommendations, repositories, modules, documentation) with content tied to the real repo (87 files); all `_prompts.md` workflows marked complete.
 - **2026-09-05** — De-duplicated the top-level docs, fixed dangling mono-repo image refs, and added the **diagrams package** (`diagrams/`) with rendered SVG images (API request UML, Django/Rust ERDs, Blinko SurrealDB) + the `render-agenda-diagrams.mjs` pipeline (59 SVGs).
 - **2026-09-05** — Added `CONTENT_MODEL.md` (Anytype glossary, 4-package object/markdown separation, plans → milestones reference contract). Added the finished-plans closeout process: completed plans are deleted from `docs/plans/` and recorded as ✅ Shipped milestones in `feature-tracking.md`.
 - **2026-08-31** — Created the agenda system: feature tracking, case studies, task board, team notes, meeting templates, completion checklist. Anytype object model (Objects / Types / Properties / Links) inspired the structure.

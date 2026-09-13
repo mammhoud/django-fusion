@@ -47,9 +47,16 @@ Status: Active
 
 ## In progress
 
-| Goal | Phase | Target | Status |
-|------|-------|--------|--------|
-| (List any active goals here) | — | — | 🚧 In progress |
+| Goal | Phase | Owner | Status |
+|------|-------|-------|--------|
+| Formint editions — one edition on desktop + Android + iOS | 9 — Products | Mahmoud | 🚧 In progress |
+| Loop-CRM — multi-tenant workspace CRM + subscriptions | 9 — Products | Mahmoud | 🚧 In progress |
+| Precis — unified LMS + landing surface | 9 — Products | Moustafa | 🚧 In progress |
+| CTC research platform — own theme published | 9 — Products | Yahia | 🚧 In progress |
+| Reporting layer — every public claim evidence-backed | 9 — Products | Asmaa | 🚧 In progress |
+
+Who is responsible for what, and the validation pair for each task type, is in
+[`../../roles/README.md`](../../roles/README.md).
 
 ---
 

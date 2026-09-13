@@ -22,7 +22,7 @@ Related Guides: _index
 ## Scope
 
 - Required mirrors: guides, plans indexes, agenda README/index rows, product docs
-- Not mirrored: working trackers (feature-tracking, task-tracking), case studies
+- Not mirrored: working trackers (feature-tracking + `feature-tracking/`, task-tracking), case studies
 
 ## Related
 

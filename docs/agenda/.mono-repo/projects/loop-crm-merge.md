@@ -2,7 +2,7 @@
 Object type: Project
 Tags: project, loop-crm, crm, social, merge
 Status: In Development
-Owner: Mammhoud
+Owner: Mahmoud
 Related Workspace: workspace
 Related Products: loop-crm
 Related Teams: product, engineering
@@ -40,7 +40,7 @@ One workspace where RevOps sees POS revenue, deals, attributed revenue, social p
 
 | Person | Role | Relation | Source |
 |---|---|---|---|
-| → `../objects/people/mahmoud.md` — Mahmoud | Developer | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
+| → `../objects/people/mahmoud.md` — Mahmoud | General Manager | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
 
 ## Related Documents (generated)
 
@@ -48,8 +48,9 @@ One workspace where RevOps sees POS revenue, deals, attributed revenue, social p
 |---|---|
 | → `../../case-studies/django-bolt-fusion.md` — case-studies/django-bolt-fusion.md | `1. Context` · `3.1 Decision: Real BoltAPI vs. bolt_view Adapter` |
 | → `../../data-analyst-plans.md` — data-analyst-plans.md | `Product-Level Metrics` · `المقاييس الرئيسية لكل منتج (الإيقاع)` |
-| → `../../dev-team-plans.md` — dev-team-plans.md | `6. Loop-CRM — **Active (merge complete at feature level)**` · `جدول الحقيقة (2026-09-06)` · `سلاسل المنتجات النشطة` · `✅ Implementation status truth (backend × frontend) — 2026-09-06` |
-| → `../../feature-tracking.md` — feature-tracking.md | `Loop-CRM` · `P1 — Next Up (Q4 2026)` · `✅ Shipped — Finished Milestones` |
+| → `../../dev-team-plans.md` — dev-team-plans.md | `Active vertical slices (priority order)` · `سلاسل المنتجات النشطة` · `✅ Implementation status truth — 2026-09-12` |
+| → `../../feature-tracking/loop-crm.md` — feature-tracking/loop-crm.md | `✅ Shipped — Finished Milestones` · `🎯 Loop-CRM — Feature Tracking` |
+| → `../../feature-tracking/syntara.md` — feature-tracking/syntara.md | `P1 — Next Up (Q4 2026)` |
 | → `../../marketing-plans.md` — marketing-plans.md | `Loop-CRM (🟢 Live preview — launch in progress)` · `📅 Marketing Calendar (High-Level)` |
 | → `../../pricing-plans.md` — pricing-plans.md | `Implementation tasks` · `Loop-CRM` · `Pricing levers` · `أدوات التسعير` · +1 more |
 | → `../../sales-pipeline.md` — sales-pipeline.md | `2. Targets (12-month, from pricing-plans)` · `5. Lead sources & generation steps` |
@@ -66,7 +67,7 @@ One workspace where RevOps sees POS revenue, deals, attributed revenue, social p
 ## Related
 
 - → `../plans/_index.md` — Delivery plans
-- → `../../feature-tracking.md` § Loop-CRM — Milestone records
+- → `../../feature-tracking/loop-crm.md` — Milestone records
 - → `../../../plans/loop-crm/merge-plan.md` — Merge plan (active)
 - → `../../../plans/loop-crm/wagtail-landing-plan.md` — Landing plan (active)
 - → `../objects/project.md` — Project object type

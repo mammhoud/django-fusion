@@ -26,7 +26,7 @@ links:
     to: "/agenda/main"
     icon: "i-lucide-clipboard-list"
   - label: "Feature Tracking — Multi-terminal Sync"
-    to: "/agenda/feature-tracking"
+    to: "/agenda/feature-tracking/formint-pos"
     icon: "i-lucide-target"
   - label: "Feature Tracking — Offline Queue"
     to: "/agenda/case-studies/pos-offline-queue"
@@ -40,7 +40,7 @@ links:
 
 > **Date:** 2026-08-31 | **Status:** Active
 > **Scope:** Real-time WebSocket broadcast + pull changeset (`/sync/changes`, `/sync/ack`, `/sync/trigger`) across POS terminals
-> **Feature tracking:** [`feature-tracking.md`](../feature-tracking.md) § Multi-terminal Management
+> **Feature tracking:** [`feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § Multi-terminal Management
 > **Related:** [`pos-offline-queue.md`](./pos-offline-queue.md), [`pos-qr-menu.md`](./pos-qr-menu.md)
 
 ---
@@ -267,7 +267,7 @@ When two terminals modify the same record, the system can detect the conflict bu
 
 | Document | Path |
 |----------|------|
-| Feature tracking — Multi-branch Management | [`../feature-tracking.md`](../feature-tracking.md) § Multi-branch Management |
+| Feature tracking — Multi-branch Management | [`../feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § Multi-branch Management |
 | Case study — Offline Queue | [./pos-offline-queue.md](./pos-offline-queue.md) |
 | Case study — QR Menu | [./pos-qr-menu.md](./pos-qr-menu.md) |
 | Case study — DataToken Sync Tagging | [./data-token-sync-tagging.md](./data-token-sync-tagging.md) |

@@ -54,7 +54,7 @@ plans stay in `docs/plans/`, and the agenda references them.
 | Question | Answer |
 |---|---|
 | Where do engineering plans live? | `docs/plans/` (canonical registry: `docs/plans/README.md`) |
-| Where do finished plans get recorded? | `docs/agenda/feature-tracking.md` § ✅ Shipped milestones + `team-notes.md` |
+| Where do finished plans get recorded? | `docs/agenda/feature-tracking/<product>.md` § ✅ Shipped milestones + `team-notes.md` |
 | Where does day-to-day delivery get tracked? | `docs/agenda/` (features, tasks, sprints, notes, case studies) |
 | Where does the Anytype object schema live? | `docs/agenda/.mono-repo/objects/` (`_object-types.md`, `_relations.md`, `_tags.md`, `_templates.md`) |
 | Where is the team reference contract? | **This file** — `CONTENT_MODEL.md` |
@@ -86,13 +86,13 @@ indexes (collections), but the content lives in exactly one file.
 
 A type is a blueprint: what properties every object of that kind carries.
 The agenda's canonical types are defined in
-[`mono-repo/objects/_object-types.md`](mono-repo/objects/_object-types.md):
+[`.mono-repo/objects/_object-types.md`](./.mono-repo/objects/_object-types.md):
 Workspace, Project, Plan, Goal, Milestone, Task, Sprint, Product, Edition,
 Feature, Release, Team, Person, Decision, and the rest.
 
 **Agenda rule:** every content file declares its `Object type` in frontmatter,
 and its structure follows the type's template in
-[`mono-repo/objects/_templates.md`](mono-repo/objects/_templates.md).
+[`.mono-repo/objects/_templates.md`](./.mono-repo/objects/_templates.md).
 
 ### 2.3 Property
 
@@ -114,7 +114,7 @@ properties (see the compact table in `_templates.md`).
 > duplicate content." — [Anytype Docs: Views](https://doc.anytype.io/anytype/organize/views)
 
 A view is a saved combination of layout + filters + sort over a type. The
-agenda's tracking tables (`feature-tracking.md`, `task-tracking.md`) are views
+agenda's tracking tables (`feature-tracking/`, `task-tracking.md`) are views
 — every table is a lens over one object type.
 
 **Agenda rule:** a tracking table is a view, not a new object. When a filter
@@ -159,7 +159,8 @@ docs/
 │   ├── MAIN.md                  #   hub / collection
 │   ├── README.md                #   overview / collection
 │   ├── CONTENT_MODEL.md         #   THIS FILE — the contract
-│   ├── feature-tracking.md      #   Query/View over Feature objects
+│   ├── feature-tracking.md      #   Query/View over Feature objects — hub (lifecycle + index)
+│   ├── feature-tracking/        #   Query/View over Feature objects — one file per product
 │   ├── task-tracking.md         #   Query/View over Task objects
 │   ├── team-notes.md            #   Note/Decision objects (dated log)
 │   ├── meeting-agenda.md        #   Template collection
@@ -169,7 +170,7 @@ docs/
 │   │   └── README.md            #     collection: API UML, Django/Rust ERDs, Blinko
 │   ├── anytype-extensibility.md #   Research/proposal object
 │   └── ...
-├── agenda/mono-repo/            # PACKAGE B — Anytype import set (one Channel)
+├── agenda/.mono-repo/           # PACKAGE B — Anytype import set (one Channel)
 │   ├── objects/                 #   Schema: _object-types, _relations, _tags, _templates, _status + per-type files
 │   ├── plans/ products/ features/ milestones/ tasks/ goals/ ...  #   Knowledge-graph objects
 │   ├── projects/ editions/ sprints/ releases/ integrations/ apis/ ...  #   Type-home dirs (one per type)
@@ -185,7 +186,7 @@ docs/
 | Package | Path | Job | Object types | Lifecycle |
 |---|---|---|---|---|
 | **A — Team delivery & memory** | `docs/agenda/` | Day-to-day tracking: features, tasks, sprints, notes, case studies, milestones | Feature, Task, Sprint, Note, Decision, Case Study, Milestone | Active while work is in flight; shipped features become ✅ Shipped milestones |
-| **B — Anytype import set** | `docs/agenda/mono-repo/` | The knowledge-graph schema + focused content import (one Anytype Channel) | All types in `objects/_object-types.md` | Schema is durable; content objects stay current or become Archived |
+| **B — Anytype import set** | `docs/agenda/.mono-repo/` | The knowledge-graph schema + focused content import (one Anytype Channel) | All types in `objects/_object-types.md` | Schema is durable; content objects stay current or become Archived |
 | **C — Engineering plans** | `docs/plans/` | What we agreed to build, how, and why (ADR-style) | Plan, Decision, Migration | Planned → Active → Completed → deleted (git history is archive) |
 | **A.1 — Diagrams** (sub-package of A) | `docs/agenda/diagrams/` + `docs/public/agenda/diagrams/` | Rendered diagram images + editable mermaid sources (API request flows, Django/Rust ERDs, Blinko SurrealDB); `docs/scripts/render-agenda-diagrams.mjs` re-renders | Diagram | Re-render when the source changes; images are derived assets |
 | **D — Product docs & guides** | `docs/loop-crm/`, `docs/precis/`, `docs/guides/`, … | Reader-facing product documentation | Guide, Reference, Product | Maintained per product |
@@ -200,7 +201,7 @@ docs/
    it never re-states engineering detail (link, don't duplicate).
 3. **Type dirs beat taxonomy.** An object belongs in the directory of its type;
    cross-cutting groupings are collections (index files), not new directories.
-4. **Schema changes land in Package B first** (`mono-repo/objects/`), then the
+4. **Schema changes land in Package B first** (`.mono-repo/objects/`), then the
    agenda's tracking tables are updated to match the type definition.
 
 ---
@@ -225,16 +226,16 @@ Rules:
   plan` frontmatter property).
 - The plan registry (`docs/plans/README.md`) is the single source of truth for
   plan status — the agenda never invents plan status.
-- If a feature has no plan, it is a proposal → add it to
-  `feature-tracking.md` as `Proposed` and note "no plan yet".
+- If a feature has no plan, it is a proposal → add it to the product's file in
+  `feature-tracking/` as `Proposed` and note "no plan yet".
 
 ### 4.2 Backward: finished plan → milestone
 
 When a plan is completed, it is **deleted from `docs/plans/`** (git history is
 the archive) and recorded as a ✅ Shipped milestone in the agenda:
 
-1. Add a ✅ Shipped entry to `feature-tracking.md` § the product's "Finished
-   Milestones" section.
+1. Add a ✅ Shipped entry to the product's file in `feature-tracking/` § its
+   "Finished Milestones" section.
 2. Add a dated entry to `team-notes.md` recording the closeout decision.
 3. Add ✅ Done rows to `task-tracking.md` for the closeout tasks.
 4. Update every reference to the deleted plan (plans registry, reference maps,
@@ -262,8 +263,8 @@ The first team meeting on the agenda system should walk through, in order:
    the reference contract.
 2. **`MAIN.md`** — how the agenda documents connect (hub diagram).
 3. **`meeting-agenda.md`** — the meeting templates to use from here on.
-4. **The finished-milestone log** (`feature-tracking.md` § ✅ Shipped) — the
-   plans already closed and recorded.
+4. **The finished-milestone log** (`feature-tracking/<product>.md` § ✅ Shipped,
+   indexed from `feature-tracking.md`) — the plans already closed and recorded.
 5. **Anytype concepts** (`anytype-extensibility.md` + this file § 2) — so the
    team shares the object vocabulary.
 6. Assign owners for the action items in `task-tracking.md` and record the
@@ -289,12 +290,12 @@ The first team meeting on the agenda system should walk through, in order:
 | Agenda hub | [`./MAIN.md`](./MAIN.md) |
 | Agenda overview | [`./README.md`](./README.md) |
 | Meeting templates | [`./meeting-agenda.md`](./meeting-agenda.md) |
-| Feature lifecycle | [`./feature-tracking.md`](./feature-tracking.md) |
+| Feature lifecycle | [`./feature-tracking.md`](./feature-tracking.md) — hub; per-product files in `./feature-tracking/` |
 | Sprint tasks | [`./task-tracking.md`](./task-tracking.md) |
 | Team notes | [`./team-notes.md`](./team-notes.md) |
-| Anytype object types | [`./mono-repo/objects/_object-types.md`](./mono-repo/objects/_object-types.md) |
-| Anytype relations | [`./mono-repo/objects/_relations.md`](./mono-repo/objects/_relations.md) |
-| Object templates | [`./mono-repo/objects/_templates.md`](./mono-repo/objects/_templates.md) |
+| Anytype object types | [`.mono-repo/objects/_object-types.md`](./.mono-repo/objects/_object-types.md) |
+| Anytype relations | [`.mono-repo/objects/_relations.md`](./.mono-repo/objects/_relations.md) |
+| Object templates | [`.mono-repo/objects/_templates.md`](./.mono-repo/objects/_templates.md) |
 | Anytype extensibility research | [`./anytype-extensibility.md`](./anytype-extensibility.md) |
 | Plans registry (canonical) | [`../plans/README.md`](../plans/README.md) |
 | Document lifecycle | [`../plans/document-lifecycle.md`](../plans/document-lifecycle.md) |

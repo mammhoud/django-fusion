@@ -19,8 +19,8 @@
 
 | # | Plan | Scope | Status | Progress |
 |---|------|-------|:------:|:--------:|
-| 1 | [`precis-lms/migration-plan.md`](precis-lms/migration-plan.md) | LMS Fusion — django-fusion + project-owned API + Next.js frontend | ✅ Complete | 100% |
-| 2 | [`cms-fusion/migration-plan.md`](cms-fusion/migration-plan.md) | CMS Fusion — django-fusion + project-owned API + Next.js frontend + fallbacks | ✅ Complete | 100% |
+| 1 | `precis-lms/migration-plan.md` (removed 2026-08-14; see [`../deletion-manifest.md`](../deletion-manifest.md)) | LMS Fusion — django-fusion + project-owned API + Next.js frontend | ✅ Complete | 100% |
+| 2 | `cms-fusion/migration-plan.md` (removed 2026-08-14) | CMS Fusion — django-fusion + project-owned API + Next.js frontend + fallbacks | ✅ Complete | 100% |
 | 3 | [`../DJANGO_BOLT_FUSION_CASE_STUDY.md`](../DJANGO_BOLT_FUSION_CASE_STUDY.md) | django-bolt usage analysis + fusion integration recommendations | ✅ Complete | 100% |
 | 4 | `legacy/legacy-cleanup.md` (removed) | Audit, archive, and remove old/duplicate project directories | ✅ Complete | 100% |
 

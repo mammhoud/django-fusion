@@ -30,7 +30,7 @@ POS terminal pushes sales; finance ledger updates without duplicates; RevOps rea
 
 ## Evidence
 
-- ✅ Shipped — milestone in `../../feature-tracking.md` § Loop-CRM (Formint finance integration)
+- ✅ Shipped — milestone in `../../feature-tracking/loop-crm.md` (Formint finance integration)
 - 29 workflow-action tests + connector tests green
 
 ## Related

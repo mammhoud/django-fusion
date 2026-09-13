@@ -160,7 +160,7 @@ Tauri, Django, Astro, HTMX, cloud transport are supporting details. The marketin
   - [ ] Realtime/Channels hardening on the deployed stack
   - [ ] Demo-state server-half verification
   - [ ] Loop-CRM copy pass — no "coming soon" references (product is live)
-- **Status:** Demo preview live (`crm.structa.cloud`); milestones in [`feature-tracking.md`](./feature-tracking.md) § Loop-CRM
+- **Status:** Demo preview live (`crm.structa.cloud`); milestones in [`feature-tracking/loop-crm.md`](./feature-tracking/loop-crm.md)
 
 ---
 

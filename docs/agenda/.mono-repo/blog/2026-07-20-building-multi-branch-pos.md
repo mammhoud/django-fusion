@@ -11,7 +11,7 @@ Author: mammhoud
 > **Excerpt:** How we built a cloud-synced POS system for restaurant chains using Django, Robyn sidecar, and SQLite.
 
 - **Published:** 2026-07-20
-- **Author:** → `../objects/people/me.md`
+- **Author:** → `../objects/people/mahmoud.md`
 - **Category:** Technical
 - **Tags:** `#pos-full` `#django` `#backend` `#sync`
 

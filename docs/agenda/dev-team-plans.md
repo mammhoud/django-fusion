@@ -6,190 +6,112 @@ Status: Published
 
 # Development Team Plans
 
-> **Scope:** All engineering plans across Structa Cloud products
-> **Updated:** 2026-09-06
+> **Scope:** What engineering delivers across Structa Cloud products, in priority order.
+> **Owner:** Mahmoud (General Manager)
+> **Updated:** 2026-09-12
+>
+> **This file tracks outcomes, not implementation.** Commands, frameworks, file
+> paths, and environment setup deliberately live in the engineering guides
+> ([`docs/guides/`](../guides/README.md), [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md))
+> and each product's own documentation — not in the agenda.
 
 ---
 
 ## Active vertical slices (priority order)
 
-### 1. Formint Edition Chain — P0
-**Owner:** Formint team
-**Path:** projects/formints/
+| # | Product | Priority | Delivered | Next gate | Owner |
+|---|---------|:--------:|-----------|-----------|-------|
+| 1 | Formint edition chain | P0 | Community, Standard, Client complete | Professional: sync + invoicing • Cloud: multi-tenant SaaS | Moustafa |
+| 2 | Precis Landing | P0 | Render-first public site live | Ongoing content work | Moustafa |
+| 3 | Precis LMS (unified) | P1 | Learning + marketing shell shipped | Deployment and build gates | Yahia |
+| 4 | CTC Research | Active | Content, multi-language catalogs, media, deploy | Publish gates: email parity, redeploy validation | Asmaa |
+| 5 | Syntara | Active | AI chat and customizer shipped | Live provider credentials for real AI calls | Mahmoud |
+| 6 | Loop-CRM | Active | Merge complete at feature level | Operational only: live provider credentials, realtime hardening on the deployed stack, demo-state server verification | Mahmoud |
+| 7 | django-fusion (shared framework) | P2 | Components, fragments, tasks, config cascade | Task/MCP consolidation, routing unification | Yahia |
 
-| Edition | Status | Next Gate |
-|---------|--------|-----------|
-| Community | Complete | — |
-| Standard | Complete | — |
-| Professional | In Progress | Backend sync and invoicing |
-| Cloud | Planned | Multi-tenant SaaS |
-| Client | Complete | Cloud API integration |
-
-**Key Plans:**
-- `docs/plans/editions/10-formint-audit-and-reconciliation-2026-08-22.md` — Cross-edition audit
-- `docs/plans/django-fusion/django-fusion-tasks-mcp-plan.md` — Unified task API, MCP tooling
-- `docs/plans/django-fusion/config-cascade-plan.md` — Config cascade (active, baseline implemented)
-
-### 2. Precis Landing — **P0**
-**Canonical:** `docs/plans/precis-landing.md`
-**Owner:** Precis team
-**Path:** `projects/precis/precis-landing/`
-**Contract:** Post-only code-rendering (server HTML / HTMX fragment / JSON for Astro)
-**Verification:** `make backend-test` + `npm run check`
-
-### 3. Precis LMS (unified) — **P1**
-**Canonical:** `projects/precis/precis-main/` (merged LMS + Landing)
-**Owner:** Precis team
-**Dispatcher:** `WEBSITE=precis-main` (aliases: `precis-lms`, `precis-landing`)
-**Key Areas:** Frontend build, deployment gates, Wagtail CMS integration
-
-### 4. CTC Research — **Active**
-**Canonical:** `docs/plans/repository/ctc-research-publish-2026-08-18.md`
-**Owner:** CTC team
-**Path:** `projects/precis/precis-ctc/`
-**Workstreams:** Content/component audit, multi-lang catalogs (es/sv/pt-br), media proxy, email parity, `make redeploy`, cross-module workflows
-
-### 5. Syntara (Cypercloud) — **Active**
-**Canonical:** `projects/syntara/`
-**Owner:** AI team
-**Runtime alias:** `cypercloud` preserved for external contracts
-**Stack:** Django + Webpack + HTMX + Monaco Editor + Ollama/OpenAI/Claude/Gemini
-
-### 6. Loop-CRM — **Active (merge complete at feature level)**
-**Canonical:** `docs/plans/loop-crm/merge-plan.md`
-**Owner:** CRM team
-**Path:** `projects/loop-crm/`
-**Status:** Merge milestones shipped end-to-end (tenancy/auth → tenant-scoped CRUD → channels/adapters → allauth → finance ledger → AI hub → en/ar locale → billing/Wagtail landing). Remaining gates are operational, not feature code: live OAuth provider credentials, realtime/WebSocket hardening on the deployed stack, and the demo-state server-half verification.
-**Milestones:** Tenancy/auth → tenant-scoped CRUD → channels/adapters → allauth → finance/POS ingestion → AI hub + locale → billing/landing
-
-### 7. django-fusion (Shared Framework) — **P2**
-**Canonical:** `docs/plans/django-fusion/`
-**Owner:** Framework team
-**Path:** `libs/django-fusion/`
-**Active Plans:**
-- Tasks & MCP: unified background task API, Celery removal, MCP tooling
-- LLM & AI MCP Enhancement: provider-neutral routing, model levels, caching, streaming
-- Webpack Enhancement: project-customizable webpack, env configs
-- Analyzer + Skeleton + Asset APIs: dynamic skeletons, per-page components, Astro bridge
+**Key plans:** [`docs/plans/README.md`](../plans/README.md) is the registry — this
+file never states plan status on its own.
 
 ---
 
-## ✅ Implementation status truth (backend × frontend) — 2026-09-06
+## ✅ Implementation status truth — 2026-09-12
 
-> Reconciliation pass run 2026-09-06 across the Django products. "Implemented"
-> means code-backed in the current tree; "Not yet" is planned/missing;
-> "Couldn't add" records work intentionally deferred or blocked. Cross-product
-> component evidence lives in
-> [`docs/audit/frontend-components-2026-09-06.md`](../audit/frontend-components-2026-09-06.md).
+> "Delivered" means it exists and works in the current tree. "Still open" is
+> planned or blocked. "Couldn't add" records work intentionally deferred **with
+> the reason** — usually a deploy or a credential, not a missing feature.
 
-| Product | Backend — implemented | Backend — not yet / couldn't add | Frontend — implemented | Frontend — not yet / flagged |
-|---------|-----------------------|---------------------------------|------------------------|------------------------------|
-| **Loop-CRM** | Tenancy+RBAC, CRM pipeline/deals/board, marketing posts + 12-platform catalog connectors + OAuth (incl. Google/Meta/TikTok/Reddit), attribution, finance/POS ledger, billing/Stripe, Wagtail landing road, workflows, Dramatiq tasks, realtime events, AI Hub (consent-gated), en/ar locale | Live OAuth credentials + publish E2E on deployed stack; realtime/WebSocket hardening on deploy; demo-state server-half verify (all need a real deploy, not code) | Astro shell, RevOps dashboard, PipelineBoard (real `/apis/core/` data, GSAP drag, CSRF move), AiHub, CommandPalette, LocaleSwitcher, EmployeeDirectory, BillingPlan, ReportCatalog, Task Center — no placeholder components | `PipelineDemo` is an inert marketing demo island (fake deals) — landing-preview only, not app code; live-provider config remains env-gated |
-| **Precis LMS (precis-main)** | Wagtail content/pages + LMS backend + django-fusion routing | Deployment/CI gates per plan; builder/data surfaces | Astro/marketing shell shipped | `frontend/src/lib/brand.ts` carries a stale "CRM + social scheduling · coming soon" tagline — flagged copy, see audit |
-| **Precis Landing** | Render-first Django contract (HTML/HTMX/JSON) | — | Astro front-end live | — |
-| **CTC Research** | Multi-lang catalogs (es/sv/pt-br), media proxy, i18n fixtures, containerized deploy | Publish gates (email parity E2E, redeploy validation) still open | Backend-rendered pages live | `blog/*-details*.html` demo templates still carry hard-coded Lorem-ipsum/2018 theme markup — not view-referenced, should be removed or quarantined |
-| **Syntara (Cypercloud)** | Django `chat` app, config cascade, model routing, token tracking | Provider keys + OAuth for live AI calls (local Ollama works) | Webpack/HTMX + Monaco customizer shipped | — |
-| **Formint Pro** | Django `server/` backend + sync; finance ledger groundwork | Invoicing/reports APIs, client onboarding funnel (next gates) | Astro + Vue shells shipped; create/edit modals + delete wired for suppliers, HR roles, schedules, payroll, admin notes, kitchen recipes (2026-09-06) | — |
-| **Formint Cloud** | Django `backend/` (core/domain/handlers) + Channels API road | Multi-tenant SaaS, KDS, realtime sync scale-out | Astro frontend + shared client | — |
-| **Formint Community / Standard / Client** | SQLite/Rust (Community/Standard), Vue+Tauri (Client) | — (Cloud API integration for Client) | Rust/Tauri + Vue | — |
-| **django-fusion** | Component/fragment/task/config systems; bolt bridge | Celery removal + MCP tooling + LLM routing consolidation (P2) | Astro bridge + skeleton APIs in flight | — |
+| Product | Delivered | Still open | Couldn't add (reason) |
+|---------|-----------|------------|-----------------------|
+| **Loop-CRM** | Workspace tenancy + roles, CRM pipeline/board, marketing publishing + connectors, attribution, finance ledger, billing/subscriptions, Wagtail landing, workflows, realtime events, AI hub (consent-gated), EN/AR locale | Live provider credentials, realtime hardening, demo-state server check | Deploy-gated: needs the deployed stack and provider secrets |
+| **Precis LMS** | Wagtail content + learning backend, unified marketing shell | Deployment/build gates, builder surfaces | — |
+| **Precis Landing** | Render-first public site | — | — |
+| **CTC Research** | Multi-language catalogs, media serving, deploy pipeline | Publish gates (email parity, redeploy validation) | Deploy-gated |
+| **Syntara** | Chat app, model routing, token tracking, customizer | Live AI provider credentials | Local model works; hosted providers need keys |
+| **Formint Professional** | Back office + sync, finance ledger groundwork, create/edit screens | Invoicing and reports, client onboarding funnel | — |
+| **Formint Cloud** | Multi-tenant backend, realtime API road | Tenant SaaS scale-out, kitchen display, realtime sync | — |
+| **Formint Community / Standard / Client** | Offline-first desktop POS editions | Cloud API integration for Client | — |
+| **django-fusion** | Component, fragment, task, and config systems | Task/MCP tooling, AI routing consolidation | P2 — not yet scheduled |
 
-**What couldn't be added (deferred or blocked, with reason):**
-- **Loop-CRM live provider publishing** — connectors + OAuth exist and are tested, but no real provider credentials are configured anywhere; verification requires the deployed stack (`crm.structa.cloud`) and secrets. Not a code gap.
-- **Loop-CRM realtime on deploy** — Channels/SSE path is dev-verified; production Redis/channel-layer hardening is a deploy gate.
-- **CTC publish gates** — content/component audit + i18n + media proxy shipped; email parity + `make redeploy` validation remain deploy-blocked.
-- ~~Formint Pro create forms~~ — resolved 2026-09-06: suppliers, HR roles/schedules/payroll, admin notes and kitchen recipes/ingredients now open real create/edit modals wired to the Django server API (see [`docs/audit/frontend-components-2026-09-06.md`](../audit/frontend-components-2026-09-06.md) § 2.3).
-- **ERD PNGs for Loop-CRM** — tooling added (2026-09-06); DOT graphs generated and PNGs rendered after installing `graphviz` locally. PNGs stay git-ignored derived assets (repo convention); the committed contract is the `docs/erd` README + DOT. Formint-cloud re-render remains blocked in this sandbox by the missing optional `django_bolt` package (present in its Docker image).---
+---
 
-## 🧱 Backend delivery workstreams (merged from backend-plans.md, 2026-09-10)
+## 🧱 Backend delivery workstreams — P1
 
-### Formint invoicing & reports — P1
-
-| Task | Target Editions | Status |
-|------|-----------------|--------|
-| Invoicing API — wizard form backend | Pro, Cloud | Planned |
-| Invoice editing and choices API | Pro, Cloud | Planned |
-| Reports API — sales, tax, inventory | Pro, Cloud | Planned |
-| Unified theme attributes API | All editions | Planned |
+| Workstream | Target editions | Status |
+|---|---|---|
+| Invoicing — guided creation and editing | Professional, Cloud | Planned |
+| Reports — sales, tax, inventory | Professional, Cloud | Planned |
+| Unified theme settings across editions | All editions | Planned |
 | Cross-team data change coordination | All editions | Planned |
-| Client onboarding funnel API | Standard, Pro, Cloud | Planned |
-| Payment gateway integration (Stripe/PayPal) | Pro, Cloud | Planned |
+| Client onboarding funnel | Standard, Professional, Cloud | Planned |
+| Payment provider integration | Professional, Cloud | Planned |
+| LMS: contact collection, workspace provisioning + billing, AI chat metering | Precis LMS | Open |
 
-### Precis LMS backend gates — P1
-
-Contact collection backend, workspace provisioning + billing, and AI design-chat token metering are the open LMS backend deliverables (see truth table above).
-
-### Recurring delivery cadence
+**Recurring delivery cadence**
 
 | Review | Cadence | Team |
 |--------|---------|------|
-| API contract review | Weekly | Backend |
-| Database migration review | Weekly | Backend |
-| Schema backward-compatibility check | Bi-weekly | Backend |
-| Performance and query review | Bi-weekly | Backend |
+| Contract review | Weekly | Engineering |
+| Data change review | Weekly | Engineering |
+| Backward-compatibility check | Bi-weekly | Engineering |
+| Performance review | Bi-weekly | Engineering |
 | Security dependency audit | Weekly | Engineering |
-| Cross-team data impact review | Monthly | Backend + Product |
+| Cross-team data impact | Monthly | Engineering + Product |
+
+**Verification rule:** a workstream is only complete when its outcome is checked
+by someone other than the owner — see
+[`task-tracking.md`](task-tracking.md) § Validating Tasks with the Team.
 
 ---
 
-## 🔧 Key Commands by Product
+## 📋 Current engineering priorities
 
-| Product | Check | Test | Build/Run |
-|---------|-------|------|-----------|
-| Formint Pro | `cd projects/formints/formint-pro && make check` | `make test` | `make run-dev` |
-| Formint Cloud | `cd projects/formints/formint-cloud && make check` | `make test` | `make run-dev` |
-| Formint Community | `cd projects/formints/formint-community && pnpm run check` | `pnpm test` | `pnpm tauri dev` |
-| Precis Main | `cd projects/precis/precis-main/backend && make check` | `make test` | `make run-dev` |
-| Precis Landing | `cd projects/precis/precis-landing && make check` | `make backend-test` | `make build` |
-| Precis CTC | `cd projects/precis/precis-ctc && make check` | `make test` | `make build` |
-| Syntara | `cd projects/syntara && make check` | `make test` | `make dev` |
-| django-fusion | `cd libs/django-fusion && uv run pytest` | — | — |
-
----
-
-## 📐 Architecture Patterns (Reference)
-
-| Pattern | Location | Description |
-|---------|----------|-------------|
-| **Dual rendering** | Precis Landing, Formint | Server HTML / HTMX fragment / JSON API contract |
-| **Config cascade** | `django_fusion.config.project` | Layered YAML: site → admin → defaults |
-| **Component system** | `django_fusion.comp` | `{% comp "name" %}` registered components |
-| **Fragment routing** | `django_fusion.routes` | Named fragment endpoints for HTMX/Astro |
-| **Background tasks** | `django_fusion.tasks` | Dramatiq-based, Redis broker (prod) |
-| **Wagtail pages** | Product `models.py` | StreamField + django-fusion blocks |
-
----
-
-## 📋 Current Engineering Priorities (from recommendations.md)
-
-| Priority | Action | Verification |
-|----------|--------|--------------|
-| P0 | Formint edition extension chain — next executable task | Edition-specific tests |
-| P0 | Precis Landing content work — preserve rendering contract | Backend tests + `npm run check` |
-| P1 | Precis LMS — close frontend/deployment gates | Site checks, tests, builds |
-| P1 | Repository cleanup — don't delete compatibility sources prematurely | Reference scan |
-| P2 | django-fusion tasks & MCP — unified bg task API, Celery removal, MCP tooling | `uv run pytest libs/django-fusion/` |
-| P2 | Docs maintenance — link validation, stale ref removal | Link checker |
+| Priority | Action | What proves it |
+|----------|--------|----------------|
+| P0 | Formint edition chain — next executable slice | Edition acceptance checks |
+| P0 | Precis Landing content work — keep the rendering contract | Public pages render correctly |
+| P1 | Precis LMS — close frontend and deployment gates | Site checks and builds green |
+| P1 | Repository cleanup — don't delete compatibility sources early | Reference scan |
+| P2 | Shared framework — task and AI routing consolidation | Framework checks green |
+| P2 | Docs maintenance — link validation, stale reference removal | Validator runs clean |
 
 ---
 
 ## 🔗 Cross-References
 
-- **Plan Registry:** `docs/plans/README.md` — all active/superseded plans
-- **Recommendations:** `docs/recommendations.md` — prioritized next actions
-- **Project Awareness:** `docs/guides/00-project-awareness.md` — object graph, commands
-- **Architecture:** `docs/ARCHITECTURE.md` — full system architecture
-- **Config Cascade:** `docs/plans/django-fusion/config-cascade-plan.md`
-- **Marketing Claims:** `docs/plans/marketing-claims.md` — evidence requirements for feature claims
+- **Plan registry:** [`docs/plans/README.md`](../plans/README.md)
+- **Priorities:** [`docs/recommendations.md`](../recommendations.md)
+- **Architecture:** [`docs/ARCHITECTURE.md`](../ARCHITECTURE.md)
+- **Engineering guides:** [`docs/guides/README.md`](../guides/README.md)
+- **Claims evidence:** [`docs/plans/marketing-claims.md`](../plans/marketing-claims.md)
 
 ---
 
 ## Remarks & Notes
 
-- Use `projects/Makefile` dispatcher (`make check WEBSITE=<target>`) for canonical commands
 - Product `AGENTS.md` files are the local source of truth for conventions
-- Do not create plans in `docs/dev/plans/`, `projects/*/docs/`, or `docs/plans/migrated/`
+- Plans live in `docs/plans/` only — never in `docs/dev/plans/`, `projects/*/docs/`, or a migrated-plans folder
 - Completed plans are deleted once superseded; git history is the archive
+- Anything a reader would need to *type* belongs in the guides, not here
 
 <!-- AI-generated: review needed -->
 
@@ -197,34 +119,25 @@ Contact collection backend, workspace provisioning + billing, and AI design-chat
 
 ## 🇸🇦 ملخّص عربي — خطط فريق التطوير
 
-> **النطاق:** كل خطط هندسة المنتجات عبر Structa Cloud، مرتّبة بالأولوية.
+> **النطاق:** ما ينفّذه فريق الهندسة عبر منتجات Structa Cloud، مرتّباً بالأولوية.
+> هذا الملف يتابع **النتائج** لا التفاصيل التقنية: الأوامر والأطر والمسارات
+> البرمجية مكانها أدلّة الهندسة ووثائق كل منتج.
 
 ### سلاسل المنتجات النشطة
 
-| المنتج | الحالة | البوابة التالية |
-|---|---|---|
-| سلسلة إصدارات Formint | المجتمع والقياسي والعميل مكتملة؛ الاحترافي جارٍ | مزامنة الواجهة الخلفية والفوترة |
-| Precis الموحّد (نظام التعلّم + صفحة الهبوط) | نشط | بوابات النشر والبناء |
-| Precis Landing | موقع حيّ (نسخة قديمة تُخدم) | عمل محتوى مستمر |
-| مركز CTC البحثي | نشط | بوابات النشر: تكافؤ البريد والنشر المعاد |
-| Syntara (Cypercloud) | نشط | مفاتيح مزوّدي الذكاء الاصطناعي للاتصال الحيّ |
-| Loop-CRM | اكتمل على مستوى الميزات | بوابات تشغيلية: بيانات مزوّدي OAuth الحيّة، والتحقق من حالة العرض على الخادم |
-| django-fusion (الإطار المشترك) | نشط | تكامل المهام وMCP وتوحيد التوجيه |
+| المنتج | الأولوية | ما سُلّم | البوابة التالية | المسؤول |
+|---|---|---|---|---|
+| سلسلة إصدارات Formint | P0 | المجتمع والقياسي والعميل مكتملة | الاحترافي: المزامنة والفوترة • السحابي: تعدد المستأجرين | مصطفى |
+| Precis Landing | P0 | الموقع العام الحيّ | عمل محتوى مستمر | مصطفى |
+| Precis الموحّد (التعلّم + التسويق) | P1 | واجهة التعلّم والتسويق | بوابات النشر والبناء | يحيى |
+| مركز CTC البحثي | نشط | المحتوى وتعدّد اللغات والوسائط | بوابات النشر: تكافؤ البريد والتحقق من النشر | أسماء |
+| Syntara | نشط | المحادثة وأداة التخصيص | بيانات اعتماد مزوّدي الذكاء الاصطناعي الحيّة | محمود |
+| Loop-CRM | نشط | اكتمل على مستوى الميزات | بوابات تشغيلية فقط | محمود |
+| django-fusion (الإطار المشترك) | P2 | المكوّنات والمهام وسلسلة الإعداد | توحيد المهام والتوجيه | يحيى |
 
-### جدول الحقيقة (2026-09-06)
+### قاعدة التحقق
 
-- "منفَّذ" يعني مدعوماً بالكود في الشجرة الحالية؛ "ليس بعد" مخطط أو ناقص؛
-  و"تعذّر الإضافة" يسجّل العمل المؤجَّل عمداً أو المعطول مع السبب.
-- البنود المفتوحة الرئيسية: بيانات اعتماد OAuth الحيّة لـ Loop-CRM (تحتاج
-  نشراً حقيقياً)، تحصين الوقت الفعلي عند النشر، بوابات نشر CTC، وبوابات النشر
-  والبناء لـ Precis.
-
-### أعمال الواجهة الخلفية (بعد دمج backend-plans.md في 2026-09-10)
-
-- فوترة وفواتير Formint (احترافي/سحابي): API الفواتير والتحرير والتقارير —
-  مخطط له.
-- بوابات نظام التعلّم Precis: جمع جهات الاتصال، وتجهيز مساحات العمل مع
-  الفوترة، وقياس توكن المحادثة — ليس بعد.
-- إيقاع المراجعة الأسبوعي: عقود API، ومراجعات الترحيل، وتدقيق الأمان.
+لا يُعدّ أي عمل مكتملاً حتى يتحقق منه شخص آخر غير منفّذه، مع تسجيل الدليل —
+انظر [`task-tracking.md`](task-tracking.md) § بوابة التحقق مع الفريق.
 
 > المصدر الرسمي لسجل الخطط: `docs/plans/README.md` — لا تخترع حالة الخطة هنا.

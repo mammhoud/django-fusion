@@ -367,7 +367,7 @@ Ordered by impact; each phase is independently shippable.
 > **Finance + workflows + integrations** shipped (2026-08-14/15): Formint POS
 > financial-data ingestion into the finance module, workflow action/template
 > expansion, and webhooks/email/Slack/social/export connectors. Recorded as a
-> finished milestone in [`docs/agenda/feature-tracking.md`](../../agenda/feature-tracking.md)
+> finished milestone in [`docs/agenda/feature-tracking/loop-crm.md`](../../agenda/feature-tracking/loop-crm.md)
 > § Loop-CRM; the separate plan file was deleted (git history is the archive).
 
 ---

@@ -4,7 +4,7 @@
 > **Version:** 1.1.0  
 > **Last Updated:** 2026-07-24 (audit revision)  
 > **Scope:** POS Mini / Solo / Full / Cloud + django-fusion package  
-> **Goal:** Increase django-fusion impact across POS apps, harden sync logic, and make both the package and the projects that use it more minimal. API transport remains project-owned; cloud transport is governed by [`cloud-plan.md`](cloud-plan.md).
+> **Goal:** Increase django-fusion impact across POS apps, harden sync logic, and make both the package and the projects that use it more minimal. API transport remains project-owned; cloud transport was governed by the retired `docs/plans/pos/cloud-plan.md` (removed 2026-08-14; see [`deletion-manifest.md`](../deletion-manifest.md)).
 
 ---
 

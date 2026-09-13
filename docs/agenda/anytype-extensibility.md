@@ -1,6 +1,6 @@
 ---
 title: Anytype Extensibility Research
-description: Research on the Anytype object model (anytype-ts + doc.anytype.io) and concrete extensibility + project-separation enhancements mapped to the Structa Cloud agenda/mono-repo docs
+description: Research on the Anytype object model (anytype-ts + doc.anytype.io) and concrete extensibility + project-separation enhancements mapped to the Structa Cloud agenda/.mono-repo docs
 navigation:
   title: Anytype Extensibility
   icon: i-lucide-git-branch
@@ -31,7 +31,7 @@ links:
 
 # 🔬 Anytype Extensibility Research — Enhancements for the Agenda & Project Separation
 
-> **Purpose:** Record what Anytype (the local-first knowledge OS) actually offers — from its open client repo `anyproto/anytype-ts` and its docs — and translate it into concrete extensibility + project-separation enhancements for the Structa Cloud agenda docs (`docs/agenda/`, `docs/agenda/mono-repo/`) and the product boundaries in the monorepo.
+> **Purpose:** Record what Anytype (the local-first knowledge OS) actually offers — from its open client repo `anyproto/anytype-ts` and its docs — and translate it into concrete extensibility + project-separation enhancements for the Structa Cloud agenda docs (`docs/agenda/`, `docs/agenda/.mono-repo/`) and the product boundaries in the monorepo.
 > **Created:** 2026-09-03
 > **Status:** Proposed — implement in follow-up passes; each item is independently shippable
 
@@ -53,7 +53,7 @@ Researched 2026-09-03 against:
 
 | Anytype concept | Meaning | Already mirrored in our agenda? |
 |-----------------|---------|-------------------------------|
-| **Object** | Every entry is a first-class entity | ✅ `docs/agenda/mono-repo/objects/_object-types.md` defines ~30 types; each content doc is an object |
+| **Object** | Every entry is a first-class entity | ✅ `docs/agenda/.mono-repo/objects/_object-types.md` defines ~30 types; each content doc is an object |
 | **Type** | Blueprint: object type + property set | ✅ Object type + frontmatter per doc |
 | **Property** | Typed field (Select/Multi-select/Object links…) | ✅ Status/Tags/Owner/Related-* properties in `_object-types.md` + `_relations.md` |
 | **Relation** | Typed link between objects (source → target, cardinality) | ✅ `objects/_relations.md` (plural = many, singular = one) |
@@ -73,7 +73,7 @@ Concrete, independent enhancements, derived directly from the Anytype model abov
 
 Anytype's sharpest distinction is **Queries (dynamic) vs Collections (curated)**. We have neither formalized — every hub table is hand-maintained prose.
 
-**Build:** add `docs/agenda/mono-repo/objects/_collections.md` defining named collections with (a) a Query-style filter definition where one exists (type + status + tags) and (b) a curated link list. Start with 3 collections:
+**Build:** add `docs/agenda/.mono-repo/objects/_collections.md` defining named collections with (a) a Query-style filter definition where one exists (type + status + tags) and (b) a curated link list. Start with 3 collections:
 - `active-delivery` — filter: `Status = Active|In Development` across features/plans/tasks; curated additions for loose items.
 - `q3-launch` — curated only (mixed types, no shared property → collection is correct).
 - `backend-infra` — filter on `#backend` + `#architecture`.
@@ -90,13 +90,13 @@ Anytype's sharpest distinction is **Queries (dynamic) vs Collections (curated)**
 
 `_relations.md` already links to `_templates.md`, which **does not exist yet** (broken reference).
 
-**Build:** create `docs/agenda/mono-repo/objects/_templates.md` with one short starter block per high-use type: Feature, Plan, Task, Case Study/Decision, Goal, Product. Each template = frontmatter skeleton + 3 bullet section skeleton. Reference the file from `_relations.md` (already points there).
+**Build:** create `docs/agenda/.mono-repo/objects/_templates.md` with one short starter block per high-use type: Feature, Plan, Task, Case Study/Decision, Goal, Product. Each template = frontmatter skeleton + 3 bullet section skeleton. Reference the file from `_relations.md` (already points there).
 
 **Why Anytype:** Templates = per-type standards ("all vacations have a photo album"). A starter block per type makes new docs consistent without copying a whole case-study file.
 
 ### 4. 🔗 Relation hygiene — cardinality + backlink checks in `_prompts.md`
 
-**Build:** add to `docs/agenda/mono-repo/_prompts.md` "Knowledge graph operations":
+**Build:** add to `docs/agenda/.mono-repo/_prompts.md` "Knowledge graph operations":
 - **Relation lint:** every `Related X`/`Owner`/`Depends On` value in a doc must be (a) a real path, (b) the correct direction per `_relations.md` cardinality.
 - **Backlink pass:** after adding relation `A → B`, check whether `B` should list `A` (Anytype relations are bidirectional in graph view).
 
@@ -136,7 +136,7 @@ Anytype isolates content into **Spaces** (different encryption keys — types/re
    - **Canonical media/static source** = monorepo shared `projects/assets/` (media per site under `projects/assets/media/<site>/`, static shared under `projects/assets/static/`).
    - **Per-site staticfiles** (collectstatic output) = `<site>/assets/staticfiles/`, bind-mounted into the site container and into `assets-proxy` as `/var/www/sites/<site>/static/`.
    - **Fallback chain** = per-host Nginx `$static_root`/`$media_root` maps default to the shared `/var/www/static` + `/var/www/media` roots when the per-site alias misses → this is the "fallback from the other side" (frontend Nginx layer falls back to the shared dir when the site-local file isn't loaded).
-   - Home for the object: `docs/agenda/mono-repo/decisions/shared-assets-contract.md` or the assets guide `docs/guides/10-fusion-assets-health.md` (pick one; link from `_prompts.md`).
+   - Home for the object: `docs/agenda/.mono-repo/decisions/shared-assets-contract.md` or the assets guide `docs/guides/10-fusion-assets-health.md` (pick one; link from `_prompts.md`).
 2. **Mirror "Types are per-Space"** — a product may override a shared default only inside its own settings module; the shared `configs/base/assets.py` stays the reference. CTC now does this correctly (settings default → canonical shared tree; env var wins in containers).
 3. **Keep cross-product wiring in the "shared space"** — anything mounted into two products (assets-proxy, tasks stack worker/scheduler) belongs to `application/tools` / `projects/*.yml` compose, not inside one product. (Worker/scheduler now mount no asset data — see Workstream 1 below.)
 
@@ -157,9 +157,9 @@ Anytype isolates content into **Spaces** (different encryption keys — types/re
 |-------|------|
 | Agenda content model (definition + reference contract) | [`./CONTENT_MODEL.md`](./CONTENT_MODEL.md) |
 | Agenda hub | [`./MAIN.md`](./MAIN.md) |
-| Anytype object types (agenda) | [`./mono-repo/objects/_object-types.md`](./mono-repo/objects/_object-types.md) |
-| Anytype relations (agenda) | [`./mono-repo/objects/_relations.md`](./mono-repo/objects/_relations.md) |
-| Agent prompts for the graph | [`./mono-repo/_prompts.md`](./mono-repo/_prompts.md) |
+| Anytype object types (agenda) | [`.mono-repo/objects/_object-types.md`](./.mono-repo/objects/_object-types.md) |
+| Anytype relations (agenda) | [`.mono-repo/objects/_relations.md`](./.mono-repo/objects/_relations.md) |
+| Agent prompts for the graph | [`.mono-repo/_prompts.md`](./.mono-repo/_prompts.md) |
 | Fusion assets health guide | [`../guides/10-fusion-assets-health.md`](../guides/10-fusion-assets-health.md) |
 | Shared media contract test | [`tests/test_shared_media.py`](../../tests/test_shared_media.py) |
 

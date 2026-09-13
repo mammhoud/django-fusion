@@ -40,16 +40,16 @@ _No agenda role mentions resolved yet._
 | → `../../case-studies/ceptor-ai.md` — case-studies/ceptor-ai.md | `7. Related Documentation` · `Use Case 3: Template Discovery + AI Customization` |
 | → `../../case-studies/django-bolt-fusion.md` — case-studies/django-bolt-fusion.md | `1. Context` · `3.1 Decision: Real BoltAPI vs. bolt_view Adapter` · `4.1 What Worked` · `4.3 Before → After` |
 | → `../../data-analyst-plans.md` — data-analyst-plans.md | `Current Stack` · `Product-Level Metrics` |
-| → `../../dev-team-plans.md` — dev-team-plans.md | `4. CTC Research — **Active**` · `جدول الحقيقة (2026-09-06)` · `سلاسل المنتجات النشطة` · `✅ Implementation status truth (backend × frontend) — 2026-09-06` · +1 more |
-| → `../../feature-tracking.md` — feature-tracking.md | `CTC Research Center` · `P1 — Next Up` · `✅ Shipped — Live Site` |
+| → `../../dev-team-plans.md` — dev-team-plans.md | `Active vertical slices (priority order)` · `سلاسل المنتجات النشطة` · `✅ Implementation status truth — 2026-09-12` |
+| → `../../feature-tracking/ctc-research.md` — feature-tracking/ctc-research.md | `P1 — Next Up` · `✅ Shipped — Live Site` · `🎯 CTC Research Center — Feature Tracking` |
 | → `../../marketing-plans.md` — marketing-plans.md | `CTC Research (🔄 Pre-Publish)` · `Multi-Language (EN/AR Parity)` · `📅 Marketing Calendar (High-Level)` |
 | → `../../task-tracking.md` — task-tracking.md | `Backlog (post Sprint-2 refinement)` · `Sprint 1.5 — interim (2026-09-03 → 2026-09-10)` |
-| → `../../team-notes.md` — team-notes.md | `2026-09-03 — Infrastructure & Docs Workstreams — Worker Assets, Coder Deploy, Shared Assets, Anytype Research` · `2026-09-05 — Agenda — Object Types & Objects Separation (Anytype Schema)` · `2026-09-06 — Loop-CRM + Agenda — Implementation Reconciliation, Component Audit & Model ERDs` |
+| → `../../team-notes.md` — team-notes.md | `2026-09-03 — Infrastructure & Docs Workstreams — Worker Assets, Coder Deploy, Shared Assets, Anytype Research` · `2026-09-05 — Agenda — Object Types & Objects Separation (Anytype Schema)` |
 
 <!-- agenda-relations:end -->
 
 ## Related
 
 - → `../plans/_index.md` — Delivery plans
-- → `../../feature-tracking.md` § CTC Research — ceptor-ai migration milestone
+- → `../../feature-tracking/ctc-research.md` — ceptor-ai migration milestone
 - → `../objects/project.md` — Project object type

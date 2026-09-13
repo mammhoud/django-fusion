@@ -32,7 +32,7 @@ One canonical component framework: canonical `django_fusion.*` imports (no re-ex
 
 | Person | Role | Relation | Source |
 |---|---|---|---|
-| → `../objects/people/yahia.md` — Yahia | Developer | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
+| → `../objects/people/yahia.md` — Yahia | Front-end Developer | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
 
 ## Related Documents (generated)
 
@@ -41,8 +41,10 @@ One canonical component framework: canonical `django_fusion.*` imports (no re-ex
 | → `../../case-studies/ceptor-ai.md` — case-studies/ceptor-ai.md | `1. Context` · `5.2 Current State` · `7. Related Documentation` · `Ceptor-AI — Package Use Cases & Case Study` · +2 more |
 | → `../../case-studies/data-token-sync-tagging.md` — case-studies/data-token-sync-tagging.md | `6. Related Documentation` · `DataToken Sync Tagging — django-fusion Case Study` · `Remarks & Notes` |
 | → `../../case-studies/django-bolt-fusion.md` — case-studies/django-bolt-fusion.md | `1. Context` · `2.1 Overall Pattern Map` · `2.2 Deployment Modes` · `2.3 Fragment Rendering Pipeline (django-fusion)` · +11 more |
-| → `../../dev-team-plans.md` — dev-team-plans.md | `1. Formint Edition Chain — P0` · `7. django-fusion (Shared Framework) — **P2**` · `سلاسل المنتجات النشطة` · `✅ Implementation status truth (backend × frontend) — 2026-09-06` · +4 more |
-| → `../../feature-tracking.md` — feature-tracking.md | `P1 — Next Up (Q4 2026)` · `P2 — Planned (Q1 2027)` · `django-fusion (Component Framework)` · `✅ Shipped` · +2 more |
+| → `../../dev-team-plans.md` — dev-team-plans.md | `Active vertical slices (priority order)` · `سلاسل المنتجات النشطة` · `✅ Implementation status truth — 2026-09-12` |
+| → `../../feature-tracking/django-fusion.md` — feature-tracking/django-fusion.md | `P1 — Next Up (Q4 2026)` · `P2 — Planned (Q1 2027)` · `✅ Shipped` · `🎯 django-fusion (Component Framework) — Feature Tracking` |
+| → `../../feature-tracking/formint-pos.md` — feature-tracking/formint-pos.md | `✅ Shipped — Launch Scope` |
+| → `../../feature-tracking/precis-main.md` — feature-tracking/precis-main.md | `✅ Shipped — Core Platform` |
 | → `../../task-tracking.md` — task-tracking.md | `Current Sprint — Sprint 1 (2026-09-01 to 2026-09-14)` · `Sprint 1.5 — interim (2026-09-03 → 2026-09-10)` · `Sprint 2 — 2026-09-15 to 2026-09-28` |
 | → `../../team-notes.md` — team-notes.md | `2026-09-05 — Agenda — Object Types & Objects Separation (Anytype Schema)` |
 

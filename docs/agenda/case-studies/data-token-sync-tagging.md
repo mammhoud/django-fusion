@@ -26,7 +26,7 @@ links:
     to: "/agenda/main"
     icon: "i-lucide-clipboard-list"
   - label: "Feature Tracking — django-fusion"
-    to: "/agenda/feature-tracking"
+    to: "/agenda/feature-tracking/django-fusion"
     icon: "i-lucide-target"
   - label: "Django-Bolt case study"
     to: "/agenda/case-studies/django-bolt-fusion"
@@ -40,7 +40,7 @@ links:
 
 > **Date:** 2026-08-31 | **Status:** Active
 > **Scope:** GenericForeignKey-based sync row tagging with parent/child tree, progress tracking, and auto-untag, UUID PK support
-> **Feature tracking:** [`feature-tracking.md`](../feature-tracking.md) § django-fusion
+> **Feature tracking:** [`feature-tracking/django-fusion.md`](../feature-tracking/django-fusion.md) § django-fusion
 > **Related:** [`case-studies/django-bolt-fusion.md`](./django-bolt-fusion.md), [`case-studies/pos-multi-terminal-sync.md`](./pos-multi-terminal-sync.md)
 
 ---
@@ -293,7 +293,7 @@ Without auto-untag, completed sync tags would accumulate indefinitely, clutterin
 
 | Document | Path |
 |----------|------|
-| Feature tracking — django-fusion | [`../feature-tracking.md`](../feature-tracking.md) § django-fusion |
+| Feature tracking — django-fusion | [`../feature-tracking/django-fusion.md`](../feature-tracking/django-fusion.md) § django-fusion |
 | Case study — Django-Bolt fusion | [./django-bolt-fusion.md](./django-bolt-fusion.md) |
 | Case study — Multi-terminal Sync | [./pos-multi-terminal-sync.md](./pos-multi-terminal-sync.md) |
 | Feature roadmap | [`../../features/feature-roadmap.md`](../../features/feature-roadmap.md) |

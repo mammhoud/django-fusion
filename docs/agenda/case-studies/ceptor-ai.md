@@ -531,7 +531,7 @@ ChatBubble's fallback to local Ollama when the chat server is unreachable means 
 | Django-Bolt case study | [`case-studies/django-bolt-fusion.md`](./django-bolt-fusion.md) |
 | Shared use cases | [`../../shared/use-cases.md`](../../shared/use-cases.md) |
 | Shared methods | [`../../shared/shared-methods.md`](../../shared/shared-methods.md) |
-| CTC Research ceptor-ai migration | ✅ complete — recorded as a finished milestone in [`../../agenda/feature-tracking.md`](../../agenda/feature-tracking.md) § CTC Research (the plan file was deleted; git history is the archive) |
+| CTC Research ceptor-ai migration | ✅ complete — recorded as a finished milestone in [`../../agenda/feature-tracking/ctc-research.md`](../../agenda/feature-tracking/ctc-research.md) (the plan file was deleted; git history is the archive) |
 
 ---
 

@@ -25,7 +25,7 @@ links:
     to: "/agenda/main"
     icon: "i-lucide-clipboard-list"
   - label: "Feature Tracking — API Token Management"
-    to: "/agenda/feature-tracking"
+    to: "/agenda/feature-tracking/syntara"
     icon: "i-lucide-target"
   - label: "Case Study — Stripe Billing"
     to: "/agenda/case-studies/stripe-billing"
@@ -39,7 +39,7 @@ links:
 
 > **Date:** 2026-08-31 | **Status:** Active | **Priority:** P0
 > **Scope:** Token model with scopes, generate/rotate/revoke actions, token list UI, scoped permission enforcement
-> **Feature tracking:** [`feature-tracking.md`](../feature-tracking.md) § API Token Management
+> **Feature tracking:** [`feature-tracking/syntara.md`](../feature-tracking/syntara.md) § API Token Management
 
 ---
 
@@ -270,7 +270,7 @@ Tokens carry scopes. Endpoints declare required scopes. The middleware matches t
 
 | Document | Path |
 |----------|------|
-| Feature tracking — API Token Management | [`../feature-tracking.md`](../feature-tracking.md) § API Token Management |
+| Feature tracking — API Token Management | [`../feature-tracking/syntara.md`](../feature-tracking/syntara.md) § API Token Management |
 | Case study — Stripe Billing | [./stripe-billing.md](./stripe-billing.md) |
 | Feature roadmap — Syntara | [`../../features/feature-roadmap.md`](../../features/feature-roadmap.md) |
 | Syntara product docs | [`../../projects/syntara/`](../../projects/syntara/) |

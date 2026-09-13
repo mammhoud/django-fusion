@@ -16,22 +16,21 @@ Related Teams: product, engineering, marketing, sales, support
 
 | Team | Mission | Owns | Members |
 |------|---------|------|---------|
-| Product | Validate problems and prioritize outcomes | Product objects, research, roadmap | Moustafa, Mammhoud |
-| Engineering | Build reliable product capabilities | Features, architecture, releases | Yahia, Asmaa, Mahmoud |
-| Marketing | Explain value and create qualified demand | Campaigns, content, social channels | — |
-| Sales | Convert qualified demand into sustainable customers | Demos, pilots, proposals, revenue | — |
-| Support | Help customers adopt and stay successful | Onboarding, incidents, feedback | — |
-| Partners | Extend reach and integrations | Channels, referrals, external services | — |
+| Leadership | Set direction, hold the money, unblock delivery | Pricing, portfolio, final calls | Mahmoud |
+| Product & PM | Decide what gets built and in what order | Roadmap, specs, task validation | Moustafa |
+| Front-end & UX | Turn specs into design drafts, then interfaces | Layouts, flows, design system | Yahia |
+| Data & Reporting | Keep every number trustworthy | Metrics, evidence, pilot readouts | Asmaa |
+| Marketing | Explain value and create qualified demand | Campaigns, content, claim wording | Moustafa |
+| Support | Help customers adopt and stay successful | Onboarding, incidents, feedback | Dariia |
 
 ## Team ownership
 
 | Person | Role | Team | Primary Focus |
 |--------|------|------|---------------|
-| Mammhoud | Founder | Leadership | Architecture, product strategy, roadmap |
-| Moustafa | Product | Product | Roadmap, prioritization, cross-team coordination |
-| Yahia | Developer | Engineering | Feature development, code review |
-| Asmaa | Developer | Engineering | Feature development, testing |
-| Mahmoud | Developer | Engineering | Feature development, bug fixes |
+| Mahmoud | General Manager + Full Stack | Leadership | Direction, pricing, full-stack delivery |
+| Moustafa | Product Manager + Marketing Specialist | Product & PM | Roadmap, task validation, positioning |
+| Yahia | Front-end Developer + UX Designer | Front-end & UX | Design drafts, interfaces, UX review |
+| Asmaa | Data Development | Data & Reporting | Metrics, evidence, pilots |
 | Dariia | Contributor | Support | Content and documentation |
 
 ## Operating methods
@@ -44,34 +43,41 @@ Related Teams: product, engineering, marketing, sales, support
 
 ## Periodic team tasks
 
-### Engineering (Yahia, Asmaa, Mahmoud)
+### Front-end & UX (Yahia)
 
 | Task | Cadence |
 |------|---------|
-| Sprint development work and deliverables | Weekly |
-| Code review participation | Weekly |
-| Bug triage and fixes | Weekly |
-| Technical debt reduction | Bi-weekly |
-| Documentation updates | Monthly |
+| Design draft for the next slice | Per slice |
+| Screen and flow review | Weekly |
+| Design-system drift check | Bi-weekly |
+| Accessibility pass on new flows | Per release |
 
-### Product (Moustafa, Mammhoud)
+### Data & Reporting (Asmaa)
+
+| Task | Cadence |
+|------|---------|
+| Metrics refresh and anomaly note | Weekly |
+| Evidence record for each active claim | Bi-weekly |
+| Pilot readout | Per pilot |
+| Claims evidence audit | Quarterly |
+
+### Product & Marketing (Moustafa)
 
 | Task | Cadence |
 |------|---------|
 | Sprint planning and backlog grooming | Weekly |
-| Product roadmap review | Bi-weekly |
-| Customer feedback review | Weekly |
-| Feature prioritization | Bi-weekly |
-| Cross-team sync | Weekly |
-| Product metrics review | Monthly |
+| Task validation pass with the team | Weekly |
+| Campaign readout | Per campaign |
+| Roadmap and positioning review | Monthly |
 
-### Leadership (Mammhoud)
+### Leadership (Mahmoud)
 
 | Task | Cadence |
 |------|---------|
-| Architecture decision review | Bi-weekly |
-| Product roadmap update | Monthly |
-| Team capacity check | Bi-weekly |
+| Portfolio review — one next step per venture | Weekly |
+| Revenue and pipeline check | Weekly |
+| Scope gate | Bi-weekly |
+| Claims approval before publication | Per release |
 
 ## Team cadence
 
@@ -88,7 +94,7 @@ Related Teams: product, engineering, marketing, sales, support
 - → `sales.md` — Sales ownership
 - → `../objects/team.md` — Team object type
 - → `../objects/people.md` — Person object type
-- → `../objects/people/me.md` — Mammhoud
+- → `../objects/people/mahmoud.md` — Mahmoud
 - → `../objects/people/moustafa.md` — Moustafa
 - → `../objects/people/yahia.md` — Yahia
 - → `../objects/people/asmaa.md` — Asmaa

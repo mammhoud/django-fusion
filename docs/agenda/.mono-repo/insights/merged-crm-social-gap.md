@@ -24,6 +24,6 @@ Related Plans: merge-plan
 
 ## Related
 
-- → `../../feature-tracking.md` § Loop-CRM — Twenty/Postiz DNA milestone
+- → `../../feature-tracking/loop-crm.md` — Twenty/Postiz DNA milestone
 - → `../recommendations/keep-loop-crm-merged.md` — Recommendation
 - → `../objects/insight.md` — Insight object type

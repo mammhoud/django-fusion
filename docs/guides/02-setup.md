@@ -88,12 +88,12 @@ Triggers on changes to:
 - `.github/actions/deploy-preflight/**`
 - `**/docker-compose*.yml` and `*.yaml`
 - `libs/**/*.md`
-- `application/scripts/check_markdown_links.py`
+- `application/scripts/staging/check_markdown_links.py`
 
 Jobs:
 
 1. **preflight** — runs the local Composite Action `.github/actions/deploy-preflight` to validate Docker daemon and `make deploy-ci`.
-2. **markdown-links** — runs `application/scripts/check_markdown_links.py` to validate Markdown cross-links.
+2. **markdown-links** — runs `application/scripts/staging/check_markdown_links.py` to validate Markdown cross-links.
 
 #### `check-extras.yml`
 

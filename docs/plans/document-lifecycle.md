@@ -36,7 +36,7 @@ The detailed repository plan remains authoritative for implementation. Plan copi
 |---|---|---|
 | `docs/plans/editions/README.md` | Current (canonical) | Formints edition chain 01–08 — the main, latest product + engineering plans |
 
-The former `docs/Anytype/` knowledge-graph docs moved to `docs/agenda/mono-repo/`
+The former `docs/Anytype/` knowledge-graph docs moved to `docs/agenda/.mono-repo/`
 in the monorepo consolidation; product scope and market research also live
 alongside the canonical plans in `docs/plans/editions/`.
 

@@ -18,12 +18,11 @@ Status: Active
 - **.mono-repo/** — Package B — the Anytype object graph: type definitions + per-type content objects (projects, editions, sprints, releases, integrations, APIs, components, tools, pipelines, styles, diagrams, reports, dashboards, methodologies, insights, recommendations, repositories, modules, documentation) + install guides
 - **diagrams/** — Rendered diagram images + mermaid sources: API request UML, Django/Rust ERDs, Blinko SurrealDB
 - **startup-story.md** — Founder journey story + goals-as-achievement tracking
-- **dev-team-plans.md** — Product vertical slices, edition chains, and engineering tasks
-- **dev-team-plans.md** — All engineering plans incl. backend workstreams (backend-plans.md merged 2026-09-10)
+- **dev-team-plans.md** — Product vertical slices, edition chains, and engineering tasks (incl. backend workstreams; `backend-plans.md` merged 2026-09-10)
 - **pricing-plans.md** — Pricing strategy, revenue targets, and feature-based pricing
 - **data-analyst-plans.md** — Metrics, evidence tracking, and pilot validation
 - **marketing-plans.md** — Positioning, claims register, and launch campaigns
-- **tools-auth-dashboard.md** — Tools dashboard and authentication implementation
+- **roles/** — Per-role working plans: tasks, validation steps, and collaborators for each team member
 
 ---
 
@@ -44,7 +43,7 @@ Status: Active
 |-----------|------|---------|
 | **Agenda Content Model** | `docs/agenda/CONTENT_MODEL.md` | Agenda definition, packaging, and the plans → milestones reference contract |
 | **Plan Registry** | `docs/plans/README.md` | Single source of truth for all engineering plans |
-| **Finished Milestones** | `docs/agenda/feature-tracking.md` § ✅ Shipped | Backward map of completed plans recorded as milestones |
+| **Finished Milestones** | `docs/agenda/feature-tracking/<product>.md` § ✅ Shipped (hub: `docs/agenda/feature-tracking.md`) | Backward map of completed plans recorded as milestones |
 | **Recommendations** | `docs/recommendations.md` | Prioritized next actions & sequencing |
 | **Project Awareness** | `docs/guides/00-project-awareness.md` | Object graph, commands, computation paths |
 | **Repository Overview** | `docs/overview.md` | Project map, stack, infrastructure, name migrations |

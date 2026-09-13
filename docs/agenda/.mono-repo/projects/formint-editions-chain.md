@@ -33,7 +33,7 @@ Every edition the docs and landing site claim actually exists, is tested, and ha
 
 | Person | Role | Relation | Source |
 |---|---|---|---|
-| → `../objects/people/yahia.md` — Yahia | Developer | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
+| → `../objects/people/yahia.md` — Yahia | Front-end Developer | `Assigned To` | `task-tracking.md § Sprint 2 — 2026-09-15 to 2026-09-28` |
 
 ## Related Documents (generated)
 
@@ -45,8 +45,11 @@ Every edition the docs and landing site claim actually exists, is tested, and ha
 | → `../../case-studies/pos-offline-queue.md` — case-studies/pos-offline-queue.md | `1. Context` · `2.1 Offline Transaction Flow` · `2.2 Outbox Queue Design` · `2.3 Retry with Exponential Backoff` · +3 more |
 | → `../../case-studies/pos-qr-menu.md` — case-studies/pos-qr-menu.md | `2.1 Menu Versioning + QR Code Flow` · `2.2 Versioned URL Strategy` · `2.3 Preview / Publish Workflow` · `2.4 Branch/Table QR Code Generation` · +2 more |
 | → `../../data-analyst-plans.md` — data-analyst-plans.md | `Active Pilots` · `Current Stack` · `Data Access Patterns` · `Product-Level Metrics` · +2 more |
-| → `../../dev-team-plans.md` — dev-team-plans.md | `1. Formint Edition Chain — P0` · `6. Loop-CRM — **Active (merge complete at feature level)**` · `Formint invoicing & reports — P1` · `أعمال الواجهة الخلفية (بعد دمج backend-plans.md في 2026-09-10)` · +5 more |
-| → `../../feature-tracking.md` — feature-tracking.md | `Formint POS` · `P1 — Next Up (Q4 2026)` · `P2 — Planned (Empty)` · `✅ Shipped` · +2 more |
+| → `../../dev-team-plans.md` — dev-team-plans.md | `Active vertical slices (priority order)` · `سلاسل المنتجات النشطة` · `✅ Implementation status truth — 2026-09-12` · `📋 Current engineering priorities` |
+| → `../../feature-tracking/django-fusion.md` — feature-tracking/django-fusion.md | `✅ Shipped` |
+| → `../../feature-tracking/formint-pos.md` — feature-tracking/formint-pos.md | `P2 — Planned (Empty)` · `✅ Shipped — Launch Scope` · `🎯 Formint POS — Feature Tracking` |
+| → `../../feature-tracking/loop-crm.md` — feature-tracking/loop-crm.md | `✅ Shipped — Finished Milestones` |
+| → `../../feature-tracking/syntara.md` — feature-tracking/syntara.md | `P1 — Next Up (Q4 2026)` |
 | → `../../marketing-plans.md` — marketing-plans.md | `Formint Client (✅ Launched)` · `Formint Cloud (📋 Planned)` · `Formint Community (✅ Launched)` · `Formint Professional (🔄 Pre-Launch)` · +7 more |
 | → `../../pricing-plans.md` — pricing-plans.md | `Formint POS` · `Formint POS — 12-month client targets` · `Implementation tasks` · `Pricing levers` · +3 more |
 | → `../../sales-pipeline.md` — sales-pipeline.md | `2. Targets (12-month, from pricing-plans)` · `3. Active pipeline` · `5. Lead sources & generation steps` · `Remarks & Notes` |

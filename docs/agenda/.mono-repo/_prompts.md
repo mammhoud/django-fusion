@@ -115,8 +115,8 @@ Fill the roles named in the agenda fact tables back into the graph
 the same way the Anytype client attaches relation properties to objects:
 
 1. `node agenda/scripts/link-agenda-relations.mjs` (from `docs/`) — scans
-   `task-tracking.md`, `feature-tracking.md`, `sales-pipeline.md`, the plans
-   family and `case-studies/`, then fills `## Assigned Objects (generated)` on
+   `task-tracking.md`, `sales-pipeline.md`, the plans family,
+   `case-studies/` and `feature-tracking/` (one file per product), then fills `## Assigned Objects (generated)` on
    Person objects and `## Related Roles / Related Documents / Related Features`
    on Project objects, plus a missing `Owner:` from the explicit owner map.
    `--check` (CI) fails on drift; `--dry-run` reports only; `--emit-anytype`

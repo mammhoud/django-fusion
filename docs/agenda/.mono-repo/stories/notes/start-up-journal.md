@@ -2,7 +2,7 @@
 Object type: Note
 Tags: notes, journal, origin, startup, learning
 Status: Draft
-Author: people/me.md
+Author: people/mahmoud.md
 ---
 
 # Start-Up Journal — Working Notes

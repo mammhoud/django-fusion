@@ -95,7 +95,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | CTC Research workflow plan | 2026-08-18 | Proposed — 16 cross-module workflows with Dramatiq as the single publishing, refresh, analytics, and attribution boundary |
 | Loop-CRM tenancy + auth gating | 2026-08-14 | Workspace-scoped reads/mutations, login-gated pages/APIs, CSRF-protected kanban move, tenant-isolation tests |
 | Loop-CRM CRUD + channels + allauth + real screens | 2026-08-14 | Tenant-scoped REST CRUD + msgspec schemas on both roads, Channels manager + Mastodon/Bluesky adapters, complete allauth flows, data-backed module tables, motion/design pass |
-| Loop-CRM finance + workflows + integrations | 2026-08-14 → completed 2026-09-05 | Formint↔Loop-CRM finance ingestion, workflow expansion, and connectors **completed** — recorded as a milestone in [`docs/agenda/feature-tracking.md`](../agenda/feature-tracking.md) § Loop-CRM; the plan itself was deleted (git history is the archive) |
+| Loop-CRM finance + workflows + integrations | 2026-08-14 → completed 2026-09-05 | Formint↔Loop-CRM finance ingestion, workflow expansion, and connectors **completed** — recorded as a milestone in [`docs/agenda/feature-tracking/loop-crm.md`](../agenda/feature-tracking/loop-crm.md); the plan itself was deleted (git history is the archive) |
 
 ## Lifecycle rules
 

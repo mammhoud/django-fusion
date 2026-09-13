@@ -16,7 +16,7 @@ Related Milestones: formint-editions-chain
 - Standard ✅ done — multi-currency, tax profiles, custom roles, export, sync queue
 - Pro ✅ done — merged `pos-full` + `pos-solo`, required Django backend
 - Cloud 🟡 staging — schema-per-tenant master, backups, monitoring
-- Umbrella plan `finish-community-standard` archived (superseded by the per-edition chain — see the ✅ Shipped milestone in `../../feature-tracking.md` § Formint POS)
+- Umbrella plan `finish-community-standard` archived (superseded by the per-edition chain — see the ✅ Shipped milestone in `../../feature-tracking/formint-pos.md`)
 
 ## Evidence
 
@@ -26,5 +26,5 @@ Related Milestones: formint-editions-chain
 ## Related
 
 - → `../editions/_index.md` — Edition objects
-- → `../../feature-tracking.md` § Formint POS — ✅ Shipped milestone
+- → `../../feature-tracking/formint-pos.md` — ✅ Shipped milestone
 - → `../objects/release.md` — Release object type

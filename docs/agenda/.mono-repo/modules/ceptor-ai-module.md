@@ -25,6 +25,6 @@ Related Documentation: _index
 
 ## Related
 
-- → `../../feature-tracking.md` § CTC Research — ceptor-ai migration milestone
+- → `../../feature-tracking/ctc-research.md` — ceptor-ai migration milestone
 - → `../../case-studies/ceptor-ai.md` — Historical case study
 - → `../objects/module.md` — Module object type

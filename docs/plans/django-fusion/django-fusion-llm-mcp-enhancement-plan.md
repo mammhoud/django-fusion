@@ -623,9 +623,9 @@ labels.
 | Unified tasks and task MCP | [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md) |
 | django-fusion enhancements | [`django-fusion-enhancements.md`](django-fusion-enhancements.md) |
 | Worker consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
-| Precis Landing plan | [`../precis/landi/README.md`](../precis/landi/README.md) |
-| Precis product handoff | [`../../../projects/precis/precis-lms/README.md`](../../../projects/precis/precis-lms/README.md) |
-| Precis backend guidance | [`../../../projects/precis/precis-lms/backend/AGENTS.md`](../../../projects/precis/precis-lms/backend/AGENTS.md) |
+| Precis Landing plan | [`../precis-landing.md`](../precis-landing.md) |
+| Precis product handoff | [`../../../projects/precis/precis-main/README.md`](../../../projects/precis/precis-main/README.md) |
+| Precis guidance | [`../../../projects/precis/precis-main/AGENTS.md`](../../../projects/precis/precis-main/AGENTS.md) |
 | Formint Professional plan | [`../editions/03-pro.md`](../editions/03-pro.md) |
 | POS editions index | [`../editions/README.md`](../editions/README.md) |
 | Plan registry | [`../README.md`](../README.md) |

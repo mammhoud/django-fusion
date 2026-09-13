@@ -296,7 +296,7 @@ Replace the precis-ctc-specific `.env.example` with Precis-specific settings.
 | Webpack Integration (Phase 1-2 done, Phase 3 planned) | [`django-fusion-webpack-integration-plan.md`](django-fusion-webpack-integration-plan.md) |
 | django-fusion Tasks & MCP | [`django-fusion-tasks-mcp-plan.md`](django-fusion-tasks-mcp-plan.md) |
 | Fusion Assets & Templates Cleanup | [`fusion-assets-templates-cleanup.md`](fusion-assets-templates-cleanup.md) |
-| Precis Landing | [`../precis/landi/README.md`](../precis/landi/README.md) |
+| Precis Landing | [`../precis-landing.md`](../precis-landing.md) |
 | Canonical Plan Registry | [`../README.md`](../README.md) |
 
 ---

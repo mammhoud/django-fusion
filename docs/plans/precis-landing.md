@@ -2,7 +2,7 @@
 
 > **Status:** Active  
 > **Owner:** Precis Landing team  
-> **Project:** [`projects/precis/precis-landing/`](../../../projects/precis/precis-landing/) (legacy Precis Landing copy; the unified product lives in `projects/precis/precis-main/`)
+> **Project:** [`projects/precis/precis-landing/`](../../projects/precis/precis-landing/) (legacy Precis Landing copy; the unified product lives in `projects/precis/precis-main/`)
 
 Precis Landing is the Astro + Tailwind + HTMX + Alpine frontend paired with the Django + Wagtail editable content backend. This page is the canonical plan entry point under the main documentation project.
 
@@ -42,5 +42,5 @@ and secrets stay in the backend/worker boundary, never in Astro browser code.
 
 - [`../recommendations.md`](../recommendations.md) — recommended priority order
 - [`README.md`](README.md) — canonical plan registry
-- [`../../projects/precis/precis-landing/README.md`](../../projects/precis/precis-landing/README.md) — project quickstart (unified product: [`../../projects/precis/precis-main/README.md`](../../projects/precis/precis-main/README.md))
+- [`projects/precis/precis-landing/`](../../projects/precis/precis-landing/) — legacy landing site tree (unified product quickstart: [`projects/precis/precis-main/README.md`](../../projects/precis/precis-main/README.md))
 - [`document-lifecycle.md`](document-lifecycle.md) — plan lifecycle and archive policy

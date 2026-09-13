@@ -41,7 +41,7 @@ links:
 قابلية التوسع، ونظام مكونات django-fusion، ومرونة CMS/AI، ومنصة سطح المكتب +
 السحابة — مُسجَّل كقصة بمراحل زمنية.
 
-**اقرأ القصة كاملة:** `mono-repo/stories/starting-the-project.md`
+**اقرأ القصة كاملة:** `.mono-repo/stories/starting-the-project.md`
 
 **الرحلة في سطر واحد:** مواقع Django الصغيرة → htmx/Alpine/WebSockets → قواعد
 بيانات متعددة المستأجرين قابلة للتوسع + OAuth → خلفية API/AI/وكلاء → نظام
@@ -52,7 +52,7 @@ links:
 
 تُتتبع الأهداف كلوحة إنجاز منظمة بمراحل القصة، وكل بند منجز عليه علامة تحقيق.
 
-**شاهد اللوحة:** `mono-repo/goals/achievement-board.md`
+**شاهد اللوحة:** `.mono-repo/goals/achievement-board.md`
 
 | الفئة | المحقق |
 |----------|:--------:|
@@ -64,15 +64,15 @@ links:
 
 السرد يتغذى على التخطيط:
 
-- **الاستراتيجية:** `mono-repo/plans/startup-planner.md`، `mono-repo/plans/business-model.md`
-- **دورة حياة المنتج:** `mono-repo/plans/product-development.md`
-- **مساحة عمل المحفظة:** `mono-repo/plans/project-workspace.md`
+- **الاستراتيجية:** `.mono-repo/plans/startup-planner.md`، `.mono-repo/plans/business-model.md`
+- **دورة حياة المنتج:** `.mono-repo/plans/product-development.md`
+- **مساحة عمل المحفظة:** `.mono-repo/plans/project-workspace.md`
 
 ## ملاحظات العمل
 
 ملاحظات الالتقاط الخام من بداية المشروع محفوظة على حدة:
 
-- `mono-repo/stories/notes/start-up-journal.md`
+- `.mono-repo/stories/notes/start-up-journal.md`
 
 ---
 
@@ -84,8 +84,8 @@ links:
 ## الروابط ذات الصلة
 
 - → `agenda/INDEX.md` — فهرس خطط الفريق المركزي
-- → `mono-repo/stories/starting-the-project.md` — قصة المؤسس
-- → `mono-repo/goals/achievement-board.md` — لوحة الإنجازات
+- → `.mono-repo/stories/starting-the-project.md` — قصة المؤسس
+- → `.mono-repo/goals/achievement-board.md` — لوحة الإنجازات
 
 ---
 

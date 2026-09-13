@@ -74,7 +74,7 @@ node docs/scripts/render-agenda-diagrams.mjs
 ## Related
 
 - [Case studies index](../case-studies/INDEX.md) — per-case-study diagrams
-- [Feature tracking](../feature-tracking.md) — features these diagrams document
+- [Feature tracking](../feature-tracking.md) — hub; the features themselves live in `../feature-tracking/<product>.md`
 - [Content model](../CONTENT_MODEL.md) — where diagrams live in the package split
 
 <!-- AI-generated: review needed -->

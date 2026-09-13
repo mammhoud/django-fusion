@@ -31,7 +31,7 @@ jobs:
   preflight:
     - make deploy-ci                    # Compose config validation
   markdown-links:
-    - python application/scripts/check_markdown_links.py  # Broken link check
+    - python application/scripts/staging/check_markdown_links.py  # Broken link check
 ```
 
 **What it validates:**
@@ -79,7 +79,7 @@ on:
 
 jobs:
   check-extras:
-    - python application/scripts/check_extras_in_docs.py
+    - python application/scripts/staging/check_extras_in_docs.py
 ```
 
 Validates every `uv add "pkg[extras]"` line in docs matches actual `pyproject.toml` `[project.optional-dependencies]`.
@@ -128,10 +128,10 @@ make deploy-ci
 uv run pytest
 
 # Check markdown links (requires Python 3.11+)
-python application/scripts/check_markdown_links.py
+python application/scripts/staging/check_markdown_links.py
 
 # Check pyproject.toml extras in docs
-python application/scripts/check_extras_in_docs.py
+python application/scripts/staging/check_extras_in_docs.py
 ```
 
 ---

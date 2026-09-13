@@ -35,7 +35,7 @@ Status: Published
 ## Use
 
 - One plan = one agreed method or time-bound effort; do not duplicate delivery detail into features or workspaces — link.
-- **Lifecycle contract (with the agenda):** when every task is done and verification passes, record a ✅ Shipped milestone in `docs/agenda/feature-tracking.md`, note the closeout decision in `team-notes.md`, then **delete this plan file** — git history is the archive.
+- **Lifecycle contract (with the agenda):** when every task is done and verification passes, record a ✅ Shipped milestone in the owning product's file under `docs/agenda/feature-tracking/`, note the closeout decision in `team-notes.md`, then **delete this plan file** — git history is the archive.
 - Marketing Campaign, Sales, and Commerce plans feed the go-to-market graph (`Related Campaigns`, `Related Sales`, `Related Commerce`).
 
 ## Views (suggested defaults for the type)
@@ -64,4 +64,4 @@ graph LR
 - → [`task.md`](./task.md) — the work items plans break into
 - → [`milestone.md`](./milestone.md) — the checkpoints plans pass
 - → [`_relations.md`](./_relations.md) — canonical relation names
-- → [`../../feature-tracking.md`](../../feature-tracking.md) § ✅ Shipped — where completed plans are recorded
+- → [`../../feature-tracking.md`](../../feature-tracking.md) — hub; the ✅ Shipped milestone logs are per product under `../../feature-tracking/`

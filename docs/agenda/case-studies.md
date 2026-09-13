@@ -205,7 +205,7 @@ Copy this template when adding a new case study:
 > **Date:** YYYY-MM-DD | **Status:** Active
 > **Scope:** [One-line scope]
 > **Related plan:** [`path/to/plan.md`](../path/to/plan.md)
-> **Feature tracking:** [./feature-tracking.md](./feature-tracking.md) § [Feature Name]
+> **Feature tracking:** [./feature-tracking.md](./feature-tracking.md) → the product's file in `./feature-tracking/` § [Feature Name]
 
 ---
 

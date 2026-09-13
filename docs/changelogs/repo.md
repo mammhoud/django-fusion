@@ -51,8 +51,8 @@ Fixed broken links across all library documentation:
 
 | Script | Purpose |
 |--------|---------|
-| `application/scripts/check_markdown_links.py` | Validates every Markdown relative + HTTP link |
-| `application/scripts/check_extras_in_docs.py` | Validates `pyproject.toml` extras match docs |
+| `application/scripts/staging/check_markdown_links.py` | Validates every Markdown relative + HTTP link |
+| `application/scripts/staging/check_extras_in_docs.py` | Validates `pyproject.toml` extras match docs |
 
 ### feat: test scaffolding
 

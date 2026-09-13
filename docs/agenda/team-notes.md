@@ -75,9 +75,59 @@ Every entry should be date-stamped and categorized:
 
 ## 🗓️ Meeting Notes Log
 
+### 2026-09-13 — Agenda maintenance — Render pipeline + plan-link repair
+
+**Attendees:** @mahmoud (General Manager) — maintenance change, no meeting held.
+
+**Topic / Agenda:** Two stale-target defects: the agenda diagram renderer duplicated the `.mono-repo` diagrams on every run, and `docs/plans/` carried unresolved relative links to removed or renamed Precis paths.
+
+**Key points:**
+1. **Root cause** — a leading dot-directory sanitized to a leading hyphen, so the renderer asked for `-mono-repo-*` while the eight committed images are `mono-repo-*`; the skip-check missed and each run re-rendered and re-inserted them.
+2. **Fix** — `slugFor()` now trims leading separators after sanitizing. A full run reports `0 rendered, 60 skipped, 0 failed` and writes no files, so the pipeline is idempotent again.
+3. **Plan links** — fourteen unresolved links in `docs/plans/` were repointed at the current tree; the folder now has zero unresolved relative links.
+
+**Decisions made:**
+- Generated slugs must stay stable across directory renames; renaming a directory that contains rendered diagrams is a slug-affecting change to verify, not a no-op.
+- Deleted plan targets are de-linked with their removal date instead of pointing at a missing file.
+
+**Action items:**
+- [ ] @mahmoud — Note in the plan-review checklist that moving a directory containing rendered diagrams requires checking the slug output
+
+**Links:**
+- Renderer: [`../scripts/render-agenda-diagrams.mjs`](../scripts/render-agenda-diagrams.mjs)
+- Change log: [`SUMMARY.md`](./SUMMARY.md) § 2026-09-13
+
+---
+
+### 2026-09-13 — Agenda maintenance — Feature Tracking split per product
+
+**Attendees:** @mahmoud (General Manager) — maintenance change, no meeting held.
+
+**Topic / Agenda:** `feature-tracking.md` had grown to 2,282 lines with nine products in one file, so nobody could find their own product's table.
+
+**Key points:**
+1. **Split, not a rewrite** — the nine product sections moved verbatim into `feature-tracking/`, one file each; the original file became a hub. Verified line-by-line against the pre-split copy: zero content loss.
+2. **References kept working** — the hub still carries a heading per product, so existing `feature-tracking.md § <Product>` pointers resolve instead of breaking.
+3. **New products** now get their own file plus one hub pointer, rather than appending to a monolith.
+
+**Decisions made:**
+- The **finished-milestone log** is now per product: record a ✅ Shipped milestone in the owning product's file, not in the hub.
+- The hub holds only the lifecycle contract, status definitions, entry template, index, and shipped roll-up. Feature entries never go in the hub.
+- `link-agenda-relations.mjs` reads `feature-tracking/` as a source directory so role ↔ object relations keep resolving.
+
+**Action items:**
+- [ ] @moustafa — Confirm the three P0 Syntara features (`Owner: TBD`) get real owners — carried over from Sprint 2 backlog
+
+**Links:**
+- Hub: [`feature-tracking.md`](./feature-tracking.md)
+- Per-product files: `feature-tracking/` (9 files)
+- Change log: [`SUMMARY.md`](./SUMMARY.md) § 2026-09-13
+
+---
+
 ### 2026-09-10 — Kickoff Meeting — Agenda System Adoption (CONTENT_MODEL § 5)
 
-**Attendees:** Workspace team — @mammhoud (Founder, presiding), @moustafa (Product), @mahmoud, @asmaa, @yahia (Engineering), @dariia (Contributor)
+**Attendees:** Workspace team — @mahmoud (General Manager, presiding), @moustafa (Product Manager + Marketing), @yahia (Front-end + UX), @asmaa (Data Development), @dariia (Contributor)
 
 **Topic / Agenda:** First team meeting on the agenda system, walked in the order defined in [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) § 5. Held ahead of the 2026-09-16 due date.
 
@@ -100,12 +150,12 @@ Every entry should be date-stamped and categorized:
 - [x] Record initial Sprint 2 executors in task-tracking.md — Done (2026-09-10)
 - [ ] @moustafa — Run sprint planning for Sprint 2 with template 1 (capacity check + commitment) — due 2026-09-15
 - [ ] @moustafa — Assign feature owners to the 3 P0 Syntara features — due 2026-09-22
-- [ ] @mahmoud — Run `npm run validate-content` + link check across the agenda — due 2026-09-19
+- [ ] @mahmoud — Run the documentation validation and link check across the agenda — due 2026-09-19
 - [ ] @mahmoud — Configure Loop-CRM live OAuth credentials + publish E2E (deploy-gated) — due 2026-09-26
 - [ ] @mahmoud — Verify demo-state server half on the deployed stack — due 2026-09-26
 - [ ] @asmaa — Review all 8 case studies for completeness (Context → Lessons) — due 2026-09-18
 - [ ] @yahia — Confirm every ✅ Shipped feature entry links its case study — due 2026-09-19
-- [ ] @mammhoud — Seed sales pipeline: owners + convert-pilot plan for the 3 restaurant rows — due 2026-09-22
+- [ ] @mahmoud — Seed sales pipeline: owners + convert-pilot plan for the 3 restaurant rows — due 2026-09-22
 - [ ] @moustafa — Backlog refinement: schedule the 11 remaining rows → Sprint 3 or Parked — due 2026-09-24
 
 **Blockers / Risks:**
@@ -116,7 +166,7 @@ Every entry should be date-stamped and categorized:
 **Links:**
 - Related definition: [`CONTENT_MODEL.md`](./CONTENT_MODEL.md) § 5 (this meeting's source agenda)
 - Related task board: [`task-tracking.md`](./task-tracking.md) § Sprint 2
-- Related roster: [`mono-repo/objects/people/`](./mono-repo/objects/people.md)
+- Related roster: [`.mono-repo/objects/people/`](./.mono-repo/objects/people/)
 - Meeting folder: <https://drive.google.com/drive/folders/1-A0MxVvAUpaOc56Nr9t2672DkrvgILb0>
 
 ---
@@ -153,7 +203,7 @@ the sprint goal.
 - [x] Hold the first agenda meeting — Done (2026-09-10, held early; see Kickoff Meeting entry above)
 - [ ] @mahmoud — Configure Loop-CRM live OAuth credentials + publish E2E — due 2026-09-26
 - [ ] @mahmoud — Verify demo-state server half on deployed stack — due 2026-09-26
-- [ ] @mammhoud — Seed sales pipeline owners + pilot conversion plan — due 2026-09-22
+- [ ] @mahmoud — Seed sales pipeline owners + pilot conversion plan — due 2026-09-22
 - [x] Define Sprint 2 goal and seed tasks — Done (2026-09-10)
 
 **Blockers / Risks:**
@@ -218,14 +268,14 @@ the sprint goal.
 
 **Key points:**
 - Researched the current Anytype model (doc.anytype.io: Objects, Types, Properties, Views, Queries, Collections) and mapped it conceptually onto the agenda markdown files + frontmatter.
-- The agenda splits into four packages: A — team delivery & memory (`docs/agenda/`), B — Anytype import set (`docs/agenda/mono-repo/`), C — canonical engineering plans (`docs/plans/`), D — product docs & guides.
+- The agenda splits into four packages: A — team delivery & memory (`docs/agenda/`), B — Anytype import set (`docs/agenda/.mono-repo/`), C — canonical engineering plans (`docs/plans/`), D — product docs & guides.
 - The reference contract: forward links from work → plans (`docs/plans/`), backward links from finished plans → ✅ Shipped milestones in the agenda. Finished plans are deleted (git history = archive) and recorded as milestones — never left as dangling links.
 - First meeting folder (Google Drive) referenced from `CONTENT_MODEL.md` § 5.
 
 **Decisions made:**
 - `docs/agenda/CONTENT_MODEL.md` is the canonical definition; indexes (`README.md`, `MAIN.md`, `INDEX.md`) link to it instead of restating the rules.
 - The ✅ Shipped milestone log (`feature-tracking.md`) is the backward map for all completed plans.
-- One object type per home directory; no duplicate content across packages; schema changes land in `mono-repo/objects/` first.
+- One object type per home directory; no duplicate content across packages; schema changes land in `.mono-repo/objects/` first.
 
 **Action items:**
 - [x] Create `CONTENT_MODEL.md` (glossary, packaging, reference contract) — Done (2026-09-05)
@@ -234,7 +284,7 @@ the sprint goal.
 - [ ] Adopt the plans → milestones reference contract for all future plan closeouts — Pending (rule is now documented)
 
 **Blockers / Risks:**
-- None; the content model is a definition, not a migration. Package B (`mono-repo/`) is already largely consistent with it.
+- None; the content model is a definition, not a migration. Package B (`.mono-repo/`) is already largely consistent with it.
 
 **Links:**
 - Related definition: [`CONTENT_MODEL.md`](./CONTENT_MODEL.md)
@@ -258,8 +308,8 @@ viewable outside Docus (GitHub, Anytype import, Drive).
   README/MAIN tables + Anytype glossary); `INDEX.md` tail section removed;
   `case-studies.md` "Existing Case Studies" summaries replaced with a pointer
   to `case-studies/INDEX.md` (canonical index).
-- **Gaps fixed:** dangling image refs in `mono-repo/plans/business-model.md`
-  (Business Model Canvas) and `mono-repo/tasks/timeline.md` replaced with real
+- **Gaps fixed:** dangling image refs in `.mono-repo/plans/business-model.md`
+  (Business Model Canvas) and `.mono-repo/tasks/timeline.md` replaced with real
   rendered mermaid diagrams.
 - **Diagram package created:** `docs/agenda/diagrams/` — README index +
   `api-request-flows.md` (6 request/response sequences with auth + tenant
@@ -307,17 +357,17 @@ viewable outside Docus (GitHub, Anytype import, Drive).
 **Attendees:** Workspace team (agent session)
 
 **Topic / Agenda:** Add the missing Anytype object types and objects to the
-`mono-repo/` knowledge graph, separate them into per-type directories with
+`.mono-repo/` knowledge graph, separate them into per-type directories with
 content related to the actual projects and repository, and complete all prompts
-recorded in `mono-repo/_prompts.md`.
+recorded in `.mono-repo/_prompts.md`.
 
 **Key points:**
-- **15 new object type definitions** added to `mono-repo/objects/` (architecture,
+- **15 new object type definitions** added to `.mono-repo/objects/` (architecture,
   guide, reference, changelog, diagram, project, report, dashboard,
   data-pipeline, methodology, insight, recommendation, repository, module,
   documentation) — each with description, relations, and related links, matching
   the established `feature.md`/`tool.md`/`product.md` format.
-- **20 new type directories** created under `mono-repo/`, each with a `_index.md`
+- **20 new type directories** created under `.mono-repo/`, each with a `_index.md`
   and content objects tied to real repo entities: `projects/` (loop-crm-merge,
   ctc, formint-editions-chain, django-fusion, docs-agenda-system), `editions/`
   (all 5 Formint editions + precis-unified), `sprints/`, `releases/`,
@@ -355,9 +405,9 @@ recorded in `mono-repo/_prompts.md`.
   will drift and should be re-synced at each sprint boundary.
 
 **Links:**
-- Related ledger: [`mono-repo/_prompts.md`](./mono-repo/_prompts.md)
-- Related object types: [`mono-repo/objects/_index.md`](./mono-repo/objects/_index.md)
-- Related relations: [`mono-repo/objects/_relations.md`](./mono-repo/objects/_relations.md)
+- Related ledger: [`.mono-repo/_prompts.md`](./.mono-repo/_prompts.md)
+- Related object types: [`.mono-repo/objects/_index.md`](./.mono-repo/objects/_index.md)
+- Related relations: [`.mono-repo/objects/_relations.md`](./.mono-repo/objects/_relations.md)
 
 ---
 
@@ -401,33 +451,32 @@ recorded in `mono-repo/_prompts.md`.
 **Topic / Agenda:** Four approved workstreams: (1) minimize assets data in scheduler/worker containers, (2) verify + redeploy Coder, (3) audit shared assets dir between precis-ctc and precis-main with fallback, (4) research anytype.io and record agenda/project-separation extensibility.
 
 **Key points:**
-- Shared tasks stack (`projects/docker-compose.tasks.yml`) bind-mounted the whole monorepo `projects/assets` tree into worker+scheduler; CTC tools compose mounted the media tree into scheduler+worker even though only the worker needs it
-- Docker host had no Postgres/Redis/Coder running; Precis scheduler had crashed at boot waiting on Redis
-- CTC settings `MEDIA_ROOT` default resolved to a stray precis-local rendition tree (`projects/precis/assets/media/ctc-research`, 380K) while compose, docstring, and CHANGELOG all cite the monorepo tree (`projects/assets/media/ctc-research`, 139M) as canonical
-- `tests/test_shared_media.py` still asserted the retired `application/proxy` shared-proxy topology; the live contract is `assets-proxy` in `application/tools`
-- Anytype (anytype-ts repo + doc.anytype.io) reviewed: objects/types/properties/relations + Queries vs Collections + per-space type isolation are the transferable concepts
+- Background workers and schedulers were mounted with the entire shared assets tree, even where the task never touches media — more data in more containers than the work requires
+- The Docker host had no Postgres, Redis, or workspace runtime up; the Precis scheduler had crashed at boot waiting on Redis
+- A research-site media default pointed at a stray local rendition tree (≈380 KB) while the build, docs, and changelog all treated the shared tree (≈139 MB) as canonical
+- The shared-media contract check still asserted a retired proxy topology while the live contract had moved to the assets proxy
+- Anytype was reviewed: objects, types, properties, and relations, queries vs. collections, and per-space type isolation are the transferable concepts
 
 **Decisions made:**
-- Worker/scheduler containers should stay minimal: no assets/media data except where a task genuinely writes media (CTC worker keeps its mount; scheduler never needs it)
-- CTC local-dev `MEDIA_ROOT` default should match the canonical monorepo shared tree; containers override via env var
-- The shared-assets contract (per-site staticfiles + per-host nginx fallback to shared roots) is validated by the rewritten `tests/test_shared_media.py`
-- Anytype findings recorded as a proposal doc, not an integration commitment
+- Workers and schedulers stay minimal: no media data except where a task genuinely writes media (the research worker keeps its mount; the scheduler never needs one)
+- The research-site local default should match the canonical shared media tree; containers override it by environment variable
+- The shared-assets contract (per-site static files plus per-host fallback to shared roots) is the accepted contract, and its check now asserts the live topology
+- Anytype findings are recorded as a proposal, not an integration commitment
 
 **Action items:**
-- [x] Remove assets/media binds from shared worker/scheduler + CTC scheduler — Done (2026-09-03)
-- [x] Deploy Postgres/Redis + Coder; restart Precis scheduler — Done (2026-09-03)
-- [x] Fix CTC MEDIA_ROOT default; run manage.py check — Done (2026-09-03)
-- [x] Rewrite tests/test_shared_media.py to assets-proxy topology — Done (26/26 pass, 2026-09-03)
-- [x] Write docs/agenda/anytype-extensibility.md proposal — Done (2026-09-03)
-- [ ] Review Anytype proposal items (#3 templates, #4 relation lint first) and schedule into a sprint — Pending
+- [x] Remove media mounts from the shared workers/scheduler and the research scheduler — Done (2026-09-03)
+- [x] Bring up Postgres, Redis, and the workspace runtime; restart the Precis scheduler — Done (2026-09-03)
+- [x] Align the research-site media default and re-run the configuration check — Done (2026-09-03)
+- [x] Update the shared-media contract check to the live assets-proxy topology — Done (2026-09-03)
+- [x] Publish the Anytype extensibility proposal — Done (2026-09-03)
+- [ ] Review the Anytype proposal items (templates, then relation lint) and schedule them into a sprint — Pending
 
 **Blockers / Risks:**
-- None blocking; stray 380K rendition tree at `projects/precis/assets/media/ctc-research` is leftover runtime data from the old default — safe to leave (gitignored) or delete after confirmation
+- None blocking; the stray ≈380 KB rendition tree is leftover runtime data from the old default — safe to leave (ignored by version control) or delete after confirmation
 
 **Links:**
 - Related proposal: [`anytype-extensibility.md`](./anytype-extensibility.md)
 - Related task board: [`task-tracking.md`](./task-tracking.md) § Sprint 2 (2026-09-03 rows)
-- Related test: [`tests/test_shared_media.py`](../../tests/test_shared_media.py)
 
 ---
 
@@ -438,27 +487,27 @@ recorded in `mono-repo/_prompts.md`.
 **Topic / Agenda:** Close the loop on the un-recorded Loop-CRM AI-hub work, reconcile what is actually implemented (backend × frontend) per product, audit frontend components for placeholders, and stand up the model-ERD (graph_models) docs for Loop-CRM.
 
 **Key points:**
-- The 2026-09-05 Loop-CRM commit (AI hub, en/ar locale, Google/Meta/TikTok/Reddit connectors, people/search islands) was never recorded in the agenda — added as a ✅ Shipped milestone under `feature-tracking.md` § Loop-CRM.
-- dev-team-plans.md now carries an **implementation-status truth table** (backend × frontend per product) and a "couldn't add" register; Loop-CRM's remaining items are operational gates (live provider credentials, realtime hardening, demo-state server verify), not feature code.
-- Component audit (`docs/audit/frontend-components-2026-09-06.md`): Loop-CRM app islands are all real-data with explicit empty/pending states; genuine findings are CTC lorem blog-demo templates, the precis-main `brand.ts` "coming soon" tagline, and Formint Pro "Add … coming soon" stub toasts.
-- Loop-CRM backend now follows the repo ERD convention (`django_extensions` + `make erd`/`erd-all` + `docs/erd/README.md`), generating per-app model graphs incl. **crm (sales)** and **marketing**.
+- The 2026-09-05 Loop-CRM work (AI hub, en/ar language, Google/Meta/TikTok/Reddit connectors, people and search surfaces) was never recorded in the agenda — added as a ✅ Shipped milestone under `feature-tracking.md` § Loop-CRM.
+- The engineering plans now carry an **implementation-status truth table** (backend × front end per product) and a "couldn't add" register; Loop-CRM's remaining items are operational gates (live provider credentials, realtime hardening, demo-state server verification), not feature work.
+- Component audit: Loop-CRM surfaces are all real-data with explicit empty and pending states; genuine findings are the research site's demo blog templates, the Precis LMS "coming soon" tagline, and Formint Pro's "Add … coming soon" stub toasts.
+- Loop-CRM now follows the repo's ERD convention and publishes per-app model diagrams for **crm (sales)** and **marketing**.
 
 **Decisions made:**
-- PNG ERD outputs stay gitignored derived assets (repo convention); the per-project `docs/erd/README.md` tables are the committed contract.
-- The component audit is a report, not a plan — findings move into sprint backlog tasks (task-tracking.md Backlog) rather than new plan files.
+- Diagram image outputs stay derived, ignored artifacts; the committed contract is the per-project diagram index.
+- The component audit is a report, not a plan — findings move into sprint backlog tasks rather than new plan files.
 
 **Action items:**
-- [x] Record Loop-CRM AI-hub/locale/connectors milestone — Done (2026-09-06)
-- [x] Reconcile implementation status per product in dev-team-plans.md — Done (2026-09-06)
-- [x] Publish frontend component audit — Done (2026-09-06)
-- [x] Add Loop-CRM ERD tooling + docs/erd README — Done (2026-09-06)
-- [ ] Configure live OAuth credentials and run publish/consent E2E on the deployed stack — Pending (deploy-gated)
-- [x] Implement Formint Pro create-forms behind the "coming soon" toasts — Done (2026-09-06; suppliers, HR roles/schedules/payroll, admin notes, recipes + ingredients — create/edit modals wired to the Django server API; see [`../audit/frontend-components-2026-09-06.md`](../audit/frontend-components-2026-09-06.md) § 2.3)
-- [x] Verify Formint Pro modals end-to-end (2026-09-06) — removed stale `item.*_name` table bindings in favor of `empName()`/`prodName()` FK resolution; added `create-forms.contract.test.ts` (payload/endpoint/method contracts); `vitest run` **86/86** passed across 8 files and `astro check` reports **0 errors / 0 warnings**. Backend suite cannot run in this sandbox: the server lockfile requires `libs/django-bolt`, which is not in this checkout — run `make test` inside the Formint Pro Docker image on the host (see audit doc § 2.3).
-- [x] Finish remaining list pages + ops/shifts create/edit flow (2026-09-10) — pos/products, pos/inventory, pos/transactions delete-confirm + FK-name resolution (`catName`/`prodName`/`custName`); crm/contacts, crm/deals, crm/activities, crm/notes resolve company/contact/stage/deal names from fetched reference lists and their modals now send `company_id`/`contact_id`/`pipeline_id`/`stage_id`/`deal_id`; ops/shifts script repaired (broken `openEdit` block), unique-open-shift enforced client+server (409 before the DB partial constraint) and expected cash auto-computed as opening float + in-window cash sales. Backend: fixed the broken `models.crm_models` imports (every `/crm/*` GET 500'd), added CRM write views + shift create/close/detail URLs, and extended the server persist suite with four shift tests. `vitest run` **93/93** (8 files), `astro check` **0/0** (105 pre-existing hints); backend suite remains host-Docker-only (`py_compile` clean; see audit doc § 2.3 second follow-up).
+- [x] Record the Loop-CRM AI hub / language / connector milestone — Done (2026-09-06)
+- [x] Reconcile implementation status per product — Done (2026-09-06)
+- [x] Publish the front-end component audit — Done (2026-09-06)
+- [x] Add Loop-CRM model-diagram tooling and its index — Done (2026-09-06)
+- [ ] Configure live provider credentials and run publishing/consent end-to-end on the deployed stack — Pending (deploy-gated)
+- [x] Implement the Formint Pro create forms that sat behind the "coming soon" toasts — Done (2026-09-06; suppliers, HR roles/schedules/payroll, admin notes, recipes and ingredients now create and edit against the real server)
+- [x] Verify Formint Pro modals end to end (2026-09-06) — table columns now resolve the related names they display instead of showing stale bindings; the client checks passed clean with no errors or warnings. The server suite is host-Docker-only in this sandbox (see the audit doc § 2.3).
+- [x] Finish the remaining list pages and the operations/shifts create-edit flow (2026-09-10) — products, inventory, and transactions gained delete confirmation and real related-name resolution; contacts, deals, activities, and notes resolve company/contact/stage/deal names and send the correct identifiers. Shifts were repaired, a unique open shift is enforced on both sides before the database constraint, and expected cash is computed as opening float plus in-window cash sales. Previously broken contact-relation reads (every CRM list request failed) were fixed, CRM write paths and shift create/close/detail were added, and the server persist checks were extended. Client checks green (93/93); the server suite remains host-Docker-only (see the audit doc § 2.3).
 
 **Blockers / Risks:**
-- `graphviz` was not pre-installed in the agent sandbox — installed on request (2026-09-06) and PNGs rendered for Loop-CRM + regenerated for precis-main/precis-ctc/syntara (models unchanged — tracked `.dot` files were left at HEAD to avoid pure churn). Formint-cloud's ERD cannot re-render here because its optional `django_bolt` package is not in the sandbox venv (run `make erd` in its backend Docker image).
+- The diagramming tool was not pre-installed in the working environment — installed on request (2026-09-06) and diagrams were rendered for Loop-CRM and regenerated for Precis and Syntara (models unchanged, so tracked sources were left untouched to avoid pure churn). The Formint cloud diagrams cannot be re-rendered here because their optional package is not present; run the project's diagram target in its backend image.
 
 **Links:**
 - Related feature tracking: [`feature-tracking.md`](./feature-tracking.md) § Loop-CRM — AI Hub, locale & connectors

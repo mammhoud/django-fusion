@@ -4,7 +4,7 @@
 > **Date:** 2026-08-18
 > **Canonical path:** `projects/precis/precis-ctc/`
 > **Tags:** #precis-ctc #publish #i18n #media #proxy #redeploy #content
-> **Related:** ceptor-ai removal (✅ complete — recorded as a finished milestone in [`docs/agenda/feature-tracking.md`](../../agenda/feature-tracking.md) § CTC Research; the plan file was deleted, git history is the archive), [`../README.md`](../README.md)
+> **Related:** ceptor-ai removal (✅ complete — recorded as a finished milestone in [`docs/agenda/feature-tracking/ctc-research.md`](../../agenda/feature-tracking/ctc-research.md); the plan file was deleted, git history is the archive), [`../README.md`](../README.md)
 
 This plan consolidates every task raised across the 2026-08-18 session for the
 CTC Research site (full content/component audit, translations, media/bundles
@@ -242,7 +242,7 @@ They are intentionally recorded here rather than being represented as passed:
 
 ## Related
 
-- ceptor-ai removal (complete — see [`docs/agenda/feature-tracking.md`](../../agenda/feature-tracking.md) § CTC Research)
+- ceptor-ai removal (complete — see [`docs/agenda/feature-tracking/ctc-research.md`](../../agenda/feature-tracking/ctc-research.md))
 - [`../README.md`](../README.md) — plans registry
 - [`active-monorepo-consolidation-2026-08-14.md`](active-monorepo-consolidation-2026-08-14.md) — shared Dramatiq baseline
 - [`../../recent-changes.md`](../../recent-changes.md) — session log

@@ -11,7 +11,7 @@ Author: mammhoud
 > **Excerpt:** Using Wagtail to power multiple branded websites from a single Django deployment.
 
 - **Published:** 2026-07-15
-- **Author:** → `../objects/people/me.md`
+- **Author:** → `../objects/people/mahmoud.md`
 - **Category:** Tutorial
 - **Tags:** `#wagtail` `#cms` `#ctc-research` `#lms`
 

@@ -36,7 +36,16 @@ async function walk(dir) {
 }
 
 function slugFor(relative, index) {
-  return relative.replace(/\.md$/i, '').replace(/[^a-zA-Z0-9_-]/g, '-') + `-${index}.svg`;
+  // A leading dot-directory (e.g. `.mono-repo/`) would otherwise sanitize to a
+  // leading '-', producing slugs like `-mono-repo-...` that never match the
+  // committed `mono-repo-...` SVGs (so the skip-check below misses and every run
+  // re-renders + re-inserts duplicates). Trim leading separators to stay stable.
+  return (
+    relative
+      .replace(/\.md$/i, '')
+      .replace(/[^a-zA-Z0-9_-]/g, '-')
+      .replace(/^-+/, '') + `-${index}.svg`
+  );
 }
 
 function extractBlocks(source) {

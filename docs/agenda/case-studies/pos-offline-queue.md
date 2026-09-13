@@ -26,7 +26,7 @@ links:
     to: "/agenda/main"
     icon: "i-lucide-clipboard-list"
   - label: "Feature Tracking — Multi-branch"
-    to: "/agenda/feature-tracking"
+    to: "/agenda/feature-tracking/formint-pos"
     icon: "i-lucide-target"
   - label: "Case study — Multi-terminal Sync"
     to: "/agenda/case-studies/pos-multi-terminal-sync"
@@ -40,7 +40,7 @@ links:
 
 > **Date:** 2026-08-31 | **Status:** Active
 > **Scope:** Durable `OutboxQueue` + retry/backoff/dead-letter flush (`/offline-queue/*`) — queue transactions offline, sync when back online
-> **Feature tracking:** [`feature-tracking.md`](../feature-tracking.md) § Multi-terminal Management
+> **Feature tracking:** [`feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § Multi-terminal Management
 > **Related:** [`pos-multi-terminal-sync.md`](./pos-multi-terminal-sync.md), [`pos-qr-menu.md`](./pos-qr-menu.md)
 
 ---
@@ -263,7 +263,7 @@ Some transactions will permanently fail — invalid data, schema mismatches, cor
 
 | Document | Path |
 |----------|------|
-| Feature tracking — Multi-branch Management | [`../feature-tracking.md`](../feature-tracking.md) § Multi-branch Management |
+| Feature tracking — Multi-branch Management | [`../feature-tracking/formint-pos.md`](../feature-tracking/formint-pos.md) § Multi-branch Management |
 | Case study — Multi-terminal Sync | [./pos-multi-terminal-sync.md](./pos-multi-terminal-sync.md) |
 | Case study — QR Menu | [./pos-qr-menu.md](./pos-qr-menu.md) |
 | Case study — DataToken Sync Tagging | [./data-token-sync-tagging.md](./data-token-sync-tagging.md) |

@@ -74,7 +74,6 @@ const PROJECTS_DIR = path.join(MONO_ROOT, 'projects');
 /** Agenda sources scanned for role ↔ object mentions. */
 const SOURCE_FILES = [
   'task-tracking.md',
-  'feature-tracking.md',
   'team-notes.md',
   'sales-pipeline.md',
   'dev-team-plans.md',
@@ -84,8 +83,12 @@ const SOURCE_FILES = [
   'meeting-agenda.md',
   'completion-checklist.md',
 ];
-/** Directories whose files are also scanned (project-attributed stories). */
-const SOURCE_DIRS = ['case-studies'];
+/**
+ * Directories whose files are also scanned: project-attributed stories
+ * (`case-studies`) and the per-product feature tables (`feature-tracking`,
+ * split out of `feature-tracking.md` on 2026-09-12).
+ */
+const SOURCE_DIRS = ['case-studies', 'feature-tracking'];
 
 /**
  * Handle → Person object slug. A handle resolves to a Person when it matches the
@@ -94,7 +97,7 @@ const SOURCE_DIRS = ['case-studies'];
  * while the agenda assigns `@mammhoud`).
  */
 const HANDLE_ALIASES = {
-  mammhoud: 'me',
+  mammhoud: 'mahmoud', // merged 2026-09-12: the former people/me.md object
 };
 
 /**
@@ -126,10 +129,10 @@ const PROJECT_ALIASES = {
  * are written (to `Owner:`); the script never guesses accountability.
  */
 const PROJECT_OWNERS = {
-  'loop-crm-merge': 'me',
+  'loop-crm-merge': 'mahmoud',
   'ctc-research-platform': 'moustafa',
   'formint-editions-chain': 'moustafa',
-  'docs-agenda-system': 'me',
+  'docs-agenda-system': 'mahmoud',
   'django-fusion-library': 'mahmoud',
 };
 

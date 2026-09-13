@@ -88,7 +88,7 @@ READMEs.
   branching/merging, cycle rejection, topological action order.
 - **Formint finance ingestion** — `pos_sales` push, data mapping, `apps/pos`
   model expansion, workflow action/template growth (✅ completed — see
-  [`docs/agenda/feature-tracking.md`](../agenda/feature-tracking.md) § Loop-CRM;
+  [`docs/agenda/feature-tracking/loop-crm.md`](../agenda/feature-tracking/loop-crm.md);
   the plan file was deleted, git history is the archive).
 - **Wagtail landing Phases 5–8** — sidenav/guided UX, employees + report
   catalog, shared-locale i18n, license removal (`wagtail-landing-plan.md`).
@@ -116,7 +116,7 @@ READMEs.
 - **Dual rendering roads** — render-first (HTMX) + data (Astro islands):
   documented contract, but each screen must consciously choose; drift risk.
 - **Demo-state complexity** — the demo state + auth gap fixes shipped (see
-  [`docs/agenda/feature-tracking.md`](../agenda/feature-tracking.md) § Loop-CRM);
+  [`docs/agenda/feature-tracking/loop-crm.md`](../agenda/feature-tracking/loop-crm.md));
   the demo credential contract must never leak into production paths.
 - **Test skew** — 28 test files, but Playwright coverage is scoped to nav/
   workflow/content; finance, billing, and landing flows lack browser coverage.

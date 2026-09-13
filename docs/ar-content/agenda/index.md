@@ -72,7 +72,7 @@ links:
 - **pricing-plans.md** — استراتيجية التسعير، أهداف الإيراد، تسعير قائم على الميزات (العربي: [`pricing-plans.md`](./pricing-plans.md))
 - **data-analyst-plans.md** — مقاييس، تتبع الأدلة، تحقق التجارب (العربي: [`data-analyst-plans.md`](./data-analyst-plans.md))
 - **marketing-plans.md** — التموضع، سجل الادعاءات، حملات الإطلاق (العربي: [`marketing-plans.md`](./marketing-plans.md))
-- **tools-auth-dashboard.md** — لوحة الأدوات وبوابة المصادقة (إنجليزي فقط)
+- **roles/** — خطة مختصرة لكل فرد: المهام، وخطوات التحقق، والمتعاونون (العربي: [`roles/`](./roles/README.md))
 
 ---
 

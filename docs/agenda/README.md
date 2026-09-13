@@ -20,7 +20,8 @@
 | **Delivery facts** | [`feature-tracking.md`](./feature-tracking.md), [`task-tracking.md`](./task-tracking.md), [`sales-pipeline.md`](./sales-pipeline.md), [`team-notes.md`](./team-notes.md) | Milestones (Proposed → Shipped), sprint task board, leads & deals, decision log |
 | **Business dimensions** | [`dev-team-plans.md`](./dev-team-plans.md), [`pricing-plans.md`](./pricing-plans.md), [`marketing-plans.md`](./marketing-plans.md), [`data-analyst-plans.md`](./data-analyst-plans.md), [`startup-story.md`](./startup-story.md) | What engineering builds; revenue targets; positioning & campaigns; metrics & evidence; founder journey |
 | **Rhythm & gates** | [`meeting-agenda.md`](./meeting-agenda.md), [`completion-checklist.md`](./completion-checklist.md) | 6 meeting templates; definition-of-done + sign-off |
-| **Evidence & memory** | [`case-studies.md`](./case-studies.md) + [`case-studies/`](./case-studies/INDEX.md), [`diagrams/`](./diagrams/README.md), [`anytype-extensibility.md`](./anytype-extensibility.md), [`tools-auth-dashboard.md`](./tools-auth-dashboard.md) | Implementation stories with diagrams; rendered SVG package; knowledge-graph proposal; internal tools portal guide |
+| **Evidence & memory** | [`case-studies.md`](./case-studies.md) + [`case-studies/`](./case-studies/INDEX.md), [`diagrams/`](./diagrams/README.md), [`anytype-extensibility.md`](./anytype-extensibility.md) | Implementation stories with diagrams; rendered SVG package; knowledge-graph proposal |
+| **Role plans** | [`roles/`](./roles/README.md) | One minimal plan per person: tasks, validation steps, collaborators |
 | **Knowledge graph (Package B)** | [`.mono-repo/`](./.mono-repo/README.md) | Anytype object types + per-type business objects (products, editions, projects, goals, stories) |
 
 **العربية.** القائمة الكاملة — كل ملف مجمّعاً حسب دوره:
@@ -31,26 +32,34 @@
 | **حقائق التنفيذ** | `feature-tracking.md`، `task-tracking.md`، `sales-pipeline.md`، `team-notes.md` | المعالم المنجزة، ولوحة مهام السباق، والعملاء المحتملون والصفقات، وسجل القرارات |
 | **أبعاد الأعمال** | `dev-team-plans.md`، `pricing-plans.md`، `marketing-plans.md`، `data-analyst-plans.md`، `startup-story.md` | ما يبنيه فريق التطوير؛ أهداف الإيرادات؛ التموضع والحملات؛ المقاييس والأدلة؛ رحلة المؤسس |
 | **الإيقاع والبوابات** | `meeting-agenda.md`، `completion-checklist.md` | ٦ قوالب اجتماعات؛ تعريف الاكتمال والتوقيع |
-| **الأدلة والذاكرة** | `case-studies.md` + `case-studies/`، `diagrams/`، `anytype-extensibility.md`، `tools-auth-dashboard.md` | قصص التنفيذ مع المخططات؛ حزمة SVG المصيّرة؛ مقترح الرسم المعرفي؛ دليل بوابة الأدوات |
+| **الأدلة والذاكرة** | `case-studies.md` + `case-studies/`، `diagrams/`، `anytype-extensibility.md` | قصص التنفيذ مع المخططات؛ حزمة SVG المصيّرة؛ مقترح الرسم المعرفي |
+| **خطط الأدوار** | `roles/` | خطة مختصرة لكل فرد: المهام، وخطوات التحقق، والمتعاونون |
 | **الرسم المعرفي (الحزمة B)** | `.mono-repo/` | أنواع الكائنات وكائنات الأعمال لكل نوع (المنتجات، الإصدارات، المشاريع، الأهداف، القصص) |
 
 > Note (2026-09-10): `backend-plans.md` was merged into `dev-team-plans.md`
 > § Backend delivery workstreams and is now a pointer stub.
 >
 > ملاحظة: دُمج `backend-plans.md` في `dev-team-plans.md` وأصبح مؤشراً فقط.
+>
+> Note (2026-09-12): `tools-auth-dashboard.md` moved to
+> [`../guides/11-tools-dashboard-auth.md`](../guides/11-tools-dashboard-auth.md) —
+> engineering guides belong in `docs/guides/`, not the business agenda.
+>
+> ملاحظة: نُقل `tools-auth-dashboard.md` إلى دليل الهندسة، فأدلّة الهندسة
+> مكانها `docs/guides/` وليس أجندة الأعمال.
 
 ## Quick start
 
 ```
 New to the agenda?            → CONTENT_MODEL.md (definition, packages, reference contract)
 Know the object schema?       → .mono-repo/README.md (object types + per-type content objects)
-New feature?                  → feature-tracking.md
+New feature?                  → feature-tracking/  (one file per product — start at feature-tracking.md)
 New task?                     → task-tracking.md
 New lead / deal update?       → sales-pipeline.md
 Need the price list?          → pricing-plans.md
 Writing public claims?        → marketing-plans.md (+ data-analyst-plans.md evidence rules)
 Meeting?                      → meeting-agenda.md (copy template) + team-notes.md (record notes)
-Feature shipped?              → case-studies.md (write case study with diagram) + feature-tracking.md (update status)
+Feature shipped?              → case-studies.md (write case study with diagram) + feature-tracking/ (update status)
 Add an object to the graph?   → .mono-repo/objects/_object-types.md + per-type directory
 Plan finished?                → CONTENT_MODEL.md § 4.2 (delete plan → record ✅ Shipped milestone)
 Project done?                 → completion-checklist.md (run through it) + team-notes.md (record decision)
@@ -61,6 +70,7 @@ Project done?                 → completion-checklist.md (run through it) + tea
 ```
 docs/agenda/MAIN.md
 ├── docs/agenda/feature-tracking.md ──→ docs/features/feature-roadmap.md
+│   └── docs/agenda/feature-tracking/ ─→ 9 per-product feature files
 ├── docs/agenda/case-studies.md ──────→ docs/plans/README.md
 ├── docs/agenda/task-tracking.md ─────→ docs/features/feature-roadmap.md
 ├── docs/agenda/team-notes.md ────────→ docs/plans/README.md (major decisions)
@@ -92,14 +102,9 @@ See: [Anytype Objects](https://doc.anytype.io/anytype/create/objects), [Anytype 
 
 All architecture and flow diagrams use mermaid, **rendered to SVG images** so
 they are viewable everywhere (GitHub, Docus, Anytype import). See
-[`diagrams/README.md`](./diagrams/README.md) — rendered assets live in
-`docs/public/agenda/diagrams/` and mermaid sources are editable. Re-render with:
-
-```bash
-node docs/scripts/render-agenda-diagrams.mjs
-```
-
-Test diagrams with `npm run validate-content` in the docs pipeline.
+[`diagrams/README.md`](./diagrams/README.md) for the rendered package and
+[`docs/guides/`](../guides/README.md) for how the docs pipeline renders and
+validates them. Mermaid sources stay editable; rendered images are generated.
 
 ## Maintenance
 
