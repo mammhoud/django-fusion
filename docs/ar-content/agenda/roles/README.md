@@ -38,10 +38,10 @@ links:
 
 | الفرد | الدور | الخطة | يتحقق من |
 |---|---|---|---|
-| **Mahmoud** | مدير عام + مطوّر شامل | [`mahmoud-gm.md`](../../../agenda/roles/mahmoud-gm.md) | المحفظة، الإيراد، النطاق |
-| **Moustafa** | مدير منتج + تسويق | [`moustafa-pm.md`](../../../agenda/roles/moustafa-pm.md) | خارطة الطريق، القبول، الادعاءات |
-| **Yahia** | واجهات أمامية + تصميم تجربة | [`yahia-frontend.md`](../../../agenda/roles/yahia-frontend.md) | المسودات التصميمية، الشاشات |
-| **Asmaa** | تطوير البيانات | [`asmaa-data.md`](../../../agenda/roles/asmaa-data.md) | المقاييس، الأدلة |
+| **Mahmoud** | مدير عام + مطوّر شامل | [`mahmoud-gm.md`](./mahmoud-gm.md) | المحفظة، الإيراد، النطاق |
+| **Moustafa** | مدير منتج + تسويق | [`moustafa-pm.md`](./moustafa-pm.md) | خارطة الطريق، القبول، الادعاءات |
+| **Yahia** | واجهات أمامية + تصميم تجربة | [`yahia-frontend.md`](./yahia-frontend.md) | المسودات التصميمية، الشاشات |
+| **Asmaa** | تطوير البيانات | [`asmaa-data.md`](./asmaa-data.md) | المقاييس، الأدلة |
 
 يشارك `Dariia` في المحتوى والتوثيق وليس له قائمة مهام دائمة.
 

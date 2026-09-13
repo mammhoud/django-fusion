@@ -31,13 +31,13 @@ navigation:
 
 | أريد العمل على… | ابدأ بـ |
 |------------------|---------|
-| منتج التسويق + نظام التعلم | [Precis (الموحد)](../projects/precis/docs/precis-main/SETUP_AND_BUILD.md) |
+| منتج التسويق + نظام التعلم | [Precis (الموحد)](../../projects/precis/docs/precis-main/SETUP_AND_BUILD.md) |
 | اسم مستعار LMS تاريخي | [نشر Precis Main](../precis/deployment.md) — `precis-lms`/`lms` أسماء توافق |
-| شريحة التسويق/الكتالوج | [Precis Landing](../projects/precis/docs/precis-landing/SETUP_AND_BUILD.md) |
-| موقع مركز الأبحاث الطبية | [CTC Research](../projects/precis/docs/precis-ctc/SETUP_AND_BUILD.md) |
-| أداة الدردشة/تخصيص القوالب بالذكاء الاصطناعي | [Syntara / Cypercloud](../projects/syntara/docs/SETUP_AND_BUILD.md) |
-| أي إصدار POS (سطح مكتب، Pro، سحابة) | [Formint POS](../projects/formints/docs/GETTING_STARTED.md) |
-| منصة المبيعات والتسويق | [Loop-CRM](../projects/loop-crm/docs/SETUP_AND_BUILD.md) |
+| شريحة التسويق/الكتالوج | [Precis Landing](../../projects/precis/docs/precis-landing/SETUP_AND_BUILD.md) |
+| موقع مركز الأبحاث الطبية | [CTC Research](../../projects/precis/docs/precis-ctc/SETUP_AND_BUILD.md) |
+| أداة الدردشة/تخصيص القوالب بالذكاء الاصطناعي | [Syntara / Cypercloud](../../projects/syntara/docs/SETUP_AND_BUILD.md) |
+| أي إصدار POS (سطح مكتب، Pro، سحابة) | [Formint POS](../../projects/formints/docs/GETTING_STARTED.md) |
+| منصة المبيعات والتسويق | [Loop-CRM](../../projects/loop-crm/docs/SETUP_AND_BUILD.md) |
 | مكونات Django/Wagtail المشتركة | [django-fusion](../libs/django-fusion/docs/SETUP_AND_BUILD.md) |
 
 ## خطوات أولى مشتركة (كل المشاريع)
