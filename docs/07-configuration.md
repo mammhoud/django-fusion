@@ -142,14 +142,14 @@ layers only supply defaults.
 ```python
 from django_fusion.config.project import load_config, staticfiles_plan
 
-config = load_config(project_dir="projects/precis/precis-main")
+config = load_config(project_dir="projects/structa.cloud")
 domain = config.get("SITE.primary_domain", "structa.cloud")   # dotted keys
 admin = config.section("ADMIN")                                # section dict
 
 # Base-URL priority: resolve identity for a specific origin (front/back road).
 backend_view = config.resolve("https://lms.structa.cloud", side="back")
 
-plan = staticfiles_plan(project_dir="projects/precis/precis-main")
+plan = staticfiles_plan(project_dir="projects/structa.cloud")
 print(plan.render())   # static read → output → deploy reference table
 ```
 

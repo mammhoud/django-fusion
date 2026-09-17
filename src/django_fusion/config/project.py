@@ -31,14 +31,14 @@ Usage
 -----
     from django_fusion.config.project import load_config, staticfiles_plan
 
-    config = load_config(project_dir="projects/precis/precis-main")
+    config = load_config(project_dir="projects/structa.cloud")
     domain = config.get("SITE.primary_domain", "structa.cloud")
 
     # Resolve identity for a specific origin (front or back road).
     resolved = config.resolve(base_url="https://lms.structa.cloud", side="back")
     admin_url = resolved.get("ADMIN.wagtailadmin_base_url")
 
-    plan = staticfiles_plan(project_dir="projects/precis/precis-main")
+    plan = staticfiles_plan(project_dir="projects/structa.cloud")
     print(plan.render())  # static read → output → deploy reference table
 
 YAML parsing uses ``dynaconf.vendor.ruamel`` (dynaconf is a hard dependency of
@@ -216,8 +216,10 @@ class ProjectConfig:
         Active environment (``development``, ``production``, ...). Detected
         from ``SERVER_ENV``/``DJANGO_ENV`` when not provided.
     shared_config_dir:
-        Directory of shared Env YAML files. Defaults to
-        ``<project_dir>/../configs/Env`` (the Precis shared configs package).
+        Directory of shared Env YAML files. Defaults to the first existing
+        conventional location: ``<project_dir>/../configs/Env`` (group-adjacent
+        projects) or ``<project_dir>/../precis/configs/Env`` (top-level
+        projects such as ``projects/structa.cloud``).
     dotenv_paths:
         Additional dotenv files, loaded after the automatic workspace and
         project files.
@@ -235,7 +237,16 @@ class ProjectConfig:
         self.workspace_dir = _workspace_dir(self.project_dir)
         self.env = env or os.environ.get("SERVER_ENV") or os.environ.get("DJANGO_ENV") or "development"
         if shared_config_dir is None:
-            shared_config_dir = self.project_dir.parent / "configs" / "Env"
+            # Conventional shared-layer discovery. The shared Precis configs
+            # package sits at ``<group>/configs/Env``; projects live either
+            # directly inside the group (projects/precis/precis-dev) or at
+            # the top level with the group as a sibling
+            # (projects/structa.cloud — moved from projects/structa.cloud).
+            candidates = (
+                self.project_dir.parent / "configs" / "Env",
+                self.project_dir.parent / "precis" / "configs" / "Env",
+            )
+            shared_config_dir = next((c for c in candidates if c.is_dir()), candidates[0])
         self.shared_config_dir = Path(shared_config_dir)
         self.dotenv_paths = [Path(p) for p in dotenv_paths]
         self._data: dict[str, Any] = {}

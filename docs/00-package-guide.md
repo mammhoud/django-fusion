@@ -58,7 +58,7 @@ monorepo. Consumers and their intensity:
 
 | Project | Backend | Usage |
 |---------|---------|-------|
-| Precis (main) | `projects/precis/precis-main/backend/` | Reference consumer: components, viewsets, fragments |
+| Precis (main) | `projects/structa.cloud/backend/` | Reference consumer: components, viewsets, fragments |
 | CTC Research | `projects/precis/precis-ctc/backend/` | Heaviest consumer (194 files): health, scheduler, config |
 | Loop-CRM | `projects/loop-crm/backend/` | Pages, seed commands (`seed_demo`, `seed_pages`) |
 | Syntara | `projects/syntara/` | `django_fusion.config.loader` registries |

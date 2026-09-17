@@ -18,7 +18,7 @@ from django_fusion.config.project import (
 
 def _make_project(tmp_path, *, with_shared=True, with_env_site=True):
     """Build a minimal project tree with configs/, Env/, and backend/ dirs."""
-    project = tmp_path / "projects" / "precis" / "precis-main"
+    project = tmp_path / "projects" / "structa.cloud"
     (project / "configs").mkdir(parents=True)
     (project / "Env").mkdir(parents=True)
     (project / "backend" / "assets" / "static").mkdir(parents=True)
@@ -241,7 +241,7 @@ def test_staticfiles_plan_conventional_layout(tmp_path):
         project / "assets" / "static",
         project / "frontend" / "public",
     )
-    assert plan.deploy["static_volume"] == "precis-main-static"
+    assert plan.deploy["static_volume"] == "structa.cloud-static"
     assert "/static/" in plan.render()
     assert "STATIC_ROOT" in plan.render()
 
