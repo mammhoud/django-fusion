@@ -1,0 +1,80 @@
+{
+  "SITE": {
+    "name": "precis-main",
+    "aliases": [
+      "precis-landing",
+      "precis-lms",
+      "structa",
+      "structa.cloud",
+      "lms"
+    ],
+    "primary_domain": "structa.cloud",
+    "domains": [
+      "structa.cloud",
+      "www.structa.cloud",
+      "lms.structa.cloud"
+    ],
+    "allowed_hosts": [
+      "structa.cloud",
+      "www.structa.cloud",
+      "lms.structa.cloud",
+      "localhost",
+      "127.0.0.1",
+      "precis-main-backend",
+      "precis-main-frontend"
+    ],
+    "default_email": "Structa Cloud <structa.cloud@gmail.com>",
+    "module": "CMS",
+    "wagtail_site_name": "StructAI Softwares"
+  },
+  "ADMIN": {
+    "panel_path": "/admin/",
+    "django_admin_path": "/django-admin/",
+    "wagtail_site_name": "StructAI Softwares",
+    "wagtailadmin_base_url": "http://localhost:8074",
+    "csrf_trusted_origins": [
+      "https://structa.cloud",
+      "https://www.structa.cloud",
+      "https://lms.structa.cloud",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000"
+    ],
+    "cors_allowed_origins": [
+      "https://structa.cloud",
+      "https://www.structa.cloud",
+      "https://lms.structa.cloud",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000"
+    ]
+  },
+  "CSS_PANEL": {
+    "source": "frontend/src/styles/globals.css",
+    "compiled": "assets/static/css/fusion.css",
+    "build_command": "make css",
+    "served_at": "/static/css/fusion.css",
+    "tailwind": true,
+    "tokens_reference": "frontend/src/styles/globals.css"
+  },
+  "STATIC": {
+    "read_dirs": [
+      "backend/assets/static",
+      "assets/static",
+      "frontend/public"
+    ],
+    "output_dir": "backend/assets/staticfiles",
+    "media_dir": "backend/assets/media",
+    "bundle_stats": "backend/assets/static/bundles/bundles.json",
+    "css_path": "assets/static/css/fusion.css",
+    "deploy": {
+      "static_volume": "precis-main-static",
+      "media_volume": "precis-main-media",
+      "static_url": "/static/",
+      "media_url": "/media/",
+      "static_server": "whitenoise (backend) behind traefik /static/",
+      "media_server": "shared-proxy nginx (application/proxy)"
+    }
+  },
+  "DEBUG": true,
+  "FUSION_RENDER_FIRST": false,
+  "FRONTEND_PORT": 3000
+}

@@ -1,0 +1,13 @@
+{% load wagtailimages_tags %}
+
+{% for img in images %}
+    
+<li class="blocks-gallery-item">
+    <figure>
+        {% picture img format-{avif,webp,jpeg} fill-255x143-c100 loading="lazy" %}
+    </figure>
+</li>
+{% endfor %}
+
+
+

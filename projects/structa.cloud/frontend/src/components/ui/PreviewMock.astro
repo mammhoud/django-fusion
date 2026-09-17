@@ -1,0 +1,145 @@
+---
+interface Props {
+  slug: string;
+  edition?: string;
+  price?: string;
+  period?: string;
+  features?: string[];
+}
+const { slug, edition, price, period, features = [] } = Astro.props;
+const editionName = edition || 'preview';
+---
+
+<div class='preview-mock' style='border:1px solid hsl(var(--fu-line));border-radius:1rem;overflow:hidden;background:hsl(var(--fu-surface));box-shadow:0 24px 60px -32px rgb(0 0 0 / .25);'>
+  <div class='preview-mock__bar' style='display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem;border-bottom:1px solid hsl(var(--fu-line));background:hsl(var(--fu-card));'>
+    <span style='width:.55rem;height:.55rem;border-radius:999px;background:hsl(var(--fu-muted) / .4);'></span>
+    <span style='width:.55rem;height:.55rem;border-radius:999px;background:hsl(var(--fu-muted) / .4);'></span>
+    <span style='width:.55rem;height:.55rem;border-radius:999px;background:hsl(var(--fu-live) / .7);'></span>
+    <span class='preview-mock__slug' style='margin-left:.5rem;font-family:var(--font-mono);font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));'>{slug} · {editionName}</span>
+  </div>
+
+  <div class='preview-mock__body' style='padding:1.25rem;'>
+
+    {slug === 'formint-pos' && (
+      <div style='display:grid;grid-template-columns:1.6fr 1fr;gap:1rem;'>
+        <div style='display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;'>
+          {[
+            ['Espresso', '$3.50'], ['Latte', '$4.25'], ['Croissant', '$2.80'],
+            ['Cappuccino', '$4.50'], ['Muffin', '$3.20'], ['Tea', '$2.00'],
+          ].map(([name, price]) => (
+            <div style='border:1px solid hsl(var(--fu-line));border-radius:.6rem;padding:.6rem;background:hsl(var(--fu-card));'>
+              <span style='font-size:.72rem;color:hsl(var(--fu-ink));'>{name}</span><br />
+              <span style='font-family:var(--font-mono);font-size:.68rem;color:hsl(var(--fu-link));'>{price}</span>
+            </div>
+          ))}
+        </div>
+        <div style='border:1px solid hsl(var(--fu-line));border-radius:.6rem;padding:.75rem;background:hsl(var(--fu-paper));display:flex;flex-direction:column;gap:.4rem;'>
+          <p style='margin:0;font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-muted));'>sale</p>
+          <div style='font-size:.72rem;display:flex;justify-content:space-between;'><span style='color:hsl(var(--fu-text) / .7);'>2 × Latte</span><span style='font-family:var(--font-mono);color:hsl(var(--fu-ink));'>$8.50</span></div>
+          <div style='font-size:.72rem;display:flex;justify-content:space-between;'><span style='color:hsl(var(--fu-text) / .7);'>1 × Croissant</span><span style='font-family:var(--font-mono);color:hsl(var(--fu-ink));'>$2.80</span></div>
+          <div style='border-top:1px solid hsl(var(--fu-line));margin-top:.25rem;padding-top:.4rem;font-size:.8rem;display:flex;justify-content:space-between;'><strong style='color:hsl(var(--fu-ink));'>Total</strong><strong style='font-family:var(--font-mono);color:hsl(var(--fu-ink));'>$11.30</strong></div>
+          <div style='display:flex;gap:.35rem;margin-top:.25rem;'>
+            <span style='flex:1;text-align:center;font-size:.62rem;padding:.35rem 0;border-radius:999px;border:1px solid hsl(var(--fu-line));color:hsl(var(--fu-muted));'>cash</span>
+            <span style='flex:1;text-align:center;font-size:.62rem;padding:.35rem 0;border-radius:999px;background:hsl(var(--fu-link));color:hsl(var(--fu-paper));'>card</span>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {slug === 'vresume' && (
+      <div style='border:1px solid hsl(var(--fu-line));border-radius:.6rem;background:hsl(var(--fu-paper));overflow:hidden;'>
+        <div style='padding:1rem 1.25rem .75rem;border-bottom:1px solid hsl(var(--fu-line));display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap;'>
+          <div>
+            <p style='margin:0;font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:hsl(var(--fu-ink));'>Mina Mammhoud</p>
+            <p style='margin:.15rem 0 0;font-size:.7rem;color:hsl(var(--fu-muted));'>Full-stack developer · Cairo, EG</p>
+          </div>
+          <span class='edition-chip'>{editionName}</span>
+        </div>
+        <div style='display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;padding:1rem 1.25rem;'>
+          <div>
+            <p style='margin:0 0 .4rem;font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));'>Experience</p>
+            <div style='font-size:.72rem;color:hsl(var(--fu-text) / .8);display:flex;flex-direction:column;gap:.3rem;'>
+              <span>▸ Built Formints POS — Tauri + Rust + React</span>
+              <span>▸ Shipped structa.cloud on the AHA stack</span>
+              <span>▸ Open-source django-fusion + ceptor-ai</span>
+            </div>
+          </div>
+          <div>
+            <p style='margin:0 0 .4rem;font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));'>Skills</p>
+            <div style='display:flex;flex-wrap:wrap;gap:.3rem;'>
+              {['Django', 'Rust', 'React', 'Wagtail', 'HTMX', 'Alpine'].map((skill) => (
+                <span style='font-size:.62rem;padding:.2rem .5rem;border:1px solid hsl(var(--fu-line));border-radius:999px;color:hsl(var(--fu-muted));'>{skill}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {slug === 'cms' && (
+      <div style='display:grid;grid-template-columns:8rem 1fr;gap:1rem;'>
+        <div style='display:flex;flex-direction:column;gap:.35rem;'>
+          {['hero', 'stats', 'features', 'pricing', 'faq'].map((b) => (
+            <span style='font-size:.62rem;padding:.35rem .5rem;border:1px solid hsl(var(--fu-line));border-radius:.4rem;background:hsl(var(--fu-card));color:hsl(var(--fu-muted));'>{b}</span>
+          ))}
+        </div>
+        <div style='display:flex;flex-direction:column;gap:.5rem;'>
+          <div style='border:1px dashed hsl(var(--fu-link) / .5);border-radius:.5rem;padding:.6rem;background:hsl(var(--fu-card));'>
+            <p style='margin:0;font-family:var(--font-display);font-size:.8rem;font-weight:600;color:hsl(var(--fu-ink));'>Shipped as HTML, edited as blocks</p>
+            <p style='margin:.15rem 0 0;font-size:.62rem;color:hsl(var(--fu-muted));'>Wagtail StreamField · django-fusion render</p>
+          </div>
+          <div style='border:1px solid hsl(var(--fu-line));border-radius:.5rem;padding:.6rem;background:hsl(var(--fu-paper));'>
+            <div style='display:flex;gap:.35rem;margin-bottom:.4rem;'>{[1, 2, 3, 4].map(() => <span style='width:33%;height:.35rem;border-radius:999px;background:hsl(var(--fu-line));'></span>)}</div>
+            <div style='display:flex;gap:.5rem;'>
+              <span style='flex:1;height:1.6rem;border-radius:.35rem;background:hsl(var(--fu-line) / .5);'></span>
+              <span style='width:38%;height:1.6rem;border-radius:.35rem;border:1px solid hsl(var(--fu-line));'></span>
+            </div>
+          </div>
+          <div style='border:1px solid hsl(var(--fu-line));border-radius:.5rem;padding:.6rem;background:hsl(var(--fu-paper));'>
+            <p style='margin:0 0 .35rem;font-family:var(--font-mono);font-size:.6rem;text-transform:uppercase;letter-spacing:.14em;color:hsl(var(--fu-link));'>Built with Loop</p>
+            <div style='display:flex;gap:.35rem;'>{[1, 2, 3, 4, 5].map(() => <span style='width:18%;height:.35rem;border-radius:999px;background:hsl(var(--fu-line));'></span>)}</div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {slug === 'lms' && (
+      <div style='display:grid;grid-template-columns:9rem 1fr;gap:1rem;'>
+        <div style='display:flex;flex-direction:column;gap:.35rem;'>
+          <span style='font-size:.62rem;padding:.35rem .5rem;border:1px solid hsl(var(--fu-line));border-radius:.4rem;background:hsl(var(--fu-card));color:hsl(var(--fu-muted));'>1 · Getting started</span>
+          <span style='font-size:.62rem;padding:.35rem .5rem;border:1px solid hsl(var(--fu-link) / .5);border-radius:.4rem;background:hsl(var(--fu-paper));color:hsl(var(--fu-ink));'>2 · Building a course</span>
+          <span style='font-size:.62rem;padding:.35rem .5rem;border:1px solid hsl(var(--fu-line));border-radius:.4rem;background:hsl(var(--fu-card));color:hsl(var(--fu-muted));'>3 · Publishing</span>
+        </div>
+        <div style='display:flex;flex-direction:column;gap:.6rem;'>
+          <p style='margin:0;font-family:var(--font-display);font-size:.85rem;font-weight:600;color:hsl(var(--fu-ink));'>Building a course</p>
+          <div style='height:.4rem;border-radius:999px;background:hsl(var(--fu-line) / .6);overflow:hidden;'><div style='width:64%;height:100%;border-radius:999px;background:hsl(var(--fu-link));'></div></div>
+          <div style='border:1px solid hsl(var(--fu-line));border-radius:.5rem;padding:.6rem;background:hsl(var(--fu-paper));display:flex;flex-direction:column;gap:.3rem;'>
+            {['92%', '80%', '88%', '60%'].map((w) => <span style={`width:${w};height:.35rem;border-radius:999px;background:hsl(var(--fu-line) / .7);`}></span>)}
+          </div>
+          <div style='align-self:flex-start;font-size:.62rem;padding:.35rem .75rem;border-radius:999px;background:hsl(var(--fu-link));color:hsl(var(--fu-paper));'>enrolled</div>
+        </div>
+      </div>
+    )}
+
+    {!['formint-pos', 'vresume', 'cms', 'lms'].includes(slug) && (
+      <div style='max-width:24rem;margin:0 auto;border:1px solid hsl(var(--fu-line));border-radius:.75rem;background:hsl(var(--fu-paper));padding:1.25rem;'>
+        <p class='tag-marker' style='margin-bottom:.5rem;'>{slug} · {editionName}</p>
+        <div style='display:flex;align-items:baseline;gap:.4rem;margin-bottom:1rem;'>
+          <span style='font-family:var(--font-mono);font-size:1.6rem;font-weight:600;color:hsl(var(--fu-ink));'>{price || '$0'}</span>
+          {period && <span style='font-family:var(--font-mono);font-size:.65rem;text-transform:uppercase;color:hsl(var(--fu-muted));'>{period}</span>}
+        </div>
+        {features.length > 0 && (
+          <ul style='list-style:none;margin:0;padding:.75rem 0 0;border-top:1px solid hsl(var(--fu-line));display:flex;flex-direction:column;gap:.4rem;'>
+            {features.slice(0, 5).map((f) => (
+              <li style='display:flex;align-items:flex-start;gap:.5rem;font-size:.78rem;color:hsl(var(--fu-text) / .8);'>
+                <svg style='margin-top:.1rem;flex-shrink:0;color:hsl(var(--fu-link));' width='12' height='12' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/></svg>
+                {f}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )}
+
+  </div>
+</div>

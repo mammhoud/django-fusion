@@ -1,0 +1,262 @@
+/* ============================================================
+   Learning surface extras — reviews, rating, resources
+   Served AFTER the compiled fusion.css bundle via {% block extra_head %}
+   in learning/catalog.html + learning/course_detail.html.
+   Uses the --fu-* design tokens defined in pages/base.html so the
+   dossier aesthetic and light/dark theming stay in sync.
+   ============================================================ */
+
+/* ── Rating strip ─────────────────────────────────────────── */
+.learning-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: .68rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-muted));
+}
+
+.learning-rating__stars {
+  color: hsl(var(--fu-mark));
+  letter-spacing: .12em;
+  font-size: .82rem;
+  line-height: 1;
+}
+
+.learning-rating__value {
+  font-weight: 600;
+  color: hsl(var(--fu-ink));
+}
+
+.learning-rating__count {
+  color: hsl(var(--fu-muted));
+}
+
+/* Metric-strip rating cell inside the dossier hero. */
+.learning-metric-strip [data-course-rating] {
+  color: hsl(var(--fu-muted));
+}
+
+/* ── Lesson resources ─────────────────────────────────────── */
+.learning-resources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-top: .6rem;
+}
+
+.learning-resource {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  padding: .32rem .7rem;
+  border: 1px solid hsl(var(--fu-border));
+  border-radius: .35rem;
+  background: hsl(var(--fu-bg));
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: .66rem;
+  letter-spacing: .04em;
+  color: hsl(var(--fu-ink));
+  text-decoration: none;
+  transition: border-color .2s ease, color .2s ease, transform .2s ease;
+}
+
+.learning-resource:hover,
+.learning-resource:focus-visible {
+  border-color: hsl(var(--fu-link));
+  color: hsl(var(--fu-link));
+  transform: translateY(-1px);
+}
+
+.learning-resource__type {
+  color: hsl(var(--fu-muted));
+  text-transform: uppercase;
+  font-size: .56rem;
+  letter-spacing: .14em;
+}
+
+.learning-resource--free {
+  border-style: dashed;
+}
+
+.learning-resource__badge {
+  font-size: .56rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-live));
+}
+
+/* ── Reviews section ──────────────────────────────────────── */
+.learning-reviews {
+  padding-block: 3rem 4rem;
+}
+
+.learning-reviews .learning-section-head {
+  margin-bottom: 0;
+}
+
+.learning-reviews__list {
+  display: grid;
+  gap: .8rem;
+  margin-top: 1.4rem;
+}
+
+.learning-review {
+  border: 1px solid hsl(var(--fu-border));
+  border-radius: .5rem;
+  background: hsl(var(--fu-card));
+  padding: 1rem 1.15rem;
+}
+
+.learning-review__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .6rem .75rem;
+}
+
+.learning-review__stars {
+  color: hsl(var(--fu-mark));
+  letter-spacing: .12em;
+  font-size: .92rem;
+  line-height: 1;
+}
+
+.learning-review__author {
+  font-family: "Bricolage Grotesque", "Public Sans", ui-sans-serif, sans-serif;
+  font-weight: 600;
+  font-size: .9rem;
+  color: hsl(var(--fu-ink));
+}
+
+.learning-review__meta {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: hsl(var(--fu-muted));
+}
+
+.learning-review__body {
+  margin: .6rem 0 0;
+  font-size: .9rem;
+  line-height: 1.65;
+  color: hsl(var(--fu-ink) / .85);
+}
+
+/* ── Module progress (lesson reader) ──────────────────────── */
+.learning-module-progress {
+  border: 1px solid hsl(var(--fu-border));
+  border-radius: .5rem;
+  background: hsl(var(--fu-card));
+  padding: 1.1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.learning-module-progress__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  margin-bottom: .9rem;
+}
+
+.learning-module-progress__title {
+  margin: 0;
+  font-family: "Bricolage Grotesque", "Public Sans", ui-sans-serif, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: hsl(var(--fu-ink));
+}
+
+.learning-module-progress__signal {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: .62rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-muted));
+}
+
+.learning-module-progress__bar {
+  height: .45rem;
+  border-radius: 999px;
+  background: hsl(var(--fu-border) / .6);
+  overflow: hidden;
+}
+
+.learning-module-progress__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: hsl(var(--fu-live));
+  transition: width .35s ease;
+}
+
+.learning-module-progress__lessons {
+  list-style: none;
+  margin: .9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: .3rem;
+}
+
+.learning-module-progress__lesson {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .4rem .5rem;
+  border-radius: .35rem;
+  font-size: .82rem;
+}
+
+.learning-module-progress__lesson.is-current {
+  background: hsl(var(--fu-mark) / .14);
+  outline: 1px solid hsl(var(--fu-mark) / .5);
+}
+
+.learning-module-progress__lesson a {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  min-width: 0;
+  color: hsl(var(--fu-ink));
+  text-decoration: none;
+  transition: color .2s ease;
+}
+
+.learning-module-progress__lesson a:hover,
+.learning-module-progress__lesson a:focus-visible {
+  color: hsl(var(--fu-link));
+}
+
+.learning-module-progress__index {
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: .6rem;
+  color: hsl(var(--fu-muted));
+}
+
+.learning-module-progress__lesson samp {
+  flex: none;
+  font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  font-size: .58rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: hsl(var(--fu-muted));
+}
+
+.learning-module-progress__lesson.is-complete samp {
+  color: hsl(var(--fu-live));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .learning-resource,
+  .learning-module-progress__bar span {
+    transition: none;
+    transform: none !important;
+  }
+}

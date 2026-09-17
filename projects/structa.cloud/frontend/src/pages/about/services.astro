@@ -1,0 +1,185 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import Timeline from '@/components/blocks/Timeline.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Toast from '@/components/ui/Toast.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import AboutSubNav from '@/components/ui/AboutSubNav.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData } from '@/lib/api';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData('services'),
+  ]);
+} catch { /* use fallbacks */ }
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const pageServices = (pageData?.services as any[] | undefined);
+const pageProcess = (pageData?.process as any[] | undefined);
+const phaseList = (pageData?.phases as { slug: string; title: string; phase_number?: number; phase_label?: string }[] | undefined) || [];
+
+const serviceItems = pageServices?.map((s: any) => ({
+  icon: String(s.icon || 'M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z'),
+  title: String(s.title || ''),
+  description: String(s.description || ''),
+  deliverables: (s.deliverables || []) as string[],
+  cta_label: String(s.cta_label || ''),
+  cta_href: String(s.cta_href || ''),
+}));
+
+const processSteps = pageProcess?.map((p: any) => ({
+  date: '',
+  title: String(p.title || ''),
+  description: String(p.description || ''),
+  icon: String(p.icon || ''),
+}));
+
+// Consolidate the former delivery-phase subpages onto this one page: fetch
+// each phase's body + outcomes so the whole methodology reads as a document.
+const phaseDetails = await Promise.all(
+  phaseList.map(async (phase) => {
+    try {
+      const detail = await cachedPageData(phase.slug);
+      return {
+        ...phase,
+        body: detail?.body,
+        outcomes: (detail?.outcomes || []) as string[],
+      };
+    } catch {
+      return { ...phase, body: undefined, outcomes: [] as string[] };
+    }
+  })
+);
+---
+
+<Layout
+  title={pageData?.title || 'Services'}
+  description={pageData?.search_description || 'How structa.cloud works: the service lines and the delivery phases, from brief to shipped system.'}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug="services"
+>
+  <Breadcrumb
+    items={[{ label: 'Home', href: '/' }, { label: 'About', href: '/about/' }]}
+    current="Services"
+  />
+
+  <Hero
+    eyebrow={pageHero?.badge || 'about · services'}
+    heading={pageHero?.title || 'Services'}
+    accent='built as you go'
+    intro={pageHero?.subtitle || 'A focused path from customer need to a dependable digital service. We help teams across the Gulf, Levant, and North Africa launch clear, bilingual experiences without unnecessary complexity.'}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : { label: 'See our products', href: '/products' }}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : { label: 'Contact us', href: '/contact/' }}
+    status='200 OK · text/html · the offering, in one response'
+  />
+
+  <AboutSubNav current="services" />
+
+  {serviceItems?.length ? (
+  <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
+    <div class='container-fusion'>
+      <div class='mb-14 max-w-2xl'>
+        <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Build for the market you serve</h2>
+        <p class='text-fu-muted'>A focused path from customer need to a dependable digital service. We help teams across the Gulf, Levant, and North Africa launch clear, bilingual experiences without unnecessary complexity.</p>
+      </div>
+      <div class='grid grid-cols-1 gap-5 md:grid-cols-2'>
+        {serviceItems.map((service, i) => (
+          <div class:list={['card reveal flex flex-col gap-4 p-6', i === 0 ? 'md:col-span-2 md:flex-row md:items-start md:gap-8 md:p-8' : '']} x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
+            <div class='mb-1 inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
+              <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                <path stroke-linecap='round' stroke-linejoin='round' d={service.icon} />
+              </svg>
+            </div>
+            <div class='min-w-0 flex-1'>
+              <h3 class='font-display text-[1.05rem] font-semibold text-fu-ink'>{service.title}</h3>
+              {service.description && <p class='mt-1 text-sm leading-relaxed text-fu-muted'>{service.description}</p>}
+              {service.deliverables.length > 0 && (
+                <ul class='mt-3 flex flex-col gap-1.5'>
+                  {service.deliverables.map((d: string) => (
+                    <li class='flex items-baseline gap-2 text-sm text-fu-muted'><span class='flex-shrink-0 text-fu-link'>•</span><span>{d}</span></li>
+                  ))}
+                </ul>
+              )}
+              {service.cta_label && (
+                <a href={service.cta_href || '/contact/'} class='btn-secondary mt-4 w-fit !py-2 text-sm'>{service.cta_label}</a>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+  ) : <ContentError label="Services data unavailable" />}
+
+  {phaseDetails.length > 0 && (
+    <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
+      <div class='container-fusion'>
+        <div class='mb-10 max-w-2xl'>
+          <p class='tag-marker mb-4'>delivery phases</p>
+          <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>A path from brief to durable system</h2>
+          <p class='mt-3 text-fu-muted'>Each phase is a Wagtail document with reusable prompts, outcomes, and a clear handoff — all in one place.</p>
+        </div>
+        <div class='space-y-6'>
+          {phaseDetails.map((phase) => (
+            <article class='rounded-xl border border-fu-line bg-fu-card p-6 md:p-8'>
+              <p class='tag-marker'>phase {phase.phase_number || ''} · {phase.phase_label || 'delivery'}</p>
+              <h3 class='mt-3 font-display text-2xl font-bold text-fu-ink'>{phase.title}</h3>
+              {phase.body && <div class='prose-fusion mt-4 max-w-3xl text-fu-muted' set:html={phase.body} />}
+              {phase.outcomes.length > 0 && (
+                <ul class='mt-5 grid gap-3 sm:grid-cols-2'>
+                  {phase.outcomes.map((outcome: string) => (
+                    <li class='flex gap-2 text-sm text-fu-muted'><span class='text-fu-link'>↗</span>{outcome}</li>
+                  ))}
+                </ul>
+              )}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {processSteps?.length ? (
+    <Timeline
+      title='A measured path to launch'
+      description='We keep the work visible and incremental. Each phase leaves your team with a clearer decision, a working slice, or a useful handoff.'
+      events={processSteps}
+    />
+  ) : <ContentError label="Process data unavailable" />}
+
+  <section class='doc-sheet bg-fu-card py-20 md:py-24'>
+    <div class='container-fusion'>
+      <div class='mb-12 max-w-2xl'>
+        <p class='tag-marker mb-4'>AI tools · integrate the ones that earn their place</p>
+        <h2 class='font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Powered by an AI-tooling layer you can plug into.</h2>
+        <p class='mt-3 text-fu-muted'>Every service can ship with the AI surface that fits the workflow — from an in-house MCP server to managed models and self-hosted local inference.</p>
+      </div>
+      <div class='grid gap-5 md:grid-cols-2 lg:grid-cols-3'>
+        <article class='card p-6'><p class='tag-marker mb-3'>in-house</p><h3 class='font-display text-lg font-semibold text-fu-ink'>ceptor-ai</h3><p class='mt-2 text-sm leading-relaxed text-fu-muted'>The monorepo's AI layer: a Model Context Protocol server, a multi-model chat client, and prompt-to-component tooling.</p></article>
+        <article class='card p-6'><p class='tag-marker mb-3'>models</p><h3 class='font-display text-lg font-semibold text-fu-ink'>OpenAI · Anthropic</h3><p class='mt-2 text-sm leading-relaxed text-fu-muted'>Managed frontier models wired through MCP with provider controls, least privilege, and audit trails.</p></article>
+        <article class='card p-6'><p class='tag-marker mb-3'>self-hosted</p><h3 class='font-display text-lg font-semibold text-fu-ink'>Ollama · local LLMs</h3><p class='mt-2 text-sm leading-relaxed text-fu-muted'>Run inference on your own hardware for data that must never leave the network.</p></article>
+        <article class='card p-6'><p class='tag-marker mb-3'>retrieval</p><h3 class='font-display text-lg font-semibold text-fu-ink'>RAG · vector search</h3><p class='mt-2 text-sm leading-relaxed text-fu-muted'>Ground answers in your documents with retrieval-augmented generation and clear citation paths.</p></article>
+        <article class='card p-6'><p class='tag-marker mb-3'>protocol</p><h3 class='font-display text-lg font-semibold text-fu-ink'>MCP</h3><p class='mt-2 text-sm leading-relaxed text-fu-muted'>The Model Context Protocol connects any LLM to your tools and data — one standard, any provider.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <CTA
+    heading={pageCta?.title || 'Most of our builds are open source'}
+    intro={pageCta?.subtitle || 'Community editions of every product and the core libraries are public on GitHub. Standard, Pro, and Custom editions are commercial.'}
+    ctaLabel={pageCta?.primary_cta?.label || 'View on GitHub'}
+    ctaHref={pageCta?.primary_cta?.href || 'https://github.com/mammhoud'}
+  />
+  <Toast />
+  <HtmxBootstrap />
+</Layout>

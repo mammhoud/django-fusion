@@ -1,0 +1,11 @@
+---
+/**
+ * Products catalog — minimal shell. The backend fragment (/fragment/pages/products/)
+ * is the single source of truth for the hero, product cards (get_product_cards),
+ * body, stats, features+pricing, testimonials, faq and cta. The product grid is
+ * server-rendered from Wagtail, so there is no duplicated Astro grid.
+ */
+import BackendPage from '@/components/BackendPage.astro';
+---
+
+<BackendPage slug="products" />

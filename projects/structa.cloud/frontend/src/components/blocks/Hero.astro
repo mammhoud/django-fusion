@@ -1,0 +1,129 @@
+---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
+// Structa Cloud hero — "the page as its own document."
+// The hero stays focused on the value proposition and the next action;
+// implementation details live in the engineering blog rather than the page.
+
+interface Props {
+  eyebrow?: string;
+  heading?: string;
+  accent?: string;
+  intro?: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  /** Retained for API compatibility; implementation detail is not rendered. */
+  status?: string;
+  /** 'cinematic' — ultra-wide centered hero (home road). */
+  variant?: 'default' | 'cinematic';
+}
+
+const {
+  eyebrow = 'structa.cloud · full-stack engineering',
+  heading = 'Platforms that ship as',
+  accent = 'documents',
+  intro =
+    'Structa Cloud renders every page as server-rendered HTML. No 500 KB bundle, no hydration, no framework.',
+  primaryCta = { label: 'Explore the stack', href: '/products' },
+  secondaryCta = { label: 'About the engineer', href: '/about' },
+  variant = 'default',
+} = Astro.props;
+
+const cinematic = variant === 'cinematic';
+
+// Entrance ownership: the default road reveals via Alpine x-intersect; the
+// cinematic road lets GSAP own the hero intro, so the animators never fight.
+const revealWiring = cinematic
+  ? {}
+  : {
+      'x-data': '',
+      'x-intersect': "$el.classList.add('reveal-visible')",
+    };
+---
+
+<section class={`hero${cinematic ? ' hero--cinematic' : ''}`} data-gsap={cinematic ? 'hero-intro' : undefined}>
+  <span class="hero__corner-tl" aria-hidden="true"></span>
+  <span class="hero__corner-br" aria-hidden="true"></span>
+  <div data-hydrate-skeleton>
+    <Skeleton variant="hero-section" />
+  </div>
+  <div data-hydrate-content>
+    <div class="hero__inner">
+      <div class="hero__content">
+        <p
+          class="hero__eyebrow"
+          {...revealWiring}
+          data-gsap={cinematic ? 'hero-child' : undefined}
+        >
+          {eyebrow}
+        </p>
+
+        <h1
+          class="hero__heading"
+          {...revealWiring}
+          data-gsap={cinematic ? 'hero-child' : undefined}
+        >
+          {heading}{' '}
+          <span class="hero__accent">
+            <span class="relative z-10">{accent}</span>
+            <span class="hero__accent-mark" aria-hidden="true"></span>
+          </span>
+        </h1>
+
+        <p
+          class="hero__intro"
+          {...revealWiring}
+          style={cinematic ? undefined : 'transition-delay: 100ms'}
+          data-gsap={cinematic ? 'hero-child' : undefined}
+        >
+          {intro}
+        </p>
+
+        <div
+          class="hero__actions"
+          {...revealWiring}
+          style={cinematic ? undefined : 'transition-delay: 200ms'}
+          data-gsap={cinematic ? 'hero-child' : undefined}
+        >
+          <span
+            class="btn-magnetic"
+            x-data="magnetic"
+            @pointerenter="active = true; center()"
+            @pointermove="track($event)"
+            @pointerleave="leave()"
+            :class="active && 'btn-magnetic--tracking'"
+            :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+          >
+            <a href={primaryCta.href} class="btn-primary btn-chip !px-6 !py-2.5">
+              {primaryCta.label}
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </span>
+          <span
+            class="btn-magnetic"
+            x-data="magnetic"
+            @pointerenter="active = true; center()"
+            @pointermove="track($event)"
+            @pointerleave="leave()"
+            :class="active && 'btn-magnetic--tracking'"
+            :style="`transform: translate3d(${mx}px, ${my}px, 0)`"
+          >
+            <a href={secondaryCta.href} class="btn-secondary !px-7 !py-3">
+              {secondaryCta.label}
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    x-data
+    aria-hidden="true"
+    style="height:0;pointer-events:none;"
+    x-intersect:enter="$dispatch('fusion:header-scrolled', { scrolled: false })"
+    x-intersect:leave="$dispatch('fusion:header-scrolled', { scrolled: true })"
+  ></div>
+</section>

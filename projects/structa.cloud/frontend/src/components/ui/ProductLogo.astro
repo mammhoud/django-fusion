@@ -1,0 +1,73 @@
+---
+interface Props {
+  /** One of: crest (Formints) / ribbon (Precis LMS) / isometric (Loop) /
+   *  ascent (vResume) / research (CTC Research); crest is the default fallback. */
+  style?: string;
+  className?: string;
+}
+const { style = 'crest', className = '' } = Astro.props;
+const logoStyle = style || 'crest';
+
+// Brand identity map — each logo style owns one muted accent hue. The mark
+// glyph is always currentColor; the chip border + glyph are tinted by the
+// per-brand token (see .product-logo[data-brand=…] in globals.css).
+const brandByStyle: Record<string, string> = {
+  crest: 'formints',
+  ribbon: 'precis',
+  isometric: 'loop',
+  ascent: 'vresume',
+  research: 'precis-ctc',
+};
+const brand = brandByStyle[logoStyle] ?? 'formints';
+---
+<span class:list={['product-logo', className]} data-brand={brand}>
+  {logoStyle === 'crest' ? (
+    // Formints — merchant seal: shield (trust) + till bar (the counter) +
+    // a verified check cut into the shield's negative space.
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M16 2.5l11.5 4v9.5c0 6.8-4.9 11.6-11.5 13.5C9.4 27.6 4.5 22.8 4.5 16.5V6.5L16 2.5z" stroke-linejoin="round"/>
+      <path d="M9.5 19.5h13" stroke-linecap="round"/>
+      <path d="M11.8 14.8l2.9 2.9 5.8-6.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  ) : logoStyle === 'ribbon' ? (
+    // Precis LMS — award ribbon (recognition) with an ascending arrow cut
+    // from the band: learning is progress, precisely marked.
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M4 8.5h24v7.5a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V8.5z" stroke-linejoin="round"/>
+      <path d="M10.5 19.5l2.4 4.5M16 19.5v4.5M21.5 19.5l-2.4 4.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12.5 12.5l2.6 2.6 5-5.4M15.1 15.1V9" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  ) : logoStyle === 'isometric' ? (
+    // Loop — an isometric cube containing a nested block: content blocks
+    // compose into sites, blocks inside blocks.
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M16 3l11 6v14L16 29 5 23V9l11-6z" stroke-linejoin="round"/>
+      <path d="M5 9l11 6 11-6M16 15v14" stroke-linejoin="round"/>
+      <path d="M16 10.5l5.8 3.2v6.6L16 23.5l-5.8-3.2v-6.6l5.8-3.2z" stroke-linejoin="round"/>
+      <path d="M10.2 13.7l5.8 3.2 5.8-3.2M16 16.9v6.6" stroke-linejoin="round"/>
+    </svg>
+  ) : logoStyle === 'ascent' ? (
+    // vResume — a career staircase rising to a verified peak: steps up,
+    // work shown, a check at the summit.
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M4 26h7v-7h7v-7h7" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M24.8 12.2l2.4 2.4 4-4.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 6v20" stroke-linecap="round"/>
+    </svg>
+  ) : logoStyle === 'research' ? (
+    // CTC Research — a focused centre with intersecting paths from question
+    // to evidence to the next decision.
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <circle cx="16" cy="16" r="9"/>
+      <path d="M16 7v18M7 16h18" stroke-linecap="round"/>
+      <circle cx="16" cy="16" r="2.5" fill="currentColor" stroke="none"/>
+    </svg>
+  ) : (
+    // Default fallback — Formints merchant seal (crest) for unknown styles.
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+      <path d="M16 2.5l11.5 4v9.5c0 6.8-4.9 11.6-11.5 13.5C9.4 27.6 4.5 22.8 4.5 16.5V6.5L16 2.5z" stroke-linejoin="round"/>
+      <path d="M9.5 19.5h13" stroke-linecap="round"/>
+      <path d="M11.8 14.8l2.9 2.9 5.8-6.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  )}
+</span>

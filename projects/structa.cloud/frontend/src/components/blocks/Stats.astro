@@ -1,0 +1,62 @@
+---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
+interface Stat {
+  label: string;
+  value: number | string;
+  suffix?: string;
+}
+
+interface Props {
+  stats?: Stat[];
+}
+
+// Network facts — the numbers that matter to a technical evaluator.
+const defaultStats: Stat[] = [
+  { label: 'Total page weight', value: 30, suffix: 'KB' },
+  { label: 'Client-side framework', value: 0, suffix: 'KB' },
+  { label: 'Time to first byte', value: '<0.1', suffix: 's' },
+  { label: 'HTML, not JSON', value: 100, suffix: '%' },
+];
+
+const { stats = defaultStats } = Astro.props;
+---
+
+<section class="stats">
+  <div class="container-fusion">
+    <div class="relative">
+      <div data-hydrate-skeleton>
+        <Skeleton variant="stats-row" count={stats.length} />
+      </div>
+
+      <div data-hydrate-content class="stats__grid">
+        {stats.map((stat) => (
+          <div
+            class="stats__item"
+            x-data="{ shown: false, count: 0 }"
+            x-intersect.once="shown = true"
+          >
+            <p class="stats__label">
+              {stat.label}
+            </p>
+            <div
+              class="stats__value"
+              x-text={
+                typeof stat.value === 'number'
+                  ? `shown ? count.toLocaleString() + '${stat.suffix ?? ''}' : '0${stat.suffix ?? ''}'`
+                  : `'${stat.value}' + '${stat.suffix ?? ''}'`
+              }
+              x-effect={
+                typeof stat.value === 'number'
+                  ? `if (shown && count === 0) { const target = ${stat.value}; const step = Math.max(1, Math.ceil(target / 30)); const t = setInterval(() => { count += step; if (count >= target) { count = target; clearInterval(t); } }, 30); }`
+                  : undefined
+              }
+            >
+              {typeof stat.value === 'number' ? `0${stat.suffix ?? ''}` : `${stat.value}${stat.suffix ?? ''}`}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

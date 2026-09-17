@@ -1,0 +1,12 @@
+{% extends "pages/base.html" %}
+{% block title %}Learning profile · Structa Cloud{% endblock %}
+{% block content %}
+<main class="learning-surface">
+  <section class="learning-hero learning-hero--compact reg-marks"><div class="container-fusion"><p class="learning-kicker">[ LEARNING / USER RECORD ]</p><h1 class="learning-hero__title">Your learning<br><span>record.</span></h1><p class="learning-hero__intro">Courses, progress, and saved paths in one place.</p></div></section>
+  {% include "learning/partials/learner_nav.html" %}
+  <section class="learning-sheet"><div class="container-fusion">
+    <div class="learning-record-head"><div><p class="learning-kicker">ACCOUNT HOLDER</p><p class="learning-record-email">{{ request.user.email }}</p></div><a class="learning-button" href="/profile/">Account settings <span aria-hidden="true">&gt;&gt;</span></a></div>
+    <div class="learning-record-grid"><article class="learning-record-card"><span class="learning-stamp">INDEX / 01</span><strong>{{ enrollments|length }}</strong><span>ENROLLED COURSES</span><a href="{% url 'learning:dashboard' %}">OPEN DASHBOARD &gt;&gt;&gt;</a></article><article class="learning-record-card"><span class="learning-stamp">INDEX / 02</span><strong>{{ wishlist|length }}</strong><span>SAVED PATHS</span><a href="{% url 'learning:catalog' %}">BROWSE CATALOG &gt;&gt;&gt;</a></article></div>
+  </div></section>
+</main>
+{% endblock %}

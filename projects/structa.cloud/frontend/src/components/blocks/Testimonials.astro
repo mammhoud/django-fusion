@@ -1,0 +1,116 @@
+---
+import Skeleton from '@/components/ui/Skeleton.astro';
+
+interface Testimonial {
+  quote: string;
+  author: string;
+  role: string;
+}
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  testimonials?: Testimonial[];
+}
+
+const defaultTestimonials: Testimonial[] = [
+  {
+    quote:
+      'We swapped a 480 KB React bundle for server-rendered HTML and our load time halved. The page is the document itself, nothing in between.',
+    author: 'Sarah Mitchell',
+    role: 'CTO, EduStart',
+  },
+  {
+    quote:
+      'Alpine handled the accordion and modals in an afternoon. We deleted more state-management code than we wrote this quarter.',
+    author: 'David Chen',
+    role: 'Lead Developer, LearnLoop',
+  },
+  {
+    quote:
+      'Search engines read our finished pages instead of a JS shell. Organic traffic doubled within a month, with zero extra work.',
+    author: 'Amira Hassan',
+    role: 'Marketing Director, SkillBridge',
+  },
+];
+
+const {
+  heading = 'The stack, reviewed in production',
+  intro = 'Teams that moved off heavy SPAs, in their own words.',
+  testimonials = defaultTestimonials,
+} = Astro.props;
+---
+
+<section class="testimonials">
+  <div class="container-fusion">
+    <div class="testimonials__header">
+      <h2 class="page-section__title">{heading}</h2>
+      <p class="text-fu-muted">{intro}</p>
+    </div>
+
+    <div data-hydrate-skeleton>
+      <Skeleton variant="testimonials-carousel" />
+    </div>
+
+    <div data-hydrate-content class="testimonials__carousel" x-data={`{ active: 0, total: ${testimonials.length} }`}>
+      <div class="overflow-hidden">
+        <div class="flex transition-transform duration-500 ease-out" :style="`transform: translateX(-${active * 100}%)`">
+          {testimonials.map((t) => (
+            <div class="w-full flex-shrink-0 px-1">
+              <figure class="testimonials__card">
+                <blockquote class="testimonials__quote">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+
+                <figcaption class="testimonials__author">
+                  <div class="testimonials__avatar">
+                    {t.author.split(' ').map((n) => n[0]).join('')}
+                  </div>
+                  <div>
+                    <div class="font-medium text-fu-ink">{t.author}</div>
+                    <div class="font-mono text-[0.72rem] uppercase tracking-wider text-fu-muted">{t.role}</div>
+                  </div>
+                </figcaption>
+              </figure>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="testimonials__controls">
+        <button
+          type="button"
+          class="btn-secondary !h-10 !w-10 !p-0"
+          @click="active = active > 0 ? active - 1 : total - 1"
+          aria-label="Previous testimonial"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <div class="flex gap-2">
+          {testimonials.map((testimonial, i) => (
+            <button
+              type="button"
+              class="h-1.5 rounded-full transition-all duration-300"
+              :class={`active === ${i} ? 'w-7 bg-fu-link' : 'w-4 bg-fu-line hover:bg-fu-link/50'`}
+              @click={`active = ${i}`}
+              aria-label={`Go to testimonial ${i + 1}`}
+              title={testimonial.author}
+            ></button>
+          ))}
+        </div>
+        <button
+          type="button"
+          class="btn-secondary !h-10 !w-10 !p-0"
+          @click="active = active < total - 1 ? active + 1 : 0"
+          aria-label="Next testimonial"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

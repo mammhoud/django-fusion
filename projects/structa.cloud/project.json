@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "precis-main-assets",
+  "root": "projects/structa.cloud",
+  "projectType": "library",
+  "tags": ["product:precis-main", "type:assets", "stack:webpack"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "inputs": ["assets", "^production"],
+      "cache": true,
+      "options": { "command": "make build", "cwd": "projects/structa.cloud" }
+    },
+    "check": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "make check", "cwd": "projects/structa.cloud" }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "inputs": ["default", "^production"],
+      "cache": true,
+      "options": { "command": "make backend-test", "cwd": "projects/structa.cloud" }
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make dev", "cwd": "projects/structa.cloud" }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make clean", "cwd": "projects/structa.cloud" }
+    },
+    "deploy-local": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-local", "cwd": "projects/structa.cloud" }
+    },
+    "deploy-production": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-production", "cwd": "projects/structa.cloud" }
+    },
+    "redeploy": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make deploy-production", "cwd": "projects/structa.cloud" }
+    },
+    "cleanup": {
+      "executor": "nx:run-commands",
+      "options": { "command": "make -C ../../.. cleanup", "cwd": "projects/structa.cloud" }
+    }
+  }
+}
