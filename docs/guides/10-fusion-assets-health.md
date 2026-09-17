@@ -76,7 +76,7 @@ Staticfiles Volume → Shared Proxy (Nginx) → CDN / Browser
 
 ```bash
 # Validate bundles.json exists and is parseable
-cat projects/precis/precis-main/backend/assets/static/bundles/bundles.json | jq .
+cat projects/structa.cloud/backend/assets/static/bundles/bundles.json | jq .
 
 # Expected keys: main.css, main.js, vendor.css, vendor.js, fusion.css
 ```
@@ -85,20 +85,20 @@ cat projects/precis/precis-main/backend/assets/static/bundles/bundles.json | jq 
 
 ```bash
 # Check compiled CSS size
-wc -c projects/precis/precis-main/backend/assets/staticfiles/css/fusion.css
+wc -c projects/structa.cloud/backend/assets/staticfiles/css/fusion.css
 
 # Validate no duplicate selectors (rough check)
-awk '/\{/{print}' projects/precis/precis-main/backend/assets/staticfiles/css/fusion.css | sort | uniq -d
+awk '/\{/{print}' projects/structa.cloud/backend/assets/staticfiles/css/fusion.css | sort | uniq -d
 ```
 
 ### 3. JS Bundle Health
 
 ```bash
 # Check bundle sizes
-ls -lh projects/precis/precis-main/frontend/dist/assets/
+ls -lh projects/structa.cloud/frontend/dist/assets/
 
 # Source map verification
-file projects/precis/precis-main/frontend/dist/assets/*.js.map
+file projects/structa.cloud/frontend/dist/assets/*.js.map
 ```
 
 ### 4. django-fusion Asset Views
@@ -118,7 +118,7 @@ curl -s https://structa.cloud/static/css/fusion.css | head -20
 ### Webpack Bundle Analyzer
 
 ```bash
-cd projects/precis/precis-main/frontend
+cd projects/structa.cloud/frontend
 npx webpack-bundle-analyzer dist/stats.json
 ```
 

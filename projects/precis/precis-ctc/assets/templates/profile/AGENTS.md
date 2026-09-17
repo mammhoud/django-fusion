@@ -1,10 +1,10 @@
 # Precis Profile Asset Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/assets/templates/profile/`
+**Scope:** `projects/structa.cloud/assets/templates/profile/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. New
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. New
 profile behavior belongs in the active profile app under
-`projects/precis/precis-main/backend/apps/pages/profile/` when enabled. This asset folder
+`projects/structa.cloud/backend/apps/pages/profile/` when enabled. This asset folder
 is for Precis-specific templates explicitly loaded from the asset tree.
 
 Preserve user/profile context, authorization, forms, notifications, HTMX

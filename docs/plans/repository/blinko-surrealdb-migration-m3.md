@@ -1,9 +1,14 @@
 # Blinko — Prisma → SurrealDB Migration, Milestone 3 (Query Engine)
 
 > **Tags:** #blinko #migration #surrealdb #prisma #m3 #query-engine
-> **Last updated:** 2026-08-27 | **Status:** Implemented — parity harness green
->   (commit `586b5bf3` on `surrealdb/migration-auth-first`); router flips for
->   the remaining list endpoints + `notes.list` cutover pending M4.
+> **Last updated:** 2026-09-17 | **Status:** **RETIRED** (was: Implemented —
+>   parity harness green, commit `586b5bf3` on `surrealdb/migration-auth-first`).
+>   The vendored `mammhoud/blinko` checkout this port targeted was replaced by
+>   the SurrealDB-native runtime at `application/tools/planing/runtime/`, so the
+>   Prisma↔Surreal parity harness has nothing left to compare against. The
+>   where-builder inventory remains useful as a checklist of list surfaces;
+>   current roadmap:
+>   [`blinko-surrealdb-enhancements.md`](blinko-surrealdb-enhancements.md).
 > **Scope:** Port the **list/query where-builders** — `notes.list` first (the
 > hardest), then the other list endpoints — from Prisma to SurrealQL, with a
 > parity harness that proves both stores return identical results before any

@@ -45,8 +45,8 @@ links:
 |---|---|---|---|
 | **CRM** (Loop-CRM) | `projects/loop-crm/` | 🟢 live | Foundation, tenancy, CRUD, finance, billing, landing, and social publishing shipped; AI hub + 6 adapters remain |
 | **POS** (Formints) | `projects/formints/` | 🟢 core / 🟡 cloud | Community/Standard/Pro done in code; Cloud staging; pos-client dev; claims + docs need a truth pass |
-| **LMS** (Precis) | `projects/precis/precis-main/` | 🟢 live | Courses/enrollment/progress/profile + assistant shipped; E2E suite + production rollout gates remain |
-| **Landing Builder** | `projects/precis/precis-main/` · `precis-landing/` · `loop-crm/apps/pages` · `assets/theme` | 🟡 building blocks / 🔴 product | 80% of the stack exists (Wagtail + theme engine + dynamic templates); the drag-and-drop builder product itself does not exist |
+| **LMS** (Precis) | `projects/structa.cloud/` | 🟢 live | Courses/enrollment/progress/profile + assistant shipped; E2E suite + production rollout gates remain |
+| **Landing Builder** | `projects/structa.cloud/` · `precis-landing/` · `loop-crm/apps/pages` · `assets/theme` | 🟡 building blocks / 🔴 product | 80% of the stack exists (Wagtail + theme engine + dynamic templates); the drag-and-drop builder product itself does not exist |
 
 ## Headline gaps
 

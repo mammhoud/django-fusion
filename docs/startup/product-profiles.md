@@ -89,7 +89,7 @@ Microsoft 365
 
 ## 2. 🎓 Precis Platform — Unified Digital Experience Platform
 
-> **Path:** `projects/precis/precis-main/` (live LMS + landing) · **Strategy:** [`precis.md`](precis.md) · **Product docs:** [`docs/precis/README.md`](../precis/README.md) · **CMS/Builder profile:** [`docs/precis/cms-builder.md`](../precis/cms-builder.md)
+> **Path:** `projects/structa.cloud/` (live LMS + landing) · **Strategy:** [`precis.md`](precis.md) · **Product docs:** [`docs/precis/README.md`](../precis/README.md) · **CMS/Builder profile:** [`docs/precis/cms-builder.md`](../precis/cms-builder.md)
 
 Precis is a unified platform that enables organizations to build websites,
 manage content, create learning portals, run research centers, generate
@@ -162,7 +162,7 @@ applications using reusable components and AI-assisted generation.
 
 ## 5. 📚 Precis LMS — Learning Experience Platform 🟢
 
-> **Path:** `projects/precis/precis-main/` (courses, enrollment, progress, profile, assistant) · **Strategy:** [`precis.md`](precis.md) · **Docs:** [`docs/precis/courses.md`](../precis/courses.md)
+> **Path:** `projects/structa.cloud/` (courses, enrollment, progress, profile, assistant) · **Strategy:** [`precis.md`](precis.md) · **Docs:** [`docs/precis/courses.md`](../precis/courses.md)
 
 A learning management solution for educational institutions, academies,
 enterprises, and training providers.

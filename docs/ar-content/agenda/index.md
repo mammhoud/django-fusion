@@ -89,7 +89,7 @@ links:
 | المنتج | المسار الكانيكي | الحالة | هدف العارض |
 |--------|----------------|--------|-------------|
 | **سلسلة إصدارات Formint** | `projects/formints/` | نشط | `WEBSITE=formint-pro`, `formint-cloud`, `formint-community` |
-| **Precis LMS (موحد)** | `projects/precis/precis-main/` | نشط | `WEBSITE=precis-main` |
+| **Precis LMS (موحد)** | `projects/structa.cloud/` | نشط | `WEBSITE=structa.cloud` |
 | **Precis Landing** | `projects/precis/precis-landing/` | نشط (نسخة قديمة) | `WEBSITE=precis-landing` |
 | **بحث CTC** | `projects/precis/precis-ctc/` | نشط | `WEBSITE=precis-ctc` |
 | **Syntara (Cypercloud)** | `projects/syntara/` | نشط | `WEBSITE=syntara` |

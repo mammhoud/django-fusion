@@ -1,0 +1,23 @@
+{
+  "name": "planing-surreal-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs",
+    "test": "playwright test && playwright test --config playwright.extra.config.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "surrealdb": "^1.3.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

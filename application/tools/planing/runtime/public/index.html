@@ -1,0 +1,736 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f4f0">
+  <meta name="description" content="A focused SurrealDB-backed workspace for notes, ideas, and agent briefs." data-i18n-content="metaDescription">
+  <title data-i18n-title="pageTitle">Planing — Shared context</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content" data-i18n="skip">Skip to content</a>
+  <div class="app-background" aria-hidden="true"></div>
+  <main id="main-content" class="shell">
+    <header class="masthead">
+      <a class="brand-lockup" href="#" aria-label="Planing home" data-i18n-aria-label="brandHome">
+        <span class="brand-mark" aria-hidden="true">B</span>
+        <span><span class="eyebrow" data-i18n="brandEyebrow">PLANING / SURREALDB</span><strong class="brand-name" data-i18n="brandName">Shared context.</strong></span>
+      </a>
+      <div class="masthead-actions">
+        <button id="locale-toggle" class="button button-quiet" type="button" aria-label="Switch language">العربية</button>
+        <button id="theme-toggle" class="button button-quiet" type="button" aria-pressed="false">Dark mode</button>
+        <button id="logout" class="button button-quiet hidden" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <section id="auth-panel" class="auth-layout" aria-labelledby="auth-title">
+      <div class="auth-intro">
+        <p class="eyebrow" data-i18n="quietWorkspace">A QUIET WORKSPACE</p>
+        <h1 data-i18n="heroTitle">Notes that stay useful after the moment passes.</h1>
+        <p class="lede" data-i18n="heroLede">Capture quickly, keep context close, and give people and agents one dependable stream to work from.</p>
+        <div class="principles" aria-label="Workspace principles" data-i18n-aria-label="workspacePrinciples">
+          <div><span>01</span><strong data-i18n="capture">Capture</strong><small data-i18n="captureDescription">Drop in the thought before it disappears.</small></div>
+          <div><span>02</span><strong data-i18n="route">Route</strong><small data-i18n="routeDescription">Keep work together without flattening its intent.</small></div>
+          <div><span>03</span><strong data-i18n="build">Build</strong><small data-i18n="buildDescription">Give teams and models durable context.</small></div>
+        </div>
+      </div>
+      <div class="panel auth-panel">
+        <p class="eyebrow" data-i18n="accountAccess">ACCOUNT ACCESS</p>
+        <h2 id="auth-title">Create your admin</h2>
+        <p class="panel-copy" data-i18n="firstAdminDescription">Your first account becomes the workspace administrator.</p>
+        <form id="auth-form">
+          <label for="username" data-i18n="username">Username<input id="username" name="name" required minlength="3" autocomplete="username" placeholder="your-name" data-i18n-placeholder="usernamePlaceholder"></label>
+          <label for="password" data-i18n="password">Password<input id="password" name="password" required minlength="8" type="password" autocomplete="new-password" placeholder="At least 8 characters" data-i18n-placeholder="passwordPlaceholder"></label>
+          <label id="invite-field" class="hidden" for="invite-code" data-i18n="inviteCode">Invitation code<input id="invite-code" name="invite" autocomplete="off" placeholder="XXXX-XXXX-XXXX"></label>
+          <button class="button button-wide" type="submit"><span id="auth-action" data-i18n="createAccount">Create account</span><span aria-hidden="true">↗</span></button>
+        </form>
+        <p id="auth-message" class="message" role="alert" aria-live="polite"></p>
+        <button id="switch-auth" class="text-action" type="button" data-i18n="switchToLogin">Already have an account? Sign in</button>
+      </div>
+    </section>
+
+    <section id="app-panel" class="hidden" aria-labelledby="workspace-title">
+      <div class="workspace-bar">
+        <div><p class="eyebrow"><span data-i18n="workspace">WORKSPACE</span> / <span id="workspace-kicker">PLANING</span></p><h1 id="workspace-title" data-i18n="sharedContext">Your shared context</h1><p id="workspace-description" class="workspace-description">A shared stream for people and agents.</p></div>
+        <div class="workspace-metrics" aria-label="Workspace metrics" data-i18n-aria-label="workspaceMetricsAria">
+          <span><b id="note-total">0</b> <span data-i18n="notesCountLabel">notes</span></span>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <aside class="sidebar panel" aria-label="Workspace navigation" data-i18n-aria-label="workspaceNavigation">
+          <div class="sidebar-heading"><div><p class="eyebrow" data-i18n="navigation">NAVIGATION</p><p class="muted" data-i18n="moveThroughWorkspace">Move through the workspace</p></div><span class="live-pulse" aria-label="Live database connection"></span></div>
+          <div id="workspace-switcher" class="workspace-switcher">
+            <label class="sr-only" for="workspace-select" data-i18n="workspaceSwitchLabel">Workspace</label>
+            <select id="workspace-select" aria-describedby="workspace-switch-hint"></select>
+            <p id="workspace-switch-hint" class="workspace-switch-hint" data-i18n="workspaceSwitchHint">Notes, lanes, chats, and study cards all belong to the selected workspace.</p>
+          </div>
+          <nav class="primary-nav" aria-label="Workspace pages" data-i18n-aria-label="notesPageAria">
+            <button class="nav-button active" data-view="notes" type="button"><span class="nav-icon">+</span><span data-i18n="notesPage">Notes</span><span class="nav-arrow">↗</span></button>
+            <button class="nav-button" data-view="chat" type="button"><span class="nav-icon">◇</span><span data-i18n="chatPage">Chat</span><span class="nav-arrow">↗</span></button>
+            <button class="nav-button" data-view="study" type="button"><span class="nav-icon">✓</span><span data-i18n="studyPage">Study</span><span class="nav-arrow">↗</span></button>
+            <button class="nav-button" data-view="kanban" type="button"><span class="nav-icon">⬚</span><span data-i18n="kanbanPage">Kanban</span><span class="nav-arrow">↗</span></button>
+            <button class="nav-button" data-view="calendar" type="button"><span class="nav-icon">▣</span><span data-i18n="calendarPage">Calendar</span><span class="nav-arrow">↗</span></button>
+            <button class="nav-button" data-view="graph" type="button"><span class="nav-icon">✳</span><span data-i18n="graphPage">Graph</span><span class="nav-arrow">↗</span></button>
+            <button class="nav-button" data-view="tickets" type="button"><span class="nav-icon">◱</span><span data-i18n="ticketsPage">Tickets</span><span class="nav-arrow">↗</span></button>
+            <button class="nav-button" data-view="settings" type="button"><span class="nav-icon">◎</span><span data-i18n="settingsPage">Settings</span><span class="nav-arrow">↗</span></button>
+          </nav>
+          <div id="notes-navigation" class="notes-navigation">
+            <p class="eyebrow" data-i18n="noteStreams">NOTE STREAMS</p>
+            <nav id="note-view-buttons" class="category-buttons" aria-label="Note views">
+              <button class="category-button active" data-note-view="all" type="button"><span class="icon">•</span><span data-i18n="viewAll">All notes</span></button>
+              <button class="category-button" data-note-view="archive" type="button"><span class="icon">▲</span><span data-i18n="viewArchive">Archive</span></button>
+              <button class="category-button" data-note-view="recycle" type="button"><span class="icon">×</span><span data-i18n="viewRecycle">Recycle bin</span></button>
+            </nav>
+            <p class="eyebrow" data-i18n="noteLanes">NOTE LANES</p>
+            <nav id="category-buttons" class="category-buttons" aria-label="Note categories" data-i18n-aria-label="categoriesAria"></nav>
+            <form id="category-form" class="category-form"><label class="sr-only" for="new-category" data-i18n="newLane">New category</label><input id="new-category" placeholder="Add lane" maxlength="40" required data-i18n-placeholder="addLane"><button class="button button-small" type="submit" aria-label="+ Add">+</button></form>
+            <div id="category-editor" class="category-editor-mount hidden"></div>
+            <nav id="tag-buttons" class="sr-only" aria-hidden="true"></nav>
+            <form id="tag-filter-form" class="tag-filter-form"><label class="sr-only" for="tag-search" data-i18n="filterByTag">Filter by tag</label><input id="tag-search" placeholder="#tag" maxlength="40" data-i18n-placeholder="tagPlaceholder"><button class="text-action" type="submit" data-i18n="filter">Filter</button><button class="text-action muted-action hidden" id="tag-clear" type="button" data-i18n="clear">Clear</button></form>
+          </div>
+          <div class="sidebar-footer"><span class="user-chip"><span id="user-avatar" class="avatar">B</span><span><strong id="current-user">Admin</strong><span id="current-role">superadmin</span></span></span><span class="connection-label" data-i18n="live">LIVE</span></div>
+        </aside>
+
+        <div class="content-column">
+          <section id="notes-view" class="view" aria-labelledby="stream-title">
+            <section class="composer panel" id="composer">
+              <div class="composer-topline">
+                <span class="category-signal"><span id="selected-category-icon">B</span></span>
+                <div><p class="eyebrow" data-i18n="newEntry">NEW ENTRY</p><strong id="selected-category-name">Planing</strong></div>
+                <div class="composer-topline-actions">
+                  <button id="composer-preview-toggle" class="chip-toggle" type="button" aria-pressed="false" title="Toggle live preview" data-i18n-title="tooltipPreview"><span data-i18n="previewLabel">Preview</span></button>
+                  <button id="composer-expand-toggle" class="chip-toggle" type="button" aria-pressed="false" title="Widen the editor" data-i18n-title="tooltipExpand"><span aria-hidden="true">⤢</span><span data-i18n="expandLabel">Wide</span></button>
+                  <kbd title="Shortcut: save the note" data-i18n-title="tooltipSaveShortcut">⌘ ↵</kbd>
+                </div>
+              </div>
+              <form id="note-form">
+                <label class="sr-only" for="note-content" data-i18n="noteContent">Note content</label>
+                <div class="editor-toolbar" role="toolbar" aria-label="Markdown formatting" data-i18n-aria-label="editorToolbarAria">
+                  <button type="button" data-md-insert="bold" title="Bold — Ctrl/⌘ B" data-i18n-title="tooltipBold"><b>B</b></button>
+                  <button type="button" data-md-insert="italic" title="Italic — Ctrl/⌘ I" data-i18n-title="tooltipItalic"><i>I</i></button>
+                  <button type="button" data-md-insert="strike" title="Strikethrough" data-i18n-title="tooltipStrike"><s>S</s></button>
+                  <button type="button" data-md-insert="highlight" title="Highlight" data-i18n-title="tooltipHighlight">▨</button>
+                  <span class="editor-toolbar-sep" aria-hidden="true"></span>
+                  <button type="button" data-md-insert="heading" title="Heading" data-i18n-title="tooltipHeading">H</button>
+                  <button type="button" data-md-insert="quote" title="Quote" data-i18n-title="tooltipQuote">❝</button>
+                  <button type="button" data-md-insert="code" title="Code block — Ctrl/⌘ E" data-i18n-title="tooltipCode">&lt;/&gt;</button>
+                  <button type="button" data-md-insert="inline-code" title="Inline code" data-i18n-title="tooltipInlineCode">`</button>
+                  <span class="editor-toolbar-sep" aria-hidden="true"></span>
+                  <button type="button" data-md-insert="list" title="Bulleted list" data-i18n-title="tooltipList">•</button>
+                  <button type="button" data-md-insert="ordered" title="Numbered list" data-i18n-title="tooltipOrdered">1.</button>
+                  <button type="button" data-md-insert="task" title="Task list" data-i18n-title="tooltipTask">☑</button>
+                  <span class="editor-toolbar-sep" aria-hidden="true"></span>
+                  <button type="button" data-md-insert="link" title="Link — Ctrl/⌘ K" data-i18n-title="tooltipLink">↗</button>
+                  <button type="button" data-md-insert="wikilink" title="Link another note by title" data-i18n-title="tooltipWikilink">[[</button>
+                  <button type="button" data-md-insert="table" title="Insert a table" data-i18n-title="tooltipTable">▦</button>
+                  <button type="button" data-md-insert="divider" title="Horizontal rule" data-i18n-title="tooltipDivider">—</button>
+                  <span id="composer-caret-hint" class="editor-hint" aria-live="polite"></span>
+                </div>
+                <div class="editor-surface" id="composer-surface">
+                  <textarea id="note-content" rows="8" placeholder="Capture a thought, task, or agent brief…" data-i18n-placeholder="notePlaceholder" required></textarea>
+                  <div id="composer-preview" class="editor-preview markdown-body hidden" aria-live="polite"></div>
+                </div>
+                <label class="composer-tags-label" for="note-tags"><span data-i18n="tagsOptional">Tags</span><input id="note-tags" placeholder="#tag1 #tag2" data-i18n-placeholder="tagsPlaceholder" title="Separate tags with spaces, e.g. #study #recall" data-i18n-title="tooltipTags"></label>
+                <div class="composer-attach-row">
+                  <button id="attach-button" class="button button-quiet button-small" type="button" title="Attach files — text is extracted so they can become notes" data-i18n-title="tooltipAttach" data-i18n="attachFiles">Attach files</button>
+                  <button id="md-import-button" class="button button-quiet button-small" type="button" title="Import a .md file as a note" data-i18n-title="tooltipImportMd" data-i18n="importMdFile">Import .md file</button>
+                  <span id="pending-attachments" class="pending-attachments"></span>
+                  <span id="composer-metrics" class="editor-metrics"></span>
+                </div>
+                <div class="composer-footer"><span data-i18n="markdownStored">Markdown · stored in SurrealDB</span><button class="button" type="submit" title="Save the note — Ctrl/⌘ Enter" data-i18n-title="tooltipSave"><span data-i18n="saveNote">Save note</span> <span aria-hidden="true">↗</span></button></div>
+              </form>
+              <input id="file-input" type="file" multiple hidden>
+              <input id="md-file-input" type="file" accept=".md,.markdown,text/markdown" hidden>
+            </section>
+
+            <div class="list-toolbar">
+              <div class="search-wrap"><label class="sr-only" for="note-search" data-i18n="searchNotes">Search notes</label><input id="note-search" placeholder="Search…" data-i18n-placeholder="searchPlaceholder"></div>
+              <span id="note-count" class="count-label">0 notes</span>
+              <nav id="tag-chips" class="tag-chips" aria-label="Tag filters"></nav>
+              <form id="tag-filter-form" class="tag-inline-form"><label class="sr-only" for="tag-search" data-i18n="filterByTag">Filter by tag</label><input id="tag-search" placeholder="#tag" maxlength="40" data-i18n-placeholder="tagPlaceholder"><button class="text-action" type="submit" data-i18n="filter">Filter</button><button class="text-action muted-action hidden" id="tag-clear" type="button" data-i18n="clear">Clear</button></form>
+            </div>
+            <div id="outbox-banner" class="outbox-banner hidden" role="status">
+              <span class="outbox-dot" aria-hidden="true"></span>
+              <span><b data-outbox-count>0</b> <span data-i18n="outboxPending">changes waiting to sync</span></span>
+              <button id="outbox-retry" class="link-button" type="button" data-i18n="retryNow">Retry now</button>
+            </div>
+            <div id="notes-list" class="notes-list" aria-live="polite"></div>
+            <div id="notes-empty" class="empty-state"><span class="empty-icon">+</span><strong data-i18n="noNotes">No notes here yet.</strong><p data-i18n="noNotesDescription">Start with a small thought. Your future team will thank you.</p></div>
+          </section>
+
+          <section id="chat-view" class="view hidden" aria-labelledby="chat-title" x-data="planingChatApp()" x-init="window.chatApp = $data">
+            <div class="view-heading"><div><p class="eyebrow" data-i18n="chatEyebrow">AI CHAT</p><h2 id="chat-title" data-i18n="chatTitle">Chat</h2><p class="panel-copy" data-i18n="chatDescription">Talk with the workspace's active AI provider. Sessions and messages are stored in SurrealDB.</p></div><span class="view-mark">CHAT</span></div>
+            <div class="chat-layout">
+              <aside class="chat-sidebar panel">
+                <button id="chat-new" class="button button-wide" type="button" @click="newSession()"><span data-i18n="chatNew">New chat</span> <span aria-hidden="true">+</span></button>
+                <template x-if="providerName"><p class="chat-provider"><span class="live-pulse"></span><span x-text="providerName"></span></p></template>
+                <template x-if="!providerName"><p class="chat-provider muted" data-i18n="chatNoProvider">No active provider yet.</p></template>
+                <nav id="chat-sessions" class="chat-sessions" aria-label="Chat sessions">
+                  <template x-for="session in sessions" :key="session.id">
+                    <button class="chat-session-item" :class="{ active: session.id === sessionId }" type="button" @click="openSession(session.id)"><span x-text="session.title"></span><span class="chat-session-arrow">↗</span></button>
+                  </template>
+                </nav>
+              </aside>
+              <div class="chat-main">
+                <div class="chat-toolbar panel">
+                  <label for="chat-prompt"><span data-i18n="chatPromptLabel">PROMPT STYLE</span>
+                    <select id="chat-prompt" x-model="promptId" @change="savePromptChoice()">
+                      <option value="" data-i18n="chatPromptNone">No prompt</option>
+                      <template x-for="prompt in prompts" :key="prompt.id">
+                        <option :value="prompt.id" x-text="prompt.title"></option>
+                      </template>
+                    </select>
+                  </label>
+                  <button class="link-button" type="button" @click="deleteSession()" x-show="sessionId" data-i18n="chatDelete">Delete chat</button>
+                </div>
+                <section id="chat-context" class="chat-context panel">
+                  <button id="chat-context-toggle" class="chat-context-toggle" type="button" @click="toggleContext()" :aria-expanded="String(contextOpen)" aria-controls="chat-context-body">
+                    <span class="eyebrow" data-i18n="chatContextTitle">FILES</span>
+                    <span class="chat-context-summary"><span class="context-count" x-text="contextFiles.length"></span><span data-i18n="chatContextAttached">ATTACHED</span></span>
+                    <span class="chat-context-caret" x-text="contextOpen ? '▾' : '▸'"></span>
+                  </button>
+                  <div id="chat-context-body" class="chat-context-body" x-show="contextOpen" x-cloak>
+                    <p class="panel-copy" data-i18n="chatContextHint">Attach project or document files — their text travels with every message.</p>
+                    <div class="context-roots" role="tablist">
+                      <template x-for="root in contextRoots" :key="root.id">
+                        <button class="context-root" :class="{ active: root.id === rootId, missing: !root.exists }" type="button" :disabled="!root.exists" @click="openRoot(root.id)"><span x-text="root.label"></span><small x-text="root.exists ? root.entries + ' · ' + (root.writable ? t('chatContextWritable') : t('chatContextReadOnly')) : t('chatContextMissing')"></small></button>
+                      </template>
+                    </div>
+                    <div class="context-path">
+                      <button class="link-button" type="button" x-show="rootPath" @click="browseUp()" data-i18n="chatContextUp">Up</button>
+                      <code id="context-path-label" x-text="rootId ? (rootId + (rootPath ? ':' + rootPath : '')) : ''"></code>
+                      <button id="context-attach-folder" class="link-button" type="button" x-show="rootPath" @click="attachFolder()" data-i18n="chatContextFolder">Attach folder</button>
+                    </div>
+                    <ul id="context-entries" class="context-entries">
+                      <template x-for="entry in entries" :key="entry.path">
+                        <li class="context-entry">
+                          <button class="context-entry-main" :class="{ dir: entry.type === 'dir' }" type="button" @click="entry.type === 'dir' ? browse(entry.path) : toggleContextFile(entry.ref)">
+                            <span class="context-entry-mark" :class="'kind-' + (entry.kind || entry.type)" x-text="contextMark(entry)"></span>
+                            <span class="context-entry-name" x-text="entry.name"></span>
+                            <small x-show="entry.type === 'file'" x-text="size(entry.size)"></small>
+                          </button>
+                          <button class="context-entry-save" type="button" x-show="entry.type === 'file' && entry.kind !== 'image'" @click="saveAsNote(entry)" :title="t('chatContextSaveNote')" :aria-label="t('chatContextSaveNote')">⤓</button>
+                        </li>
+                      </template>
+                    </ul>
+                    <p class="context-empty" x-show="!entries.length" data-i18n="chatContextEmpty">No readable files in this folder.</p>
+                    <p class="context-limit"><span data-i18n="chatContextLimit">Up to 12 files per message.</span> <span data-i18n="chatContextKinds">Markdown and text are read, PDF text is extracted, and images are sent to the model.</span></p>
+                  </div>
+                  <p id="chat-context-status" class="message" role="alert" aria-live="polite"></p>
+                </section>
+                <div id="chat-messages" class="chat-messages" aria-live="polite">
+                  <template x-if="!sessionId"><div class="chat-empty"><span class="empty-icon">◇</span><strong data-i18n="chatEmptyTitle">Start a conversation.</strong><p data-i18n="chatEmptyHint">Pick a prompt style, then send your first message.</p></div></template>
+                  <template x-for="message in messages" :key="message.id">
+                    <article class="chat-bubble" :class="message.role === 'user' ? 'from-user' : (message.error ? 'error' : 'from-ai')">
+                      <span class="chat-role" x-text="message.role === 'user' ? 'YOU' : (message.error ? 'ERROR' : (message.model || 'AI'))"></span>
+                      <div class="chat-content markdown-body" x-html="rendered(message.content)"></div>
+                    </article>
+                  </template>
+                </div>
+                <form id="chat-form" class="chat-composer panel" @submit.prevent="send()">
+                  <div id="chat-context-chips" class="chat-context-chips">
+                    <template x-for="ref in contextFiles" :key="ref">
+                      <span class="context-chip"><span class="context-chip-kind" x-text="contextKind({ ref }) === 'pdf' ? '▤' : (['png','jpg','jpeg','webp','gif'].includes(String(contextKind({ ref })).toLowerCase()) ? '▣' : '◻')"></span><code x-text="ref"></code><button class="context-chip-remove" type="button" @click="detachContext(ref)" :aria-label="t('removeLabel')">×</button></span>
+                    </template>
+                    <button class="link-button" type="button" x-show="contextFiles.length" @click="clearContext()" data-i18n="chatContextClear">Detach all</button>
+                  </div>
+                  <label class="sr-only" for="chat-input" data-i18n="chatInputLabel">Message</label>
+                  <textarea id="chat-input" rows="2" x-model="draft" :placeholder="t('chatPlaceholder')" data-i18n-placeholder="chatPlaceholder"></textarea>
+                  <button class="button" type="submit" :disabled="sending"><span data-i18n="chatSend">Send</span> <span aria-hidden="true">↗</span></button>
+                </form>
+                <p id="chat-message-status" class="message" role="alert" aria-live="polite"></p>
+              </div>
+            </div>
+          </section>
+
+          <section id="study-view" class="view hidden" aria-labelledby="study-title">
+            <div class="view-heading"><div><p class="eyebrow" data-i18n="studyEyebrow">SPACED RECALL</p><h2 id="study-title" data-i18n="studyTitle">Study</h2><p class="panel-copy" data-i18n="studyDescription">Review cards built from your notes. Grading an answer schedules the next review.</p></div><span class="view-mark">RECALL</span></div>
+            <div class="study-layout">
+              <div class="panel study-summary">
+                <p class="eyebrow" data-i18n="studyPage">STUDY</p>
+                <p id="study-counts" class="study-counts"></p>
+                <div id="study-boxes" class="study-boxes"></div>
+                <button id="study-refresh" class="button ghost" type="button"><span data-i18n="studyShowAnswer">Refresh</span> <span aria-hidden="true">↻</span></button>
+              </div>
+              <div class="study-queue">
+                <div id="study-empty" class="panel study-empty">
+                  <p class="panel-copy" data-i18n="studyEmpty">Nothing is due right now.</p>
+                  <p class="panel-copy muted" data-i18n="studyEmptyHint">Add cards from a note with the Cards action, then come back when they fall due.</p>
+                </div>
+                <div id="study-cards" class="study-cards"></div>
+              </div>
+            </div>
+            <section id="study-analytics" class="panel study-analytics" aria-labelledby="study-analytics-title">
+              <div class="study-analytics-head">
+                <div><p class="eyebrow" data-i18n="studyAnalyticsTitle">RETENTION</p><h3 id="study-analytics-title" data-i18n="studyAnalyticsHeading">How recall is holding up</h3></div>
+                <span class="view-mark">RECALL</span>
+              </div>
+              <div id="study-analytics-totals" class="study-analytics-totals"></div>
+              <p id="study-analytics-empty" class="panel-copy muted" data-i18n="studyAnalyticsEmpty">Grade a few cards and the retention picture appears here.</p>
+              <div class="study-analytics-grid">
+                <div class="study-panel">
+                  <p class="eyebrow" data-i18n="studyAnalyticsByTag">BY TAG</p>
+                  <div id="study-analytics-tags" class="study-tag-table"></div>
+                </div>
+                <div class="study-panel">
+                  <p class="eyebrow" data-i18n="studyAnalyticsHotspots">LAPSE HOTSPOTS</p>
+                  <div id="study-analytics-hotspots" class="study-hotspots"></div>
+                </div>
+                <div class="study-panel">
+                  <p class="eyebrow" data-i18n="studyAnalyticsForecast">NEXT 7 DAYS</p>
+                  <div id="study-analytics-forecast" class="study-forecast"></div>
+                  <p class="eyebrow"><span data-i18n="studyAnalyticsActivity">LAST 14 DAYS</span></p>
+                  <div id="study-analytics-activity" class="study-activity"></div>
+                </div>
+              </div>
+            </section>
+            <p id="study-message" class="message" role="alert" aria-live="polite"></p>
+          </section>
+
+          <section id="graph-view" class="view hidden" aria-labelledby="graph-title">
+            <div class="view-heading"><div><p class="eyebrow" data-i18n="graphEyebrow">KNOWLEDGE GRAPH</p><h2 id="graph-title" data-i18n="graphTitle">Graph</h2><p class="panel-copy" data-i18n="graphDescription">Read-only map of notes and their [[wiki links]]. Click a node to open that note.</p></div><span class="view-mark">GRAPH</span></div>
+            <div class="panel graph-panel">
+              <div id="graph-stats" class="graph-stats"></div>
+              <div class="graph-toolbar">
+                <div id="graph-filter" class="graph-filters"></div>
+                <div id="graph-timeline-controls" class="graph-timeline">
+                  <button class="chip-toggle" id="graph-timeline-play" type="button" aria-label="Play">▶</button>
+                  <input id="graph-timeline" type="range" aria-label="Timeline position">
+                  <button class="chip-toggle graph-speed" data-speed="1" type="button" aria-pressed="true">1×</button>
+                  <button class="chip-toggle graph-speed" data-speed="2" type="button" aria-pressed="false">2×</button>
+                  <button class="chip-toggle graph-speed" data-speed="4" type="button" aria-pressed="false">4×</button>
+                </div>
+              </div>
+              <div class="graph-stage">
+                <div id="graph-canvas" class="graph-canvas"></div>
+                <div id="graph-tooltip" class="graph-tooltip" role="status" aria-hidden="true"></div>
+                <button class="chip-toggle graph-zoom-reset" id="graph-zoom-reset" type="button">⟲ 1:1</button>
+                <aside id="graph-drawer" class="graph-drawer hidden" aria-label="Note details"></aside>
+              </div>
+              <div id="graph-legend" class="graph-legend"></div>
+            </div>
+            <p id="graph-message" class="message" role="alert" aria-live="polite"></p>
+          </section>
+
+          <section id="kanban-view" class="view hidden" aria-labelledby="kanban-title">
+            <div class="view-heading"><div><p class="eyebrow" data-i18n="kanbanEyebrow">KANBAN BOARD</p><h2 id="kanban-title" data-i18n="kanbanTitle">Kanban</h2><p class="panel-copy" data-i18n="kanbanDescription">Visualize and manage your work across customizable lanes. Drag cards between columns to update status.</p></div><span class="view-mark">KANBAN</span></div>
+            <div class="panel kanban-board" id="kanban-board">
+              <div class="kanban-columns" id="kanban-columns"></div>
+              <div id="kanban-editor" class="kanban-editor-mount hidden"></div>
+            </div>
+            <p id="kanban-message" class="message" role="alert" aria-live="polite"></p>
+          </section>
+
+          <section id="calendar-view" class="view hidden" aria-labelledby="calendar-title">
+            <div class="view-heading"><div><p class="eyebrow" data-i18n="calendarEyebrow">CALENDAR</p><h2 id="calendar-title" data-i18n="calendarTitle">Calendar</h2><p class="panel-copy" data-i18n="calendarDescription">Schedule and track deadlines, events, and recurring tasks. Switch between month, week, and day views.</p></div><span class="view-mark">CAL</span></div>
+            <div class="panel calendar-panel" id="calendar-panel">
+              <div class="calendar-toolbar">
+                <div class="calendar-nav">
+                  <button class="button button-quiet button-small" type="button" id="cal-prev" aria-label="Previous"><span aria-hidden="true">‹</span></button>
+                  <h3 id="cal-current-month" class="calendar-month-title"></h3>
+                  <button class="button button-quiet button-small" type="button" id="cal-next" aria-label="Next"><span aria-hidden="true">›</span></button>
+                </div>
+                <div class="calendar-view-switcher">
+                  <button class="chip-toggle" type="button" data-cal-view="month" aria-pressed="true" data-i18n="calViewMonth">Month</button>
+                  <button class="chip-toggle" type="button" data-cal-view="week" aria-pressed="false" data-i18n="calViewWeek">Week</button>
+                  <button class="chip-toggle" type="button" data-cal-view="day" aria-pressed="false" data-i18n="calViewDay">Day</button>
+                </div>
+                <button class="button button-quiet button-small" type="button" id="cal-today" data-i18n="calToday">Today</button>
+                <button class="button button-quiet button-small" type="button" id="cal-new-event" data-i18n="calNewEvent">New event</button>
+              </div>
+              <div id="calendar-grid" class="calendar-grid"></div>
+              <div id="calendar-editor" class="kanban-editor-mount hidden"></div>
+            </div>
+            <p id="calendar-message" class="message" role="alert" aria-live="polite"></p>
+          </section>
+
+          <section id="tickets-view" class="view hidden" aria-labelledby="tickets-title">
+            <div class="view-heading"><div><p class="eyebrow" data-i18n="ticketsEyebrow">SUPPORT DESK</p><h2 id="tickets-title" data-i18n="ticketsTitle">Tickets</h2><p class="panel-copy" data-i18n="ticketsDescription">Track support requests with statuses, priorities, and workspace-defined custom fields.</p></div><span class="view-mark">DESK</span></div>
+            <div class="panel tickets-panel">
+              <div class="tickets-toolbar">
+                <div class="ticket-filters" role="group" aria-label="Status filters">
+                  <button class="chip-toggle active" type="button" data-ticket-status="">All</button>
+                  <button class="chip-toggle" type="button" data-ticket-status="new" data-i18n="ticketStatusNew">New</button>
+                  <button class="chip-toggle" type="button" data-ticket-status="open" data-i18n="ticketStatusOpen">Open</button>
+                  <button class="chip-toggle" type="button" data-ticket-status="pending" data-i18n="ticketStatusPending">Pending</button>
+                  <button class="chip-toggle" type="button" data-ticket-status="resolved" data-i18n="ticketStatusResolved">Resolved</button>
+                  <button class="chip-toggle" type="button" data-ticket-status="closed" data-i18n="ticketStatusClosed">Closed</button>
+                </div>
+                <input id="ticket-search" type="search" data-i18n-placeholder="ticketSearchPlaceholder" placeholder="Search tickets…" aria-label="Search tickets">
+                <button class="button button-small" id="ticket-new" type="button" data-i18n="ticketNew">New ticket</button>
+              </div>
+              <div id="tickets-list" class="tickets-list"></div>
+            </div>
+            <div id="ticket-editor" class="kanban-editor-mount hidden"></div>
+            <p id="tickets-message" class="message" role="alert" aria-live="polite"></p>
+          </section>
+
+          <section id="settings-view" class="view hidden" aria-labelledby="settings-title">
+            <div class="view-heading"><div><p class="eyebrow" data-i18n="workspaceControl">WORKSPACE CONTROL</p><h2 id="settings-title" data-i18n="settingsTitle">Settings</h2><p class="panel-copy" data-i18n="settingsDescription">Shape the workspace once. People and agents inherit the same operating context.</p></div><span class="view-mark">CONFIG</span></div><div class="settings-tabs" role="tablist" aria-label="Settings sections">
+              <button class="settings-tab active" data-settings-tab="general" type="button" data-i18n="tabGeneral">General</button>
+              <button class="settings-tab" data-settings-tab="tickets" type="button" data-i18n="tabTickets">Ticket fields</button>
+              <button class="settings-tab" data-settings-tab="appearance" type="button" data-i18n="tabAppearance">Appearance</button>
+              <button class="settings-tab" data-settings-tab="people" type="button" data-i18n="tabPeople">People</button>
+              <button class="settings-tab" data-settings-tab="activity" type="button" data-i18n="tabActivity">Activity</button>
+              <button class="settings-tab" data-settings-tab="ai" type="button" data-i18n="tabAI">AI</button>
+              <button class="settings-tab" data-settings-tab="data" type="button" data-i18n="tabData">Data</button>
+            </div>
+
+            <div class="panel settings-panel hidden" id="workspace-admin-panel" data-settings-page="general">
+              <p class="eyebrow" data-i18n="workspacesTitle">WORKSPACES</p>
+              <p class="panel-copy" data-i18n="workspacesDescription">Each workspace keeps its own notes, lanes, chats, study cards, and context roots. Create one for a team, a client, or a separate line of research.</p>
+              <form id="workspace-create-form" class="import-row">
+                <label class="sr-only" for="workspace-new-name" data-i18n="workspaceNewName">Workspace name</label>
+                <input id="workspace-new-name" placeholder="Research lab" maxlength="80" required data-i18n-placeholder="workspaceNewNamePlaceholder">
+                <button class="button" type="submit"><span data-i18n="workspaceCreate">Create workspace</span> <span aria-hidden="true">+</span></button>
+              </form>
+              <p id="workspace-admin-message" class="message" role="alert"></p>
+              <div id="workspace-list" class="provider-list"></div>
+            </div>
+
+            <section id="settings-tickets" class="settings-page hidden">
+              <div class="panel settings-panel">
+                <p class="eyebrow" data-i18n="ticketFieldsTitle">CUSTOM TICKET FIELDS</p>
+                <p class="panel-copy" data-i18n="ticketFieldsDescription">Define the extra fields every ticket form shows. Types: text, paragraph, number, date, dropdown, checkbox.</p>
+                <form id="ticket-field-form" class="ticket-field-form">
+                  <input id="ticket-field-label" type="text" data-i18n-placeholder="ticketFieldLabel" placeholder="Field label" aria-label="Field label" required>
+                  <select id="ticket-field-type" aria-label="Field type">
+                    <option value="text" data-i18n-content="fieldTypeText">Text</option>
+                    <option value="textarea" data-i18n-content="fieldTypeTextarea">Paragraph</option>
+                    <option value="number" data-i18n-content="fieldTypeNumber">Number</option>
+                    <option value="date" data-i18n-content="fieldTypeDate">Date</option>
+                    <option value="select" data-i18n-content="fieldTypeSelect">Dropdown</option>
+                    <option value="checkbox" data-i18n-content="fieldTypeCheckbox">Checkbox</option>
+                  </select>
+                  <input id="ticket-field-options" type="text" data-i18n-placeholder="ticketFieldOptions" placeholder="Options (comma separated)">
+                  <label class="ticket-field-required"><input id="ticket-field-required" type="checkbox"> <span data-i18n="ticketFieldRequired">Required</span></label>
+                  <button class="button button-small" type="submit" data-i18n="ticketFieldAdd">Add field</button>
+                </form>
+                <div id="ticket-fields-list" class="ticket-fields-list"></div>
+                <p id="ticket-fields-message" class="message" role="alert"></p>
+              </div>
+            </section>
+
+            <section id="settings-general" class="settings-page">
+              <form id="settings-form" class="panel settings-panel">
+                <div class="settings-grid">
+                  <label for="workspace-name" data-i18n="workspaceName">Workspace name<input id="workspace-name" maxlength="80" required></label>
+                  <label for="default-category" data-i18n="defaultLane">Default lane<select id="default-category"></select></label>
+                </div>
+                <label for="workspace-description-input" data-i18n="description">Description<input id="workspace-description-input" maxlength="180"></label>
+                <div class="settings-footer"><span data-i18n="settingsStored">Changes are written directly to SurrealDB.</span><button class="button" type="submit"><span data-i18n="saveSettings">Save settings</span> <span aria-hidden="true">↗</span></button></div>
+                <p id="settings-message" class="message" role="alert"></p>
+              </form>
+            </section>            <section id="settings-appearance" class="settings-page hidden">
+              <div class="panel settings-panel">
+                <p class="eyebrow">PRESETS</p>
+                <div id="preset-cards" class="preset-grid"></div>
+                <div class="appearance-group">
+                  <p class="eyebrow" data-i18n="themeMode">THEME MODE</p>
+                  <div id="theme-options" class="option-grid"></div>
+                  <p class="eyebrow" data-i18n="themeVariant">THEME VARIANT</p>
+                  <div id="theme-variant-options" class="option-grid"></div>
+                  <p class="eyebrow" data-i18n="accentColor">ACCENT COLOR</p>
+                  <div id="accent-options" class="option-grid"></div>
+                  <p class="eyebrow" data-i18n="fontScale">TEXT SIZE</p>
+                  <div id="font-scale-options" class="option-grid"></div>
+                </div>
+                <div class="appearance-group">
+                  <p class="eyebrow" data-i18n="surfaceGroup">SURFACE</p>
+                  <p class="appearance-sublabel" data-i18n="styleVariant">SURFACE STYLE</p>
+                  <div id="style-options" class="option-grid"></div>
+                  <p class="eyebrow" data-i18n="radiusScale">CORNER RADIUS</p>
+                  <div id="radius-options" class="option-grid"></div>
+                  <p class="eyebrow" data-i18n="shadowDepth">SHADOW DEPTH</p>
+                  <div id="shadow-options" class="option-grid"></div>
+                  <p class="eyebrow" data-i18n="edgeStrength">EDGE CONTRAST</p>
+                  <div id="edge-options" class="option-grid"></div>
+                  <p class="eyebrow" data-i18n="density">DENSITY</p>
+                  <div id="density-options" class="option-grid"></div>
+                </div>
+                <div class="appearance-group">
+                  <p class="eyebrow" data-i18n="elementsGroup">ELEMENTS</p>
+                  <p class="appearance-sublabel" data-i18n="buttonStyle">BUTTONS</p>
+                  <div id="button-style-options" class="option-grid"></div>
+                  <p class="appearance-sublabel" data-i18n="badgeStyle">BADGES &amp; TAGS</p>
+                  <div id="badge-style-options" class="option-grid"></div>
+                </div>
+                <p class="appearance-note" data-i18n="appearanceStored">Theme, accent, and text size are saved to SurrealDB and apply to everyone.</p>
+                <p id="appearance-message" class="message" role="alert"></p>
+              </div>
+            </section>
+
+            <section id="settings-people" class="settings-page hidden">
+              <p class="eyebrow" data-i18n="peopleTitle">PEOPLE</p>
+              <p class="panel-copy"><span data-i18n="peopleDescription">Members, roles, and invitation codes are scoped to one workspace at a time.</span> <span id="people-scope" class="people-scope"></span></p>
+              <div class="people-layout">
+                <div id="members-list" class="members-list"></div>
+                <form id="member-form" class="panel form-panel">
+                  <p class="eyebrow" data-i18n="addMember">ADD MEMBER</p>
+                  <h3 data-i18n="giveLane">Give someone a lane.</h3>
+                  <label for="member-name" data-i18n="username">Username<input id="member-name" minlength="3" required placeholder="teammate" data-i18n-placeholder="memberPlaceholder"></label>
+                  <label for="member-password" data-i18n="temporaryPassword">Temporary password<input id="member-password" type="password" minlength="8" required placeholder="At least 8 characters" data-i18n-placeholder="passwordPlaceholder"></label>
+                  <label for="member-role" data-i18n="role">Role<select id="member-role"><option value="commenter" data-i18n="commenterOption">Commenter · read and reply</option><option value="viewer" data-i18n="viewerOption">Viewer · read only</option><option value="editor" data-i18n="editorOption">Editor · notes and lanes</option><option value="admin" data-i18n="adminOption">Admin · workspace control</option><option value="owner" data-i18n="ownerOption">Owner · full workspace control</option></select></label>
+                  <button class="button button-wide" type="submit"><span data-i18n="addMemberAction">Add member</span><span aria-hidden="true">↗</span></button>
+                  <p id="member-message" class="message" role="alert"></p>
+                </form>
+              </div>
+              <div class="role-reference panel"><p class="eyebrow" data-i18n="roleReference">ROLE REFERENCE</p><div id="role-reference" class="role-grid"></div></div>
+              <div id="invite-panel" class="role-reference panel hidden">
+                <p class="eyebrow" data-i18n="invitesTitle">INVITATIONS</p>
+                <p class="panel-copy" data-i18n="invitesDescription">Create a one-time code for the workspace you are in. Codes work once, expire on their own, and can be revoked.</p>
+                <form id="invite-form" class="invite-row">
+                  <select id="invite-role" aria-label="Role"><option value="commenter" data-i18n="commenterOption">Commenter · read and reply</option><option value="viewer" data-i18n="viewerOption">Viewer · read only</option><option value="editor" data-i18n="editorOption">Editor · notes and lanes</option><option value="admin" data-i18n="adminOption">Admin · workspace control</option><option value="owner" data-i18n="ownerOption">Owner · full workspace control</option></select>
+                  <button class="button" type="submit"><span data-i18n="createInvite">Create invite</span> <span aria-hidden="true">↗</span></button>
+                </form>
+                <p id="invite-message" class="message" role="alert"></p>
+                <div id="invitations-list" class="invitations-list"></div>
+              </div>
+              <div id="join-panel" class="role-reference panel">
+                <p class="eyebrow" data-i18n="joinTitle">JOIN A WORKSPACE</p>
+                <p class="panel-copy" data-i18n="joinDescription">Already have an account? Paste a code to join the workspace it belongs to. You keep your own name and password.</p>
+                <form id="join-form" class="invite-row">
+                  <label class="sr-only" for="join-code" data-i18n="inviteCode">Invitation code</label>
+                  <input id="join-code" autocomplete="off" placeholder="XXXX-XXXX-XXXX" data-i18n-placeholder="joinCodePlaceholder">
+                  <button class="button" type="submit"><span data-i18n="joinAction">Join workspace</span> <span aria-hidden="true">↗</span></button>
+                </form>
+                <p id="join-message" class="message" role="alert"></p>
+              </div>
+            </section>
+
+            <section id="settings-activity" class="settings-page hidden">
+              <div class="panel settings-panel">
+                <p class="eyebrow" data-i18n="activityTitle">ACTIVITY</p>
+                <div id="audit-list" class="audit-list" hx-get="/fragments/audit" hx-trigger="htmxAidedLoad from:body" hx-swap="innerHTML"></div>
+              </div>
+              <div class="panel settings-panel">
+                <p class="eyebrow" data-i18n="securityTitle">SECURITY EVENTS</p>
+                <p class="panel-copy" data-i18n="securityDescription">Sign-ins, registration attempts, invitation failures, and rate-limit blocks. Failed attempts record the IP and user agent — nothing else does.</p>
+                <div id="security-list" class="audit-list"></div>
+                <p id="security-message" class="message" role="status"></p>
+              </div>
+            </section>
+
+            <section id="settings-ai" class="settings-page hidden">
+              <form id="ai-form" class="panel settings-panel">
+                <label for="ai-context" data-i18n="agentContext">Agent operating context<textarea id="ai-context" rows="4" maxlength="1200" placeholder="How should models use this workspace?" data-i18n-placeholder="agentContextPlaceholder"></textarea></label>
+                <div class="settings-footer"><span data-i18n="aiContextStored">The context is stored in SurrealDB and available to future agent runs.</span><button class="button" type="submit"><span data-i18n="saveAI">Save AI context</span> <span aria-hidden="true">↗</span></button></div>
+                <p id="ai-message" class="message" role="alert"></p>
+              </form>
+              <div id="provider-panel" class="panel settings-panel" x-data="planingProviderAdmin()" x-init="window.providerAdmin = $data">
+                <p class="eyebrow" data-i18n="providersTitle">AI PROVIDERS</p>
+                <p class="panel-copy" data-i18n="providersDescription">Connect any OpenAI-compatible endpoint. Keys are stored in SurrealDB and never returned to the browser.</p>
+                <form id="provider-form" class="settings-grid provider-grid" @submit.prevent="save()">
+                  <label data-i18n="providerName">Name<input id="provider-name" x-model="form.name" maxlength="60" required></label>
+                  <label data-i18n="providerBaseUrl">Base URL<input id="provider-base-url" x-model="form.baseUrl" placeholder="https://api.openai.com/v1" required></label>
+                  <label data-i18n="providerModel">Model<input id="provider-model" x-model="form.model" placeholder="gpt-4o-mini" required></label>
+                  <label data-i18n="providerApiKey">API key<input id="provider-api-key" type="password" x-model="form.apiKey" :placeholder="editing ? '•••••••• (unchanged)' : 'sk-…'"></label>
+                  <label class="provider-activate"><input type="checkbox" x-model="form.activate"><span data-i18n="providerActivate">Set active</span></label>
+                  <div class="provider-actions">
+                    <button class="button" type="submit"><span data-i18n="providerSave">Save provider</span> <span aria-hidden="true">↗</span></button>
+                    <button class="link-button" type="button" x-show="editing" @click="verify()" data-i18n="providerVerify">Verify</button>
+                    <button class="link-button danger" type="button" x-show="editing" @click="remove()" data-i18n="providerDelete">Delete</button>
+                  </div>
+                </form>
+                <p id="provider-message" class="message" role="alert"></p>
+                <div id="provider-list" class="provider-list">
+                  <template x-for="provider in providers" :key="provider.id">
+                    <div class="provider-row" :class="{ active: provider.isActive }">
+                      <span class="provider-identity"><strong x-text="provider.name"></strong><small x-text="provider.model"></small></span>
+                      <span class="provider-flags"><code x-show="provider.isActive" data-i18n="providerActive">ACTIVE</code><code x-show="provider.hasKey">KEY SET</code></span>
+                      <span class="provider-row-actions">
+                        <button class="link-button" type="button" @click="edit(provider)" data-i18n="edit">Edit</button>
+                        <button class="link-button" type="button" x-show="!provider.isActive" @click="activate(provider)" data-i18n="providerActivateAction">Activate</button>
+                      </span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+              <div id="prompt-panel" class="panel settings-panel" x-data="planingPromptAdmin()" x-init="window.promptAdmin = $data">
+                <p class="eyebrow" data-i18n="promptsTitle">PROMPT LIBRARY</p>
+                <p class="panel-copy" data-i18n="promptsDescription">Prompt styles appear in the chat toolbar. Built-ins are read-only — duplicate one to make it yours.</p>
+                <form id="prompt-form" class="settings-grid prompt-grid" @submit.prevent="save()">
+                  <label data-i18n="promptTitle">Title<input id="prompt-title" x-model="form.title" maxlength="80" required></label>
+                  <label data-i18n="promptIdLabel">Identifier<input id="prompt-id" x-model="form.id" :disabled="Boolean(editing)" placeholder="my-prompt" maxlength="60" required></label>
+                  <label class="prompt-body-label" data-i18n="promptBody">Prompt text<textarea id="prompt-body" rows="4" maxlength="2000" x-model="form.body" required></textarea></label>
+                  <div class="provider-actions">
+                    <button id="prompt-save" class="button" type="submit"><span data-i18n="promptSave">Save prompt</span> <span aria-hidden="true">↗</span></button>
+                    <button class="link-button" type="button" x-show="editing" @click="reset()" data-i18n="cancelEdit">Cancel</button>
+                  </div>
+                </form>
+                <p id="prompt-message" class="message" role="alert"></p>
+                <div id="prompt-list" class="provider-list">
+                  <template x-for="prompt in prompts" :key="prompt.id">
+                    <div class="provider-row" :class="{ active: prompt.isSystem }">
+                      <span class="provider-identity"><strong x-text="prompt.title"></strong><small x-text="prompt.id"></small></span>
+                      <span class="provider-flags"><code x-show="prompt.isSystem" data-i18n="promptBuiltIn">BUILT-IN</code></span>
+                      <span class="provider-row-actions">
+                        <button class="link-button" type="button" @click="duplicate(prompt)" data-i18n="promptDuplicate">Duplicate</button>
+                        <button class="link-button" type="button" x-show="!prompt.isSystem" @click="edit(prompt)" data-i18n="edit">Edit</button>
+                        <button class="link-button danger" type="button" x-show="!prompt.isSystem" @click="remove(prompt)" data-i18n="providerDelete">Delete</button>
+                      </span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+              <div id="context-panel" class="panel settings-panel" x-data="planingContextRoots()" x-init="window.contextRootsAdmin = $data">
+                <p class="eyebrow" data-i18n="chatContextRootsTitle">CONTEXT ROOTS</p>
+                <p class="panel-copy" data-i18n="chatContextRootsDescription">Directories chats may read. The project directory is mounted read-only; documents and notes are writable.</p>
+                <p class="panel-copy muted" data-i18n="chatContextRootsWorkspace">These roots apply to the workspace selected in the sidebar. Turning one off hides it from chats here and rejects any reference to it.</p>
+                <div id="context-root-list" class="provider-list">
+                  <template x-for="root in roots" :key="root.id">
+                    <div class="provider-row" :class="{ active: root.enabled && root.writable }">
+                      <span class="provider-identity"><strong x-text="root.label"></strong><small x-text="root.id"></small></span>
+                      <span class="provider-flags"><code x-show="!root.exists" data-i18n="chatContextMissing">NOT MOUNTED</code><code x-show="root.exists" x-text="root.entries + ' ' + t('chatContextEntriesSuffix')"></code><code x-show="root.writable" data-i18n="chatContextWritable">WRITABLE</code></span>
+                      <label class="context-root-toggle"><input type="checkbox" :checked="root.enabled" :disabled="!root.exists" @change="toggleRoot(root)"><span data-i18n="chatContextEnabled">Enabled</span></label>
+                    </div>
+                  </template>
+                </div>
+                <p id="context-root-message" class="message" role="status"></p>
+              </div>
+              <div id="ai-policy-panel" class="panel settings-panel" x-data="planingAiPolicy()" x-init="window.aiPolicyAdmin = $data">
+                <p class="eyebrow" data-i18n="aiPolicyTitle">AI POLICY</p>
+                <p class="panel-copy" data-i18n="aiPolicyDescription">Decide which providers this workspace may use and which one chats default to. An empty allow-list means every active provider is allowed.</p>
+                <div id="ai-policy-providers" class="provider-list">
+                  <template x-for="provider in providers" :key="provider.id">
+                    <div class="provider-row" :class="{ active: provider.allowed }">
+                      <span class="provider-identity"><strong x-text="provider.name"></strong><small x-text="provider.model"></small></span>
+                      <span class="provider-flags">
+                        <code x-show="!provider.isActive" data-i18n="aiPolicyInactive">INACTIVE</code>
+                        <code x-show="policy.defaultProvider === provider.id" data-i18n="aiPolicyDefault">DEFAULT</code>
+                        <label class="context-root-toggle"><input type="checkbox" :checked="provider.allowed" @change="toggleProvider(provider)"><span data-i18n="aiPolicyAllowed">Allowed</span></label>
+                        <button class="link-button" type="button" x-show="policy.defaultProvider !== provider.id && provider.allowed" @click="setDefault(provider)" data-i18n="aiPolicyMakeDefault">Make default</button>
+                      </span>
+                    </div>
+                  </template>
+                  <p class="panel-copy muted" x-show="!providers.length" data-i18n="aiPolicyNoProviders">No active providers yet — add one above.</p>
+                </div>
+                <form id="ai-policy-form" class="settings-grid" @submit.prevent="saveCap()">
+                  <label data-i18n="aiPolicyRunCap">AI run cap per hour (empty = unlimited)<input id="ai-policy-cap" type="number" min="1" max="100000" x-model="capInput" :placeholder="'e.g. 200'"></label>
+                  <label data-i18n="aiPolicyBudget">Monthly AI budget in USD (empty = unlimited)<input id="ai-policy-budget" type="number" min="0" step="0.01" x-model="budgetInput" :placeholder="'e.g. 5.00'"></label>
+                  <div class="provider-actions">
+                    <button class="button" type="submit"><span data-i18n="aiPolicySaveCap">Save limits</span> <span aria-hidden="true">↗</span></button>
+                    <button class="link-button" type="button" x-show="policy.runCap || policy.monthlyBudgetMicros" @click="clearLimits()" data-i18n="aiPolicyClearCap">Remove limits</button>
+                  </div>
+                </form>
+                <div class="ai-usage" x-show="usage && usage.totalCalls">
+                  <span class="link-group-title" data-i18n="aiUsageTitle">USAGE</span>
+                  <p class="panel-copy">
+                    <span data-i18n="aiUsageCapLine">This hour:</span> <code x-text="policy.runCap ? (usage ? usage.totalCalls : 0) + ' / ' + policy.runCap : (usage ? usage.totalCalls : 0)"></code>
+                    · <span data-i18n="aiUsageBudgetLine">This month:</span> <code x-text="policy.monthlyBudgetMicros ? '$' + cost(usage?.monthCostMicros || 0) + ' / $' + cost(policy.monthlyBudgetMicros) : '$' + cost(usage?.monthCostMicros || 0)"></code>
+                    · <code x-text="(usage?.totalTokens || 0).toLocaleString() + ' tok'"></code>
+                    · <code x-text="cost(usage?.totalCostMicros || 0) + ' ' + (usage?.currency || '')"></code>
+                  </p>
+                  <template x-for="group in (usage?.byProvider || [])" :key="(group.provider || '') + group.model">
+                    <div class="provider-row">
+                      <span class="provider-identity"><strong x-text="group.provider || '—'"></strong><small x-text="group.model"></small></span>
+                      <span class="provider-flags"><code x-text="group.calls + ' calls'"></code><code x-text="group.tokens.toLocaleString() + ' tok'"></code><code x-text="cost(group.costMicros)"></code></span>
+                    </div>
+                  </template>
+                </div>
+                <p id="ai-policy-message" class="message" role="status"></p>
+              </div>
+              <div id="ai-runs-panel" class="panel settings-panel" x-data="planingAiRuns()" x-init="window.aiRunsAdmin = $data">
+                <p class="eyebrow" data-i18n="aiRunsTitle">AI RUNS</p>
+                <p class="panel-copy" data-i18n="aiRunsDescription">Every provider call made from this workspace — feature, model, latency, and outcome. Failed calls keep their error message.</p>
+                <button class="link-button" type="button" @click="load()" data-i18n="aiRunsRefresh">Refresh</button>
+                <div id="ai-runs-list" class="provider-list">
+                  <template x-for="run in runs" :key="run.id">
+                    <div class="provider-row" :class="{ active: false }">
+                      <span class="provider-identity"><strong x-text="run.feature"></strong><small x-text="(run.model || '—') + ' · ' + (run.accountName || '')"></small></span>
+                      <span class="provider-flags"><code :class="run.status === 'ok' ? '' : 'run-error'" x-text="run.status"></code><code x-text="run.durationMs + ' ms'"></code><code x-show="run.totalTokens" x-text="run.totalTokens + ' tok'"></code><code x-show="run.costMicros" x-text="cost(run.costMicros)"></code><code x-show="run.error" :title="run.error || ''">ERR</code></span>
+                    </div>
+                  </template>
+                  <p class="panel-copy muted" x-show="!runs.length" data-i18n="aiRunsEmpty">No AI runs yet — chat or generate study cards to fill this ledger.</p>
+                </div>
+              </div>
+              <div id="ai-jobs-panel" class="panel settings-panel" x-data="planingAiJobs()" x-init="window.aiJobsAdmin = $data">
+                <p class="eyebrow" data-i18n="aiJobsTitle">AI JOBS</p>
+                <p class="panel-copy" data-i18n="aiJobsDescription">Queued provider runs with retry and cancellation. A failed attempt is retried automatically with backoff until its attempt limit; queued jobs can be cancelled until they start running.</p>
+                <button class="link-button" type="button" @click="load()" data-i18n="aiRunsRefresh">Refresh</button>
+                <div id="ai-jobs-list" class="provider-list">
+                  <template x-for="job in jobs" :key="job.id">
+                    <div class="provider-row" :class="{ active: job.status === 'running' }">
+                      <span class="provider-identity"><strong x-text="job.kind"></strong><small x-text="t('aiJobAttempt') + ' ' + job.attempts + '/' + job.maxAttempts"></small></span>
+                      <span class="provider-flags"><code :class="['failed'].includes(job.status) ? 'run-error' : ''" x-text="job.status"></code><code x-show="job.lastError" :title="job.lastError || ''">ERR</code></span>
+                      <span class="provider-row-actions">
+                        <button class="link-button danger" type="button" x-show="job.status === 'queued'" @click="cancel(job)" data-i18n="aiJobCancel">Cancel</button>
+                      </span>
+                    </div>
+                  </template>
+                  <p class="panel-copy muted" x-show="!jobs.length" data-i18n="aiJobsEmpty">No queued runs. Jobs appear here when a study-generation run is deferred.</p>
+                </div>
+                <p id="ai-jobs-message" class="message" role="status"></p>
+              </div>
+            </section>
+
+            <section id="settings-data" class="settings-page hidden">
+              <div class="panel settings-panel">
+                <p class="eyebrow" data-i18n="exportTitle">EXPORT</p>
+                <p class="panel-copy" data-i18n="exportDescription">Download the full workspace — notes, lanes, tags, and attachments metadata — as versioned JSON.</p>
+                <a id="export-link" class="button" href="/api/export" download><span data-i18n="exportAction">Export JSON</span> <span aria-hidden="true">↘</span></a>
+                <p class="eyebrow storage-snapshot-title" data-i18n="importTitle">IMPORT</p>
+                <p class="panel-copy" data-i18n="importDescription">Restore a previously exported JSON file. Existing notes and lanes are kept — only missing records are added back.</p>
+                <form id="import-form" class="import-row">
+                  <input id="import-file" type="file" accept="application/json,.json" required>
+                  <button class="button" type="submit"><span data-i18n="importAction">Import JSON</span> <span aria-hidden="true">↥</span></button>
+                </form>
+                <p id="import-message" class="message" role="alert"></p>
+                <p class="eyebrow storage-snapshot-title" data-i18n="bundleTitle">WORKSPACE BUNDLE</p>
+                <p class="panel-copy" data-i18n="bundleDescription">Move a whole workspace to another deployment: a bundle carries its lanes, tags, notes, study cards, comment threads, and custom prompts. Importing always creates a new workspace, so nothing already here is touched.</p>
+                <div class="import-row">
+                  <button id="bundle-export" class="button" type="button"><span data-i18n="bundleExport">Export bundle</span> <span aria-hidden="true">↘</span></button>
+                  <input id="bundle-file" type="file" accept="application/json,.json" data-i18n-aria-label="bundleFileAria" aria-label="Workspace bundle file">
+                  <button id="bundle-import" class="button" type="button"><span data-i18n="bundleImport">Import as new workspace</span> <span aria-hidden="true">↥</span></button>
+                </div>
+                <p id="bundle-message" class="message" role="alert"></p>
+                <p class="eyebrow storage-snapshot-title" data-i18n="markdownImportTitle">MARKDOWN FILES</p>
+                <p class="panel-copy" data-i18n="markdownImportDescription">Import .md files as notes. The first heading becomes the title; identical files are skipped so re-importing a folder never duplicates notes.</p>
+                <form id="markdown-import-form" class="import-row markdown-import" data-i18n-title="markdownImportHint" title="Drop .md files here or choose them">
+                  <input id="markdown-files" type="file" accept=".md,.markdown,.mdx,text/markdown" multiple>
+                  <button class="button" type="submit"><span data-i18n="markdownImportAction">Import .md files</span> <span aria-hidden="true">↥</span></button>
+                </form>
+                <p id="markdown-import-message" class="message" role="alert"></p>
+                <p class="eyebrow storage-snapshot-title" data-i18n="markdownExportTitle">MARKDOWN BUNDLE</p>
+                <p class="panel-copy" data-i18n="markdownExportDescription">Download a lane or a tag as a .zip of linked markdown files. Wiki links and note metadata travel with each file, so the bundle re-imports cleanly.</p>
+                <form id="markdown-export-form" class="import-row">
+                  <label class="field-label" for="markdown-export-lane" data-i18n="markdownExportLane">Lane</label>
+                  <select id="markdown-export-lane"></select>
+                  <label class="field-label" for="markdown-export-tag" data-i18n="markdownExportTag">Tag</label>
+                  <input id="markdown-export-tag" type="text" placeholder="#tag">
+                  <button class="button" type="submit"><span data-i18n="markdownExportAction">Export .md bundle</span> <span aria-hidden="true">↘</span></button>
+                </form>
+                <p id="markdown-export-message" class="message" role="alert"></p>
+                <p class="eyebrow storage-snapshot-title" data-i18n="samplesTitle">SAMPLE CONTENT</p>
+                <p class="panel-copy" data-i18n="samplesDescription">Load curated demo notes that show off headings, tables, task lists, quotes, and code rendering. Safe to run any time — nothing is duplicated.</p>
+                <form id="samples-form" class="import-row">
+                  <button class="button" type="submit"><span data-i18n="samplesAction">Load samples</span> <span aria-hidden="true">↗</span></button>
+                </form>
+                <p id="samples-message" class="message" role="alert"></p>
+                <p class="eyebrow storage-snapshot-title" data-i18n="retentionTitle">RETENTION</p>
+                <p class="panel-copy" data-i18n="retentionDescription">Automatically purge notes that have been in the recycle bin longer than the retention window. Leave a field empty to keep everything forever.</p>
+                <form id="retention-form" class="import-row retention-row">
+                  <label class="field-label" for="retention-days" data-i18n="retentionDaysLabel">Recycle-bin retention (days)</label>
+                  <input id="retention-days" type="number" min="1" max="3650" inputmode="numeric" data-i18n-placeholder="retentionForever" placeholder="empty = forever">
+                  <button class="button" type="submit"><span data-i18n="retentionSave">Save retention</span> <span aria-hidden="true">↗</span></button>
+                  <button id="retention-purge" class="link-button" type="button"><span data-i18n="retentionPurge">Purge now</span> <span aria-hidden="true">↘</span></button>
+                </form>
+                <p id="retention-message" class="message" role="status"></p>
+                <p class="eyebrow storage-snapshot-title" data-i18n="storageSnapshot">STORAGE SNAPSHOT</p>
+                <div id="storage-flag" class="storage-flag"><span class="storage-flag-dot" aria-hidden="true"></span><span id="storage-flag-label">—</span><code>SURREALDB</code></div>
+                <div id="storage-snapshot" class="storage-snapshot"></div>
+              </div>
+            </section>
+          </section>
+          <p id="app-message" class="message" role="alert" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script defer src="/vendor/htmx.min.js"></script>
+  <script src="/app.js" type="module"></script>
+  <script defer src="/vendor/alpine.min.js"></script>
+</body>
+</html>

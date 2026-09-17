@@ -120,6 +120,7 @@ MODULES: tuple[dict[str, Any], ...] = (
             {"id": "saved-views", "label": _("Saved views"), "href": "/settings/saved-views/"},
             {"id": "import", "label": _("Import"), "href": "/settings/import/"},
             {"id": "audit", "label": _("Audit log"), "href": "/settings/audit/"},
+            {"id": "ledger", "label": _("Ledger settings"), "href": "/settings/ledger/"},
             {"id": "plan", "label": _("Plan & billing"), "href": "/settings/plan/"},
         ),
     },

@@ -184,6 +184,15 @@ const breadcrumbs = breadcrumbsFor(path, title);
     }
     if (detail?.target?.id === 'loop-app-content') refreshNavigator();
   });
+  // Do not silently keep stale navigation when Django fails. Replace the
+  // navigation target with an explicit data-unavailable state so operators
+  // can distinguish an empty workspace from a backend outage.
+  document.body.addEventListener('htmx:responseError', (event) => {
+    const detail = (event as CustomEvent).detail;
+    if (detail?.target?.id !== 'loop-app-navigation-content') return;
+    const target = detail.target as HTMLElement;
+    target.innerHTML = '<div class="loop-data-empty" role="status"><strong>Workspace navigation unavailable.</strong><span>Reconnect to Django and reload.</span></div>';
+  });
 </script>
 <style>
   .loop-skip-link { position:fixed; z-index:60; top:.75rem; left:.75rem; transform:translateY(-150%); padding:.55rem .75rem; border:1px solid var(--loop-accent); background:var(--loop-panel-raised); color:var(--loop-accent-bright); transition:transform .2s ease; }
@@ -192,6 +201,8 @@ const breadcrumbs = breadcrumbsFor(path, title);
   .loop-app-shell > * { position:relative; z-index:1; }
   .loop-app-backdrop { display:none; }
   .loop-app-sidebar { position:relative; z-index:2; border-right:1px solid var(--loop-line); background:#0a0a0a; padding:1.15rem .8rem 2rem; }
+  .loop-data-empty { display:grid; gap:.45rem; margin:.5rem; padding:1rem .75rem; border:1px dashed var(--loop-line); color:var(--loop-muted); font:600 .62rem/1.5 "JetBrains Mono",monospace; text-transform:uppercase; }
+  .loop-data-empty strong { color:var(--loop-accent-bright); }
   .loop-app-brand { display:flex; align-items:center; gap:.75rem; padding:.3rem .55rem 1.9rem; border-bottom:1px solid var(--loop-line); margin-bottom:1.2rem; color:var(--loop-ink); text-decoration:none; letter-spacing:-.04em; }
   .loop-app-brand::after { margin-left:auto; content:"®"; color:var(--loop-dim); font:600 .6rem "JetBrains Mono",monospace; }
   .loop-app-brand > span:last-child { display:grid; gap:.08rem; font-size:1.18rem; line-height:1; }

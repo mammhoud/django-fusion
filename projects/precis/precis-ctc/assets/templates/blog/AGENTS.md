@@ -1,14 +1,14 @@
 # Precis Blog Asset Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/assets/templates/blog/`
+**Scope:** `projects/structa.cloud/assets/templates/blog/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. This
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. This
 folder contains Precis blog presentation assets or compatibility templates.
 
 ## Ownership and placement
 
 New blog behavior belongs in the active blog application under
-`projects/precis/precis-main/backend/apps/pages/blog/` when that app is enabled. Keep this
+`projects/structa.cloud/backend/apps/pages/blog/` when that app is enabled. Keep this
 folder for templates explicitly loaded from the Precis asset tree; do not
 invent `plugins/blog/` paths or move blog logic into templates.
 

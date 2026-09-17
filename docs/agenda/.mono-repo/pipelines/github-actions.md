@@ -12,7 +12,7 @@ Related Releases: formint-editions-2026-08
 
 ## Method
 
-- Workflows delegate to `projects/Makefile` targets (e.g. `make check WEBSITE=precis-main`)
+- Workflows delegate to `projects/Makefile` targets (e.g. `make check WEBSITE=structa.cloud`)
 - Composite actions encapsulate repeated setup (Python, Node, Rust)
 - Docs validation via `prepare-content` + `validate-content`
 

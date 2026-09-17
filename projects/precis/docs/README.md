@@ -24,7 +24,7 @@ projects/precis/docs/
 
 | Product | Canonical runtime | Documentation | Responsibility |
 |---|---|---|---|
-| Precis unified | `projects/precis/precis-main/` | [`precis-main/`](precis-main/README.md) | LMS courses, enrollment, progress, profile, marketing and catalog shell |
+| Precis unified | `projects/structa.cloud/` | [`precis-main/`](precis-main/README.md) | LMS courses, enrollment, progress, profile, marketing and catalog shell |
 | Precis Landing legacy copy | `projects/precis/precis-landing/` | [`precis-landing/`](precis-landing/README.md) | Retained compatibility copy; new product work belongs in Precis unified |
 | CTC Research | `projects/precis/precis-ctc/` | [`precis-ctc/`](precis-ctc/README.md) | Medical research, learning, Wagtail content, Astro shell, and public site |
 

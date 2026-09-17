@@ -71,7 +71,7 @@ across the Middle East and international markets.
 
 | Product | Status | Monorepo path | What it is |
 |---------|--------|---------------|------------|
-| 🎓 Precis (LMS + landing) | 🟢 live | `projects/precis/precis-main/` | Learning platform + marketing/catalog shell in one stack |
+| 🎓 Precis (LMS + landing) | 🟢 live | `projects/structa.cloud/` | Learning platform + marketing/catalog shell in one stack |
 | 🤝 Loop-CRM | 🟢 live | `projects/loop-crm/` | Unified sales + marketing CRM |
 | 💳 Formint POS | 🟢 live | `projects/formints/` | Offline-first multi-edition restaurant/café POS |
 | 🤖 Syntara (Cypercloud) | 🟡 beta | `projects/syntara/` | AI chat + template customization runtime |

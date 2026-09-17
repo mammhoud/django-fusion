@@ -63,7 +63,7 @@ graph LR
 
 | Project | Backend path | Usage | Highlights |
 |---------|-------------|-------|------------|
-| 🎓 Precis (main) | `projects/precis/precis-main/backend/` | Components, routing, fragments, pages | Reference consumer; `{% comp %}` + Viewset pattern throughout |
+| 🎓 Precis (main) | `projects/structa.cloud/backend/` | Components, routing, fragments, pages | Reference consumer; `{% comp %}` + Viewset pattern throughout |
 | 🏥 CTC Research | `projects/precis/precis-ctc/backend/` | Heaviest consumer (194 files) | Health checks, scheduler, Dynaconf, full fusion road |
 | 🤝 Loop-CRM | `projects/loop-crm/backend/` | Pages, seed commands, config | `seed_demo`, `seed_pages` management commands |
 | 🤖 Syntara | `projects/syntara/` | Config loader, model/template registries | `django_fusion.config.loader` for Dynaconf |

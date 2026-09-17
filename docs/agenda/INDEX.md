@@ -58,7 +58,7 @@ Status: Active
 | Product | Canonical Path | Status | Dispatcher Target |
 |---------|---------------|--------|-------------------|
 | **Formint Edition Chain** | `projects/formints/` | Active | `WEBSITE=formint-pro`, `formint-cloud`, `formint-community` |
-| **Precis LMS (unified)** | `projects/precis/precis-main/` | Active | `WEBSITE=precis-main` |
+| **Precis LMS (unified)** | `projects/structa.cloud/` | Active | `WEBSITE=structa.cloud` |
 | **Precis Landing** | `projects/precis/precis-landing/` | Active (legacy copy) | `WEBSITE=precis-landing` |
 | **CTC Research** | `projects/precis/precis-ctc/` | Active | `WEBSITE=precis-ctc` |
 | **Syntara (Cypercloud)** | `projects/syntara/` | Active | `WEBSITE=syntara` |

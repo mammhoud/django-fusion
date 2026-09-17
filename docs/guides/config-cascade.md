@@ -141,18 +141,18 @@ the canonical place for **local-dev differences** (ports, debug flags, live
 mounts) — production deploys ignore it:
 
 ```yaml
-# projects/precis/precis-main/docker-compose.override.yml
+# projects/structa.cloud/docker-compose.override.yml
 services:
   backend:
     ports: ["8074:8074"]
     environment:
       DJANGO_DEBUG: "1"
     volumes:
-      - ./configs:/app/precis-main/configs:ro
+      - ./configs:/app/structa.cloud/configs:ro
 ```
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 docker compose up -d --build        # auto-loads the override
 ```
 
@@ -224,7 +224,7 @@ site identity on the cascade — still below environment variables.
 ```python
 from django_fusion.config.project import load_config
 
-config = load_config(project_dir="projects/precis/precis-main")
+config = load_config(project_dir="projects/structa.cloud")
 backend_view = config.resolve("https://lms.structa.cloud", side="back")
 frontend_view = config.resolve("http://localhost:3000", side="front")
 ```
@@ -302,7 +302,7 @@ graph LR
 
 | Product | Cascade root | `configs/` dir | Notes |
 |---------|--------------|----------------|-------|
-| Precis Main | `projects/precis/precis-main/` | ✅ `defaults/site/admin` | env-file root `.env` → project `.env`; `docker-compose.override.yml`; `make config-front` wires the Astro road |
+| Precis Main | `projects/structa.cloud/` | ✅ `defaults/site/admin` | env-file root `.env` → project `.env`; `docker-compose.override.yml`; `make config-front` wires the Astro road |
 | CTC Research | `projects/precis/precis-ctc/` | ✅ `defaults/site/admin` | shared stack (`configs.settings` MainSettings) loads the project YAMLs before `Env/_site.yml`; `make config-show`/`config-check` |
 | Loop-CRM | `projects/loop-crm/` | ✅ `defaults/site/admin` (+ env catalog) | env-first settings; `backend/configs/site.py` seeds env defaults from the cascade (`SITE`/`ADMIN` sections); `make config-show`/`config-check` |
 | Syntara | `projects/syntara/` | ✅ `defaults/site/admin` (+ dynaconf loader files) | `settings.yml`/`models.yml` stay the AI-model source; identity defaults via `load_config`; `make config-show`/`config-check` |

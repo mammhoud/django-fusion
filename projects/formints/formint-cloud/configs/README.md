@@ -1,7 +1,7 @@
 # 📐 Formint Cloud — Project Configs (`configs/`)
 
 Project-owned layer of the layered configuration cascade, sitting beside
-`backend/` and `frontend/` (same layout as `precis/precis-main/configs/`).
+`backend/` and `frontend/` (same layout as `structa.cloud/configs/`).
 YAML holds **defaults**; the project `.env` holds local customization;
 environment variables (`DJANGO_*`) hold deploy-time truth.
 

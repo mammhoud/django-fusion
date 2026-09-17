@@ -67,6 +67,6 @@ inspection. Never commit ACME state, DNS API tokens, or database passwords.
 - The router/service identifiers may still contain historical Precis Landing or
   LMS names; only the target URLs define the active Precis Main containers.
 - A running proxy cannot make an absent application stack healthy; deploy
-  `projects/precis/precis-main/docker-compose.yml` before diagnosing a 503.
+  `projects/structa.cloud/docker-compose.yml` before diagnosing a 503.
 - ACME/DNS failures for unrelated configured hosts should be handled as
   separate certificate operations.

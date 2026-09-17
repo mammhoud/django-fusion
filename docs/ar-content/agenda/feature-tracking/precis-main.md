@@ -29,7 +29,7 @@ links:
 
 # 🎯 Precis (precis-main) — تتبّع الميزات
 
-> **تاريخ المنتج:** كان اسمه «LMS (نظام إدارة التعلّم)» — وأُعيدت تسميته في 2026-09-10 بعد دمج precis-landing + precis-lms في `projects/precis/precis-main/`.
+> **تاريخ المنتج:** كان اسمه «LMS (نظام إدارة التعلّم)» — وأُعيدت تسميته في 2026-09-10 بعد دمج precis-landing + precis-lms في `projects/structa.cloud/`.
 > **آخر تحديث:** 2026-09-12
 > **المركز:** [`feature-tracking.md`](../feature-tracking.md) — دورة الحياة، وتعريفات الحالة، وفهرس كل منتج.
 

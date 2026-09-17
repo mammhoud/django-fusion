@@ -98,7 +98,7 @@ The current canonical product identities are:
 
 | Runtime identity | Canonical path | Compatibility aliases |
 |---|---|---|
-| `precis-main` | `projects/precis/precis-main/` | `precis-lms`, `precis-landing` dispatcher aliases where documented |
+| `precis-main` | `projects/structa.cloud/` | `precis-lms`, `precis-landing` dispatcher aliases where documented |
 | `precis-landing` | `projects/precis/precis-landing/` | legacy Precis Landing runtime copy |
 | `precis-ctc` | `projects/precis/precis-ctc/` | `ctc`, `ctc-website`, `ctc-research.com` |
 | `syntara` | `projects/syntara/` | `cypercloud` runtime alias where required |
@@ -177,9 +177,9 @@ removes generated Docus output only; it does not remove source Markdown.
 
 ```bash
 cd projects
-make show-config WEBSITE=precis-main
-make check WEBSITE=precis-main
-make test WEBSITE=precis-main
+make show-config WEBSITE=structa.cloud
+make check WEBSITE=structa.cloud
+make test WEBSITE=structa.cloud
 make run-dev WEBSITE=precis-ctc
 make check WEBSITE=precis-ctc
 make test WEBSITE=precis-ctc
@@ -209,7 +209,7 @@ commands against shared/production data without explicit approval.
 ### Precis frontends and POS projects
 
 ```bash
-cd projects/precis/precis-main/backend && make check && make test
+cd projects/structa.cloud/backend && make check && make test
 cd projects/precis/precis-landing && make check && make backend-test
 cd projects/formints/formint-pro && make check && make test
 cd projects/formints/formint-cloud && make check && make test

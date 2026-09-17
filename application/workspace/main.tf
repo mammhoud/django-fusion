@@ -247,6 +247,17 @@ resource "docker_container" "workspace" {
   name     = "coder-${data.coder_workspace.me.id}-workspace"
   hostname = local.ws_name
 
+  # Add Docker group so the container can access the host Docker socket.
+  # The default Docker group GID is 999, matching the Coder service configuration
+  # in tools/coder/docker-compose.yml. This allows non-root processes inside the
+  # workspace to use the Docker CLI/docker compose.
+  group_add = [
+    {
+      gid = 999
+      name = "docker"
+    }
+  ]
+
   # The Coder access URL serves a broken TLS cert, so the agent binary is
   # fetched over plain HTTP from the stable internal coder_host_ip instead of
   # coder_agent.main.init_script (which would target the HTTPS access URL).

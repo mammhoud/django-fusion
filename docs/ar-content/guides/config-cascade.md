@@ -40,7 +40,7 @@ Compose، والحاوية تفوز دائماً.
   التطوير المحلي (منافذ، debug، تثبيتات مباشرة)؛ لا تُستخدم في نشر الإنتاج.
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 docker compose up -d --build   # يحمّل override تلقائياً
 ```
 

@@ -90,9 +90,9 @@ make create-networks
 Every variable referenced by the tool compose files lives in
 **`application/tools/.env.example`** (versions, ports, designs, and generated
 RANDOM defaults for secrets) — covering all tools, including the ones
-commented out of the aggregate file (`adminer/`, `monitoring/`):
-`ADMINER_DESIGN`, `MAILPIT_VERSION`, `GRAFANA_ADMIN_USER`,
-`GRAFANA_ADMIN_PASSWORD`, `BLINKO_DB_PASSWORD`, `XYOPS_HOSTNAME`, …
+commented out of the aggregate file (`adminer/`, `monitoring`). Blinko uses
+only `SURREALDB_PASS`/`SURREALDB_PORT`; it must not receive `DATABASE_URL` or
+`BLINKO_DB_*` values.
 
 ```bash
 cd application/tools/<tool>
@@ -104,9 +104,9 @@ Each tool Makefile resolves its env according to that tool's contract. The
 aggregate file (`application/tools/docker-compose.yml`) uses the env file
 supplied by the caller.
 
-> **Blinko note:** `BLINKO_DB_PASSWORD` belongs to the shared PostgreSQL
-> cluster. The generated defaults in `.env.example` are for fresh local
-> deployments only.
+> **Blinko note:** Blinko's dedicated deployment uses SurrealDB and does not
+> connect to PostgreSQL. Run `make -C application/tools/blinko verify-surrealdb`
+> before building or starting it.
 
 ## Per-tool notes
 
@@ -120,9 +120,10 @@ supplied by the caller.
 - **space (coder)** — cloud development environment at `space.structa.cloud/`.
   Provides VS Code Web, terminals, and AI agent workspaces. Managed by
   `application/docker-compose.yml`.
-- **blinko/** — self-hosted personal AI note tool. Connects to the shared
-  PostgreSQL cluster (`postgres:5432` on `common`). Served at
-  `tools.structa.cloud/notes/`.
+- **blinko/** — self-hosted personal AI note tool. Its dedicated deployment
+  uses SurrealDB (`blinko-surreal:8000`) on the `common` network and does not
+  connect to PostgreSQL. Run `make -C application/tools/blinko verify-surrealdb`
+  before building or starting it.
 - **affine/** — permanent shared workspace (AFFiNE). Real-time docs,
   whiteboards, and databases. Served at `tools.structa.cloud/`. Uses
   `warehouse-net` for PostgreSQL and `common` for Redis.

@@ -39,7 +39,7 @@ links:
 
 | Product | Canonical Path | Main Responsibility | Domain |
 |---|---|---|---|
-| **Precis (unified LMS + landing)** | `projects/precis/precis-main/` | Unified Django/Wagtail + Astro product: marketing, catalog, courses, enrollment, progress, profiles, content | structa.cloud · lms.structa.cloud |
+| **Precis (unified LMS + landing)** | `projects/structa.cloud/` | Unified Django/Wagtail + Astro product: marketing, catalog, courses, enrollment, progress, profiles, content | structa.cloud · lms.structa.cloud |
 | **Precis Landing** | `projects/precis/precis-landing/` | Kept legacy marketing/catalog source copy; runtime identity maps to Precis Main | compatibility alias only |
 | **Syntara** (Cypercloud) | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | — |
 | **Formint POS** | `projects/formints/` | Multi-edition restaurant POS: Community, Professional, Cloud, Client | — |

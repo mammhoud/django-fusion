@@ -58,6 +58,7 @@ export const NAVIGATION: NavigationModule[] = [
     { id: 'saved-views', label: 'Saved views', href: '/settings/saved-views/' },
     { id: 'import', label: 'Import', href: '/settings/import/' },
     { id: 'audit', label: 'Audit log', href: '/settings/audit/' },
+    { id: 'ledger', label: 'Ledger settings', href: '/settings/ledger/' },
     { id: 'plan', label: 'Plan & billing', href: '/settings/plan/' },
   ] },
 ];

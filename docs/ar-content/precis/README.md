@@ -11,7 +11,7 @@ navigation:
 > **أسماء ذات صلة:** `precis-main`، `precis-landing`، `precis-lms`، `structa`، `lms`
 > **الوسوم:** #site #lms #courses #enrollment #progress #profile #catalog #marketing
 
-**المسار المعياري:** `projects/precis/precis-main/`  
+**المسار المعياري:** `projects/structa.cloud/`  
 **النطاقات:** structa.cloud · lms.structa.cloud  
 **المكدس:** Astro 5 + Tailwind 4 + HTMX + Alpine.js؛ Django 5.2 + Wagtail 7.4 + django-fusion
 
@@ -25,10 +25,10 @@ Precis (الموحد) يدمج نظام التعلم (LMS) مع واجهة ال�
 
 ## البنية
 
-- **الواجهة الخلفية:** `projects/precis/precis-main/backend/` — Django + Wagtail + django-fusion
-- **الواجهة الأمامية:** `projects/precis/precis-main/frontend/` — Astro 5 + Tailwind 4
-- **الأصول:** `projects/precis/precis-main/assets/` — SCSS، CSS المجمع، الصور/الوسائط
-- **التكوين:** `projects/precis/precis-main/configs/` — متسلسل YAML (site، admin، defaults)
+- **الواجهة الخلفية:** `projects/structa.cloud/backend/` — Django + Wagtail + django-fusion
+- **الواجهة الأمامية:** `projects/structa.cloud/frontend/` — Astro 5 + Tailwind 4
+- **الأصول:** `projects/structa.cloud/assets/` — SCSS، CSS المجمع، الصور/الوسائط
+- **التكوين:** `projects/structa.cloud/configs/` — متسلسل YAML (site، admin، defaults)
 
 ---
 
@@ -48,7 +48,7 @@ Precis (الموحد) يدمج نظام التعلم (LMS) مع واجهة ال�
 ## البدء السريع
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make dev
 ```
 
@@ -67,7 +67,7 @@ make dev
 
 ## ملاحظات وإرشادات
 
-- `precis-main` هو المنتج الموحد (دمج LMS + Landing). الأسماء المستعيرة `precis-lms` و `precis-landing` تُحل إلى `WEBSITE=precis-main`.
+- `precis-main` هو المنتج الموحد (دمج LMS + Landing). الأسماء المستعيرة `precis-lms` و `precis-landing` تُحل إلى `WEBSITE=structa.cloud`.
 - `precis-landing` محتفظ بها كنسخة قديمة؛ الهوية وقت التشغيل تربط إلى `precis-main`.
 - الصيانة المشتركة لـ django-fusion عبر `libs/django-fusion/`.
 

@@ -14,7 +14,9 @@ module/sidebar navigation, the finance ledger, the RevOps dashboard
 (revenue-trend card + funnel-to-board deep links), the responsive Astro
 shell, the canonical optional django-bolt API, the compatibility JSON API,
 the workflow catalog, cross-module workflow actions, the Dramatiq publishing
-boundary, the **AI Hub** (consent-gated `/apis/core/ai/`), **en/ar locale**
+boundary, the **AI Hub** (consent-gated `/apis/core/ai/`), the workspace control
+surface (audited ledger defaults at `/apis/core/settings/ledger/`, AI readiness,
+automation, and connector status), **en/ar locale**
 (`/apis/core/locale/`), and the **connector expansion** (12-platform catalog;
 OAuth for LinkedIn/X/Mastodon/Bluesky/Discord/Slack + Google/Meta/TikTok/Reddit)
 are all in place. Multi-tenant isolation is enforced end-to-end: every
@@ -150,7 +152,9 @@ polymorphic model dependency.
 
 
 The finance surface is available at `/finance/`, `/finance/invoices/`,
-`/finance/payments/`, and `/finance/revenue/`; the API exposes `invoices`,
+`/finance/payments/`, and `/finance/revenue/`; ledger defaults are managed at
+`/settings/ledger/` and persisted through the authenticated
+`/apis/core/settings/ledger/` endpoint with an audit record. The API exposes `invoices`,
 `payments`, and `revenue` on the canonical `/apis/core/` road, plus the read-only
 revenue-trend aggregate (on `/bolt/revenue/trend`)
 that feeds the RevOps dashboard's recognized-revenue card. The Task Center lives at

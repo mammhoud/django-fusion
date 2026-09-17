@@ -36,35 +36,27 @@ else ifeq ($(WEBSITE),cmsfull)
   TEST_WEBSITE := cms-full
   COMPOSE_FILE ?= docker-compose.yml
 else ifeq ($(WEBSITE),structa)
-  # Legacy alias — structa/lms was merged into precis-main.
-  SITE := precis-main
-  PROJECT_DIR := precis/precis-main
-  TEST_WEBSITE := precis-main
-  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  # Legacy alias — structa/lms was merged into structa.cloud.
+  SITE := structa.cloud
+  PROJECT_DIR := structa.cloud
+  TEST_WEBSITE := structa.cloud
+  COMPOSE_FILE ?= structa.cloud/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 else ifeq ($(WEBSITE),lms)
-  # Legacy alias — structa/lms was merged into precis-main.
-  SITE := precis-main
-  PROJECT_DIR := precis/precis-main
-  TEST_WEBSITE := precis-main
-  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  # Legacy alias — structa/lms was merged into structa.cloud.
+  SITE := structa.cloud
+  PROJECT_DIR := structa.cloud
+  TEST_WEBSITE := structa.cloud
+  COMPOSE_FILE ?= structa.cloud/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 else ifeq ($(WEBSITE),core)
-  # Legacy alias — structa/lms was merged into precis-main.
-  SITE := precis-main
-  PROJECT_DIR := precis/precis-main
-  TEST_WEBSITE := precis-main
-  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
-  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
-  PYTHON := uv run python
-else ifeq ($(WEBSITE),structa.cloud)
-  # Legacy alias — structa/lms was merged into precis-main.
-  SITE := precis-main
-  PROJECT_DIR := precis/precis-main
-  TEST_WEBSITE := precis-main
-  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  # Legacy alias — structa/lms was merged into structa.cloud.
+  SITE := structa.cloud
+  PROJECT_DIR := structa.cloud
+  TEST_WEBSITE := structa.cloud
+  COMPOSE_FILE ?= structa.cloud/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 else ifeq ($(WEBSITE),vresume)
@@ -112,13 +104,23 @@ else ifeq ($(WEBSITE),cms-fusion)
   MANAGE := uv run python $(SITE)/backend/__main__.py
   PYTHON := uv run python
 
+else ifeq ($(WEBSITE),structa.cloud)
+  # structa.cloud is the unified Precis product — merged from precis-landing
+  # (marketing/catalog shell) and precis-lms (courses, learning, profile). Now a
+  # top-level project at projects/structa.cloud (renamed from precis-main).
+  SITE := structa.cloud
+  PROJECT_DIR := structa.cloud
+  TEST_WEBSITE := structa.cloud
+  COMPOSE_FILE ?= structa.cloud/docker-compose.yml
+  MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
+  PYTHON := uv run python
+
 else ifeq ($(WEBSITE),precis-main)
-  # precis-main is the unified Precis product — merged from precis-landing
-  # (marketing/catalog shell) and precis-lms (courses, learning, profile).
-  SITE := precis-main
-  PROJECT_DIR := precis/precis-main
-  TEST_WEBSITE := precis-main
-  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  # Legacy alias — precis-main was renamed to structa.cloud and moved to projects/structa.cloud.
+  SITE := structa.cloud
+  PROJECT_DIR := structa.cloud
+  TEST_WEBSITE := structa.cloud
+  COMPOSE_FILE ?= structa.cloud/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
@@ -132,20 +134,20 @@ else ifeq ($(WEBSITE),precis-dev)
   PYTHON := uv run python
 
 else ifeq ($(WEBSITE),precis-lms)
-  # Legacy alias — precis-lms was merged into precis-main.
-  SITE := precis-main
-  PROJECT_DIR := precis/precis-main
-  TEST_WEBSITE := precis-main
-  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  # Legacy alias — precis-lms was merged into structa.cloud.
+  SITE := structa.cloud
+  PROJECT_DIR := structa.cloud
+  TEST_WEBSITE := structa.cloud
+  COMPOSE_FILE ?= structa.cloud/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
 else ifeq ($(WEBSITE),precis-landing)
-  # Legacy alias — precis-landing was merged into precis-main.
-  SITE := precis-main
-  PROJECT_DIR := precis/precis-main
-  TEST_WEBSITE := precis-main
-  COMPOSE_FILE ?= precis/precis-main/docker-compose.yml
+  # Legacy alias — precis-landing was merged into structa.cloud.
+  SITE := structa.cloud
+  PROJECT_DIR := structa.cloud
+  TEST_WEBSITE := structa.cloud
+  COMPOSE_FILE ?= structa.cloud/docker-compose.yml
   MANAGE := uv run python $(PROJECT_DIR)/backend/__main__.py
   PYTHON := uv run python
 
@@ -168,14 +170,14 @@ MANAGE ?= uv run $(RUN_MODULE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),portfolio,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
-DOCKER_SERVICE := $(if $(filter $(SITE),precis-ctc),precis-ctc-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),precis-main loop-crm),backend,$(SITE)))))
+DOCKER_SERVICE := $(if $(filter $(SITE),precis-ctc),precis-ctc-website,$(if $(filter $(SITE),lms),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(if $(filter $(SITE),precis-main structa.cloud loop-crm),backend,$(SITE)))))
 # Internal health-check port for the selected website container.
-DOCKER_HEALTH_PORT := $(if $(filter $(SITE),precis-ctc),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),precis-main precis-dev loop-crm),8074,8000))))
+DOCKER_HEALTH_PORT := $(if $(filter $(SITE),precis-ctc),5070,$(if $(filter $(SITE),lms),5071,$(if $(filter $(SITE),vresume),5072,$(if $(filter $(SITE),precis-main structa.cloud precis-dev loop-crm),8074,8000))))
 # Per-site worker service name, resolved from the per-site Compose file.
 # The shared Dramatiq worker owns cross-product background execution. Precis/LMS
 # is deliberately mapped to a non-existent worker name so explicit LMS web
 # maintenance cannot silently start an LMS background service.
-DOCKER_WORKER ?= $(if $(filter $(SITE),precis-ctc),precis-ctc-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(if $(filter $(SITE),lms precis-main),lms-background-disabled,$(SITE)-worker)))
+DOCKER_WORKER ?= $(if $(filter $(SITE),precis-ctc),precis-ctc-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(if $(filter $(SITE),lms precis-main structa.cloud),lms-background-disabled,$(SITE)-worker)))
 export PROJECT_PATH := $(SITE)
 export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
@@ -186,7 +188,7 @@ export SERVER_TYPE
 # the project's own backend tree (with its PYTHONPATH + uv wiring) instead of
 # the generic `uv run <module>` fallback. Sites without a backend tree keep
 # the MANAGE fallback (legacy aliases: vresume, cms-fusion, ...).
-BACKEND_MAKE := $(if $(filter $(SITE),precis-ctc),precis/precis-ctc/backend,$(if $(filter $(SITE),precis-main),precis/precis-main/backend,$(if $(filter $(SITE),precis-dev),precis/precis-dev/backend,$(if $(filter $(SITE),loop-crm),loop-crm/backend,))))
+BACKEND_MAKE := $(if $(filter $(SITE),precis-ctc),precis/precis-ctc/backend,$(if $(filter $(SITE),structa.cloud),structa.cloud/backend,$(if $(filter $(SITE),precis-dev),precis/precis-dev/backend,$(if $(filter $(SITE),loop-crm),loop-crm/backend,))))
 
 .PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate superuser server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-proxy docker-build-all loop-crm-up loop-crm-migrate docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy redeploy-with-stack docker-up docker-down up docker-logs docker-prune-containers docker-prune-data precis-ctc-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs clean-docker clean-unused docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
@@ -228,7 +230,7 @@ help:
 		'  run-dev        - Run Django dev server for selected website' \
 		'  run-local      - Alias for run-dev for local machine use' \
 		'  check-all      - Run active product checks (LMS excluded)' \
-		'  test-fusion    - Run precis-main tests' \
+		'  test-fusion    - Run structa.cloud tests' \
 		'  test-local     - Run local pytest via uv' \
 		'  server         - Start the ASGI server (container default)' \
 		'  migrations     - Create Django migrations for selected website' \
@@ -266,15 +268,13 @@ website-ctc:
 website-precis-dev:
 	$(MAKE) -C precis/precis-dev $(filter-out $@,$(MAKECMDGOALS))
 
-website-precis:
-	$(MAKE) -C precis/precis-main $(filter-out $@,$(MAKECMDGOALS))
+website-precis:	$(MAKE) -C structa.cloud $(filter-out $@,$(MAKECMDGOALS))
 
-website-precis-main: website-precis  ## Alias — Precis is the unified precis-main runtime
-
-website-precis-lms: website-precis  ## Legacy alias — precis-lms merged into precis-main
+website-precis-main: website-precis  ## Alias — Precis is the unified structa.cloud runtime
+website-precis-lms: website-precis  ## Legacy alias — precis-lms merged into structa.cloud
 
 website-structa:
-	$(MAKE) -C precis/precis-main $(filter-out $@,$(MAKECMDGOALS))
+	$(MAKE) -C structa.cloud $(filter-out $@,$(MAKECMDGOALS))
 
 website-vresume:
 	@if [ -f portfolio/Makefile ]; then \
@@ -289,10 +289,10 @@ website-formints:
 website-pos: website-formints  ## Alias — POS editions dispatcher (projects/formints/Makefile)
 
 # Aggregate project commands intentionally exclude the Precis product.
-# Precis remains available through WEBSITE=precis-main for explicit maintenance,
+# Precis remains available through WEBSITE=structa.cloud (legacy: precis-main) for maintenance,
 # but it is not part of repository-wide install/check/deploy workflows.
 projects:
-	@for project in precis/precis-main precis/precis-dev loop-crm formints; do \
+	@for project in structa.cloud precis/precis-dev loop-crm formints; do \
 		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
 		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
 	done
@@ -306,7 +306,7 @@ check:
 
 check-all:
 	@echo "==> check precis-main backend"
-	@$(MAKE) -C precis/precis-main/backend check
+	@$(MAKE) -C structa.cloud/backend check
 	@echo "==> check loop-crm backend"
 	@$(MAKE) -C loop-crm/backend check
 	@echo "==> check Formint editions"
@@ -334,7 +334,8 @@ validate-compose-env:
 build-assets:
 	@case '$(SITE)' in \
 	  precis-ctc)   $(MAKE) -C precis/precis-ctc build-assets ;; \
-	  precis-main)  $(MAKE) -C precis/precis-main build-assets ;;
+	  precis-main)  $(MAKE) -C structa.cloud build-assets ;; \
+	  structa.cloud) $(MAKE) -C structa.cloud build-assets ;; \
 	  precis-dev)   $(MAKE) -C precis/precis-dev build-assets ;; \
 	  loop-crm)     $(MAKE) -C loop-crm build ;; \
 	  *) echo "No asset pipeline registered for $(SITE)"; exit 1 ;; \
@@ -342,7 +343,7 @@ build-assets:
 
 build-assets-all:
 	@$(MAKE) build-assets WEBSITE=precis-ctc
-	@$(MAKE) build-assets WEBSITE=precis-main
+	@$(MAKE) build-assets WEBSITE=structa.cloud
 	@$(MAKE) build-assets WEBSITE=loop-crm
 
 test:
@@ -357,7 +358,7 @@ test-local tests-local:
 
 test-fusion:
 	@echo '🚀 Running precis-main tests...'
-	@uv run python -m pytest precis/precis-main/backend/tests/ -q --tb=short
+	@uv run python -m pytest structa.cloud/backend/tests/ -q --tb=short
 	@echo ''
 	@echo '✅ precis-main tests complete'
 
@@ -558,7 +559,7 @@ populate-data-site:
 
 populate-data-all:
 	mkdir -p $(LOG_DIR)
-	@for site in precis-main loop-crm; do \
+	@for site in structa.cloud loop-crm; do \
 		uv run python ../tests/scripts/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
@@ -568,7 +569,7 @@ verify-runtime-site:
 
 full-site-check:
 	@if [[ "$(TEST_WEBSITE)" == "all" ]]; then \
-		for website in precis-main loop-crm; do \
+		for website in structa.cloud loop-crm; do \
 			echo "==> full-site-check WEBSITE=$$website"; \
 			$(MAKE) full-site-check WEBSITE=$$website; \
 		done; \
@@ -593,8 +594,8 @@ migrate:
 # Create a Django superuser for the selected site. Interactive by default;
 # pass DJANGO_SUPERUSER_EMAIL + DJANGO_SUPERUSER_PASSWORD (and optionally
 # DJANGO_SUPERUSER_USERNAME) for a non-interactive run.
-#   make superuser WEBSITE=precis-main
-#   DJANGO_SUPERUSER_EMAIL=admin@structa.cloud DJANGO_SUPERUSER_PASSWORD=... make superuser WEBSITE=precis-main
+#   make superuser WEBSITE=structa.cloud
+#   DJANGO_SUPERUSER_EMAIL=admin@structa.cloud DJANGO_SUPERUSER_PASSWORD=... make superuser WEBSITE=structa.cloud
 superuser:
 	@if [ -n "$(BACKEND_MAKE)" ]; then \
 		$(MAKE) -C $(BACKEND_MAKE) superuser; \
@@ -682,8 +683,8 @@ docker-deploy-websites:
 	 echo "[deploy-all] writing to $(LOG_DEPLOY_DIR)/deploy-all-$$timestamp.log"; \
 	 { \
 		 echo "Deploying active websites (LMS excluded)..."; \
-		 echo "Building precis-main..."; \
-		 $(MAKE) -C precis/precis-main docker-up; \
+		 echo "Building structa.cloud..."; \
+		 $(MAKE) -C structa.cloud docker-up; \
 		 echo "Building loop-crm..."; \
 		 $(MAKE) -C loop-crm docker-up; \
 		 echo "Active websites deployed (LMS excluded)."; \
@@ -735,7 +736,7 @@ docker-health-check:
 # Probe health for all three website containers by wrapping docker-health-check per site.
 probe-health:
 	@echo "Probing health for active sites..."
-	@$(MAKE) docker-health-check WEBSITE=precis-main
+	@$(MAKE) docker-health-check WEBSITE=structa.cloud
 	@$(MAKE) docker-health-check WEBSITE=loop-crm
 
 # Restart all services
@@ -765,13 +766,13 @@ docker-start-all:
 # Lint/typecheck active Python products. Precis/LMS remains explicit via its
 # own backend Makefile and is not part of aggregate checks.
 lint:
-	$(PYTHON) -m pylint precis/precis-main loop-crm formints tests 2>/dev/null || echo "Linting completed with warnings"
+	$(PYTHON) -m pylint structa.cloud loop-crm formints tests 2>/dev/null || echo "Linting completed with warnings"
 
 format:
-	$(PYTHON) -m black precis/precis-main loop-crm formints tests/
+	$(PYTHON) -m black structa.cloud loop-crm formints tests/
 
 typecheck:
-	$(PYTHON) -m mypy precis/precis-main loop-crm formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
+	$(PYTHON) -m mypy structa.cloud loop-crm formints --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
 
 # Run all checks: lint, format, typecheck
 lint-all: lint typecheck

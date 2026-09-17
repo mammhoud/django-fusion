@@ -6,7 +6,7 @@ Validates that the ctc-research.com / lms static/media pipeline is wired
 correctly from source files through to the shared assets-proxy Nginx server
 (``application/tools/docker-compose.assets.yml`` + ``nginx/assets.conf.template``).
 
-Both Precis sites (precis-ctc, precis-main/lms) mount their per-site staticfiles
+Both Precis sites (precis-ctc, structa.cloud (precis-main)/lms) mount their per-site staticfiles
 and media trees into assets-proxy **and** fall back to the monorepo shared
 ``projects/assets/static`` + ``projects/assets/media`` roots, so every site loads
 its shared assets dir at the backend (Django STATICFILES_DIRS/collectstatic) and
@@ -73,8 +73,8 @@ class TestSharedMediaConfiguration:
     def test_assets_compose_mounts_lms_static_and_media(self) -> None:
         """assets-proxy must mount precis-main/lms staticfiles + media for lms.structa.cloud."""
         text = _read(ASSETS_COMPOSE)
-        assert "../../projects/precis/precis-main/assets/staticfiles:/var/www/sites/lms/static:ro" in text
-        assert "../../projects/precis/precis-main/assets/media:/var/www/media/lms:ro" in text
+        assert "../../projects/structa.cloud/assets/staticfiles:/var/www/sites/lms/static:ro" in text
+        assert "../../projects/structa.cloud/assets/media:/var/www/media/lms:ro" in text
 
     def test_shared_media_dir_exists(self) -> None:
         """The monorepo-shared ctc-research media tree must exist beside the other project media."""

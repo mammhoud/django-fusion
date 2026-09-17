@@ -482,7 +482,7 @@ root.style.setProperty('--fu-token-accent', 'hsl(180 60% 50%)');
 ### Example 6: Product SCSS entry point
 
 ```scss
-// projects/precis/precis-main/assets/styles/_index.scss
+// projects/structa.cloud/assets/styles/_index.scss
 
 // 1. Import the base theme (always needed)
 @import 'theme/default';

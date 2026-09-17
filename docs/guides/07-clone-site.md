@@ -55,7 +55,7 @@ The Structa Cloud monorepo is designed for multi-tenancy — create a new Django
 
 | Template | Use Case | Source |
 |----------|----------|--------|
-| **LMS (precis-main)** | Courses, catalog, enrollment, progress | `projects/precis/precis-main/` |
+| **LMS (precis-main)** | Courses, catalog, enrollment, progress | `projects/structa.cloud/` |
 | **CTC Research** | Medical research center, publications | `projects/precis/precis-ctc/` |
 
 > 💡 **Tip:** LMS is the most feature-complete. Start with it unless you need CTC's publication workflow.

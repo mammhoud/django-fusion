@@ -1,8 +1,8 @@
 # Precis Backend Site-Root Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/backend/templates/`
+**Scope:** `projects/structa.cloud/backend/templates/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. This
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. This
 folder is for deliberate Precis site-root templates and overrides, not a
 replacement for every app template.
 

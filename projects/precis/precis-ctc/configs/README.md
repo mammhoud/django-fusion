@@ -1,7 +1,7 @@
 # 📐 CTC Research — Project Configs (`configs/`)
 
 Project-owned layer of the layered configuration cascade, sitting **beside
-`frontend/` and `backend/`** (same layout as `precis/precis-main/configs/`).
+`frontend/` and `backend/`** (same layout as `structa.cloud/configs/`).
 YAML holds **defaults**; the project `.env` holds local customization;
 `docker-compose.yml` / `backend/docker-compose.yml` hold deploy-time truth.
 

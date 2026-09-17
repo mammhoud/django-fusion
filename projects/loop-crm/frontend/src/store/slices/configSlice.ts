@@ -18,10 +18,11 @@ export interface ConfigState {
 const initialState: ConfigState = {
   renderMode: 'html',
   backendUrl: import.meta.env.PUBLIC_BACKEND_URL ?? 'http://127.0.0.1:8000',
-  // Canonical API road: /bolt when the django-bolt runtime is installed,
-  // /apis/core/ (named road) when it is not. /api/v1 is the deprecated fallback.
+  // Canonical API roads: /bolt when the django-bolt runtime is installed,
+  // /apis/core/ for the session-cookie render-first contract. /api/v1 is
+  // compatibility-only and is never the default frontend road.
   apiPrefix: import.meta.env.PUBLIC_API_PREFIX ?? '/bolt',
-  fallbackApiPrefix: import.meta.env.PUBLIC_API_FALLBACK_PREFIX ?? '/api/v1',
+  fallbackApiPrefix: import.meta.env.PUBLIC_API_FALLBACK_PREFIX ?? '/apis/core',
 };
 
 const configSlice = createSlice({

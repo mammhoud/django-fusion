@@ -37,8 +37,8 @@ navigation:
 
 ```bash
 cd projects
-make check WEBSITE=precis-main         # فحص Precis LMS
-make test WEBSITE=precis-main          # اختبار Precis LMS
+make check WEBSITE=structa.cloud         # فحص Precis LMS
+make test WEBSITE=structa.cloud          # اختبار Precis LMS
 make run-dev WEBSITE=precis-landing    # خادم Precis Landing للتطوير
 make check WEBSITE=precis-ctc          # فحوصات CTC Research
 make check WEBSITE=precis-landing
@@ -49,7 +49,7 @@ make test WEBSITE=precis-landing
 
 ```bash
 # Precis LMS
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make check && make test && make migrate
 
 # Precis Landing
@@ -99,7 +99,7 @@ make logs              # تتبع سجلات جميع الخدمات
 
 | المشروع | المجلد | النوع | المنفذ | التقنية |
 |---------|--------|-------|--------|---------|
-| **Precis (نظام تعلم + تسويق موحّد)** | `projects/precis/precis-main/` | Astro + Django | الخلفية 8074 · الواجهة 3000 (Docker) | Wagtail + Astro 5 + django-fusion |
+| **Precis (نظام تعلم + تسويق موحّد)** | `projects/structa.cloud/` | Astro + Django | الخلفية 8074 · الواجهة 3000 (Docker) | Wagtail + Astro 5 + django-fusion |
 | **Precis Landing** | `projects/precis/precis-landing/` | نسخة توافق قديمة | — | مصدر تاريخي؛ وقت التشغيل يُوجّه إلى Precis Main |
 | **CTC Research** | `projects/precis/precis-ctc/` | موقع Django | — | Wagtail + django-fusion |
 | **Syntara** | `projects/syntara/` | موقع Django | 5073 | محادثة ذكاء اصطناعي + CeptorAI + Ollama |
@@ -174,11 +174,11 @@ make logs              # تتبع سجلات جميع الخدمات
 | الاسم القديم | الاسم الحالي | المسار الحالي |
 |---|---|---|
 | `precis-ctc` / `ctc` | **CTC Research** | `projects/precis/precis-ctc/` |
-| `precis-lms` / `lms` | **Precis LMS** (اسم بديل) | `projects/precis/precis-main/` |
+| `precis-lms` / `lms` | **Precis LMS** (اسم بديل) | `projects/structa.cloud/` |
 | `precis-landing` | **Precis Landing** | `projects/precis/precis-landing/` |
 | `cms-fusion` | دُمج في Precis + Precis Landing | — |
 | `cypercloud` | **Syntara** (اسم التشغيل محفوظ) | `projects/syntara/` |
-| `portfolio` / `VResume` | دُمج في Precis | `projects/precis/precis-main/` |
+| `portfolio` / `VResume` | دُمج في Precis | `projects/structa.cloud/` |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | **Formint Community** | `projects/formints/formint-community/` |
 | `pos-solo` / `pos-full` / `formint` / `formint-pro` | **Formint Professional** (مدمج) | `projects/formints/formint-pro/` |
 | `pos-cloud` / `formintB` / `formint-cloud` | **Formint Cloud** | `projects/formints/formint-cloud/` |

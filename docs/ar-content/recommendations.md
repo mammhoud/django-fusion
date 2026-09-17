@@ -61,7 +61,7 @@ navigation:
 - `uv sync` يدير تبعيات Python للمساحة. إذا لم يكن لديك، `pip install uv` يعمل أيضاً.
 - أول تشغيل يسحب ~2 جيجابايت من صور Docker؛ `make deploy` اللاحقة تزايدية.
 - تعارض المنافذ: إذا كانت 80/443 مشغولة، لن يبدأ Traefik. أوقف الخدمات الأخرى أو استخدم منافذ مخصصة عبر `.env`.
-- هجرات قاعدة البيانات تعمل تلقائياً في أول نشر عبر `make deploy`. للتحكم اليدوي: `cd projects/precis/precis-main/backend && make migrate`.
+- هجرات قاعدة البيانات تعمل تلقائياً في أول نشر عبر `make deploy`. للتحكم اليدوي: `cd projects/structa.cloud/backend && make migrate`.
 - تحديثات submodule: عندما تتغير `libs/django-fusion/`، شغّل `git submodule update --remote libs/django-fusion` ثم `uv sync`.
 - التنظيف: `make cleanup` يزيل الحاويات المتوقفة، الصور المعلقة، وذاكرة البناء المؤقتة (يحتفظ بالأحجام).
 

@@ -9,7 +9,7 @@ from django.test import TestCase
 
 from apps.core.demo import DEMO_PASSWORD
 from apps.core.models import Workspace
-from apps.crm.models import Deal, Pipeline, PipelineStage
+from apps.crm.models import Activity, Deal, Pipeline, PipelineStage
 from apps.finance.models import Invoice, Payment, RevenueEvent
 from apps.marketing.models import Campaign, Post, SocialChannel
 
@@ -27,6 +27,7 @@ class SeedDemoCommandTests(TestCase):
         self.assertEqual(SocialChannel.objects.filter(workspace=workspace).count(), 2)
         self.assertEqual(Deal.objects.filter(workspace=workspace).count(), 8)
         self.assertEqual(Post.objects.filter(workspace=workspace).count(), 7)
+        self.assertEqual(Activity.objects.filter(workspace=workspace).count(), 8)
 
         # Won-deal → invoice → payment → recognized revenue trail.
         invoice = Invoice.objects.get(workspace=workspace, number="INV-2026-014")
@@ -52,6 +53,13 @@ class SeedDemoCommandTests(TestCase):
         self.assertEqual(Invoice.objects.filter(workspace=workspace).count(), 1)
         # The user owns the seeded records.
         self.assertEqual(Deal.objects.filter(workspace=workspace, owner=user).count(), 8)
+
+    def test_crm_fixture_command_reuses_the_idempotent_dataset(self):
+        call_command("seed_demo")
+        call_command("seed_crm", "--workspace", "demo-workspace")
+        workspace = Workspace.objects.get(slug="demo-workspace")
+        self.assertEqual(Activity.objects.filter(workspace=workspace).count(), 8)
+        self.assertEqual(Deal.objects.filter(workspace=workspace).count(), 8)
 
     def test_command_user_option_requires_a_real_user(self):
         from django.core.management.base import CommandError

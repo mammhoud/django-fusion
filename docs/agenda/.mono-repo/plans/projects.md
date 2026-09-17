@@ -17,7 +17,7 @@ Related Teams: product, engineering
 
 | Project | Path | Purpose | Responsibility | Status |
 |---|---|---|---|---|
-| Precis (unified) | `projects/precis/precis-main/` | LMS + marketing catalog (merged) | Courses, enrollment, progress, catalog, SEO | Active |
+| Precis (unified) | `projects/structa.cloud/` | LMS + marketing catalog (merged) | Courses, enrollment, progress, catalog, SEO | Active |
 | CTC Research | `projects/precis/precis-ctc/` | Research and training site | Research publication and training workflows | Active |
 | Syntara (Cypercloud) | `projects/syntara/` | AI chat customization platform | AI chat customization and model configuration | In Development |
 | Loop-CRM | `projects/loop-crm/` | CRM + social scheduling | Pipelines, campaigns, finance, AI hub | Active |

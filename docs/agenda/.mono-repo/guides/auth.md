@@ -76,5 +76,5 @@ Auth is implemented uniformly across all sites using django-allauth:
 ## Related Docs
 
 - → `../../../../AGENTS.md` — Auth adapter details
-- → `../../../../projects/precis/precis-main/backend/apps/auth/adapters.py` — Auth implementation
+- → `../../../../projects/structa.cloud/backend/apps/auth/adapters.py` — Auth implementation
 - → `../README.md` — Master index

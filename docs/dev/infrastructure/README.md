@@ -78,7 +78,7 @@ make status              # Full deployment status
 ## Current Precis routing
 
 The historical LMS and Precis Landing public hosts share the unified
-`projects/precis/precis-main/` stack. Use the dedicated
+`projects/structa.cloud/` stack. Use the dedicated
 [Precis Main proxy/admin runbook](precis-main-proxy-admin.md) for router targets,
 admin smoke tests, health checks, and rollback guidance.
 

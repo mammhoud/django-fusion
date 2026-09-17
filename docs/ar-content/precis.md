@@ -8,7 +8,7 @@ navigation:
 
 # 🎓 Precis — منتج نظام التعلم + التسويق الموحّد
 
-> **المسار المعياري:** `projects/precis/precis-main/` · **اسم الموزّع:** `WEBSITE=precis-main` (الأسماء البديلة `precis-lms`, `precis-landing` تُوجّه هنا أيضاً)
+> **المسار المعياري:** `projects/structa.cloud/` · **اسم الموزّع:** `WEBSITE=structa.cloud` (الأسماء البديلة `precis-lms`, `precis-landing` تُوجّه هنا أيضاً)
 
 Precis هي منصة التعلم الموحدة: **LMS** (دورات، تسجيل، تقدم، ملف شخصي) مدمج مع
 **غلاف التسويق/الكتالوج** (صفحات Wagtail، أسعار، مدونة). دُمجت قاعدتا الكود في
@@ -22,7 +22,8 @@ Precis هي منصة التعلم الموحدة: **LMS** (دورات، تسجي
 | CMS / البناء | [`cms-builder.md`](/docs/en/precis) | باني CMS قائم على الأصول (قيد التطوير) |
 | الإعداد | [`configuration.md`](/docs/en/precis) | الإعدادات ومتغيرات البيئة وربط Dynaconf |
 | الدورات | [`courses.md`](/docs/en/precis) | نموذج دورة LMS والتسجيل والتقدم |
-| النشر | [`deployment.md`](/docs/en/precis) | مكدس Compose الموحّد وفحوصات الصحة ومسارات الإدارة |
+| النشر | [`deployment.md`](/docs/en/precis/deployment) | مكدس Compose الموحّد وفحوصات الصحة ومسارات الإدارة |
+| تدفق Fusion | [`landing-fusion-render-flow.html`](/docs/en/precis/landing-fusion-render-flow.html) | مسارات HTML الكامل وHTMX وAstro وأوامر Make وNx |
 | واجهة التسويق | [`precis-landing/frontend.md`](/docs/en/precis) | غلاف Astro وجسر الهيكل وHTMX |
 | API خلفية التسويق | [`precis-landing/backend-api.md`](/docs/en/precis) | عقد render-first + واجهة البيانات |
 | دليل الوكيل/الإدارة | [`../dev/infrastructure/precis-main-proxy-admin.md`](/docs/en/dev/infrastructure) | أهداف Traefik الحالية لـ structa.cloud وlms.structa.cloud |
@@ -32,7 +33,7 @@ Precis هي منصة التعلم الموحدة: **LMS** (دورات، تسجي
 
 | الاسم | الحالة | يُوجَّه إلى |
 |-------|--------|-------------|
-| `precis-main` | ✅ معياري | `projects/precis/precis-main/` |
+| `precis-main` | ✅ معياري | `projects/structa.cloud/` |
 | `precis-lms` | ⚠️ اسم بديل قديم | `precis-main` (مدمج) |
 | `precis-landing` / Precis Landing | ⚠️ اسم بديل قديم | `precis-main` (مدمج) |
 

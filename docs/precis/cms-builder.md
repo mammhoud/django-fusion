@@ -38,7 +38,7 @@ links:
 
 # 🧩 Precis — CMS / Builder Profile
 
-> **Status:** Under development 🟡 · **Canonical path:** `projects/precis/precis-main/`
+> **Status:** Under development 🟡 · **Canonical path:** `projects/structa.cloud/`
 > **Public editions:** Solo · Business (see [`structa.cloud/pricing`](https://structa.cloud/pricing/))
 
 <!-- AI-generated: review needed -->

@@ -126,7 +126,7 @@ Anytype isolates content into **Spaces** (different encryption keys — types/re
 
 | Anytype | Monorepo equivalent today | Gap found in this session |
 |---------|---------------------------|---------------------------|
-| Space = isolated container | Product root (`projects/precis/precis-ctc/`, `projects/precis/precis-main/`, `projects/syntara/`, `projects/formints/*/`) | Shared assets live in one monorepo tree (`projects/assets/`) mounted into each site's frontend+backend; **the "space" boundary is code, the shared dir is deliberate** |
+| Space = isolated container | Product root (`projects/precis/precis-ctc/`, `projects/structa.cloud/`, `projects/syntara/`, `projects/formints/*/`) | Shared assets live in one monorepo tree (`projects/assets/`) mounted into each site's frontend+backend; **the "space" boundary is code, the shared dir is deliberate** |
 | Space-scoped types | Per-product `AGENTS.md` + local app boundaries | ✅ good — root rules + nearest-file-wins |
 | Shared relations across spaces | `libs/django-fusion/`, `projects/precis/configs/`, `projects/assets/` | CTC `MEDIA_ROOT` default drifted to a precis-local rendition tree instead of the canonical shared tree — **fixed this session** (see below) |
 

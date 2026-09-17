@@ -23,7 +23,7 @@ SOURCE_DIR        := source
 # -----------------------------------------------------------------
 COMPOSE_CMD := docker compose -f docker-compose.yml
 # Default website for per-site delegations (dev / docker / check targets).
-# Override on the command line, e.g.:  make dev WEBSITE=precis-main
+# Override on the command line, e.g.:  make dev WEBSITE=structa.cloud
 WEBSITE ?= ctc
 # Networks that must exist before any service can come up.
 NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
@@ -91,7 +91,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
 .PHONY: deploy-databases deploy-coder
-.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-affine deploy-monitoring deploy-blinko deploy-xyops deploy-tools
+.PHONY: deploy-utilities deploy-ollama deploy-mailpit deploy-adminer deploy-affine deploy-monitoring deploy-planing deploy-xyops deploy-tools
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
@@ -100,7 +100,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: cert cert-generate cert-backup cert-restore cert-validate cert-check
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
-.PHONY: precis-ctc structa vresume proxy services databases precis-main cms-fusion domain-drift
+.PHONY: precis-ctc structa vresume proxy services databases precis-main structa-cloud cms-fusion domain-drift
 .PHONY: bump-action-patch bump-action-minor bump-action-major
 .PHONY: bump-app-patch bump-app-minor bump-app-major
 .PHONY: venv-setup venv-sync venv-lock venv-clean venv-info
@@ -339,7 +339,7 @@ help:
 	@echo "  make nx-graph          - Nx dependency graph"
 	@echo "  make nx-deploy         - Deploy Docker-machine projects through nx (docs + any nx deploy target)"
 	@echo ""
-	@echo "Local development & server entry points (WEBSITE=ctc|precis-main|precis-dev|loop-crm|...):"
+	@echo "Local development & server entry points (WEBSITE=ctc|structa.cloud|precis-dev|loop-crm|...):"
 	@echo "  make dev / run-dev / run-local  - Run the Django dev server for the selected website"
 	@echo "  make dev-ctc / dev-precis / dev-loop-crm / dev-syntara - per-site dev shortcuts"
 	@echo "  make server            - Start the production server (container default)"
@@ -371,13 +371,14 @@ help:
 	@echo '  make pro-*             - Formint Pro edition (check/test/env/clean)'
 	@echo '  make cloud-*           - Formint Cloud edition (check/test/dev-backend)'
 	@echo '  make client-*          - Formint pos-client edition (build/lint/test)'
-	@echo "  make precis-main       - Delegate to projects/Makefile with WEBSITE=precis-main"
-	@echo "  make precis-main check - Django system checks for Precis (merged landing + LMS)"
-	@echo "  make precis-main migrate - Run migrations for Precis"
+	@echo "  make structa-cloud     - Delegate to projects/Makefile with WEBSITE=structa.cloud"
+	@echo "  make structa-cloud check - Django system checks for Precis (merged landing + LMS)"
+	@echo "  make structa-cloud migrate - Run migrations for Precis"
+	@echo "  make precis-main       - Legacy alias for structa-cloud"
 	@echo "  make cms-fusion        - Delegate to projects/Makefile with WEBSITE=cms-fusion"
 	@echo "  make cms-fusion check  - Django system checks for Fusion CMS"
 	@echo "  make cms-fusion migrate - Run migrations for Fusion CMS"
-	@echo "  make test-fusion      - Run cms-fusion + precis-main tests sequentially"
+	@echo "  make test-fusion      - Run cms-fusion + structa.cloud tests sequentially"
 	@echo "  make syntara            - Delegate to projects/syntara/Makefile"
 	@echo "  make loop-crm           - Delegate to projects/loop-crm/Makefile"
 	@echo "  make docs               - Delegate to docs/Makefile (Docus)"
@@ -405,8 +406,8 @@ help:
 	@echo "  make nx-run T=<target> - Run any target across all nx projects"
 	@echo ""
 	@echo "Self-hosted tools (application/tools/):"
-	@echo "  make deploy-tools      - Deploy all self-hosted tools (Blinko, xyOps, monitoring, ollama, adminer, mailpit, affine)"
-	@echo "  make deploy-blinko     - Deploy Blinko notes at tools.structa.cloud/notes/"
+	@echo "  make deploy-tools      - Deploy all self-hosted tools (Planing, xyOps, monitoring, ollama, adminer, mailpit, affine)"
+	@echo "  make deploy-planing     - Deploy Planing notes at tools.structa.cloud/notes/"
 	@echo "  make deploy-xyops      - Deploy xyOps automation at ops.structa.cloud"
 	@echo "  make deploy-affine     - Deploy AFFiNE workspace at tools.structa.cloud"
 	@echo "  make deploy-utilities  - Deploy monitoring stack (Prometheus + Grafana, needs application/tools/monitoring/)"
@@ -663,8 +664,12 @@ deploy-databases:
 
 deploy-coder:
 	@echo "🚀 Deploying Coder platform..."
-	@docker compose -f application/docker-compose.yml up -d coder
-	@echo "✅ Coder platform deployed"
+	@docker compose -f application/tools/coder/docker-compose.yml up -d coder 2>/dev/null || true
+	@if docker ps --format '{{.Names}}' | grep -q coder; then \
+		echo "✅ Coder platform is running"; \
+	else \
+		echo "⚠️  Coder may need manual setup"; \
+	fi
 
 # -----------------------------------------------------------------
 # Self-hosted tools deploy targets — one compose per tool under
@@ -672,7 +677,7 @@ deploy-coder:
 # wired so adding application/tools/<X>/Makefile "just works".
 # -----------------------------------------------------------------
 deploy-tools:
-	@$(MAKE) --no-print-directory deploy-blinko
+	@$(MAKE) --no-print-directory deploy-planing
 	@$(MAKE) --no-print-directory deploy-xyops
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
@@ -680,11 +685,11 @@ deploy-tools:
 	@$(MAKE) --no-print-directory deploy-mailpit
 	@$(MAKE) --no-print-directory deploy-affine
 
-deploy-blinko:
-	@if [ -d "$(SERVICES_DIR)/blinko" ]; then \
-		$(MAKE) -C $(SERVICES_DIR)/blinko up; \
+deploy-planing:
+	@if [ -d "$(SERVICES_DIR)/planing" ]; then \
+		$(MAKE) -C $(SERVICES_DIR)/planing up; \
 	else \
-		echo "  (skip) $(SERVICES_DIR)/blinko not present"; \
+		echo "  (skip) $(SERVICES_DIR)/planing not present"; \
 	fi
 
 deploy-affine:
@@ -1337,7 +1342,7 @@ help-all:
 	@echo "Individual Component Help:"
 	@echo "  make -C $(CORE_DIR) help    - Application service commands"
 	@echo "  make pos            - POS desktop app (projects/formints/Makefile)"
-	@echo "  make precis-main     - Precis unified site (projects/Makefile)"
+	@echo "  make structa-cloud   - Precis unified site (projects/structa.cloud; precis-main = legacy alias)"
 	@echo "  make cms-fusion     - Fusion CMS site (projects/Makefile)"
 	@echo "  make {community,standard,pro,cloud,client}-*"
 	@echo "                      - Formint edition Makefiles"
@@ -1402,10 +1407,11 @@ pos:
 	@echo "📋 POS targets:"
 	@$(MAKE) -C $(POS_DIR) help
 
-precis-main:
-	@$(MAKE) -C $(CORE_DIR) WEBSITE=precis-main
+structa-cloud:  ## Unified Precis product (projects/structa.cloud, renamed from precis-main)
+	@$(MAKE) -C $(CORE_DIR) WEBSITE=structa.cloud
 
-precis-lms: precis-main  ## Legacy alias — precis-lms merged into precis-main
+precis-main: structa-cloud  ## Legacy alias — precis-main renamed to structa.cloud
+precis-lms: structa-cloud  ## Legacy alias — precis-lms merged into structa.cloud
 
 cms-fusion:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=cms-fusion
@@ -1450,7 +1456,7 @@ application:
 
 # -----------------------------------------------------------------
 # Local development & server entry points — select the site with
-# WEBSITE=ctc (default) | precis-main | precis-dev | loop-crm | ...
+# WEBSITE=ctc (default) | structa.cloud | precis-dev | loop-crm | ...
 # -----------------------------------------------------------------
 run-dev dev run-local: ## Run the Django dev server for the selected website
 	@$(MAKE) --no-print-directory -C $(CORE_DIR) run-dev WEBSITE=$(WEBSITE)
@@ -1462,7 +1468,7 @@ dev-ctc:
 	@$(MAKE) run-dev WEBSITE=precis-ctc
 
 dev-precis:
-	@$(MAKE) run-dev WEBSITE=precis-main
+	@$(MAKE) run-dev WEBSITE=structa.cloud
 
 dev-loop-crm:
 	@$(MAKE) run-dev WEBSITE=loop-crm
@@ -1511,13 +1517,13 @@ deploy-tool:
 # Backend delegation (from the Justfile command layer, now native make)
 # -----------------------------------------------------------------
 backend-check-precis:
-	@$(MAKE) -C projects/precis/precis-main/backend check
+	@$(MAKE) -C projects/structa.cloud/backend check
 
 backend-test-precis:
-	@$(MAKE) -C projects/precis/precis-main/backend test
+	@$(MAKE) -C projects/structa.cloud/backend test
 
 backend-migrate-precis:
-	@$(MAKE) -C projects/precis/precis-main/backend migrate
+	@$(MAKE) -C projects/structa.cloud/backend migrate
 
 backend-check-ctc:
 	@$(MAKE) -C projects/precis/precis-ctc/backend check
@@ -1574,7 +1580,7 @@ venv-info:           ## Show venv status and paths
 	@echo "🐍 Python Venv Info"
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo "   Python version: $$(cat .python-version 2>/dev/null || echo 'not set')"
-	@echo "   Docker Python:  python:3.11-slim (see projects/precis/precis-main/backend/Dockerfile)"
+	@echo "   Docker Python:  python:3.11-slim (see projects/structa.cloud/backend/Dockerfile)"
 	@echo "   Venv location:  $(WORKSPACE_ROOT)/.venv"
 	@if [ -d "$(WORKSPACE_ROOT)/.venv" ]; then \
 		echo "   Venv exists:    ✅"; \

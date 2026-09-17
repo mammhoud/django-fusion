@@ -5,9 +5,9 @@ generates its own ERD from `django-extensions` `graph_models`.
 
 ## Precis Main (unified LMS + landing)
 
-**Generate:** `cd projects/precis/precis-main/backend && make erd`
+**Generate:** `cd projects/structa.cloud/backend && make erd`
 
-Output: `projects/precis/precis-main/docs/erd/precis_main_erd.png`
+Output: `projects/structa.cloud/docs/erd/precis_main_erd.png`
 
 Apps covered: `apps.content`, `apps.pages`, `apps.handlers`, `apps.auth`,
 `apps.learning`, `apps.tasks`, `apps.components`, `apps.domain`

@@ -82,6 +82,7 @@ class LoopCrmApplication(Application):
         path("settings/saved-views/", SavedViewsView.as_view(), name="settings_saved_views"),
         path("settings/import/", ImportView.as_view(), name="settings_import"),
         path("settings/audit/", AuditLogView.as_view(), name="settings_audit"),
+        path("settings/ledger/", ModuleView.as_view(module_id="workspace", page_title=_("Ledger settings"), page_kicker=_("Workspace · ledger"), page_description=_("Set currency and timezone defaults for finance records and reports.")), name="settings_ledger"),
     ]
 
     def application_context(self, request) -> dict:

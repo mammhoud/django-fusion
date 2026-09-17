@@ -1,16 +1,17 @@
 # fusion-ci: Runs Django checks + tests, Astro builds + unit tests, and
-# Django checks + tests, Astro builds + unit tests for precis-main.
+# Django checks + tests, Astro builds + unit tests for the unified Precis product
+# (projects/structa.cloud, formerly precis-main; runtime identity keeps precis-main names).
 # Failures are isolated per job.
 #
 # Triggered on changes to fusion project files, lib submodules, or this
 # workflow file.
 
-name: Fusion CI (precis-main)
+name: Fusion CI (structa.cloud)
 
 on:
   pull_request:
     paths:
-      - 'projects/precis/precis-main/**'
+      - 'projects/structa.cloud/**'
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
@@ -19,7 +20,7 @@ on:
   push:
     branches: ['**']
     paths:
-      - 'projects/precis/precis-main/**'
+      - 'projects/structa.cloud/**'
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
@@ -63,18 +64,18 @@ jobs:
         run: uv sync
 
       - name: Run Django system checks
-        run: make check WEBSITE=precis-main
+        run: make check WEBSITE=structa.cloud
 
       - name: Verify root Makefile convenience target
         working-directory: ${{ github.workspace }}
-        run: make precis-main check
+        run: make structa-cloud check
 
       - name: Run migrations
         working-directory: ${{ github.workspace }}
-        run: make precis-main migrate
+        run: make structa-cloud migrate
 
       - name: Run Django tests (pages + learning)
-        run: uv run python precis/precis-main/backend/manage.py test apps.pages apps.learning --verbosity=2
+        run: uv run python projects/structa.cloud/backend/manage.py test apps.pages apps.learning --verbosity=2
 
   # ── LMS-Fusion Frontend (Astro) ─────────────────────────────────────
 
@@ -84,7 +85,7 @@ jobs:
     timeout-minutes: 10
     defaults:
       run:
-        working-directory: projects/precis/precis-main/frontend
+        working-directory: projects/structa.cloud/frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -93,7 +94,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/precis/precis-main/frontend/package-lock.json
+          cache-dependency-path: projects/structa.cloud/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -115,7 +116,7 @@ jobs:
       REDIS_PASSWORD: ci-redis-password
     defaults:
       run:
-        working-directory: projects/precis/precis-main/frontend
+        working-directory: projects/structa.cloud/frontend
     steps:
       - uses: actions/checkout@v4
 
@@ -124,7 +125,7 @@ jobs:
         with:
           node-version: '20'
           cache: npm
-          cache-dependency-path: projects/precis/precis-main/frontend/package-lock.json
+          cache-dependency-path: projects/structa.cloud/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -148,13 +149,13 @@ jobs:
 
       - name: Build precis-main backend image
         run: |
-          docker compose -f projects/precis/precis-main/docker-compose.yml build \
-            --build-arg PROJECT_PATH=precis-main --build-arg SOURCE_PATH=precis/precis-main backend
+          docker compose -f projects/structa.cloud/docker-compose.yml build \
+            --build-arg PROJECT_PATH=precis-main --build-arg SOURCE_PATH=structa.cloud backend
 
       - name: Start precis-main backend (SQLite for CI E2E)
         run: |
           DB_TYPE=sqlite DB_HOST=127.0.0.1 \
-            docker compose -f projects/precis/precis-main/docker-compose.yml up -d --remove-orphans backend
+            docker compose -f projects/structa.cloud/docker-compose.yml up -d --remove-orphans backend
 
       - name: Wait for precis-main backend health
         run: |
@@ -167,7 +168,7 @@ jobs:
             sleep 10
           done
           echo "✗ LMS-Fusion backend did not become healthy"
-          docker compose -f projects/precis/precis-main/docker-compose.yml logs --tail=50 backend
+          docker compose -f projects/structa.cloud/docker-compose.yml logs --tail=50 backend
           exit 1
 
       # AI tests fetch homepage data from this URL. The fallback in
@@ -250,17 +251,17 @@ jobs:
 
       - name: Build precis-main backend image
         run: |
-          docker compose -f projects/precis/precis-main/docker-compose.yml build \
-            --build-arg PROJECT_PATH=precis-main --build-arg SOURCE_PATH=precis/precis-main backend
+          docker compose -f projects/structa.cloud/docker-compose.yml build \
+            --build-arg PROJECT_PATH=precis-main --build-arg SOURCE_PATH=structa.cloud backend
 
       - name: Build precis-main frontend image
         run: |
-          docker compose -f projects/precis/precis-main/docker-compose.yml build frontend
+          docker compose -f projects/structa.cloud/docker-compose.yml build frontend
 
       - name: Start precis-main services (SQLite for staging)
         run: |
           DB_TYPE=sqlite DB_HOST=127.0.0.1 \
-            docker compose -f projects/precis/precis-main/docker-compose.yml up -d --remove-orphans backend frontend
+            docker compose -f projects/structa.cloud/docker-compose.yml up -d --remove-orphans backend frontend
 
       - name: Wait for precis-main backend health
         run: |
@@ -274,14 +275,14 @@ jobs:
           done
           echo "✗ LMS-Fusion backend did not become healthy"
           echo "=== LMS-Fusion backend logs ==="
-          docker compose -f projects/precis/precis-main/docker-compose.yml logs --tail=50 backend
+          docker compose -f projects/structa.cloud/docker-compose.yml logs --tail=50 backend
           exit 1
 
       - name: Show deployment status
         run: |
           echo "=== Docker Services Status ==="
           echo ""
-          docker compose -f projects/precis/precis-main/docker-compose.yml ps
+          docker compose -f projects/structa.cloud/docker-compose.yml ps
           echo ""
           echo "=== Health Checks ==="
           curl -s http://127.0.0.1:5074/health/ && echo " — LMS-Fusion"

@@ -123,7 +123,7 @@ export class BoltApiClient {
   constructor(options: BoltApiClientOptions = {}) {
     this.baseUrl = (options.baseUrl ?? environmentValue('PUBLIC_BACKEND_URL', '')).replace(/\/$/, '');
     this.apiPrefix = normalizePrefix(options.apiPrefix ?? environmentValue('PUBLIC_API_PREFIX', '/bolt'));
-    this.fallbackPrefix = normalizePrefix(options.fallbackPrefix ?? environmentValue('PUBLIC_API_FALLBACK_PREFIX', '/api/v1'));
+    this.fallbackPrefix = normalizePrefix(options.fallbackPrefix ?? environmentValue('PUBLIC_API_FALLBACK_PREFIX', '/apis/core'));
     this.storage = options.storage ?? browserStorage();
     this.storageKey = options.storageKey ?? DEFAULT_STORAGE_KEY;
     this.fetchImpl = options.fetchImpl ?? fetch;
@@ -317,7 +317,7 @@ export class BoltApiClient {
       if (deprecation === 'true') {
         const sunset = response.headers.get('Sunset') ?? 'unknown';
         console.warn(
-          `[Loop CRM] /api/v1/ road is deprecated (Sunset: ${sunset}). ` +
+          `[Loop CRM] compatibility API road is deprecated (Sunset: ${sunset}). ` +
             `Migrate to /apis/core/ (named road) or /bolt/ (Bolt runtime).`,
         );
       }

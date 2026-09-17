@@ -29,8 +29,9 @@ links:
 
 # 🎯 Precis (precis-main) — Feature Tracking
 
-> **Product history:** Was "LMS (Learning Management System)" — renamed 2026-09-10 after the precis-landing + precis-lms merge into `projects/precis/precis-main/`.
-> **Last updated:** 2026-09-12
+> **Product history:** Was "LMS (Learning Management System)" — renamed 2026-09-10 after the precis-landing + precis-lms merge into `projects/structa.cloud/`.
+> **Command contract:** [`Precis Main Fusion render-flow plan`](../../plans/repository/precis-main-render-flow.md) · [`HTML reference`](../../precis/landing-fusion-render-flow.html)
+> **Last updated:** 2026-09-15
 > **Hub:** [`feature-tracking.md`](../feature-tracking.md) — lifecycle, status definitions, and the per-product index.
 
 ---

@@ -1,6 +1,6 @@
 # Precis (precis-main) — Documentation Index
 
-> **Canonical product path:** `projects/precis/precis-main/`
+> **Canonical product path:** `projects/structa.cloud/`
 > **Runtime identity:** `precis-main` · **Dispatcher aliases:** `WEBSITE=precis-main`, `WEBSITE=precis-lms`, `WEBSITE=precis-landing`, `WEBSITE=structa`, `WEBSITE=lms`, `WEBSITE=core`
 > **Main docs:** [`docs/precis/`](../../../../docs/precis/README.md)
 

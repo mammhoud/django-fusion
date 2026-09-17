@@ -125,7 +125,7 @@ graph LR
    - `configured_language_codes()` — settings-level validation
    - `normalize_language(value)` — BCP-47 normalization with regional code handling
 
-2. **Precis Main** (`projects/precis/precis-main/backend/settings.py`) and **Precis Landing** (`projects/precis/precis-landing/backend/settings.py`) now:
+2. **Precis Main** (`projects/structa.cloud/backend/settings.py`) and **Precis Landing** (`projects/precis/precis-landing/backend/settings.py`) now:
    - Use `DefaultLanguageMiddleware` from django-fusion (no more duplicate `LandingLocaleMiddleware`)
    - Register `/i18n/setlang/` via the shared API
    - Share the same `FUSION_LANGUAGES` catalog

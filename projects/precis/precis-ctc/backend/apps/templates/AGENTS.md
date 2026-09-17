@@ -1,8 +1,8 @@
 # Precis Backend App Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/backend/apps/templates/`
+**Scope:** `projects/structa.cloud/backend/apps/templates/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. This is
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. This is
 an app-owned template scope within Precis. New templates should normally live
 in the specific app directory that owns their view/model, for example:
 

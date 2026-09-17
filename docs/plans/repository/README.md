@@ -12,6 +12,10 @@ Cross-project repository-level implementation and migration plans.
 | [active-project-closeout-2026-08-11.md](active-project-closeout-2026-08-11.md) | Project closeout |
 | [ceptor-ai-cleanup.md](ceptor-ai-cleanup.md) | Ceptor-AI cleanup |
 | [ctc-research-publish-2026-08-18.md](ctc-research-publish-2026-08-18.md) | CTC Research publish pass |
+| [blinko-surrealdb-enhancements.md](blinko-surrealdb-enhancements.md) | Blinko team, AI, and SurrealDB enhancement roadmap — **current** (Phases 1/2/5 + first Phase 4 slices shipped) |
+| [blinko-surrealdb-backup-runbook.md](blinko-surrealdb-backup-runbook.md) | Engine backup/restore runbook for the planing workspace |
+| [blinko-surrealdb-migration.md](blinko-surrealdb-migration.md) · [-m2](blinko-surrealdb-migration-m2.md) · [-m3](blinko-surrealdb-migration-m3.md) · [-m4](blinko-surrealdb-migration-m4.md) | **RETIRED 2026-09-17** — vendored-checkout Prisma→Surreal migration; the tree was replaced by the SurrealDB-native runtime |
+| [precis-main-render-flow.md](precis-main-render-flow.md) | Precis Main (now `projects/structa.cloud`) Fusion render flow |
 | [enhancement-plans.md](enhancement-plans.md) | Enhancement plans |
 | [fix-deploy-webpack-cleanup.md](fix-deploy-webpack-cleanup.md) | Deploy + webpack cleanup |
 | [header-footer-alignment-and-e2e-plan.md](header-footer-alignment-and-e2e-plan.md) | Header/footer alignment + E2E |

@@ -8,7 +8,7 @@ Related Plans: project-workspace
 
 # Precis (Unified) — LMS + Landing Catalog Shell
 
-> **Description:** The merged Precis product (`projects/precis/precis-main/`) — LMS courses/enrollment/progress/profile merged with the landing marketing/catalog shell.
+> **Description:** The merged Precis product (`projects/structa.cloud/`) — LMS courses/enrollment/progress/profile merged with the landing marketing/catalog shell.
 
 ## Scope
 
@@ -24,7 +24,7 @@ Related Plans: project-workspace
 ## Evidence
 
 - 🟡 Active (merge in progress)
-- Dispatcher: `WEBSITE=precis-main` (aliases `precis-lms`/`precis-landing` map to it)
+- Dispatcher: `WEBSITE=structa.cloud` (aliases `precis-lms`/`precis-landing` map to it)
 
 ## Related
 

@@ -21,7 +21,7 @@ from django.utils import timezone
 from apps.attribution.models import AttributionModel, AttributionTouchpoint
 from apps.billing.models import BillingAccount, Plan
 from apps.core.models import UserProfile, Workspace
-from apps.crm.models import Company, Contact, Deal, Pipeline, PipelineStage
+from apps.crm.models import Activity, Company, Contact, Deal, Pipeline, PipelineStage
 from apps.finance.models import Invoice, Payment, RevenueEvent
 from apps.marketing.models import Campaign, Post, PostAnalytics, SocialChannel
 
@@ -153,6 +153,37 @@ def seed_workspace(workspace: Workspace, owner) -> dict[str, int]:
     counts["companies"] = len(company_map)
     counts["contacts"] = len(contact_map)
     counts["deals"] = len(deal_map)
+
+    # ── Activities (CRM timeline showcase) ─────────────────────────────
+    activity_seed = [
+        ("Enterprise rollout", "meeting", "Executive rollout review", "completed", -5),
+        ("Enterprise rollout", "email", "Send implementation handoff", "completed", -3),
+        ("Platform expansion", "call", "Confirm security requirements", "completed", -2),
+        ("Team plan", "task", "Prepare negotiation brief", "pending", 1),
+        ("Design retainer", "note", "Capture proposal feedback", "pending", 2),
+        ("Pilot program", "meeting", "Pilot success criteria", "pending", 4),
+        ("API migration", "email", "Share migration checklist", "pending", 3),
+        ("Growth plan", "social", "Reply to launch interaction", "pending", 5),
+    ]
+    activities = 0
+    for deal_name, activity_type, subject, status, days_offset in activity_seed:
+        deal = deal_map[deal_name]
+        Activity.objects.get_or_create(
+            workspace=workspace,
+            deal=deal,
+            subject=subject,
+            defaults={
+                "contact": deal.contact,
+                "activity_type": activity_type,
+                "description": f"CRM timeline entry for {deal.name}.",
+                "scheduled_at": timezone.now() + timezone.timedelta(days=days_offset, hours=9),
+                "completed_at": timezone.now() if status == "completed" else None,
+                "status": status,
+                "created_by": owner,
+            },
+        )
+        activities += 1
+    counts["activities"] = activities
 
     # ── Posts (lifecycle showcase) ──────────────────────────────────────
     channel_by_platform = {

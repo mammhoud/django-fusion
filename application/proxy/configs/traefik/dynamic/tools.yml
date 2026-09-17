@@ -7,7 +7,7 @@
 #   tools.structa.cloud/mailpit/    → mailpit:8025
 #   tools.structa.cloud/grafana/    → grafana:3000
 #   tools.structa.cloud/docs/       → docus:3000
-#   tools.structa.cloud/notes/      → blinko:1111
+#   tools.structa.cloud/notes/      → planing:1111
 #
 # The tools-proxy Nginx (docker-compose.nginx.yml) performs the path-based
 # split to each container by name on the external `common` network, so tools

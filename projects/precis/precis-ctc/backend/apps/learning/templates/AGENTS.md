@@ -1,8 +1,8 @@
 # Precis Learning App Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/backend/apps/learning/templates/`
+**Scope:** `projects/structa.cloud/backend/apps/learning/templates/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. These
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. These
 are templates owned by the Precis learning app.
 
 Preserve course/catalog, enrollment, progress, certificate, search, and learner

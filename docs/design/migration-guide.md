@@ -52,7 +52,7 @@ AFTER:   product imports theme + engine → components read --fu-token-*
 ### Examples
 
 A product that currently styles everything locally (e.g.
-`projects/precis/precis-main/assets/styles/`) migrates in four steps:
+`projects/structa.cloud/assets/styles/`) migrates in four steps:
 
 ```scss
 // 1. Import the shared theme + engine from the product entry point

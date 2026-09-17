@@ -85,7 +85,7 @@ graph LR
 
 - "`documents/themes`" maps to two homes: per-project `theme/` (source of truth)
   and a root `themes/` samples library. No `documents/` directory is created.
-- "rock lms" resolved to **Precis LMS** (`projects/precis/precis-main/`).
+- "rock lms" resolved to **Precis LMS** (`projects/structa.cloud/`).
 - The root `structa.cloud/` directory exists but is **empty**; M4.1 must confirm
   the theme home before anything is created there.
 - Nothing here runs migrations, provisions tenants, or publishes externally

@@ -16,6 +16,7 @@ marketing platform (Twenty DNA + Postiz DNA) on Django + django-fusion.
 | [Setup & Build](SETUP_AND_BUILD.md) | Step-by-step startup, backend + frontend setup, build and run commands |
 | [Design System](DESIGN_SYSTEM.md) | Industrial-brutalist / tactical telemetry design tokens, typography, layout, components |
 | [Fusion Forms & Tables](FUSION_FORMS_TABLES.md) | Fusion table/form contract backed by django-fusion RowGenerator |
+| [Architecture & Extensions](ARCHITECTURE_AND_EXTENSIONS.md) | Twenty/Postiz parity, request diagrams, pipeline/workflow ordering, custom fields/forms, and Wagtail authoring |
 
 ## 🔒 Startup Strategy
 
@@ -30,5 +31,10 @@ marketing platform (Twenty DNA + Postiz DNA) on Django + django-fusion.
 ## Remarks & Notes
 
 - Render-first: Django renders data screens (fusion tables/forms); the Astro
-  shell proxies `/fragments`, `/api`, `/bolt`, `/accounts`.
+  shell requests `/fragments`, `/apis/core`, `/bolt`, and `/accounts` through
+  the configured same-origin roads.
+- No fabricated frontend data: request failures show an explicit unavailable
+  state, while successful zero-row responses show the page's no-data state.
+- The architecture guide includes Mermaid request, HTMX/Alpine, realtime,
+  worker, domain, admin, and deployment diagrams.
 - See the main docs README for the full env/config contract and command table.

@@ -1,6 +1,6 @@
 # Precis — Setup & Build Guide
 
-> **Path:** `projects/precis/precis-main/`
+> **Path:** `projects/structa.cloud/`
 > **Stack:** Astro 5 + Tailwind CSS 4 + HTMX + Alpine.js (frontend) ·
 > Django 5.2 + Wagtail 7.4 + django-fusion (backend)
 > **Backend port:** 8074 · **Frontend port:** 4321 (Astro default)
@@ -34,21 +34,21 @@ python3 --version && uv --version && node --version && npm --version
 ### 2.1 Frontend (Astro)
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 just install            # cd frontend && npm install
 ```
 
 ### 2.2 Backend (Django + Wagtail)
 
 ```bash
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 just install            # uv sync in the workspace (projects/)
 ```
 
 ### 2.3 Webpack assets (Django-side SCSS/JS)
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make install-assets     # npm install at project root
 make build-assets       # webpack production + skeleton manifest
 make build-assets-dev   # webpack development (source maps)
@@ -59,7 +59,7 @@ make build-assets-dev   # webpack development (source maps)
 ## 3. Database & seed
 
 ```bash
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make migrate            # makemigrations --noinput + migrate --noinput
 make seed               # seed_pages — site + full page tree (idempotent)
 make superuser          # interactive admin user
@@ -75,7 +75,7 @@ landing, blog, brand, and learning surfaces. Re-running is safe.
 ### 4.1 Backend (Django + Wagtail)
 
 ```bash
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make dev                # http://localhost:8074 — Wagtail admin at /admin/
 ```
 
@@ -84,14 +84,14 @@ make dev                # http://localhost:8074 — Wagtail admin at /admin/
 In a second terminal:
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make dev                # http://localhost:4321
 ```
 
 ### 4.3 Root dispatcher
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make backend-dev        # Django dev server
 make backend-check      # django system checks
 make backend-test       # apps.pages tests
@@ -103,7 +103,7 @@ make backend-help       # list all backend targets
 ## 5. Verification
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make check              # astro check
 make backend-check      # django check
 make backend-test       # manage.py test apps.pages
@@ -122,7 +122,7 @@ make e2e
 ## 6. Production build
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make build              # install-assets → build-assets → css → astro build
 make build-prod         # explicit alias for CI
 make preview            # astro preview of the built frontend
@@ -139,7 +139,7 @@ What `make build` runs:
 Backend static + production server:
 
 ```bash
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make collectstatic      # collectstatic --noinput
 make server             # gunicorn on 0.0.0.0:8074 (WSGI)
 ```
@@ -166,14 +166,14 @@ make server             # gunicorn on 0.0.0.0:8074 (WSGI)
 Run the seeder — `migrate` alone does not create the page tree:
 
 ```bash
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make seed
 ```
 
 ### Backend styles missing
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make css && make build-assets
 ```
 

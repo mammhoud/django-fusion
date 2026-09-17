@@ -35,8 +35,8 @@ Important mappings include:
 
 | `WEBSITE` value | Current code | Meaning |
 |---|---|---|
-| `precis-lms` | `projects/precis/precis-main/` | Legacy alias — merged into precis-main |
-| `precis-landing` | `projects/precis/precis-main/` | Legacy alias — merged into precis-main (dir kept) |
+| `precis-lms` | `projects/structa.cloud/` | Legacy alias — merged into precis-main |
+| `precis-landing` | `projects/structa.cloud/` | Legacy alias — merged into precis-main (dir kept) |
 | `loop-crm` | `projects/loop-crm/` | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | `cypercloud` (where supported) | `projects/syntara/` | Historical product name |
 | `ctc`, `precis-ctc` | `projects/precis/precis-ctc/` | Standalone medical research center site |
@@ -81,9 +81,9 @@ Avoid importing one product's settings into another product.
 
 ## Product guidance
 
-- Precis: `precis/precis-main/backend/AGENTS.md`; backend app code is under
-  `precis/precis-main/backend/apps/`, with product assets beside `backend/` and the Astro
-  frontend under `precis/precis-main/frontend/`.
+- Precis: `structa.cloud/backend/AGENTS.md`; backend app code is under
+  `structa.cloud/backend/apps/`, with product assets beside `backend/` and the Astro
+  frontend under `structa.cloud/frontend/`.
 - Precis Landing: `precis/precis-landing/AGENTS.md`; keep the Astro frontend and
   Django/Wagtail backend contracts synchronized.
 - CTC Research: `precis/precis-ctc/AGENTS.md`; standalone medical research
@@ -95,7 +95,7 @@ Avoid importing one product's settings into another product.
 - Loop-CRM: `loop-crm/README.md`; keep the CRM/marketing/attribution app
   boundaries separate, use `django_fusion.*` components (no django-cotton), and
   treat `apps/tasks/` (Dramatiq) as the sole background-worker runtime.
-- `precis-lms/` was merged into `precis/precis-main` and removed; git history is
+- `precis-lms/` was merged into `structa.cloud` and removed; git history is
   the archive. New learning features belong in `precis-main`.
 
 ## Project-level conventions

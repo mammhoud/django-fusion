@@ -134,7 +134,7 @@ the default.
 ```bash
 cd projects
 make check WEBSITE=precis-ctc     # backend check for the selected site
-make test  WEBSITE=precis-main    # backend test
+make test  WEBSITE=structa.cloud    # backend test
 make run-dev WEBSITE=precis-ctc   # dev servers
 make migrate WEBSITE=loop-crm
 ```
@@ -150,7 +150,7 @@ render the merged YAML + `.env` + env configuration and the static-files plan
 (read → output → deploy). See [`guides/config-cascade.md`](guides/config-cascade.md).
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make config-show     # merged cascade + static-files plan (read/output/deploy)
 make config-check    # validate required identity keys resolve
 make css             # compile Tailwind design system → assets/static/css/fusion.css

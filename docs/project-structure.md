@@ -98,7 +98,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 │   ├── manage.py                           #   Shared Django CLI entry
 │   │
 │   ├── precis/                             # 📘 Precis group — LMS, marketing, research
-│   │   ├── precis-main/                    #     Precis LMS (WEBSITE=precis-main)
+│   │   ├── precis-main/                    #     Precis LMS (WEBSITE=structa.cloud)
 │   │   │   ├── backend/                    #       Django + Wagtail backend
 │   │   │   ├── assets/                     #       Templates, static, media
 │   │   │   └── frontend/                   #       Astro frontend shell
@@ -182,7 +182,7 @@ structa.cloud/                              # Root: monorepo for Structa Cloud p
 
 | Product | Path | Stack | Key AGENTS.md |
 |---|---|---|---|
-| **Precis LMS** | `projects/precis/precis-main/` | Django + Wagtail + django-fusion | `projects/precis/precis-main/backend/AGENTS.md` |
+| **Precis LMS** | `projects/structa.cloud/` | Django + Wagtail + django-fusion | `projects/structa.cloud/backend/AGENTS.md` |
 | **Precis Landing** | `projects/precis/precis-landing/` | Astro 5 + Django + Wagtail | `projects/precis/precis-landing/AGENTS.md` |
 | **CTC Research** | `projects/precis/precis-ctc/` | Django + Wagtail + Astro | `projects/precis/precis-ctc/AGENTS.md` |
 | **Syntara** | `projects/syntara/` | Django + CeptorAI + Ollama | `projects/syntara/AGENTS.md` |
@@ -224,7 +224,7 @@ uv sync
 
 ```bash
 # Precis LMS
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make check && make migrate && make seed
 
 # Precis Landing
@@ -274,7 +274,7 @@ make dev-frontend
 
 ```bash
 # Per-product
-cd projects/precis/precis-main/backend && make test
+cd projects/structa.cloud/backend && make test
 cd projects/precis/precis-landing && make backend-test
 cd projects/loop-crm/backend && make test
 cd projects/formints/formint-cloud && make test
@@ -284,7 +284,7 @@ cd libs/django-fusion && uv run pytest
 
 # Workspace dispatcher
 cd projects && make test WEBSITE=loop-crm
-cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis-main
+cd projects && make check WEBSITE=structa.cloud   # maps to projects/structa.cloud
 ```
 
 ---
@@ -293,11 +293,11 @@ cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis
 
 | Legacy Name | Current Name | Current Path | Notes |
 |---|---|---|---|
-| `precis-lms` / `lms` | Precis LMS (alias) | `projects/precis/precis-main/` | `WEBSITE=precis-main` dispatcher alias |
+| `precis-lms` / `lms` | Precis LMS (alias) | `projects/structa.cloud/` | `WEBSITE=structa.cloud` dispatcher alias |
 | `precis-landing` | Precis Landing | `projects/precis/precis-landing/` | `WEBSITE=precis-landing` |
 | `precis-ctc` / `ctc` | CTC Research | `projects/precis/precis-ctc/` | `WEBSITE=precis-ctc` |
 | `cms-fusion` | Merged | — | Split into Precis + Precis Landing |
-| `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-main/` | Resume builder merged |
+| `portfolio` / `VResume` | Merged into Precis | `projects/structa.cloud/` | Resume builder merged |
 | `cypercloud` | Syntara | `projects/syntara/` | Runtime alias preserved |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | Formint Community | `projects/formints/formint-community/` | Offline-first edition |
 | `formint-standard` | Formint Standard | `projects/formints/formint-standard/` | |
@@ -321,7 +321,7 @@ cd projects && make check WEBSITE=precis-main   # maps to projects/precis/precis
   `precis-main/` (Precis LMS), `precis-landing/` (Precis Landing) and
   `precis-ctc/` (CTC Research). Their shared Django settings live in
   `projects/precis/configs/`.
-  The **runtime identity is unchanged** — use `WEBSITE=precis-main`,
+  The **runtime identity is unchanged** — use `WEBSITE=structa.cloud`,
   `WEBSITE=precis-landing`, or `WEBSITE=precis-ctc` and let
   `projects/Makefile` resolve the filesystem path.
 - **POS editions use explicit current names:** `formint-community/`,

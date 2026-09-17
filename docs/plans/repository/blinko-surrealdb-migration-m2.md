@@ -1,7 +1,12 @@
 # Blinko — Prisma → SurrealDB Migration, Milestone 2 (Content Graph)
 
 > **Tags:** #blinko #migration #surrealdb #prisma #m2
-> **Last updated:** 2026-08-27 | **Status:** Complete — repos + migration script + tests + router wiring done, live-verified
+> **Last updated:** 2026-09-17 | **Status:** **RETIRED** (was: Complete — repos
+> + migration script + tests + router wiring done, live-verified). The vendored
+> `mammhoud/blinko` checkout this milestone patched was replaced by the
+> SurrealDB-native runtime at `application/tools/planing/runtime/`; there is no
+> Prisma content graph left to mirror. Current roadmap:
+> [`blinko-surrealdb-enhancements.md`](blinko-surrealdb-enhancements.md).
 > **Scope:** Extend the M1 Surreal migration to the content graph — `notes`,
 > `attachments`, `tag`, `tagsToNote`, `noteReference`, `comments` — converting
 > integer FK ids to Surreal record references. Auth/accounts (M1) stays as-is.

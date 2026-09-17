@@ -24,7 +24,7 @@ structa.cloud/
 ├── docs/                                   # 📚 مشروع التوثيق (Docus)
 ├── projects/                               # 🔵 كل كود المنتجات + إعداد Django المشترك
 │   ├── precis/                             # 📘 مجموعة Precis — LMS والتسويق والبحث
-│   │   ├── precis-main/                    #     Precis LMS (WEBSITE=precis-main)
+│   │   ├── precis-main/                    #     Precis LMS (WEBSITE=structa.cloud)
 │   │   ├── precis-landing/                 #     Precis Landing (WEBSITE=precis-landing)
 │   │   ├── precis-ctc/                     #     CTC Research (WEBSITE=precis-ctc)
 │   │   ├── assets/                         #     قوالب/ملفات ثابتة مشتركة للمجموعة
@@ -59,7 +59,7 @@ structa.cloud/
 
 | المنتج | المسار | التقنية | AGENTS.md الرئيسي |
 |---|---|---|---|
-| **Precis LMS** | `projects/precis/precis-main/` | Django + Wagtail + django-fusion | `projects/precis/precis-main/backend/AGENTS.md` |
+| **Precis LMS** | `projects/structa.cloud/` | Django + Wagtail + django-fusion | `projects/structa.cloud/backend/AGENTS.md` |
 | **Precis Landing** | `projects/precis/precis-landing/` | Astro 5 + Django + Wagtail | `projects/precis/precis-landing/AGENTS.md` |
 | **CTC Research** | `projects/precis/precis-ctc/` | Django + Wagtail + Astro | `projects/precis/precis-ctc/AGENTS.md` |
 | **Syntara** | `projects/syntara/` | Django + CeptorAI + Ollama | `projects/syntara/AGENTS.md` |
@@ -98,7 +98,7 @@ cd structa.cloud
 uv sync
 
 # Precis LMS
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make check && make migrate && make seed
 
 # Precis Landing
@@ -148,7 +148,7 @@ make dev-frontend
 
 ```bash
 # لكل منتج
-cd projects/precis/precis-main/backend && make test
+cd projects/structa.cloud/backend && make test
 cd projects/precis/precis-landing && make backend-test
 cd projects/loop-crm/backend && make test
 cd projects/formints/formint-cloud && make test
@@ -158,7 +158,7 @@ cd libs/django-fusion && uv run pytest
 
 # موزّع مساحة العمل
 cd projects && make test WEBSITE=loop-crm
-cd projects && make check WEBSITE=precis-main
+cd projects && make check WEBSITE=structa.cloud
 ```
 
 ---
@@ -167,11 +167,11 @@ cd projects && make check WEBSITE=precis-main
 
 | الاسم القديم | الاسم الحالي | المسار الحالي | ملاحظات |
 |---|---|---|---|
-| `precis-lms` / `lms` | Precis LMS (اسم بديل) | `projects/precis/precis-main/` | اسم بديل للموزّع `WEBSITE=precis-main` |
+| `precis-lms` / `lms` | Precis LMS (اسم بديل) | `projects/structa.cloud/` | اسم بديل للموزّع `WEBSITE=structa.cloud` |
 | `precis-landing` | Precis Landing | `projects/precis/precis-landing/` | `WEBSITE=precis-landing` |
 | `precis-ctc` / `ctc` | CTC Research | `projects/precis/precis-ctc/` | `WEBSITE=precis-ctc` |
 | `cms-fusion` | دُمج | — | انقسم إلى Precis + Precis Landing |
-| `portfolio` / `VResume` | دُمج في Precis | `projects/precis/precis-main/` | دُمج منشئ السيرة |
+| `portfolio` / `VResume` | دُمج في Precis | `projects/structa.cloud/` | دُمج منشئ السيرة |
 | `cypercloud` | Syntara | `projects/syntara/` | اسم التشغيل محفوظ |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | Formint Community | `projects/formints/formint-community/` | إصدار offline-first |
 | `pos-solo` / `pos-full` / `formint` / `formint-pro` | Formint Professional | `projects/formints/formint-pro/` | إصدارات مدمجة |
@@ -187,7 +187,7 @@ cd projects && make check WEBSITE=precis-main
 
 - **LMS/التسويق/البحث مجموعة واحدة:** `projects/precis/` تضم `precis-main/`
   و`precis-landing/` و`precis-ctc/`، وإعدادات Django المشتركة في
-  `projects/precis/configs/`. الهوية التشغيلية ثابتة — استخدم `WEBSITE=precis-main`
+  `projects/precis/configs/`. الهوية التشغيلية ثابتة — استخدم `WEBSITE=structa.cloud`
   أو `WEBSITE=precis-landing` أو `WEBSITE=precis-ctc` واترك `projects/Makefile`
   يحلّ مسار نظام الملفات.
 - **إصدارات POS تستخدم أسماء حالية صريحة:** `formint-community/`,

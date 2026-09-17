@@ -33,7 +33,7 @@ links:
 <!-- AI-generated: review needed -->
 
 This is the current deployment contract for the unified Precis product. The
-canonical application is `projects/precis/precis-main/`; the historical
+canonical application is `projects/structa.cloud/`; the historical
 `precis-lms` and `precis-landing` names are compatibility aliases, not separate
 runtime stacks.
 
@@ -56,10 +56,10 @@ precis-main-backend
 The application services join the external `common` and `traefik-net` networks.
 The source of truth is:
 
-- Compose: `projects/precis/precis-main/docker-compose.yml`
+- Compose: `projects/structa.cloud/docker-compose.yml`
 - Structa router: `application/proxy/configs/traefik/dynamic/precis-landing.yml`
 - LMS router: `application/proxy/configs/traefik/dynamic/lms-fusion.yml`
-- Django URLs: `projects/precis/precis-main/backend/urls.py`
+- Django URLs: `projects/structa.cloud/backend/urls.py`
 
 ## Traefik service targets
 
@@ -102,7 +102,7 @@ configuration.
 ```bash
 # Read-only syntax validation
 docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml config -q
+  -f projects/structa.cloud/docker-compose.yml config -q
 python3 application/proxy/scripts/validate-traefik-config.py
 
 docker compose --env-file application/proxy/.env \
@@ -110,11 +110,11 @@ docker compose --env-file application/proxy/.env \
 
 # Build and start the unified stack
 docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml up -d --build
+  -f projects/structa.cloud/docker-compose.yml up -d --build
 
 # Confirm service health
 docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml ps
+  -f projects/structa.cloud/docker-compose.yml ps
 ```
 
 Verify the public routes after the backend and frontend health checks pass:

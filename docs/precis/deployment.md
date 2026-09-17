@@ -29,7 +29,7 @@ links:
 
 # 🚀 Precis — Deployment
 
-> **Canonical project:** `projects/precis/precis-main/`
+> **Canonical project:** `projects/structa.cloud/`
 > **Compatibility aliases:** `WEBSITE=precis-lms`, `WEBSITE=precis-landing`,
 > `WEBSITE=lms`, and `WEBSITE=structa` resolve to the unified Precis Main
 > product where supported.
@@ -40,7 +40,7 @@ Wagtail backend and one Astro frontend. There is no separate production
 
 ## Docker Compose services
 
-Source: `projects/precis/precis-main/docker-compose.yml`.
+Source: `projects/structa.cloud/docker-compose.yml`.
 
 | Service | Container | Internal port | Purpose |
 |---|---|---:|---|
@@ -54,36 +54,68 @@ secret values come from the root `.env` or deployment secret store.
 
 ## Build and deploy
 
-Run from the repository root:
+Run project commands from `projects/structa.cloud/` so the environment choice is explicit:
+
+```bash
+# Local overlay: publishes Django on :8074 and Astro on :3000
+make validate-local
+make deploy-local
+
+# Production base stack: no local override; root .env is required
+make validate-production
+make deploy-production
+```
+
+The same workflows can be called from the repository dispatcher:
+
+```bash
+cd projects
+make show-config WEBSITE=structa.cloud
+make check WEBSITE=structa.cloud
+make test WEBSITE=structa.cloud
+make -C structa.cloud validate-production
+make -C structa.cloud deploy-production
+```
+
+Nx exposes the same project Makefile contract through the `precis-main-assets` project:
+
+```bash
+npx nx run precis-main-assets:check
+npx nx run precis-main-assets:test
+npx nx run precis-main-assets:build
+npx nx run precis-main-assets:deploy-local
+npx nx run precis-main-assets:deploy-production
+```
+
+For direct Compose inspection from the repository root:
 
 ```bash
 # Validate interpolation and YAML without changing containers
-docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml config -q
+docker compose --env-file .env \\
+  -f projects/structa.cloud/docker-compose.yml config -q
 
-# Build and start backend, frontend, and scheduler
-docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml up -d --build
+# Build and start the production stack
+docker compose --env-file .env \\
+  -f projects/structa.cloud/docker-compose.yml up -d --build --remove-orphans
 
 # Inspect health and startup state
-docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml ps
+docker compose --env-file .env \\
+  -f projects/structa.cloud/docker-compose.yml ps
 ```
 
-The backend startup command applies migrations, collects static files, seeds
-idempotent pages/learning data, and starts Gunicorn. Do not use the startup seed
-command as a substitute for a reviewed production fixture reload.
+The backend startup command applies migrations, collects static files, seeds idempotent pages/learning data, and starts Gunicorn. Do not use the startup seed command as a substitute for a reviewed production fixture reload.
 
 Project-local delegation remains available:
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make backend-check
 make backend-test
 make build
 ```
 
 ## Proxy routing
+
 
 Traefik dynamic configuration is owned by `application/proxy/`:
 

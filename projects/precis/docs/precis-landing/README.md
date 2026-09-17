@@ -1,7 +1,7 @@
 # Precis Precis Landing — Documentation
 
 > **Legacy copy of the Precis Landing marketing site.**
-> **Runtime identity:** `precis-landing` · **Canonical product:** `projects/precis/precis-main/`
+> **Runtime identity:** `precis-landing` · **Canonical product:** `projects/structa.cloud/`
 > **Dispatcher aliases:** `WEBSITE=precis-landing` and `WEBSITE=precis-lms` both map to `precis-main`.
 
 <!-- AI-generated: review needed -->
@@ -40,5 +40,5 @@ only the files that are genuinely landing-specific and points at the canonical d
   source. Edit them there.
 - Do not re-copy shared docs into this directory — link to
   `../precis-main/` instead.
-- Per the repository map, `precis/precis-main` is the current filesystem
+- Per the repository map, `structa.cloud` is the current filesystem
   location for the unified product; this directory is a kept legacy copy.

@@ -23,7 +23,7 @@ Related Goals: business-goal, growth-goal
 
 | Project | Path | Domain | Purpose |
 |---------|------|--------|---------|
-| **Precis (LMS + landing, unified)** | `projects/precis/precis-main/` | structa.cloud | Learning management + marketing catalog |
+| **Precis (LMS + landing, unified)** | `projects/structa.cloud/` | structa.cloud | Learning management + marketing catalog |
 | **CTC Research** | `projects/precis/precis-ctc/` | ctc-research.com | Research publishing |
 | **Syntara (Cypercloud)** | `projects/syntara/` | — | AI chat customizer (runtime alias `cypercloud`) |
 | **Loop-CRM** | `projects/loop-crm/` | crm.structa.cloud | CRM + social scheduling |

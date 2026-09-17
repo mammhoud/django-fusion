@@ -33,7 +33,7 @@ The agenda is the team's delivery + memory layer:
   as duplicates. `slugFor()` now trims leading separators after sanitizing; a full
   run is idempotent (`0 rendered, 60 skipped, 0 failed`) and writes no files. (2)
   Fourteen unresolved relative links in `docs/plans/` were repointed: `precis-lms`
-  and `landi` targets now resolve to `projects/precis/precis-main/` and
+  and `landi` targets now resolve to `projects/structa.cloud/` and
   `projects/precis/precis-landing/`, the `pos-e2e` links gained their missing
   directory level, the deleted `docs/plans/pos/cloud-plan.md` and
   `precis-lms`/`cms-fusion` migration plans are de-linked with their removal date,

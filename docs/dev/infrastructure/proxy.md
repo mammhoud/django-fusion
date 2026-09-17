@@ -67,7 +67,7 @@ LETSENCRYPT_EMAIL=admin@structa.cloud    # Let's Encrypt account email (HTTP-01)
 ## Precis Main compatibility routing
 
 `structa.cloud` and `lms.structa.cloud` are served by the unified
-`projects/precis/precis-main/` stack. Both dynamic files target
+`projects/structa.cloud/` stack. Both dynamic files target
 `precis-main-backend:8074` and `precis-main-frontend:3000`; they do not target
 legacy `precis-landing-*` or `precis-lms-*` containers.
 

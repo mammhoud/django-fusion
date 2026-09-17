@@ -16,7 +16,7 @@ navigation:
 
 تسجيل الدخول بـ Passkey مُفعَّل عبر وحدة `allauth.mfa` الخاصة بـ django-allauth.
 الإعدادات مضبوطة في `projects/cms-fusion/configs/base/auth.py` و
-`projects/precis/precis-main/configs/base/auth.py` (مشتركة عبر كل المواقع):
+`projects/structa.cloud/configs/base/auth.py` (مشتركة عبر كل المواقع):
 
 ```python
 # allauth.mfa يجب أن يكون في INSTALLED_APPS
@@ -37,9 +37,9 @@ MFA_SUPPORTED_TYPES = ["totp", "webauthn", "recovery_codes"]
 | الملف | التغيير |
 |-------|---------|
 | `projects/cms-fusion/configs/base/apps.py` | أُضيف `"allauth.mfa"` إلى `THIRD_PARTY_APPS` |
-| `projects/precis/precis-main/configs/base/apps.py` | أُضيف `"allauth.mfa"` إلى `THIRD_PARTY_APPS` |
+| `projects/structa.cloud/configs/base/apps.py` | أُضيف `"allauth.mfa"` إلى `THIRD_PARTY_APPS` |
 | `projects/cms-fusion/configs/base/auth.py` | `MFA_PASSKEY_LOGIN_ENABLED` → `True`; أُضيف `"webauthn"` إلى `MFA_SUPPORTED_TYPES` |
-| `projects/precis/precis-main/configs/base/auth.py` | نفسه أعلاه |
+| `projects/structa.cloud/configs/base/auth.py` | نفسه أعلاه |
 | `tests/unit/test_auth_features.py` | أُضيف اختبار `test_passkey_mfa_enabled` |
 
 ## متطلبات المتصفح

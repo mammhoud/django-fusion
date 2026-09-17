@@ -48,7 +48,7 @@ Workspace · Microsoft 365
 
 ## 2. 🎓 منصة Precis — منصة التجربة الرقمية الموحدة
 
-> **المسار:** `projects/precis/precis-main/` (نظام تعلم + هبوط منشور) ·
+> **المسار:** `projects/structa.cloud/` (نظام تعلم + هبوط منشور) ·
 > **الاستراتيجية:** [`/docs/en/startup/precis`](/docs/en/startup/precis)
 
 Precis منصة موحدة تتيح للمنظمات بناء المواقع وإدارة المحتوى وإنشاء بوابات
@@ -89,7 +89,7 @@ Precis منصة موحدة تتيح للمنظمات بناء المواقع و�
 
 ## 5. 📚 Precis LMS — منصة تجربة التعلم 🟢
 
-> **المسار:** `projects/precis/precis-main/` · **الاستراتيجية:** [`/docs/en/startup/precis`](/docs/en/startup/precis)
+> **المسار:** `projects/structa.cloud/` · **الاستراتيجية:** [`/docs/en/startup/precis`](/docs/en/startup/precis)
 
 - **التعلم:** الدورات والوحدات والدروس ومسارات التعلم
 - **التقييمات:** الاختبارات والامتحانات والواجبات وبنوك الأسئلة

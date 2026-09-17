@@ -107,4 +107,4 @@ git submodule add <url> libs/<name>
 | Monorepo AGENTS.md | [`../AGENTS.md`](../AGENTS.md) |
 | docs/ README | [`../docs/README.md`](../docs/README.md) |
 | Precis Landing | [`../projects/precis/precis-landing/README.md`](../projects/precis/precis-landing/README.md) |
-| Precis LMS | [`../projects/precis/precis-main/README.md`](../projects/precis/precis-main/README.md) |
+| Precis LMS | [`../projects/structa.cloud/README.md`](../projects/structa.cloud/README.md) |

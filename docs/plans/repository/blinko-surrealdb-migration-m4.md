@@ -1,7 +1,11 @@
 # Blinko — Prisma → SurrealDB Migration, Milestone 4 (Final Cutover)
 
 > **Tags:** #blinko #migration #surrealdb #prisma #m4 #cutover
-> **Last updated:** 2026-08-27 | **Status:** Plan — not yet implemented
+> **Last updated:** 2026-09-17 | **Status:** **RETIRED** — superseded, never
+> needed. The final cutover assumed a Prisma app being drained table by table;
+> the shipped runtime at `application/tools/planing/runtime/` is SurrealDB-only
+> from the start, so there is no fallback to drop and no remaining table set to
+> migrate. Original status: Plan — not yet implemented.
 > **Scope:** Make Surreal the **only** datastore. Drop every Prisma fallback and
 > mirror, migrate the remaining tables (config, conversations/messages,
 > notifications, follows, fonts, AI providers/models/MCP, jobs, plugin, cache),

@@ -28,14 +28,17 @@ links:
   - label: "Architecture"
     to: "/architecture"
     icon: "i-lucide-landmark"
-  - label: "Startup strategy 🔒"
-    to: "/startup/precis"
-    icon: "i-lucide-rocket"
+  - label: "Fusion render flow"
+    to: "/precis/landing-fusion-render-flow.html"
+    icon: "i-lucide-route"
+  - label: "Render-flow delivery plan"
+    to: "/plans/repository/precis-main-render-flow"
+    icon: "i-lucide-clipboard-check"
 ---
 
 # 🎓 Precis — Unified LMS + Landing Product
 
-> **Canonical path:** `projects/precis/precis-main/` · **Dispatcher alias:** `WEBSITE=precis-main` (legacy aliases `precis-lms`, `precis-landing` route here too)
+> **Canonical path:** `projects/structa.cloud/` · **Dispatcher alias:** `WEBSITE=structa.cloud` (legacy aliases `precis-lms`, `precis-landing` route here too)
 
 Precis is the unified learning platform: an **LMS** (courses, enrollment, progress, profile) merged with the **landing marketing/catalog shell** (Wagtail pages, pricing, blog). The two codebases were merged into a single runtime so one Django + Astro stack serves both audiences.
 
@@ -47,7 +50,8 @@ Precis is the unified learning platform: an **LMS** (courses, enrollment, progre
 | CMS / Builder | [`cms-builder.md`](cms-builder.md) | Assets-based CMS builder (under development) + client work under the Solo/Business editions |
 | Configuration | [`configuration.md`](configuration.md) | Settings, env vars, Dynaconf wiring |
 | Courses | [`courses.md`](courses.md) | LMS course model, enrollment, progress |
-| Deployment | [`deployment.md`](deployment.md) | Unified Compose stack, health checks, and admin routes |
+| Deployment | [`deployment.md`](deployment.md) | Unified Compose stack, local/production commands, health checks, and admin routes |
+| Fusion render flow | [`landing-fusion-render-flow.html`](landing-fusion-render-flow.html) | Full HTML, HTMX fragment, Astro data API, Make, and Nx command contract |
 | Landing frontend | [`precis-landing/frontend.md`](precis-landing/frontend.md) | Astro shell, skeleton bridge, HTMX |
 | Landing backend API | [`precis-landing/backend-api.md`](precis-landing/backend-api.md) | Render-first + data API contract |
 | Proxy/admin runbook | [`../dev/infrastructure/precis-main-proxy-admin.md`](../dev/infrastructure/precis-main-proxy-admin.md) | Current Traefik targets for structa.cloud and lms.structa.cloud |
@@ -58,14 +62,14 @@ Precis is the unified learning platform: an **LMS** (courses, enrollment, progre
 
 | Name | Status | Maps to |
 |------|--------|---------|
-| `precis-main` | ✅ canonical | `projects/precis/precis-main/` |
+| `precis-main` | ✅ canonical | `projects/structa.cloud/` |
 | `precis-lms` | ⚠️ legacy alias | `precis-main` (merged) |
 | `precis-landing` / Precis Landing | ⚠️ legacy alias | `precis-main` (merged) |
 
 > Legacy docs under the old `docs/precis-landing/` tree were moved here —
 > `docs/precis/precis-landing/*` is the canonical home for the landing slice.
 
-## 🏗️ Where django-fusion is used
+- [Fusion render flow](landing-fusion-render-flow.html) — the visual and operational contract for full HTML, HTMX fragments, Astro JSON, local Compose, production Compose, and Nx delegation
 
 Precis is the reference consumer of the shared framework: `{% comp %}` components,
 `Viewset`/`ModelViewset` routing, Wagtail StreamField blocks, fragments, and HTMX

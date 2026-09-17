@@ -191,6 +191,8 @@ falls back to `/api/v1` (deprecated; /apis/core/ is the forward road).
 | `/accounts/login|signup|logout/` | allauth |
 | `/account/profile/` | Role + effective permissions |
 | `/crm`, `/marketing`, `/finance`, `/settings` | Module screens |
+| `/settings/ledger/` | Audited currency/timezone defaults for finance |
+| `/apis/core/settings/ledger/` | Authenticated ledger settings API |
 | `/finance/invoices/`, `/payments/`, `/revenue/` | Finance surface |
 | `/tasks/` | Task Center (authenticated, merged job history) |
 | `/fragments/navigation/` | HTMX navigator preload |

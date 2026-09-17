@@ -13,7 +13,7 @@ UV_RUN := $(UV) run
 .PHONY: help install dev build preview check clean clean-unused \
         backend-help backend-dev backend-check backend-migrate backend-test \
         backend-erd backend-erd-all \
-        backend-seed backend-seed-pages backend-lint backend-format backend-shell \
+        backend-seed backend-seed-crm backend-seed-pages backend-lint backend-format backend-shell \
         configs validate-env env-example config-show config-check \
         nx-help nx-dev nx-build nx-preview nx-check nx-test \
         nx-backend-dev nx-backend-check nx-backend-test nx-backend-migrate nx-graph
@@ -83,7 +83,7 @@ config-check: ## Validate required identity keys resolve from the config
 # ── Backend (Django + django-fusion) ──────────────────────────────
 backend-help backend-dev backend-check backend-migrate backend-test \
 backend-erd backend-erd-all \
-backend-seed backend-seed-pages backend-lint backend-format backend-shell:
+backend-seed backend-seed-crm backend-seed-pages backend-lint backend-format backend-shell:
 	$(MAKE) -C backend $(@:backend-%=%)
 
 # ── Nx integration (delegates to the Nx workspace at repo root) ───

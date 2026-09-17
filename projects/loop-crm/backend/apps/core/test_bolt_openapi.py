@@ -28,6 +28,13 @@ class ResourceOpenAPIMetadataTests(SimpleTestCase):
         self.assertEqual(RESOURCES["email_accounts"].label, "Email accounts")
         self.assertEqual(RESOURCES["email_messages"].label, "Email messages")
 
+    def test_pipeline_stage_resource_supports_ordered_crud_without_secret_fields(self):
+        resource = RESOURCES["pipeline_stages"]
+        self.assertEqual(resource.required_fields, ("pipeline_id", "name"))
+        self.assertIn("order", resource.write_fields)
+        self.assertIn("probability", resource.write_fields)
+        self.assertEqual(resource.singular, "pipeline stage")
+
     def test_email_account_resource_never_exposes_oauth_tokens(self):
         resource = RESOURCES["email_accounts"]
         secret_fields = {"oauth_token", "oauth_refresh_token", "token_expires_at", "sync_cursor"}

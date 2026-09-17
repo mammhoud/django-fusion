@@ -8,10 +8,11 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const read = (relativePath) => readFile(resolve(ROOT, relativePath), 'utf8');
 
-test('RevOpsDashboard island fetches the dashboard through the compatibility API road', async () => {
+test('RevOpsDashboard island fetches live data through the canonical API road', async () => {
   const island = await read('src/components/dashboard/RevOpsDashboard.tsx');
+  assert.match(island, /const apiPrefix = '\/apis\/core';/);
   assert.match(island, /fetch\(`\$\{apiPrefix\}\/dashboard\/`\)/);
-  assert.match(island, /fallbackApiPrefix/);
+  assert.doesNotMatch(island, /fallbackApiPrefix|mock|localhost/);
   assert.match(island, /dashboard\.data\.counts/);
   assert.match(island, /workflow_count/);
 });
@@ -58,6 +59,14 @@ test('Revenue-trend aggregate is registered on the canonical bolt road', async (
   assert.match(boltApi, /from apps\.finance\.services import revenue_trend_results/);
   assert.match(boltApi, /TruncMonth\("recognized_on"\)/);
   assert.match(boltApi, /filter\(workspace_id=workspace_id\)/);
+});
+
+test('RevOpsDashboard exposes explicit loading, error, and empty-data states', async () => {
+  const island = await read('src/components/dashboard/RevOpsDashboard.tsx');
+  assert.match(island, /aria-busy="true"/);
+  assert.match(island, /Could not load the dashboard/);
+  assert.match(island, /No revenue events yet/);
+  assert.match(island, /Create a pipeline with stages and deals/);
 });
 
 test('RevOpsDashboard uses shadcn components and the StoreProvider bridge', async () => {

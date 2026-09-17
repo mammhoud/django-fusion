@@ -1,6 +1,6 @@
 # 🚀 Precis Landing — Deployment Compatibility Note
 
-> **Current runtime:** `projects/precis/precis-main/`
+> **Current runtime:** `projects/structa.cloud/`
 > **Legacy source copy:** `projects/precis/precis-landing/`
 > **Dispatcher aliases:** `WEBSITE=precis-landing` and `WEBSITE=precis-lms` map to
 > the unified Precis Main runtime where supported.
@@ -12,8 +12,19 @@ send their backend and frontend service URLs to:
 - `precis-main-backend:8074`
 - `precis-main-frontend:3000`
 
-Use the canonical deployment documentation instead of maintaining a second
-Compose or Traefik procedure:
+Use the canonical Precis Main commands from
+`projects/structa.cloud/`:
+
+```bash
+make validate-local
+make deploy-local
+make validate-production
+make deploy-production
+```
+
+The complete Fusion render and Nx command reference is
+[`../landing-fusion-render-flow.html`](../landing-fusion-render-flow.html).
+
 
 - [Precis Main deployment](../deployment.md)
 - [Precis Main proxy and admin runbook](../../dev/infrastructure/precis-main-proxy-admin.md)

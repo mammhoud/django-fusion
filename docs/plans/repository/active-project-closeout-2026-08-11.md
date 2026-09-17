@@ -132,6 +132,6 @@ python application/scripts/staging/check_markdown_links.py
 - [`../README.md`](../README.md)
 - [`../document-lifecycle.md`](../document-lifecycle.md)
 - [`../deletion-manifest.md`](../deletion-manifest.md)
-- [`../../../projects/precis/precis-main/README.md`](../../../projects/precis/precis-main/README.md)
+- [`../../../projects/structa.cloud/README.md`](../../../projects/structa.cloud/README.md)
 - [`../../../projects/precis/precis-landing/`](../../../projects/precis/precis-landing/)
 - [`../../../libs/django-fusion/CHANGELOG.md`](../../../libs/django-fusion/CHANGELOG.md)

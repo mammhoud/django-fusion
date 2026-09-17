@@ -1,8 +1,8 @@
 # Precis Blog App Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/backend/apps/pages/blog/templates/`
+**Scope:** `projects/structa.cloud/backend/apps/pages/blog/templates/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. These
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. These
 templates belong to the Precis blog feature.
 
 Preserve post/category/tag/comment context, Wagtail fields, pagination,

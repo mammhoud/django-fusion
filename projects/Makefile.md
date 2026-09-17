@@ -13,9 +13,9 @@ Every command takes `WEBSITE=<site>` — see the site selection table below.
 | `WEBSITE=` value | SITE | Compose file | Notes |
 |------------------|------|--------------|-------|
 | `ctc` · `precis-ctc` · `ctc-website` · `ctc-research.com` | `precis-ctc` | `precis/precis-ctc/docker-compose.yml` | Medical research center |
-| `precis-main` | `precis-main` | `precis/precis-main/docker-compose.yml` | Unified LMS + landing (canonical) |
-| `precis-lms` · `precis-landing` | `precis-main` | `precis/precis-main/docker-compose.yml` | Legacy aliases → precis-main |
-| `structa` · `lms` · `core` · `structa.cloud` | `precis-main` | `precis/precis-main/docker-compose.yml` | Legacy aliases → precis-main |
+| `precis-main` | `precis-main` | `structa.cloud/docker-compose.yml` | Unified LMS + landing (canonical) |
+| `precis-lms` · `precis-landing` | `precis-main` | `structa.cloud/docker-compose.yml` | Legacy aliases → precis-main |
+| `structa` · `lms` · `core` · `structa.cloud` | `precis-main` | `structa.cloud/docker-compose.yml` | Legacy aliases → precis-main |
 | `loop-crm` · `crm` · `crm.structa.cloud` · `inventory` | `loop-crm` | `loop-crm/docker-compose.yml` | Unified sales + marketing CRM |
 | `vresume` · `VResume` · `resume` | `vresume` | *(legacy — not present in checkout)* | Portfolio/VResume (legacy) |
 | `cms-fusion` · `cms-full` · `cmsfull` | `cms-fusion` | `docker-compose.yml` | Legacy Fusion CMS (not present) |
@@ -127,8 +127,8 @@ Every command takes `WEBSITE=<site>` — see the site selection table below.
 | Command | Description |
 |---------|-------------|
 | `make website-ctc` | `make -C precis/precis-ctc <target>` |
-| `make website-precis` · `website-precis-main` · `website-precis-lms` | `make -C precis/precis-main <target>` |
-| `make website-structa` | `make -C precis/precis-main <target>` (legacy alias) |
+| `make website-precis` · `website-precis-main` · `website-precis-lms` | `make -C structa.cloud <target>` |
+| `make website-structa` | `make -C structa.cloud <target>` (legacy alias) |
 | `make website-vresume` | Guarded — skipped when `portfolio/` is absent |
 | `make website-formints` · `website-pos` | `make -C formints <target>` |
 | `make projects` | Run a target in precis-main, loop-crm, formints |
@@ -155,6 +155,6 @@ Every command takes `WEBSITE=<site>` — see the site selection table below.
 - **Default `WEBSITE` is `ctc`** — `make docker-up` alone targets precis-ctc.
 - `structa`/`lms`/`core` and `precis-lms`/`precis-landing` are **legacy aliases that resolve to precis-main** (the merged product). Don't reference `projects/lms/` — it no longer exists.
 - `vresume`/`cms-fusion` sites are legacy and **not present in this checkout** — their compose targets report or skip; `website-vresume` prints a notice.
-- Check/test/migrate/run-dev **delegate to the site's backend Makefile** — for a quick look at what will run, use `make -n check WEBSITE=precis-main`.
+- Check/test/migrate/run-dev **delegate to the site's backend Makefile** — for a quick look at what will run, use `make -n check WEBSITE=structa.cloud`.
 - The root `Makefile` forwards unknown targets here (`make check`, `make community-test`, …), and `make structa` / `make precis-main` etc. delegate with a preset `WEBSITE`.
 - Sync with `projects/Makefile` when adding/renaming targets; keep canonical paths + aliases documented here.

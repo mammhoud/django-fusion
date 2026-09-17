@@ -32,7 +32,7 @@ Always **cite sources** with local file paths (`docs/...`, `application/proxy/co
 
 ## Current State (Containerised View — Structa Cloud)
 
-- **Application Type:** multi-product SaaS monorepo — Precis LMS (`projects/precis/precis-main/`), Precis Landing (`projects/precis/precis-landing/`), CTC research site (`projects/precis/precis-ctc/`), Syntara (`projects/syntara/`), Formints POS (`projects/formints/`), Loop CRM (`projects/loop-crm/`)
+- **Application Type:** multi-product SaaS monorepo — Precis LMS (`projects/structa.cloud/`), Precis Landing (`projects/precis/precis-landing/`), CTC research site (`projects/precis/precis-ctc/`), Syntara (`projects/syntara/`), Formints POS (`projects/formints/`), Loop CRM (`projects/loop-crm/`)
 - **Project Root:** repository root (`structa.cloud/`)
 - **Containerisation:** Dockerfiles, docker-compose per area — `application/docker-compose.yml` (Coder control-plane, served at `space.structa.cloud`), `application/docker-compose.tasks.yml` (shared workers/scheduler), `application/databases/docker-compose.yml` (PostgreSQL + Redis), `application/proxy/docker-compose.traefik.yml` (Traefik), `application/tools/docker-compose.nginx.yml` (shared-proxy Nginx, relocated under `application/tools/`)
 - **Edge / Reverse Proxy:** Traefik `default-proxy` (ports 80/443/8080) + Nginx `shared-proxy` for static/media/sites assets

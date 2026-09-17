@@ -33,7 +33,7 @@ an HTMX fragment or an Alpine component — no large client-side bundle.
 ## Repository layout
 
 ```
-projects/precis/precis-main/
+projects/structa.cloud/
 ├── frontend/                 # Astro 5 + Tailwind 4 + HTMX + Alpine.js
 │   ├── src/
 │   │   ├── layouts/          # Document shell, SEO, theme, AHA runtime
@@ -69,7 +69,7 @@ projects/precis/precis-main/
 ### Frontend (Astro)
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 just install          # cd frontend && npm install
 make dev              # http://localhost:4321
 make check            # astro check
@@ -78,7 +78,7 @@ make check            # astro check
 ### Backend (Django + Wagtail)
 
 ```bash
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 just install          # workspace venv (uv sync)
 make migrate          # makemigrations + migrate (SQLite)
 make seed             # create site + full page tree (idempotent)
@@ -90,7 +90,7 @@ make test             # apps.pages tests
 ### Full setup in one go (project root)
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make backend-migrate
 make backend-seed
 make backend-dev      # Django :8074

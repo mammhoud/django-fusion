@@ -13,8 +13,7 @@ compatibility aliases.
 structa.cloud/
 ├── projects/                 # Product code, shared Django config, and assets
 │   ├── precis/               # Product grouping: unified Precis, landing, and research sites
-│   │   ├── precis-main/      # Unified Precis product (merged precis-landing + precis-lms)
-│   │   ├── precis-landing/   # Legacy Precis Landing copy (kept; dispatcher routes to precis-main)
+│   │   ├── precis-landing/   # Legacy Precis Landing copy (kept; dispatcher routes to structa.cloud)
 │   │   └── precis-ctc/       # Medical research center site
 │   ├── syntara/              # Cypercloud AI chat/customizer runtime
 │   ├── formints/             # POS editions, cloud backend, and shared tests
@@ -38,7 +37,7 @@ structa.cloud/
 
 | Product | Canonical path | Main responsibility | Local guidance |
 |---|---|---|---|
-| Precis (unified) | `projects/precis/precis-main/` | Merged product: LMS courses/enrollment/progress/profile + landing marketing/catalog shell | `projects/precis/precis-main/AGENTS.md` |
+| Precis (unified) | `projects/structa.cloud/` | Merged product: LMS courses/enrollment/progress/profile + landing marketing/catalog shell | `projects/structa.cloud/AGENTS.md` |
 | Precis Landing | `projects/precis/precis-landing/` | Public marketing/catalog site; Astro frontend and Django/Wagtail backend | `projects/precis/precis-landing/AGENTS.md` |
 | Cypercloud / Syntara | `projects/syntara/` | AI chat, template discovery, code customization, streaming responses | `projects/syntara/AGENTS.md` |
 | Formint POS | `projects/formints/` | Desktop POS, professional product, cloud master, and POS test suites | `projects/formints/AGENTS.md` |
@@ -48,17 +47,21 @@ structa.cloud/
 
 ### Name and migration rules
 
-- `precis/precis-main` is the current filesystem location for the unified Precis
+- `projects/structa.cloud` is the current filesystem location for the unified Precis
   product (LMS courses/learning/profile merged with the landing marketing/catalog
-  shell). The dispatcher accepts `WEBSITE=precis-main`; `WEBSITE=precis-lms` and
-  `WEBSITE=precis-landing` are legacy aliases that both map to
-  `projects/precis/precis-main/`.
+  shell), renamed and moved from `projects/structa.cloud/`. The dispatcher
+  accepts `WEBSITE=structa.cloud`; `WEBSITE=precis-main`, `WEBSITE=precis-lms`, and
+  `WEBSITE=precis-landing` are legacy aliases that all map to
+  `projects/structa.cloud/`. The runtime identity (container names `precis-main-*`,
+  images, `DJANGO_SITE=precis-main`) is intentionally preserved to keep volumes and
+  deployed environments valid.
 - `precis/precis-landing` is a kept legacy copy of the Precis Landing marketing
   site; `precis-landing` remains its runtime/site identity.
 - `precis/precis-ctc` is the standalone medical research center site, mapped
   from `WEBSITE=ctc` / `precis-ctc` to `projects/precis/precis-ctc/`.
-- `precis-lms/` was merged into `precis/precis-main` and removed; git history is
-  the archive. Do not add new product code under any `precis-lms` path.
+- `precis-lms/` was merged into the unified Precis product (now
+  `projects/structa.cloud`) and removed; git history is the archive. Do not add new
+  product code under any `precis-lms` path.
 - `syntara` is the current filesystem location for the product historically
   called Cypercloud. Use `projects/syntara/` in new paths. Preserve the
   `cypercloud` name only where a runtime alias or external contract requires it.
@@ -81,8 +84,8 @@ root safety and repository rules remain in force.
 ```text
 /AGENTS.md
 ├── projects/AGENTS.md
-│   ├── projects/precis/precis-main/AGENTS.md
-│   │   └── projects/precis/precis-main/backend/AGENTS.md
+│   ├── projects/structa.cloud/AGENTS.md  (moved from projects/structa.cloud/)
+│   │   └── projects/structa.cloud/backend/AGENTS.md
 │   ├── projects/precis/precis-landing/AGENTS.md
 │   ├── projects/syntara/AGENTS.md
 │   └── projects/formints/AGENTS.md
@@ -201,8 +204,8 @@ uv run pytest
 
 # Project dispatcher examples
 cd projects
-make check WEBSITE=precis-main       # maps to Precis
-make test WEBSITE=precis-main
+make check WEBSITE=structa.cloud     # unified Precis product (canonical)
+make test WEBSITE=structa.cloud
 make run-dev WEBSITE=precis-landing
 make check WEBSITE=precis-landing
 make test WEBSITE=precis-landing   # workspace pytest target; use the project backend test below for focused coverage
@@ -235,8 +238,8 @@ make backend-migrate
 make backend-check
 make backend-test
 
-# Precis backend
-cd projects/precis/precis-main/backend
+# Precis backend (unified product now at projects/structa.cloud)
+cd projects/structa.cloud/backend
 make check
 make test
 make migrate

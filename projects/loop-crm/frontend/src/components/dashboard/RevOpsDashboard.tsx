@@ -1,17 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
 import StoreProvider from '@/components/StoreProvider';
 import { useWorkspaceRealtime, type WorkspaceEvent } from '@/lib/useWorkspaceRealtime';
 import { useLiveSync } from '@/lib/useLiveSync';
-import type { RootState } from '@/store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-const useAppSelector = useSelector.withTypes<RootState>();
 
 // ── Payload contracts (compatibility road, mirrors backend views) ───────────
 
@@ -104,7 +100,7 @@ function StatCard({ label, value, hint, href }: { label: string; value: string; 
 }
 
 function Board() {
-  const apiPrefix = useAppSelector((state) => state.config.fallbackApiPrefix);
+  const apiPrefix = '/apis/core';
   const [status, setStatus] = useState<'loading' | 'error' | 'ready'>('loading');
   const [counts, setCounts] = useState<DashboardCounts | null>(null);
   const [workflows, setWorkflows] = useState(0);

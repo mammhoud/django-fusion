@@ -57,7 +57,7 @@ Every generated document **must** include:
 
 | Entity | Canonical | Aliases (internal only) |
 |--------|-----------|--------------------------|
-| Precis | `projects/precis/precis-main/` · `docs/precis/` | `precis-lms`, `precis-landing`, Precis Landing |
+| Precis | `projects/structa.cloud/` · `docs/precis/` | `precis-lms`, `precis-landing`, Precis Landing |
 | CTC | `projects/precis/precis-ctc/` · `docs/precis-ctc/` | `ctc`, `ctc-research.com` |
 | Loop-CRM | `projects/loop-crm/` · `docs/loop-crm/` | `crm` |
 | Syntara | `projects/syntara/` · `docs/syntara/` | `cypercloud` (legacy) |

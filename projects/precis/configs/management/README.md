@@ -1,6 +1,6 @@
 # Shared management configuration
 
-The shared worker runtime is owned by `projects/precis/precis-main/backend/plugins/workers/`.
+The shared worker runtime is owned by `projects/structa.cloud/backend/plugins/workers/`.
 Dramatiq consumes all queues and APScheduler runs `@task(schedule=...)` jobs.
 There is no Celery app or Celery Beat process in the active stack.
 

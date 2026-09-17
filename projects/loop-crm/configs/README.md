@@ -8,7 +8,7 @@ Two complementary things live in this directory:
    `make env-example` regenerates `.env.example` from the same source.
 2. **YAML cascade (django-fusion `config.project`)** — `defaults.yml`,
    `site.yml`, `admin.yml` are the project-owned layer of the layered config
-   cascade (same layout as `precis/precis-main/configs/` and
+   cascade (same layout as `structa.cloud/configs/` and
    `precis/precis-ctc/configs/`). YAML holds **defaults**; the project `.env`
    holds customization; Compose `environment:` holds deploy-time truth.
 

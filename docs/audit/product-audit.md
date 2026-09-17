@@ -184,7 +184,7 @@ READMEs.
 
 ---
 
-# 3. LMS — Precis (`projects/precis/precis-main/`) 🟢 live
+# 3. LMS — Precis (`projects/structa.cloud/`) 🟢 live
 
 > Unified product: marketing/catalog shell + learning platform on one Astro
 > frontend and one Django 5.2 + Wagtail 7.4 + django-fusion backend.
@@ -228,7 +228,7 @@ READMEs.
 - **Dual CSS pipelines** — Tailwind `globals.css` + webpack/SCSS `fusion.css`
   (`make css` + `make build-assets`); two pipelines to keep in sync.
 - **Stale plan paths** — resolved: Syntara merge plan deleted; Precis canonical
-  is `projects/precis/precis-main/`.
+  is `projects/structa.cloud/`.
 - **Theme engine not adopted** — `projects/assets/theme/lms/` exists
   (fu-lms-* tokens/components) but precis-main still styles locally via
   Tailwind + Fusion tokens; migration pending.

@@ -1,9 +1,9 @@
 # Precis Asset Components — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/assets/templates/components/`
+**Scope:** `projects/structa.cloud/assets/templates/components/`
 
 These are Precis-owned templates. They are not automatically shared across the
-monorepo. Read `projects/precis/precis-main/backend/AGENTS.md`, then
+monorepo. Read `projects/structa.cloud/backend/AGENTS.md`, then
 `libs/django-fusion/AGENTS.md`, before changing a component.
 
 ## Component ownership

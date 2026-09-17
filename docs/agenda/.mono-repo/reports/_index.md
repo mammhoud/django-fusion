@@ -12,6 +12,7 @@ Status: Active
 
 | Report | Path | Type | Status |
 |---|---|---|---|
+| Precis Main render flow and command delivery | `precis-main-delivery.md` | Delivery | Active |
 | Product metrics & evidence | `product-metrics.md` | Product | Active |
 | Data analyst operating model | `data-analyst-model.md` | Operational | Active |
 

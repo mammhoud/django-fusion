@@ -4,7 +4,7 @@
 # Containers: loop-crm-backend  (Django + django-fusion, port 8074)
 #             loop-crm-frontend (Astro static shell, port 3000)
 # Domain: crm.structa.cloud / www.crm.structa.cloud
-# Backend paths (/accounts, /api, /bolt, /admin, /django-admin, /cms, /static,
+# Backend paths (/accounts, /api, /apis, /bolt, /billing, /admin, /django-admin, /cms, /static,
 #   /media, /fragment, /fragments, /ws, /connect, /account, /sse) are routed
 #   to the backend with
 #   priority 200. All other paths (the static app shell + marketing landing)
@@ -15,13 +15,13 @@
 http:
   routers:
     loop-crm-backend-http:
-      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/bolt`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
+      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/bolt`) || PathPrefix(`/billing`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: loop-crm-backend
       priority: 200
     loop-crm-backend-https:
-      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/bolt`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
+      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/bolt`) || PathPrefix(`/billing`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: loop-crm-backend

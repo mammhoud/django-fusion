@@ -8,7 +8,7 @@ or in addition to passwords.
 
 Passkey login is enabled via `django-allauth`'s `allauth.mfa` module. The following
 settings are configured in `projects/cms-fusion/configs/base/auth.py` and
-`projects/precis/precis-main/configs/base/auth.py` (shared across all sites):
+`projects/structa.cloud/configs/base/auth.py` (shared across all sites):
 
 ```python
 # allauth.mfa must be in INSTALLED_APPS (set in configs/base/apps.py)
@@ -29,9 +29,9 @@ MFA_SUPPORTED_TYPES = ["totp", "webauthn", "recovery_codes"]
 | File | Change |
 |------|--------|
 | `projects/cms-fusion/configs/base/apps.py` | Added `"allauth.mfa"` to `THIRD_PARTY_APPS` |
-| `projects/precis/precis-main/configs/base/apps.py` | Added `"allauth.mfa"` to `THIRD_PARTY_APPS` |
+| `projects/structa.cloud/configs/base/apps.py` | Added `"allauth.mfa"` to `THIRD_PARTY_APPS` |
 | `projects/cms-fusion/configs/base/auth.py` | `MFA_PASSKEY_LOGIN_ENABLED` → `True`; added `"webauthn"` to `MFA_SUPPORTED_TYPES` |
-| `projects/precis/precis-main/configs/base/auth.py` | Same as above |
+| `projects/structa.cloud/configs/base/auth.py` | Same as above |
 | `tests/unit/test_auth_features.py` | Added `test_passkey_mfa_enabled` test |
 
 ## Browser requirements

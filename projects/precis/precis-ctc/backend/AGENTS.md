@@ -79,7 +79,7 @@ There are several template roots. Confirm `settings.py` and the nearest
 1. `backend/templates/` — site-root shells, errors, events, admin overrides,
    and deliberate project-wide overrides.
 2. `backend/apps/**/templates/` — app-owned templates close to their views.
-3. `precis/precis-main/assets/templates/` — project asset/template source where configured.
+3. `structa.cloud/assets/templates/` — project asset/template source where configured.
 4. `libs/django-fusion/src/django_fusion/templates/` — framework fallback.
 
 Do not put app-specific templates in the backend root merely because they are

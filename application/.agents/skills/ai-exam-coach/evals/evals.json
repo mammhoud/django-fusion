@@ -1,0 +1,52 @@
+{
+  "evals": [
+    {
+      "name": "default_20_question_exam",
+      "prompt": "Tạo đề ôn tập AI Thực Chiến tổng hợp",
+      "assertions": [
+        "Initializes or reuses a study repository",
+        "Creates exam and answer markdown files before writing content",
+        "Uses Vietnamese with full diacritics in generated exam content",
+        "Does not ask the user to choose Day folders for a broad exam request",
+        "Uses the default mixed blueprint when no topic is specified",
+        "Generates 20 questions by default",
+        "Includes common section and Business/Infrastructure/App Build coverage",
+        "Uses MCQ, multi-select, fill-in-blank, and scenario or code items",
+        "Does not include answer key inline in the student-facing exam"
+      ]
+    },
+    {
+      "name": "empty_kb_onboarding",
+      "prompt": "Tạo đề trong repo mới vừa init, knowledge base chưa có lịch sử làm bài",
+      "assertions": [
+        "Checks KB status before generating",
+        "Detects empty learner knowledge base",
+        "Asks one onboarding question with diagnostic tổng hợp as recommended option",
+        "Offers skill-specific practice as the second option",
+        "Does not claim personalization before diagnostic or grading evidence exists"
+      ]
+    },
+    {
+      "name": "custom_count_topic",
+      "prompt": "Tạo 12 câu ôn RAGAS và guardrails, có đáp án riêng",
+      "assertions": [
+        "Creates markdown files in the study repository",
+        "Uses Vietnamese with full diacritics",
+        "Generates exactly 12 questions",
+        "Focuses on RAGAS and guardrails",
+        "Separates student questions from answer key",
+        "Tags topics and difficulty in answer key"
+      ]
+    },
+    {
+      "name": "grade_and_update_kb",
+      "prompt": "Chấm bài mock exam này và cập nhật knowledge base",
+      "assertions": [
+        "Scores answers with rubric where needed",
+        "Explains incorrect answers",
+        "Identifies topic-level weaknesses",
+        "Updates learner knowledge base without deleting prior history"
+      ]
+    }
+  ]
+}

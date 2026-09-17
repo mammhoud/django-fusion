@@ -1,11 +1,11 @@
 # Precis Learning Asset Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/assets/templates/lms/`
+**Scope:** `projects/structa.cloud/assets/templates/lms/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. This is
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. This is
 Precis-owned learning presentation/compatibility template content.
 
-New learning behavior belongs in `projects/precis/precis-main/backend/apps/learning/` and
+New learning behavior belongs in `projects/structa.cloud/backend/apps/learning/` and
 its app templates. Keep this directory only for templates explicitly resolved
 from the Precis asset tree; do not add obsolete `plugins/lms/` paths.
 

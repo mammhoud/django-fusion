@@ -76,7 +76,7 @@ Collectstatic (python manage.py collectstatic)
 
 ```bash
 # التحقق من وجود bundles.json وقابليته للتحليل
-cat projects/precis/precis-main/backend/assets/static/bundles/bundles.json | jq .
+cat projects/structa.cloud/backend/assets/static/bundles/bundles.json | jq .
 
 # المفاتيح المتوقعة: main.css, main.js, vendor.css, vendor.js, fusion.css
 ```
@@ -85,20 +85,20 @@ cat projects/precis/precis-main/backend/assets/static/bundles/bundles.json | jq 
 
 ```bash
 # التحقق من حجم CSS المجمع
-wc -c projects/precis/precis-main/backend/assets/staticfiles/css/fusion.css
+wc -c projects/structa.cloud/backend/assets/staticfiles/css/fusion.css
 
 # التحقق من عدم تكرار المحددات (تحقق تقريبي)
-awk '/\{/{print}' projects/precis/precis-main/backend/assets/staticfiles/css/fusion.css | sort | uniq -d
+awk '/\{/{print}' projects/structa.cloud/backend/assets/staticfiles/css/fusion.css | sort | uniq -d
 ```
 
 ### 3. صحة حزم JS
 
 ```bash
 # التحقق من أحجام الحزم
-ls -lh projects/precis/precis-main/frontend/dist/assets/
+ls -lh projects/structa.cloud/frontend/dist/assets/
 
 # التحقق من Source maps
-file projects/precis/precis-main/frontend/dist/assets/*.js.map
+file projects/structa.cloud/frontend/dist/assets/*.js.map
 ```
 
 ### 4. عروض أصول django-fusion
@@ -118,7 +118,7 @@ curl -s https://structa.cloud/static/css/fusion.css | head -20
 ### محلل حزم Webpack
 
 ```bash
-cd projects/precis/precis-main/frontend
+cd projects/structa.cloud/frontend
 npx webpack-bundle-analyzer dist/stats.json
 ```
 

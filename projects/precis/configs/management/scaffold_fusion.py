@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scaffold the new Fusion LMS and CMS projects from ctc-research.
 
-This script creates isolated directories under projects/precis/precis-main and
+This script creates isolated directories under projects/structa.cloud and
 projects/cms-fusion, copies the precis-ctc backend/frontend structure,
 renames CSS classes from ctc-* to fu-*, and installs the dynamic branding
 and fusion_render_first boilerplate.

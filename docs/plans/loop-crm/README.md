@@ -10,6 +10,8 @@ ADR-style implementation plans for Loop-CRM.
 |------|------------|
 | [merge-plan.md](merge-plan.md) | Merge plan |
 | [wagtail-landing-plan.md](wagtail-landing-plan.md) | Wagtail-managed landing pages |
+| [tauri-multi-platform-plan.md](tauri-multi-platform-plan.md) | Tauri desktop/cloud/mobile architecture (DRAFT — review notes 2026-09-17) |
+| [surrealdb-migration-plan.md](surrealdb-migration-plan.md) | SurrealDB migration for Loop CRM + Formints with cloud linking (DRAFT — review notes 2026-09-17) |
 
 ## Finished plans (recorded as agenda milestones)
 

@@ -43,11 +43,11 @@
 
 The old `lms-website`/LMS Demo description is retired. `structa.cloud` and
 `lms.structa.cloud` are compatibility hosts for
-`projects/precis/precis-main/`. Deploy and verify it with:
+`projects/structa.cloud/`. Deploy and verify it with:
 
 ```bash
 docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml up -d --build
+  -f projects/structa.cloud/docker-compose.yml up -d --build
 curl -k -sS -L -o /dev/null \
   -w 'Wagtail: %{http_code} %{url_effective}\n' \
   https://lms.structa.cloud/admin
@@ -61,7 +61,7 @@ Traefik contract.
 ```
 /home/structa.cloud/
 ├── projects/
-│   ├── precis/precis-main/          # unified Precis LMS + landing
+│   ├── structa.cloud/          # unified Precis LMS + landing
 │   ├── precis/precis-landing/       # kept legacy Precis Landing copy
 │   ├── precis/precis-ctc/           # standalone CTC Research
 │   ├── configs/                     # shared Django configuration
@@ -82,7 +82,7 @@ Use the owning product Compose file rather than the retired generic
 ```bash
 # Unified Precis
 docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml up -d --build
+  -f projects/structa.cloud/docker-compose.yml up -d --build
 
 # CTC Research
 cd projects/precis/precis-ctc

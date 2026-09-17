@@ -57,7 +57,7 @@ cd projects && make show-config WEBSITE=precis-ctc
 
 | هوية التشغيل | المسار المعياري | أسماء التوافق |
 |---|---|---|
-| `precis-main` | `projects/precis/precis-main/` | `precis-lms`, `precis-landing` |
+| `precis-main` | `projects/structa.cloud/` | `precis-lms`, `precis-landing` |
 | `precis-landing` | `projects/precis/precis-landing/` | نسخة تشغيل Precis Landing القديمة |
 | `precis-ctc` | `projects/precis/precis-ctc/` | `ctc`, `ctc-website`, `ctc-research.com` |
 | `syntara` | `projects/syntara/` | `cypercloud` |
@@ -132,9 +132,9 @@ make serve             # خادم محلي عند /docs/
 
 ```bash
 cd projects
-make show-config WEBSITE=precis-main
-make check WEBSITE=precis-main
-make test WEBSITE=precis-main
+make show-config WEBSITE=structa.cloud
+make check WEBSITE=structa.cloud
+make test WEBSITE=structa.cloud
 make run-dev WEBSITE=precis-ctc
 make check WEBSITE=precis-ctc
 make test WEBSITE=precis-ctc
@@ -164,7 +164,7 @@ python manage.py prepare_ctc_media --dry-run
 ### واجهات Precis ومشاريع POS
 
 ```bash
-cd projects/precis/precis-main/backend && make check && make test
+cd projects/structa.cloud/backend && make check && make test
 cd projects/precis/precis-landing && make check && make backend-test
 cd projects/formints/formint-pro && make check && make test
 cd projects/formints/formint-cloud && make check && make test

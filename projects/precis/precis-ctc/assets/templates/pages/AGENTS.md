@@ -1,16 +1,16 @@
 # Precis Page Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/assets/templates/pages/`
+**Scope:** `projects/structa.cloud/assets/templates/pages/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. This is
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. This is
 a Precis-owned page/template asset scope.
 
 ## Ownership
 
 - Put site-wide shells and deliberate global overrides in
-  `projects/precis/precis-main/backend/templates/`.
+  `projects/structa.cloud/backend/templates/`.
 - Put page-feature templates next to their owning app under
-  `projects/precis/precis-main/backend/apps/pages/<feature>/templates/`.
+  `projects/structa.cloud/backend/apps/pages/<feature>/templates/`.
 - Keep this asset directory for Precis-specific page assets, includes, or
   presentation templates that are explicitly loaded by Precis settings.
 - Do not use obsolete `plugins/<app>/templates/` paths in new files.

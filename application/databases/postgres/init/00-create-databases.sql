@@ -37,7 +37,7 @@ END $$;
 -- Mapping of database names to project directories (keep this comment in sync
 -- with the actual tree):
 --
---   db_precis_lms   → projects/precis/precis-main    (unified Precis product)
+--   db_precis_lms   → projects/structa.cloud      (unified Precis product; renamed from precis-main)
 --   db_precis_dev   → projects/precis/precis-dev     (development copy)
 --   db_precis_ctc   → projects/precis/precis-ctc     (medical research site)
 --   db_loop_crm     → projects/loop-crm              (sales + marketing CRM)

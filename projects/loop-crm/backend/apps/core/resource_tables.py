@@ -133,6 +133,11 @@ RESOURCE_TABLE_COLUMNS: dict[str, dict[str, Any]] = {
         "formatters": {},
         "types": {"name": "text", "description": "text", "is_default": "pill", "order": "text"},
     },
+    "pipeline_stages": {
+        "columns": ["pipeline", "name", "stage_type", "probability", "order"],
+        "formatters": {},
+        "types": {"pipeline": "pill", "name": "text", "stage_type": "pill", "probability": "text", "order": "text"},
+    },
     "campaigns": {
         "columns": ["name", "description", "budget", "start_date", "end_date"],
         "formatters": {"budget": _money, "start_date": _date, "end_date": _date},

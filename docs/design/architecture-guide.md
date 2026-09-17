@@ -161,7 +161,7 @@ npx sass projects/assets/theme/_index.scss
 A product imports one theme + the engine:
 
 ```scss
-// e.g. projects/precis/precis-main/assets/styles/_index.scss
+// e.g. projects/structa.cloud/assets/styles/_index.scss
 @import '../../assets/theme/lms';
 @import '../../assets/theme/engine';
 ```

@@ -81,7 +81,7 @@ databases → coder → media → app → tasks → docs → proxy → anytype �
 ```bash
 cd projects
 make check WEBSITE=precis-ctc     # فحص الخلفية للموقع المحدد
-make test  WEBSITE=precis-main    # اختبار الخلفية
+make test  WEBSITE=structa.cloud    # اختبار الخلفية
 make run-dev WEBSITE=precis-ctc   # خوادم التطوير
 make migrate WEBSITE=loop-crm
 ```
@@ -95,7 +95,7 @@ make migrate WEBSITE=loop-crm
 مزيج YAML + `.env` + متغيرات البيئة وخطة الملفات الثابتة (قراءة ← إخراج ← نشر).
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 make config-show     # السلسلة المدمجة + خطة الملفات الثابتة
 make config-check    # التحقق من حل مفاتيح الهوية المطلوبة
 make css             # تجميع نظام التصميم Tailwind → assets/static/css/fusion.css

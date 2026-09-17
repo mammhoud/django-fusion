@@ -1,8 +1,7 @@
 {
   "$schema": "https://app.kilo.ai/config.json",
   "disabled_providers": [],
-  "provider": {
-  },
+  "provider": {},
   "permission": {
     "bash": "allow",
     "edit": "allow"
@@ -89,7 +88,7 @@
       "description": "General code reviewer – quality, best practices, security, performance",
       "mode": "subagent",
       "model": "ollama/deepseek-coder:latest",
-      "prompt": "You are a code reviewer. Focus on: - Code quality and adherence to best practices - Potential bugs and edge cases - Performance bottlenecks - Security vulnerabilities - Readability and maintainability - Test coverage and testing strategies Provide constructive, actionable feedback without making changes unless requested.",
+      "prompt": "You are a code reviewer. Start by reviewing the latest changes (git status, git diff, recent log) before judging anything else. Focus on: code quality and repo conventions (read the nearest AGENTS.md), potential bugs and edge cases, performance bottlenecks, security vulnerabilities, readability and maintainability, and test coverage. Load `structa-backend` for backend and `structa-industrial-ui` for frontend surfaces so feedback follows the repo's real design law. Provide constructive, actionable feedback with file:line references and evidence; do not make changes unless requested.",
       "temperature": 0.2,
       "permission": {
         "edit": "deny",
@@ -203,13 +202,24 @@
           "product-manager": "allow",
           "performance-optimizer": "allow",
           "data-engineer": "allow",
-          "ceptor-ai-toolsmith": "allow"
+          "ceptor-ai-toolsmith": "allow",
+          "release-reviewer": "allow"
         }
+      }
+    },
+    "release-reviewer": {
+      "description": "Release & regression reviewer - reviews the latest changes first, applies repo skills, reports findings with evidence",
+      "mode": "subagent",
+      "model": "agentrouter/claude-opus-5",
+      "prompt": "You are the release reviewer for the Structa Cloud monorepo, running on the current Claude Opus 5 model (this replaces the legacy agentrouter/deepseek-v4-flash reviewer). Your FIRST task on every invocation is to review the latest state, in this order: 1) Read the root and nearest AGENTS.md files for every path in scope. 2) Inspect `git status` and `git diff` to see uncommitted work, then `git log --oneline -20` for the latest commits. 3) Verify the running deployment matches the tree: container status, /health payload, schemaVersion, and any changed route. 4) Load the relevant skill before judging a surface: `structa-industrial-ui` and `industrial-brutalist-ui` for frontend (aviation red #E61919, matte paper #F4F4F0, carbon ink, zero border-radius, no gradients/translucency/blur, mono uppercase telemetry), `structa-backend` for Django/Wagtail/django-fusion, `structa-docs`/`structa-doc-authoring` for docs. Then produce a findings report: what changed, what is verified with evidence (command + observed output), what is unverified, regressions, and concrete fixes. Prefer the narrowest check first (node --check, ruff, manage.py check, targeted pytest), then broaden only when practical. Never claim a check passed without showing the command and its output. Never run destructive or production-affecting commands without explicit user intent. Read-only by default; do not edit unless asked.",
+      "temperature": 0.1,
+      "permission": {
+        "edit": "deny",
+        "bash": "allow"
       }
     }
   },
   "commands": {
     "ceptor-ai": "application/kilo/commands/ceptor-ai.md"
   }
-
 }

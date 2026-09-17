@@ -624,8 +624,8 @@ labels.
 | django-fusion enhancements | [`django-fusion-enhancements.md`](django-fusion-enhancements.md) |
 | Worker consolidation | [`../repository/worker-consolidation.md`](../repository/worker-consolidation.md) |
 | Precis Landing plan | [`../precis-landing.md`](../precis-landing.md) |
-| Precis product handoff | [`../../../projects/precis/precis-main/README.md`](../../../projects/precis/precis-main/README.md) |
-| Precis guidance | [`../../../projects/precis/precis-main/AGENTS.md`](../../../projects/precis/precis-main/AGENTS.md) |
+| Precis product handoff | [`../../../projects/structa.cloud/README.md`](../../../projects/structa.cloud/README.md) |
+| Precis guidance | [`../../../projects/structa.cloud/AGENTS.md`](../../../projects/structa.cloud/AGENTS.md) |
 | Formint Professional plan | [`../editions/03-pro.md`](../editions/03-pro.md) |
 | POS editions index | [`../editions/README.md`](../editions/README.md) |
 | Plan registry | [`../README.md`](../README.md) |

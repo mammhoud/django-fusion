@@ -1,8 +1,15 @@
 # Blinko — Prisma → SurrealDB Migration (Auth-First Milestone)
 
 > **Tags:** #blinko #migration #surrealdb #prisma
-> **Last updated:** 2026-08-26 | **Status:** Proposed
-> **Scope:** Incremental migration of the `mammhoud/blinko` backend from Prisma/PostgreSQL to SurrealDB, starting with accounts/auth.
+> **Last updated:** 2026-09-17 | **Status:** **RETIRED** — the vendored
+> `mammhoud/blinko` checkout this milestone patches no longer exists in the
+> repository. The product is now a SurrealDB-native runtime at
+> `application/tools/planing/runtime/` (there is no Prisma or PostgreSQL
+> datastore to migrate away from), and its roadmap is
+> [`blinko-surrealdb-enhancements.md`](blinko-surrealdb-enhancements.md). Kept
+> for history: the ID-mapping decision and the engine traps recorded here are
+> still the reference for that runtime.  
+> **Scope (historical):** Incremental migration of the `mammhoud/blinko` backend from Prisma/PostgreSQL to SurrealDB, starting with accounts/auth.
 > **Repo:** vendored checkout at `application/tools/blinko/blinko/` (own git repo, branch `main`, origin `https://github.com/mammhoud/blinko`)
 
 ---

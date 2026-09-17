@@ -532,7 +532,7 @@ covering:
   `gettext_lazy` sweep, and add translated frontend strings/i18n catalogs.
 
 ### Phase 7 — Translations & shared locale (i18n) — remaining work
-  `projects/assets/locale/<lang>/LC_MESSAGES/` — `precis-main/backend/locale`,
+  `projects/assets/locale/<lang>/LC_MESSAGES/` — `structa.cloud/backend/locale`,
   `precis-landing/backend/locale`, `precis-lms/assets/locale`,
   `precis-ctc/assets/locale`, plus archived/legacy project dirs; normalize the
   mixed flat/`LC_MESSAGES` layouts; exclude `.venv`/`node_modules`/`dist`.
@@ -702,7 +702,7 @@ override the user's design system.
   reference it as a pattern for a future Loop-CRM schema-per-tenant phase, do
   not apply its `Organization`/`Branch` models to Loop-CRM.
 - **Locale audit evidence (2026-08-18):** catalogs live at
-  `precis-main/backend/locale` (en/ar/de/es/fr/pt/sv), `precis-landing/backend/locale`
+  `structa.cloud/backend/locale` (en/ar/de/es/fr/pt/sv), `precis-landing/backend/locale`
   (LC_MESSAGES), `precis-lms/assets/locale` and `precis-ctc/assets/locale`
   (mixed flat `.po` + `LC_MESSAGES` — duplicated and inconsistent).
   `projects/assets/locale/` already exists (`.gitkeep` only) and is the merge

@@ -19,7 +19,7 @@ Structa Cloud: **نظام مكونات (`{% comp %}`)**، **توجيه صريح 
 
 | المشروع | المسار | الاستخدام |
 |---------|--------|-----------|
-| 🎓 Precis (الرئيسي) | `projects/precis/precis-main/backend/` | المستهلك المرجعي: المكونات والـ viewsets والشظايا |
+| 🎓 Precis (الرئيسي) | `projects/structa.cloud/backend/` | المستهلك المرجعي: المكونات والـ viewsets والشظايا |
 | 🏥 CTC Research | `projects/precis/precis-ctc/backend/` | أكبر مستهلك (194 ملفاً): الصحة والجدولة والإعدادات |
 | 🤝 Loop-CRM | `projects/loop-crm/backend/` | الصفحات وأوامر البذر (`seed_demo`, `seed_pages`) |
 | 🤖 Syntara | `projects/syntara/` | سجلّات `django_fusion.config.loader` |

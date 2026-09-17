@@ -21,7 +21,7 @@
 
 include:
   - coder/docker-compose.yml
-  - blinko/docker-compose.yml
+  - planing/planing/docker-compose.yml
   - xyops/docker-compose.yml
   - mailpit/docker-compose.yml
   # - adminer/docker-compose.yml

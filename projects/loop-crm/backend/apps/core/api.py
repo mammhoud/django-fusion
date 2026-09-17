@@ -199,9 +199,10 @@ def dashboard_api(request):
     counts = {}
     for key, (model, _fields) in RESOURCE_MODELS.items():
         try:
+            has_workspace = any(field.name == "workspace" for field in model._meta.concrete_fields)
             queryset = (
                 model.objects.filter(workspace_id=workspace_id)
-                if workspace_id is not None
+                if workspace_id is not None and has_workspace
                 else model.objects
             )
             counts[key] = queryset.count()
@@ -477,6 +478,51 @@ def email_messages_api(request):
 
 
 @login_required
+def ledger_settings_api(request: HttpRequest) -> JsonResponse:
+    """Read/update workspace ledger defaults without exposing secrets.
+
+    Currency and timezone are workspace controls used by finance forms and
+    reports. The endpoint deliberately does not accept arbitrary preference
+    keys, so settings cannot become an unvalidated configuration escape hatch.
+    """
+    from .models import AuditLog
+
+    profile = getattr(request.user, "profile", None)
+    workspace = getattr(profile, "workspace", None) if profile else None
+    if workspace is None:
+        return JsonResponse({"detail": _("A workspace is required.")}, status=403)
+    if request.method == "GET":
+        return JsonResponse({
+            "workspace": {"id": workspace.pk, "name": workspace.name},
+            "currency": workspace.currency,
+            "timezone": workspace.timezone,
+        })
+    if request.method != "POST":
+        return JsonResponse({"detail": _("This settings endpoint accepts POST only.")}, status=405)
+    payload = _body_json(request)
+    if payload is None:
+        return JsonResponse({"detail": _("Request body must be valid JSON.")}, status=400)
+    currency = str(payload.get("currency") or workspace.currency).strip().upper()
+    timezone = str(payload.get("timezone") or workspace.timezone).strip()
+    if len(currency) != 3 or not currency.isalpha():
+        return JsonResponse({"currency": _("Use a three-letter currency code.")}, status=400)
+    if not timezone or len(timezone) > 50:
+        return JsonResponse({"timezone": _("Enter a valid timezone.")}, status=400)
+    workspace.currency = currency
+    workspace.timezone = timezone
+    workspace.save(update_fields=["currency", "timezone", "updated_at"])
+    AuditLog.objects.create(
+        user=request.user,
+        workspace=workspace,
+        action="update",
+        model_name="WorkspaceLedgerSettings",
+        object_id=str(workspace.pk),
+        changes={"currency": currency, "timezone": timezone},
+    )
+    return JsonResponse({"currency": currency, "timezone": timezone})
+
+
+@login_required
 @require_GET
 def ai_catalog_api(request: HttpRequest) -> JsonResponse:
     """Expose AI capabilities and consent state without exposing credentials."""
@@ -730,8 +776,22 @@ def reports_api(request):
     return JsonResponse({"results": catalog, "count": len(catalog)})
 
 
+@login_required
 def integrations_api(request):
-    return JsonResponse({"results": platform_catalog(), "count": len(platform_catalog())})
+    """Return connector capabilities plus this workspace's connection state."""
+    from apps.marketing.models import SocialChannel
+
+    workspace_id = current_workspace_id(request)
+    connected = set(
+        SocialChannel.objects.filter(workspace_id=workspace_id, is_active=True)
+        .exclude(oauth_token="")
+        .values_list("platform", flat=True)
+    ) if workspace_id is not None else set()
+    results = [
+        dict(platform, connected=platform["id"] in connected)
+        for platform in platform_catalog()
+    ]
+    return JsonResponse({"results": results, "count": len(results)})
 
 
 @login_required

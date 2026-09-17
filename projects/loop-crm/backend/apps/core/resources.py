@@ -28,7 +28,7 @@ from django.db import OperationalError, ProgrammingError, models
 from django.db.models import Q
 
 from apps.attribution.models import AttributionTouchpoint
-from apps.crm.models import Activity, Company, Contact, Deal, Pipeline
+from apps.crm.models import Activity, Company, Contact, Deal, Pipeline, PipelineStage
 from apps.finance.models import Invoice, Payment, RevenueEvent
 from apps.marketing.models import Campaign, Post, SocialChannel
 
@@ -143,6 +143,15 @@ RESOURCES: dict[str, Resource] = {
         label="Pipelines",
         singular="pipeline",
         description="Sales pipelines with configurable stages and a default designation.",
+    ),
+    "pipeline_stages": Resource(
+        model=PipelineStage,
+        read_fields=("id", "pipeline_id", "name", "stage_type", "color", "order", "probability"),
+        write_fields=("pipeline_id", "name", "stage_type", "color", "order", "probability"),
+        required_fields=("pipeline_id", "name"),
+        label="Pipeline stages",
+        singular="pipeline stage",
+        description="Ordered CRM pipeline stages with probability and close-state semantics.",
     ),
     "campaigns": Resource(
         model=Campaign,

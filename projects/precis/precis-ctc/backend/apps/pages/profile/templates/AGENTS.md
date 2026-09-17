@@ -1,8 +1,8 @@
 # Precis Profile App Templates — AI Agent Instructions
 
-**Scope:** `projects/precis/precis-main/backend/apps/pages/profile/templates/`
+**Scope:** `projects/structa.cloud/backend/apps/pages/profile/templates/`
 
-Read `projects/precis/precis-main/backend/AGENTS.md` and the root `AGENTS.md` first. These
+Read `projects/structa.cloud/backend/AGENTS.md` and the root `AGENTS.md` first. These
 templates belong to the Precis profile feature.
 
 Preserve authenticated-user/profile context, permissions, forms, notifications,

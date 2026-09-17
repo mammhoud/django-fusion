@@ -3,7 +3,7 @@
 
 Allows execution via the canonical dispatcher, e.g.:
     cd projects && make check WEBSITE=precis-main
-    cd projects && uv run python precis/precis-main/backend/__main__.py runserver
+    cd projects && uv run python structa.cloud/backend/__main__.py runserver
 """
 from __future__ import annotations
 

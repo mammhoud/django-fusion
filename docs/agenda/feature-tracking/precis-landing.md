@@ -28,8 +28,9 @@ links:
 
 # 🎯 Precis Landing — Feature Tracking
 
-> **Note:** The kept legacy copy of the Precis marketing site; the unified product at `projects/precis/precis-main/` supersedes it for new feature work.
-> **Last updated:** 2026-09-12
+> **Note:** The kept legacy copy of the Precis marketing site; the unified product at `projects/structa.cloud/` supersedes it for new feature work.
+> **Canonical command/render reference:** [`Precis Main Fusion render flow`](../../precis/landing-fusion-render-flow.html)
+> **Last updated:** 2026-09-15
 > **Hub:** [`feature-tracking.md`](../feature-tracking.md) — lifecycle, status definitions, and the per-product index.
 
 ---
@@ -56,7 +57,7 @@ links:
 - [x] Lead capture working
 - [x] SEO metadata on public pages
 
-**Notes:** Site is live; kept as a legacy copy — the unified product at `projects/precis/precis-main/` supersedes it for new feature work. Ongoing content work continues under the P0 content priority in [`dev-team-plans.md`](../dev-team-plans.md).
+**Notes:** Site is live; kept as a legacy copy — the unified product at `projects/structa.cloud/` supersedes it for new feature work. Ongoing content work continues under the P0 content priority in [`dev-team-plans.md`](../dev-team-plans.md).
 
 ---
 

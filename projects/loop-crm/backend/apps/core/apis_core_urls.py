@@ -18,12 +18,17 @@ from apps.core.api import (
     dashboard_api,
     employee_report_api,
     employees_api,
+    integrations_api,
+    ledger_settings_api,
     reports_api,
     search_api,
+    resource_api,
+    workflows_api,
     workspace_current_api,
 )
 from apps.core.locale_api import locale_api
 from apps.crm.views import deal_move_api, pipeline_board_api
+from apps.finance.views import revenue_trend_api
 
 urlpatterns = [
     # Workspace identity — used by the WebSocket island to discover its tenant
@@ -33,7 +38,10 @@ urlpatterns = [
     path("dashboard/", dashboard_api, name="dashboard_api"),
     # Report catalog — /reports/ surface. (was: /apis/reports/)
     path("reports/", reports_api, name="reports_api"),
+    path("workflows/", workflows_api, name="workflows_api"),
+    path("integrations/", integrations_api, name="integrations_api"),
     path("ai/", ai_catalog_api, name="ai_catalog_api"),
+    path("settings/ledger/", ledger_settings_api, name="ledger_settings_api"),
     path("ai/consent/", ai_consent_api, name="ai_consent_api"),
     path("ai/<str:operation>/", ai_operation_api, name="ai_operation_api"),
     path("employees/", employees_api, name="employees_api"),
@@ -46,4 +54,9 @@ urlpatterns = [
     path("board/", pipeline_board_api, name="pipeline_board_api"),
     # Move a deal between stages. (was: /api/v1/deals/<pk>/stage/)
     path("deals/<int:pk>/stage/", deal_move_api, name="deal_move_api"),
+    path("revenue/trend/", revenue_trend_api, name="revenue_trend_api"),
+    # Canonical session-cookie CRUD road for registered resources. `/api/v1/`
+    # remains compatibility-only and is not used by the Astro shell.
+    path("resources/<str:resource>/", resource_api, name="resource_api"),
+    path("resources/<str:resource>/<int:pk>/", resource_api, name="resource_detail_api"),
 ]

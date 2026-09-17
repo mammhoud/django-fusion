@@ -7,7 +7,7 @@ Two layers coexist in this directory:
    registry, template sites, and environment-scoped settings.
 2. **YAML cascade (django-fusion `config.project`)** — `defaults.yml`,
    `site.yml`, `admin.yml` are the project-owned layer of the layered config
-   cascade (same layout as `precis/precis-main/configs/` and
+   cascade (same layout as `structa.cloud/configs/` and
    `precis/precis-ctc/configs/`). YAML holds **defaults**; the project `.env`
    holds customization; environment variables (`CYPERCLOUD_*` / `DJANGO_*`)
    hold deploy-time truth.

@@ -1,0 +1,79 @@
+# =============================================================================
+# Planing — self-hosted planning & task management tool
+# =============================================================================
+# Planing is SurrealDB-only. The SurrealDB runtime validator must pass
+# before the app image can be built or started.
+# Served at tools.structa.cloud/planing/ via the tools-proxy Nginx.
+#
+# SurrealDB is pinned to v1.5.6 and stored on a Docker-managed volume.
+# The tracked runtime under ./runtime is the deployed application.
+# =============================================================================
+
+networks:
+  common:
+    external: true
+
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:v1.5.6
+    container_name: planing-surreal
+    user: "0:0"
+    command: start --auth --user root --pass ${SURREALDB_PASS:-planing} file:/data/planing.db
+    ports:
+      - "${SURREALDB_PORT:-8000}:8000"
+    volumes:
+      - planing-surreal-data:/data
+    networks:
+      - common
+    healthcheck:
+      test: ["CMD", "/surreal", "isready", "--endpoint", "http://127.0.0.1:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  planing:
+    build:
+      context: ./runtime
+      dockerfile: Dockerfile
+    image: planing-local:latest
+    container_name: planing
+    depends_on:
+      surrealdb:
+        condition: service_healthy
+    ports:
+      - "${PLANING_PORT:-1111}:1111"
+    environment:
+      NEXTAUTH_SECRET: ${PLANING_NEXTAUTH_SECRET:-planing-secret-change-me}
+      # Planing is mounted below /planing/ by tools-proxy; both URL settings
+      # must use the public prefix while Nginx strips it upstream.
+      NEXTAUTH_URL: ${PLANING_PUBLIC_URL:-https://tools.structa.cloud/planing}
+      NEXT_PUBLIC_BASE_URL: ${PLANING_PUBLIC_URL:-https://tools.structa.cloud/planing}
+      PLANING_PORT: "1111"
+      NODE_ENV: production
+      # SurrealDB — sole datastore
+      SURREALDB_URL: http://surrealdb:8000/rpc
+      SURREALDB_USER: root
+      SURREALDB_PASS: ${SURREALDB_PASS:-planing}
+      SURREALDB_NS: planing
+      SURREALDB_DB: planing
+      # Chat context root: the project tree is mounted read-only so a chat can
+      # read the repository it is asked about but never write to it.
+      PLANING_CONTEXT_PROJECT_DIR: /app/context
+      PLANING_CONTEXT_MAX_BYTES: ${PLANING_CONTEXT_MAX_BYTES:-262144}
+    volumes:
+      - ./planing-data/app:/app/data
+      - ${PLANING_CONTEXT_DIR:-../../..}:/app/context:ro
+    networks:
+      - common
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:1111/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: unless-stopped
+
+volumes:
+  planing-surreal-data:

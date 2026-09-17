@@ -22,7 +22,7 @@ Tags: guide, navigation, repository
 |------|---------|
 | projects/configs/ | Shared Django configuration |
 | projects/assets/ | Shared assets and media |
-| projects/precis/precis-main/ | Precis unified (LMS + landing) |
+| projects/structa.cloud/ | Precis unified (LMS + landing) |
 | projects/precis/precis-ctc/ | CTC Research |
 | projects/syntara/ | Syntara AI chat customizer |
 | projects/loop-crm/ | Loop-CRM |

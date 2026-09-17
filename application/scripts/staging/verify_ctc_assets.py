@@ -36,7 +36,7 @@ APPLICATIONS_ROOT = REPOSITORY_ROOT / "application"
 PROJECTS_ROOT = REPOSITORY_ROOT / "projects"
 PROXY = APPLICATIONS_ROOT / "proxy"
 CTC = PROJECTS_ROOT / "precis" / "precis-ctc"
-MAIN = PROJECTS_ROOT / "precis" / "precis-main"
+MAIN = PROJECTS_ROOT / "structa.cloud"
 SHARED_ASSETS = PROJECTS_ROOT / "assets"
 
 
@@ -52,7 +52,7 @@ def site_root(site: str) -> Path:
 def site_rel(site: str) -> str:
     """Relative product path under projects/ for compose mount assertions."""
     if site in {"lms", "precis-lms", "structa", "structa.cloud"}:
-        return "precis/precis-main"
+        return "structa.cloud"
     if site == "precis-ctc":
         return "precis/precis-ctc"
     return f"precis/{site}"

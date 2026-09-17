@@ -105,9 +105,11 @@ export interface PageResult {
   error?: string;
 }
 
+// Use the same-origin proxy in every browser environment. The Astro dev proxy
+// and production Traefik route `/apis/pages/` to Django; no localhost or
+// alternate content source is allowed to silently replace Wagtail data.
 const BACKEND_URL: string =
-  (import.meta.env as Record<string, unknown>).PUBLIC_BACKEND_URL as string | undefined ??
-  'http://127.0.0.1:8000';
+  ((import.meta.env as Record<string, unknown>).PUBLIC_BACKEND_URL as string | undefined ?? '').replace(/\/$/, '');
 
 export async function fetchPage(slug: string, signal?: AbortSignal): Promise<PageResult> {
   try {

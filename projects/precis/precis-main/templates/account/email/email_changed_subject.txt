@@ -1,1 +1,0 @@
-{% load i18n %}{% autoescape off %}{% blocktrans %}Your email was changed — Structa Cloud{% endblocktrans %}{% endautoescape %}

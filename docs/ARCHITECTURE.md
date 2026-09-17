@@ -340,7 +340,7 @@ projects/
 │   ├── email_tasks.py      # send_newsletter, send_contact_form_notification
 │   └── content_tasks.py    # warm_page_cache, generate_blog_preview_images
 │
-├── precis/precis-main/backend/apps/tasks/
+├── structa.cloud/backend/apps/tasks/
 │   ├── email_tasks.py      # send_enrollment_confirmation, send_certificate
 │   ├── course_tasks.py     # sync_course_completion_rates, send_weekly_digest
 │   └── content_tasks.py    # process_uploaded_video, generate_ai_description
@@ -455,7 +455,7 @@ projects/webpack/
 projects/precis/precis-landing/webpack/
 └── precis-landing.config.js # Extends base, per-project entries/output
 │
-projects/precis/precis-main/webpack/
+projects/structa.cloud/webpack/
 └── precis.config.js         # Extends base, per-project entries/output
 ```
 
@@ -687,5 +687,5 @@ structa.cloud/
 ## Remarks & Notes
 
 - This document describes shared boundaries; product-specific behavior belongs in the product documentation and nearest scoped `AGENTS.md`.
-- The current filesystem map is `projects/precis/precis-main/`, `projects/precis/precis-landing/`, and `projects/precis/precis-ctc/`; confirm aliases in `projects/Makefile` before using a legacy name.
+- The current filesystem map is `projects/structa.cloud/`, `projects/precis/precis-landing/`, and `projects/precis/precis-ctc/`; confirm aliases in `projects/Makefile` before using a legacy name.
 - Docus metadata is generated from canonical Markdown by `docs/scripts/prepare-content.mjs`; generated content is not a second source.

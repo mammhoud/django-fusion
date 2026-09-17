@@ -28,7 +28,7 @@ Django/Wagtail + Astro]
 
 | Concern | Precis unified | Precis Landing copy | CTC Research |
 |---|---|---|---|
-| Filesystem | `projects/precis/precis-main/` | `projects/precis/precis-landing/` | `projects/precis/precis-ctc/` |
+| Filesystem | `projects/structa.cloud/` | `projects/precis/precis-landing/` | `projects/precis/precis-ctc/` |
 | Runtime identity | `precis-main` | `precis-landing` | `precis-ctc` |
 | Main audience | Learners, teams, catalog visitors | Compatibility/legacy landing workflows | Researchers, clinicians, medical writers, learners |
 | Backend | Django/Wagtail LMS + marketing | Django/Wagtail landing copy | Django/Wagtail research + learning |

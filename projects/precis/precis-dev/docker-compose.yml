@@ -21,7 +21,7 @@ services:
   backend:
     build:
       context: ../../..
-      dockerfile: projects/precis/precis-main/backend/Dockerfile
+      dockerfile: projects/structa.cloud/backend/Dockerfile
     image: precis-dev-backend:latest
     container_name: precis-dev-backend
     restart: unless-stopped
@@ -84,7 +84,7 @@ services:
   scheduler:
     build:
       context: ../../..
-      dockerfile: projects/precis/precis-main/backend/Dockerfile
+      dockerfile: projects/structa.cloud/backend/Dockerfile
     image: precis-dev-backend:latest
     container_name: precis-dev-scheduler
     restart: unless-stopped
@@ -128,7 +128,7 @@ services:
   worker:
     build:
       context: ../../..
-      dockerfile: projects/precis/precis-main/backend/Dockerfile
+      dockerfile: projects/structa.cloud/backend/Dockerfile
     image: precis-dev-backend:latest
     container_name: precis-dev-worker
     restart: unless-stopped
@@ -178,7 +178,7 @@ services:
   frontend:
     build:
       context: ../../..
-      dockerfile: projects/precis/precis-main/frontend/Dockerfile
+      dockerfile: projects/structa.cloud/frontend/Dockerfile
     image: precis-dev-frontend:latest
     container_name: precis-dev-frontend
     restart: unless-stopped

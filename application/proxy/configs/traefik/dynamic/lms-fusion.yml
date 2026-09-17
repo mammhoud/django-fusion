@@ -1,6 +1,7 @@
 # =============================================================================
 # precis-lms (Precis LMS) — Traefik router config
 # =============================================================================
+# Source tree: projects/structa.cloud (renamed from projects/structa.cloud)
 # Containers: precis-main-backend  (Django + django-fusion, port 8074)
 #             precis-main-frontend (Astro shell, port 3000)
 # Public domain: lms.structa.cloud

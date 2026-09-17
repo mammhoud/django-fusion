@@ -1,9 +1,9 @@
 #!/bin/bash
 # =============================================================================
-# Domain Drift Check — Ensures cms-fusion and precis-main domain code stays in sync
+# Domain Drift Check — Ensures cms-fusion and structa.cloud (precis-main) domain code stays in sync
 #
 # The `apps/core/domain/` directory is intentionally duplicated between
-# cms-fusion and precis-main. This script verifies they are identical
+# cms-fusion and structa.cloud (precis-main). This script verifies they are identical
 # and fails the build if any drift is detected.
 #
 # Usage:
@@ -15,7 +15,7 @@ set -euo pipefail
 
 WORKSPACE="$(cd "$(dirname "$0")/../../.." && pwd)"
 CMS_DOMAIN="$WORKSPACE/projects/cms-fusion/backend/apps/domain"
-LMS_DOMAIN="$WORKSPACE/projects/precis-main/backend/apps/domain"
+LMS_DOMAIN="$WORKSPACE/projects/structa.cloud/backend/apps/domain"
 
 QUIET=false
 SHOW_DIFF=false
@@ -33,7 +33,7 @@ if [ ! -d "$CMS_DOMAIN" ]; then
     exit 2
 fi
 if [ ! -d "$LMS_DOMAIN" ]; then
-    echo "❌ ERROR: precis-main domain directory not found: $LMS_DOMAIN"
+    echo "❌ ERROR: structa.cloud domain directory not found: $LMS_DOMAIN"
     exit 2
 fi
 
@@ -45,7 +45,7 @@ while IFS= read -r file; do
     lms_file="$LMS_DOMAIN/$file"
     if [ ! -f "$lms_file" ]; then
         DRIFT_FOUND=true
-        ISSUES+=("MISSING in precis-main: $file")
+        ISSUES+=("MISSING in structa.cloud: $file")
     fi
 done < <(cd "$CMS_DOMAIN" && find . -name '*.py' -not -path '*__pycache__*' | sort)
 
@@ -72,7 +72,7 @@ if [ "$DRIFT_FOUND" = true ]; then
     echo ""
     echo "╔══════════════════════════════════════════════════════════════════╗"
     echo "║  ❌ DOMAIN DRIFT DETECTED                                        ║"
-    echo "║  cms-fusion and precis-main domain code has diverged!             ║"
+    echo "║  cms-fusion and structa.cloud domain code has diverged!             ║"
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo ""
     echo "  Affected files (${#ISSUES[@]}):"
@@ -86,7 +86,7 @@ if [ "$DRIFT_FOUND" = true ]; then
     echo ""
     echo "  To see exact differences, run:"
     echo "    diff -r projects/cms-fusion/backend/apps/domain \\"
-    echo "         projects/precis-main/backend/apps/domain \\"
+    echo "         projects/structa.cloud/backend/apps/domain \\"
     echo "         -x '__pycache__' -x '*.pyc'"
     echo ""
 
@@ -104,6 +104,6 @@ fi
 
 # ── Success ──────────────────────────────────────────────────────────────────
 if [ "$QUIET" = false ]; then
-    echo "  ✅ Domain drift check passed — cms-fusion and precis-main are in sync"
+    echo "  ✅ Domain drift check passed — cms-fusion and structa.cloud are in sync"
 fi
 exit 0

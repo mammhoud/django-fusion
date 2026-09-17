@@ -1,7 +1,7 @@
 # 🖼️ Precis Landing (legacy) Docs
 
 > **Owning project:** `precis-landing` (legacy copy) · **Part of:** [`precis/`](../README.md)
-> **Canonical product:** `projects/precis/precis-main/`
+> **Canonical product:** `projects/structa.cloud/`
 
 Precis Landing is the Astro + HTMX + Alpine marketing/catalog site paired with
 a Django + Wagtail backend. This legacy directory holds the reader-facing docs

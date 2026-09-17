@@ -81,7 +81,7 @@ blog-detail template the Wagtail `BlogDetailPage` actually renders is
 placeholder-free.
 
 ### 2.2 Precis Main (unified) — stale brand teaser
-**Where:** `projects/precis/precis-main/frontend/src/lib/brand.ts:58`.
+**Where:** `projects/structa.cloud/frontend/src/lib/brand.ts:58`.
 **Evidence:** a product/role list still advertises the merged CRM as
 "coming soon", which Loop-CRM (live at `crm.structa.cloud`) no longer is.
 **Recommendation:** refresh the copy to the live Loop-CRM positioning or drop

@@ -17,8 +17,8 @@ graph TB
     subgraph "Duplicated Copies"
         CMS_COPY["📁 projects/cms-fusion/assets/fixtures/"]
         CMS_BACKEND["📁 projects/cms-fusion/backend/assets/fixtures/"]
-        LMS_COPY["📁 projects/precis/precis-main/assets/fixtures/"]
-        LMS_BACKEND["📁 projects/precis/precis-main/backend/assets/fixtures/"]
+        LMS_COPY["📁 projects/structa.cloud/assets/fixtures/"]
+        LMS_BACKEND["📁 projects/structa.cloud/backend/assets/fixtures/"]
     end
 
     subgraph "Loading Methods"

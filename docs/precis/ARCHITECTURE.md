@@ -36,7 +36,7 @@ links:
 > **Status:** Active (2026-08-10) · **Updated:** 10 August 2026
 > **Product:** Precis LMS + landing (unified `precis-main`)
 > **Stack:** Django 5.2 + Wagtail 7.4 + django-fusion + Astro 5 + HTMX + Alpine.js
-> **Path:** `projects/precis/precis-main/`
+> **Path:** `projects/structa.cloud/`
 
 ---
 
@@ -83,7 +83,7 @@ pipeline for reusable UI.
 - **Skeleton loading.** Build-time skeleton manifest → Astro bridge → RUM
   metrics for perceived performance.
 - **Per-project isolation.** Templates, assets, and static files are scoped to
-  `projects/precis/precis-main/`, never shared with precis-landing or formints.
+  `projects/structa.cloud/`, never shared with precis-landing or formints.
 
 ---
 
@@ -242,7 +242,7 @@ make build-assets
 ### ADR-7: Webpack-based asset pipeline
 
 **Decision:** Precis uses webpack (via `projects/webpack/base.config.js`) with
-project-specific config at `projects/precis/precis-main/webpack/precis.config.js`.
+project-specific config at `projects/structa.cloud/webpack/precis.config.js`.
 Per-project webpack aliases (`@precis`, `@precis-styles`, `@precis-js`) keep
 imports scoped.
 
@@ -383,9 +383,9 @@ make build
 ## Template Resolution Order
 
 ```
-1. projects/precis/precis-main/backend/templates/          # Site-root shells, errors
-2. projects/precis/precis-main/backend/apps/*/templates/   # App-owned templates
-3. projects/precis/precis-main/assets/templates/           # Shared asset templates
+1. projects/structa.cloud/backend/templates/          # Site-root shells, errors
+2. projects/structa.cloud/backend/apps/*/templates/   # App-owned templates
+3. projects/structa.cloud/assets/templates/           # Shared asset templates
 4. libs/django-fusion/src/django_fusion/templates/  # Framework fallback
 ```
 
@@ -394,7 +394,7 @@ make build
 ## Frontend Architecture
 
 ```
-projects/precis/precis-main/frontend/
+projects/structa.cloud/frontend/
 ├── src/
 │   ├── pages/                     # Astro pages (SSG + SSR)
 │   │   ├── index.astro            # Homepage
@@ -445,7 +445,7 @@ from django_fusion.tasks import task
 ### Testing
 
 ```bash
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make check          # ruff + django check
 make test           # pytest (167 tests)
 make migrate        # Apply migrations (SQLite in dev)
@@ -457,7 +457,7 @@ DJANGO_SETTINGS_MODULE=settings pytest apps/learning/tests/ -v
 ### Commands reference
 
 ```bash
-cd projects/precis/precis-main
+cd projects/structa.cloud
 
 # Asset build
 make install-assets     # npm install
@@ -492,7 +492,7 @@ make frontend-dev       # Astro dev server
 - [`cms-builder.md`](cms-builder.md) — Assets-based CMS / Builder profile (under development)
 - [`../ARCHITECTURE.md`](../ARCHITECTURE.md) — Monorepo-wide architecture
 - [`../startup/precis.md`](../startup/precis.md) — Precis market strategy 🔒
-- [`../../projects/precis/precis-main/README.md`](../../projects/precis/precis-main/README.md) — Project README
+- [`../../projects/structa.cloud/README.md`](../../projects/structa.cloud/README.md) — Project README
 - [`../plans/django-fusion/`](../plans/django-fusion/) — Shared framework plans (tasks, MCP, skeleton assets)
 
 ## Remarks & Notes

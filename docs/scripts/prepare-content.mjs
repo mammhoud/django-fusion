@@ -45,7 +45,7 @@ function routeFor(relative) {
 function ownerFor(relative) {
   const normalized = relative.split(path.sep).join('/');
   if (normalized.startsWith('projects/precis/precis-ctc/')) return 'precis-ctc';
-  if (normalized.startsWith('projects/precis/precis-main/')) return 'precis-main';
+  if (normalized.startsWith('projects/structa.cloud/')) return 'precis-main';
   if (normalized.startsWith('projects/precis/precis-landing/')) return 'precis-landing';
   if (normalized.startsWith('projects/formints/')) return 'formints';
   if (normalized.startsWith('projects/syntara/')) return 'syntara';

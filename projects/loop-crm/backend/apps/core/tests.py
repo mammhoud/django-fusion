@@ -11,7 +11,7 @@ from django_fusion.comp.tags.menu import app_menu
 
 from apps.core.bolt_api import bolt
 from apps.core.fusion import loop_crm_application
-from apps.core.models import TaskExecution, WorkflowDefinition, WorkflowRun, Workspace
+from apps.core.models import AuditLog, TaskExecution, WorkflowDefinition, WorkflowRun, Workspace
 from apps.core.navigation import breadcrumbs_for, navigation_context
 from apps.core.workflows import persisted_workflow_catalog
 from apps.crm.custom_fields import custom_object_catalog, validate_custom_attributes
@@ -547,6 +547,54 @@ class TaskCenterTests(TestCase):
         # loop-crm has no shared BackgroundTaskLog table; the mirror helper
         # must degrade to zero rather than raise.
         self.assertEqual(sync_website_record("loop-crm"), 0)
+
+    def test_ledger_settings_are_workspace_scoped_validated_and_audited(self):
+        user = User.objects.create_user(username="ledger-user", email="ledger-user@example.com", password="Strong-pass-123")
+        self.client.force_login(user)
+        workspace = Workspace.objects.create(name="Ledger workspace", slug="ledger-workspace")
+        user.profile.workspace = workspace
+        user.profile.save(update_fields=["workspace"])
+
+        response = self.client.get("/apis/core/settings/ledger/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["currency"], "USD")
+
+        response = self.client.post(
+            "/apis/core/settings/ledger/",
+            data='{"currency":"eur","timezone":"Europe/Paris"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 200)
+        workspace.refresh_from_db()
+        self.assertEqual(workspace.currency, "EUR")
+        self.assertEqual(workspace.timezone, "Europe/Paris")
+        self.assertTrue(AuditLog.objects.filter(model_name="WorkspaceLedgerSettings", workspace=workspace).exists())
+
+        response = self.client.post(
+            "/apis/core/settings/ledger/",
+            data='{"currency":"EURO","timezone":"Europe/Paris"}',
+            content_type="application/json",
+        )
+        self.assertEqual(response.status_code, 400)
+
+    def test_canonical_integrations_require_login_and_expose_connection_state(self):
+        response = self.client.get("/apis/core/integrations/")
+        self.assertIn(response.status_code, (301, 302))
+        user = User.objects.create_user(username="integration-user", email="integration-user@example.com", password="Strong-pass-123")
+        self.client.force_login(user)
+        workspace = Workspace.objects.create(name="Integration workspace", slug="integration-workspace")
+        user.profile.workspace = workspace
+        user.profile.save(update_fields=["workspace"])
+        SocialChannel.objects.create(
+            workspace=workspace,
+            platform="slack",
+            account_name="Ops Slack",
+            oauth_token="configured-token",
+        )
+        response = self.client.get("/apis/core/integrations/")
+        self.assertEqual(response.status_code, 200)
+        slack = next(item for item in response.json()["results"] if item["id"] == "slack")
+        self.assertTrue(slack["connected"])
 
     def test_api_contracts_expose_integration_and_workflow_catalogs(self):
         self.client.force_login(self.user)

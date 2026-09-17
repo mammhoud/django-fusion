@@ -28,10 +28,10 @@ links:
 
 # ⚙️ Precis — Configuration
 
-> **Canonical project:** `projects/precis/precis-main/`
+> **Canonical project:** `projects/structa.cloud/`
 > **Runtime:** Django 5.2 + Wagtail 7.4 + django-fusion with an Astro frontend.
 
-Precis Main is configured by `projects/precis/precis-main/docker-compose.yml`
+Precis Main is configured by `projects/structa.cloud/docker-compose.yml`
 for deployment and by `backend/settings.py` for local defaults. The former
 standalone LMS/landing configuration is a compatibility alias, not a second
 runtime configuration.
@@ -67,23 +67,32 @@ The proxy routes both hosts to `precis-main-backend:8074` for backend-owned
 paths and `precis-main-frontend:3000` for the Astro catch-all. See the
 [Precis Main proxy/admin runbook](../dev/infrastructure/precis-main-proxy-admin.md).
 
-## Local checks
+## Local and production command contract
+
+From `projects/structa.cloud/`:
 
 ```bash
-cd projects/precis/precis-main/backend
-make check
-make test
+# Local: requires the root .env and loads docker-compose.override.yml
+make validate-local
+make deploy-local
 
-# Apply local SQLite migrations when needed
-make migrate
+# Production: requires the root deployment .env and uses the base file only
+make validate-production
+make deploy-production
 ```
+
+The local target publishes `localhost:8074` and `localhost:3000`; the
+production target does not publish development ports and never loads the local
+override. Nx delegates the same operations through
+`precis-main-assets:deploy-local` and `precis-main-assets:deploy-production`.
+
 
 For the deployed stack, validate the resolved Compose configuration without
 printing environment values:
 
 ```bash
 docker compose --env-file .env \
-  -f projects/precis/precis-main/docker-compose.yml config -q
+  -f projects/structa.cloud/docker-compose.yml config -q
 ```
 
 ## Remarks & Notes

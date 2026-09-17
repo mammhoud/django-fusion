@@ -59,8 +59,8 @@ The Structa Cloud monorepo is a **multi-project Django + Rust + TypeScript + Ast
 
 ```bash
 cd projects
-make check WEBSITE=precis-main         # Checks Precis LMS
-make test WEBSITE=precis-main          # Tests Precis LMS
+make check WEBSITE=structa.cloud         # Checks Precis LMS
+make test WEBSITE=structa.cloud          # Tests Precis LMS
 make run-dev WEBSITE=precis-landing   # Precis Landing dev server
 make check WEBSITE=precis-ctc         # CTC Research backend/frontend checks
 make check WEBSITE=precis-landing
@@ -71,7 +71,7 @@ make test WEBSITE=precis-landing
 
 ```bash
 # Precis LMS
-cd projects/precis/precis-main/backend
+cd projects/structa.cloud/backend
 make check && make test && make migrate
 
 # Precis Landing
@@ -121,7 +121,7 @@ make logs              # Tail all service logs
 
 | Project | Dir | Type | Port | Stack |
 |---------|-----|------|------|-------|
-| **Precis (unified LMS + landing)** | `projects/precis/precis-main/` | Astro + Django | backend 8074 · frontend 3000 (Docker) | Wagtail + Astro 5 + django-fusion |
+| **Precis (unified LMS + landing)** | `projects/structa.cloud/` | Astro + Django | backend 8074 · frontend 3000 (Docker) | Wagtail + Astro 5 + django-fusion |
 | **Precis Landing** | `projects/precis/precis-landing/` | Legacy compatibility copy | — | Historical source; runtime maps to Precis Main |
 | **CTC Research** | `projects/precis/precis-ctc/` | Django Site | — | Wagtail + django-fusion |
 | **Syntara** | `projects/syntara/` | Django Site | 5073 | AI Chat + CeptorAI + Ollama |
@@ -234,11 +234,11 @@ The codebase has been through several renames. See this guide for mapping old na
 | Legacy Name | Current Name | Current Path |
 |---|---|---|
 | `precis-ctc` / `ctc` | **CTC Research** | `projects/precis/precis-ctc/` |
-| `precis-lms` / `lms` | **Precis LMS** (alias) | `projects/precis/precis-main/` |
+| `precis-lms` / `lms` | **Precis LMS** (alias) | `projects/structa.cloud/` |
 | `precis-landing` | **Precis Landing** | `projects/precis/precis-landing/` |
 | `cms-fusion` | Merged into Precis + Precis Landing | — |
 | `cypercloud` | **Syntara** (runtime alias preserved) | `projects/syntara/` |
-| `portfolio` / `VResume` | Merged into Precis | `projects/precis/precis-main/` |
+| `portfolio` / `VResume` | Merged into Precis | `projects/structa.cloud/` |
 | `pos-mini` / `forge-pos` / `formintA` / `formint-community` | **Formint Community** | `projects/formints/formint-community/` |
 | `formint-standard` | **Formint Standard** | `projects/formints/formint-standard/` |
 | `pos-solo` / `pos-full` / `formint` / `formint-pro` | **Formint Professional** (merged) | `projects/formints/formint-pro/` |

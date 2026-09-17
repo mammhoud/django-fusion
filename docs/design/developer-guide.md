@@ -477,7 +477,7 @@ npx sass projects/assets/theme/_index.scss
 cd libs/django-fusion && uv run pytest
 
 # Product checks (example)
-cd projects && make check WEBSITE=precis-main
+cd projects && make check WEBSITE=structa.cloud
 
 # Docs validation
 make -C docs check
