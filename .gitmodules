@@ -23,6 +23,13 @@
 	url = https://github.com/mammhoud/ctc-research.git
 	branch = generic
 
+
+[submodule "projects/Clients/structa.cloud"]
+	path = projects/Clients/structa.cloud
+	url = https://github.com/mammhoud/structa.cloud.git
+	branch = generic
+
+
 [submodule "application/tools/PlanInc"]
 	path = application/tools/PlanInc
 	url = https://github.com/mammhoud/PlanInc.git

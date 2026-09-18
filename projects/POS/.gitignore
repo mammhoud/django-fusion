@@ -182,3 +182,6 @@ _captures/
 
 stats.html
 *.tsbuildinfo
+
+# Runtime artifacts
+appmap.log
