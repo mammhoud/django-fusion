@@ -3,11 +3,6 @@
 	url = https://github.com/mammhoud/django-fusion.git
 	branch = generic
 
-[submodule "projects/structa.cloud"]
-	path = projects/structa.cloud
-	url = https://github.com/mammhoud/structa.cloud.git
-	branch = generic
-
 [submodule "projects/CRM"]
 	path = projects/CRM
 	url = https://github.com/mammhoud/crm.git
@@ -26,5 +21,10 @@
 [submodule "projects/Clients/ctc-research"]
 	path = projects/Clients/ctc-research
 	url = https://github.com/mammhoud/ctc-research.git
+	branch = generic
+
+[submodule "application/tools/PlanInc"]
+	path = application/tools/PlanInc
+	url = https://github.com/mammhoud/PlanInc.git
 	branch = generic
 
