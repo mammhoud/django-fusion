@@ -1,3 +1,0 @@
--- SQLite does not support DROP COLUMN in older versions.
--- This migration is forward-only; rollback requires a full DB reset.
--- The column is harmless if left in place.
