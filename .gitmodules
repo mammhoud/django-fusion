@@ -2,3 +2,29 @@
 	path = libs/django-fusion
 	url = https://github.com/mammhoud/django-fusion.git
 	branch = generic
+
+[submodule "projects/structa.cloud"]
+	path = projects/structa.cloud
+	url = https://github.com/mammhoud/structa.cloud.git
+	branch = generic
+
+[submodule "projects/CRM"]
+	path = projects/CRM
+	url = https://github.com/mammhoud/crm.git
+	branch = generic
+
+[submodule "projects/CMS"]
+	path = projects/CMS
+	url = https://github.com/mammhoud/cms.git
+	branch = generic
+
+[submodule "projects/POS"]
+	path = projects/POS
+	url = https://github.com/mammhoud/pos.git
+	branch = generic
+
+[submodule "projects/Clients/ctc-research"]
+	path = projects/Clients/ctc-research
+	url = https://github.com/mammhoud/ctc-research.git
+	branch = generic
+

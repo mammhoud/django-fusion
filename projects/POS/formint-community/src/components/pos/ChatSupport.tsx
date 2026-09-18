@@ -14,7 +14,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { useTranslation } from 'react-i18next';
-import AnimatePresence from '../../components/ui/AnimatePresence';
+import AnimatePresence from '../ui/AnimatePresence';
 
 interface ChatSupportProps {
   showTrigger?: boolean;

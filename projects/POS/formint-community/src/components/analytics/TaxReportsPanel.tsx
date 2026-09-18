@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { TaxReport } from '../../types';
 import { useCurrency } from '../../contexts/CurrencyContext';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
-import SearchInput from '../../components/ui/SearchInput';
-import StatCard from '../../components/ui/StatCard';
-import FormModal from '../../components/ui/FormModal';
-import Card from '../../components/ui/Card';
-import Button from '../../components/ui/Button';
+import SearchInput from '../ui/SearchInput';
+import StatCard from '../ui/StatCard';
+import FormModal from '../ui/FormModal';
+import Card from '../ui/Card';
+import Button from '../ui/Button';
 
 type SortKey = 'newest' | 'oldest' | 'sales-desc' | 'sales-asc';
 

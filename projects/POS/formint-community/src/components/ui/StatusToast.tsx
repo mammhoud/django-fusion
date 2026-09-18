@@ -1,4 +1,4 @@
-import AnimatePresence from '../../components/ui/AnimatePresence';
+import AnimatePresence from './AnimatePresence';
 interface StatusToastProps {
   type: 'success' | 'error';
   message: string;

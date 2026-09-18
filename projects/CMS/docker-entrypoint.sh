@@ -2,7 +2,7 @@
 set -euo pipefail
 
 CYPERCLOUD_PORT="${CYPERCLOUD_PORT:-5073}"
-APP_HOME="/app/cypercloud"
+APP_HOME="/app/syntara"
 WORKERS="${WORKERS:-2}"
 # Auto-recycle workers to flush stale in-memory state (template caches,
 # cached.Loader entries, accumulated per-worker caches) after they have

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import SideNav from '../layout/SideNav';
+import SideNav from './SideNav';
 import AnimatedBackground from './AnimatedBackground';
 import { useAuth, AuthUser } from '../../contexts/AuthContext';
 import AnimatePresence from '../ui/AnimatePresence';

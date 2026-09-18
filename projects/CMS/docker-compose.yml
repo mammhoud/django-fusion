@@ -9,16 +9,16 @@
 services:
   cypercloud:
     build:
-      context: ..
-      dockerfile: cypercloud/Dockerfile
+      context: .
+      dockerfile: Dockerfile
       args:
         CYPERCLOUD_PORT: "5073"
     image: cypercloud:latest
     container_name: cypercloud
     restart: unless-stopped
-    working_dir: /app/cypercloud
+    working_dir: /app/syntara
     env_file:
-      - path: ../../.env
+      - path: ../.env
         required: false
     environment:
       CYPERCLOUD_SECRET_KEY: ${CYPERCLOUD_SECRET_KEY:-django-insecure-cypercloud-dev}
@@ -40,11 +40,11 @@ services:
       - "5073:5073"
     volumes:
       # Data subdirectory — keeps SQLite DB + uploaded media persistent
-      # without overwriting the app source code mounted at /app/cypercloud/
-      - cypercloud-data:/app/cypercloud/data:rw
-      - cypercloud-static:/app/cypercloud/staticfiles:rw
-      - cypercloud-media:/app/cypercloud/assets/media:rw
-      - ../../logs:/app/logs:z
+      # without overwriting the app source code mounted at /app/syntara/
+      - cypercloud-data:/app/syntara/data:rw
+      - cypercloud-static:/app/syntara/staticfiles:rw
+      - cypercloud-media:/app/syntara/assets/media:rw
+      - ../logs:/app/logs:z
     networks:
       - common
       - traefik-net

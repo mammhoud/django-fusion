@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import AnimatePresence from '../../components/ui/AnimatePresence';
+import AnimatePresence from './AnimatePresence';
 
 interface DatePickerProps {
   value: string;
