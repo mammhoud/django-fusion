@@ -1,7 +1,0 @@
-{% extends "base.html" %}
-{% block title %}Contacts — Loop CRM{% endblock %}
-{% block content %}
-<nav class="loop-breadcrumb" aria-label="Breadcrumb">{% for crumb in breadcrumbs %}<span>{% if not forloop.first %}<span class="loop-breadcrumb__separator" aria-hidden="true">/</span> {% endif %}{% if forloop.last %}<span aria-current="page">{{ crumb.label }}</span>{% else %}<a href="{{ crumb.href }}">{{ crumb.label }}</a>{% endif %}</span>{% endfor %}</nav>
-<div class="loop-page-heading"><div><p class="loop-eyebrow">{{ page_kicker }}</p><h1>{{ page_title }}</h1><p class="loop-lede">{{ page_description }}</p></div><span class="loop-page-heading__mark">PEOPLE<br />GRAPH</span></div>
-<div class="loop-workflow-layout">{% include "dashboard/partials/contact_form.html" %}{% include "dashboard/partials/contact_list.html" %}</div>
-{% endblock %}

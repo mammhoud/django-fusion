@@ -1,8 +1,0 @@
-# loop-crm configs — dependency-free environment contract package.
-# Importable without Django: `python -c "from configs import validate_environment"`.
-[build-system]
-requires = ["setuptools>=68"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools]
-packages = ["configs"]

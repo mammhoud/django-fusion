@@ -1,5 +1,0 @@
-<section id="channel-list" class="loop-stack" aria-live="polite">
-  <div class="loop-section-heading"><div><span class="loop-card__label">Connected channels</span><h2>{{ channels|length }} connected account{{ channels|length|pluralize }}</h2></div><span class="loop-pill">provider-neutral</span></div>
-  {% if refreshed %}<div class="loop-flash"><p class="loop-flash__success">Refresh queued — the worker will re-issue the token.</p></div>{% endif %}
-  {% if channels %}<div class="loop-channels__list">{% for channel in channels %}{% include "dashboard/partials/channel_row.html" %}{% endfor %}</div>{% else %}<div class="loop-empty-state"><strong>No channels connected yet</strong><p>Connect LinkedIn, X, Mastodon, Bluesky, Discord, or Slack to publish for real — every catalog platform is discoverable here.</p></div>{% endif %}
-</section>

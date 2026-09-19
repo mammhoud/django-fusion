@@ -13,11 +13,6 @@
 	url = https://github.com/mammhoud/cms.git
 	branch = generic
 
-[submodule "projects/POS"]
-	path = projects/POS
-	url = https://github.com/mammhoud/POS.git
-	branch = generic
-
 [submodule "projects/Clients/ctc-research"]
 	path = projects/Clients/ctc-research
 	url = https://github.com/mammhoud/ctc-research.git

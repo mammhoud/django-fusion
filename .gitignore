@@ -17,6 +17,10 @@ __pycache__/
 .env
 .env.*
 !.env.example
+.git-credentials
+*.pid
+*.bundle
+backups/
 *.sqlite3
 # ── Generated / runtime ──────────────────────────────────────────────
 logs/
