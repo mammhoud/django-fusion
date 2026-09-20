@@ -8,12 +8,16 @@ import yaml
 
 
 PROXY_DIR = pathlib.Path(__file__).resolve().parents[1]
+# Dynamic router configs live under configs/ (the compose file mounts that tree
+# into the container), not at the repo root — without this the validator globbed
+# an empty directory and exited 0, so `make validate` never checked anything.
+CONFIG_DIR = PROXY_DIR / "configs"
 
 
 def main() -> int:
-    dynamic_dir = PROXY_DIR / "traefik" / "dynamic"
+    dynamic_dir = CONFIG_DIR / "traefik" / "dynamic"
     files = [
-        PROXY_DIR / "traefik" / "dynamic.yml",
+        CONFIG_DIR / "traefik" / "dynamic.yml",
         dynamic_dir / "certs.yml",
     ]
     files.extend(dynamic_dir.glob("*.yml"))

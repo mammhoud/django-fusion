@@ -10,6 +10,7 @@ front door. Self-hosted tools (Coder, Blinko, Mailpit) and the tools-proxy / ass
 |---|---|---|
 | `space.structa.cloud/` | Coder control plane | `coder:7080` |
 | `docs.structa.cloud/` | Docus | `docus:3000` |
+| `notes.structa.cloud/` | PlanInc | `planinc:1111` (dedicated vhost, no path prefix) |
 | `tools.structa.cloud/notes/` | Blinko | `blinko:1111` (path-based) |
 | `tools.structa.cloud/` | Tools navigation + proxy | `tools-proxy:80` |
 | `structa.cloud/`, `www.structa.cloud/` | Precis Main | `precis-main-backend:8074` + `precis-main-frontend:3000` |

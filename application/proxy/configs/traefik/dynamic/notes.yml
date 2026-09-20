@@ -1,0 +1,55 @@
+# =============================================================================
+# PlanInc — planning & incubation platform  [ACTIVE]
+# =============================================================================
+# PlanInc is the self-hosted planning workspace served by the `runtime/`
+# Express + embedded-SurrealDB container (`planinc`, port 1111).
+#
+# It owns this whole subdomain, so Traefik routes straight to the container and
+# no path prefix is used — the tools-proxy Nginx is bypassed entirely (there is
+# deliberately no /notes/ or /planinc/ location for PlanInc; the legacy
+# tools.structa.cloud/notes/ location still belongs to Blinko).
+#
+# Requires:
+#   • an A/AAAA record for notes.structa.cloud pointing at this server
+#   • the planinc container attached to the shared `common` network so the
+#     `planinc:1111` address resolves — deploy PlanInc with
+#     PLANINC_EXTERNAL_NETWORK=common PLANINC_NETWORK_NAME=common
+#
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
+# =============================================================================
+
+http:
+  routers:
+    notes-http:
+      rule: 'Host(`notes.structa.cloud`) || Host(`notes.localhost`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: notes-service
+      priority: 150
+
+    notes-https:
+      rule: 'Host(`notes.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: notes-service
+      priority: 150
+      tls:
+        certResolver: letsencrypt-http
+
+    notes-localhost-https:
+      rule: 'Host(`notes.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: notes-service
+      priority: 150
+
+  services:
+    notes-service:
+      loadBalancer:
+        servers:
+          - url: 'http://planinc:1111'
+        passHostHeader: true
+        healthCheck:
+          path: /health
+          interval: 30s
+          timeout: 5s
