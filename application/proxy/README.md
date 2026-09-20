@@ -43,6 +43,19 @@ Copy `.env.example` to `.env` and set unique values. Database credentials live
 in `application/databases/.env`; Blinko and tool secrets are in
 `application/tools/.env`. The repo-root `.env` fills gaps.
 
+## Documentation
+
+Long-form documentation lives in [`docs/`](./docs/INDEX.md), indexed with stable
+`PX-NNN` IDs. Two pages are worth reading before you touch anything:
+
+- [Routing](./docs/02-routing.md) — the host table, priorities, and how to add a site.
+- [Validation and health checks](./docs/05-validation-and-health-checks.md) — what
+  `make validate`, `make proxy-dns-check` and `make proxy-site-check` each catch.
+
+Every directory here also carries a `README.md` describing its role, contents and
+public API — see [`configs/traefik/dynamic/README.md`](./configs/traefik/dynamic/README.md)
+for the live router table.
+
 ## Validation and startup
 
 ```bash
