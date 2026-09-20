@@ -1,0 +1,211 @@
+/* ==========================================================================
+ * Platform & OS adaptation (PI-014)
+ * --------------------------------------------------------------------------
+ * `src/platform/PlatformProvider.tsx` puts the environment on <html>:
+ *
+ *   data-platform   web | pwa | desktop | android | ios
+ *   data-os         windows | macos | linux | android | ios | unknown
+ *   data-form-factor phone | tablet | desktop
+ *   data-tier       xs | sm | md | lg | xl | 2xl | 3xl | 4xl
+ *   data-pointer    fine | coarse
+ *   data-native-shell true | false
+ *
+ * Rules here adapt to those facts. Nothing in this file may introduce a raw
+ * colour — the token contract (tokens.css) owns every colour, and
+ * `scripts/lint-tokens.mjs` enforces it.
+ *
+ * Every rule below owns a class that real UI actually renders. That is checked:
+ * `scripts/check-platform.mjs` fails on a `pi-*` rule with no consumer in the
+ * component tree, and on a `pi-*` class used by a component but not defined here.
+ * Rules with no live consumer were deleted rather than left as decoration — a
+ * `.pi-titlebar` (the windows are configured with native decorations) and a
+ * `.pi-native-chrome-hidden` (the OS chrome it was meant to hide is already
+ * accounted for by the safe-area insets below).
+ *
+ * Responsive tier boundaries — keep in step with src/platform/responsive.ts:
+ *   xs 360 · sm 480 · md 768 · lg 1024 · xl 1280 · 2xl 1600 · 3xl 1920 · 4xl 2560
+ * ========================================================================== */
+
+/* ---------------------------------------------------------------- baseline */
+
+/* Every target: the smallest supported width is the design floor, so nothing
+ * below 360px is allowed to squash the layout — it scrolls instead. */
+html {
+  min-width: 360px;
+  /* Let the browser hide its own UI on phones without breaking the layout. */
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  /* The app owns its scroll containers; the body never bounces. */
+  overscroll-behavior: none;
+}
+
+/* ------------------------------------------------- safe areas (notch, bar) */
+
+/* Applied for every platform whose capabilities.safeAreaInsets is true:
+ * browser/PWA on a phone, Android and iOS. Desktop web and Tauri desktop have
+ * no insets, so the variables resolve to 0 and these rules are inert. */
+:root {
+  --pi-safe-top: env(safe-area-inset-top, 0px);
+  --pi-safe-right: env(safe-area-inset-right, 0px);
+  --pi-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --pi-safe-left: env(safe-area-inset-left, 0px);
+  --pi-tap-target: 44px;
+}
+
+html[data-pointer="fine"] {
+  /* Mouse targets do not need a 44px minimum; dense UI is better. */
+  --pi-tap-target: 32px;
+}
+
+/* Content column. `--pi-content-max-width` is declared per tier above; applied
+ * here it makes the reading width advance in tier steps instead of stretching
+ * without limit, and carries the landscape insets so a notch never clips the
+ * first or last column. Inert on the tiers whose cap equals their own width. */
+.layout-container {
+  max-width: var(--pi-content-max-width);
+  margin-inline: auto;
+  padding-left: var(--pi-safe-left);
+  padding-right: var(--pi-safe-right);
+}
+
+html[data-form-factor="phone"] .h-mobile-full {
+  height: calc(var(--doc-height) - var(--pi-safe-bottom));
+}
+
+/* ------------------------------------------- fixed mobile chrome (notch-safe) */
+
+/* The header pins itself while the content scrolls under it. That used to be six
+ * inline style properties computed in JS, including a hex surface returned by
+ * `getFixedHeaderBackground()`; the surface is now the `--pi-chrome-blur` token
+ * so it follows the theme, and the top inset keeps it clear of the notch. */
+html[data-form-factor="phone"] .pi-mobile-header {
+   position: fixed;
+   top: 0;
+   z-index: 11;
+   width: 100%;
+   background: var(--pi-chrome-blur);
+   backdrop-filter: blur(10px);
+   -webkit-backdrop-filter: blur(10px);
+   border-radius: 0 0 var(--card-radius) var(--card-radius);
+   transition: border-radius var(--motion-base) var(--curve-enter);
+}
+
+/* Top inset, gated on the *capability* rather than the form factor — a desktop
+ * window has no insets at all. 0.5rem is the header's own `pt-2`, added to the
+ * inset rather than overriding it, so a device without a notch is
+ * pixel-identical to before. */
+html[data-safe-area="true"] .pi-mobile-header {
+  padding-top: calc(var(--pi-safe-top) + 0.5rem);
+}
+
+/* The bottom bar must clear the home indicator / gesture bar, and it is hidden
+ * from tablet up — where `.layout-container` has room for the persistent side
+ * navigation instead. Same 768px boundary as `md`, asserted by the checker. */
+.pi-bottom-bar {
+  padding-bottom: var(--pi-safe-bottom);
+  background: var(--pi-chrome-blur);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+html[data-form-factor="desktop"] .pi-bottom-bar,
+html[data-form-factor="tablet"] .pi-bottom-bar {
+  display: none;
+}
+
+/* The sidebar resize handle is a 2px column-resize affordance: meaningful with a
+ * mouse, unusable with a finger (where the sidebar is a full-width drawer). */
+html[data-pointer="coarse"] .pi-sidebar-resize {
+  display: none;
+}
+
+/* ------------------------------------------- interaction affordances by OS */
+
+/* Coarse pointers get real touch targets; hover styles that would stick after a
+ * tap are neutralised, which is the single most common mobile-web bug. */
+html[data-pointer="coarse"] button,
+html[data-pointer="coarse"] [role="button"] {
+  min-height: var(--pi-tap-target);
+  min-width: var(--pi-tap-target);
+}
+
+/* A control that is only revealed on hover is *unreachable* on a touch device:
+ * this is the single most common mobile-web bug, and it was live in the sidebar
+ * (its collapse toggle was `opacity-0` behind a group-hover). Mark the reveal
+ * container with `data-reveal` and the control with `hover-only-on-fine`.
+ * `:focus-visible` is included so the keyboard reaches it too. */
+@media (hover: none) {
+  .hover-only-on-fine {
+    opacity: 1 !important;
+  }
+}
+
+@media (hover: hover) {
+  .hover-only-on-fine {
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+  [data-reveal]:hover .hover-only-on-fine,
+  .hover-only-on-fine:hover,
+  .hover-only-on-fine:focus-visible {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------- layout tiers (360 → 2560) */
+
+/* The tier attribute exists so a layout can respond to the *named* boundary the
+ * TypeScript side computed, guaranteeing the two never disagree. */
+html[data-tier="xs"] {
+  --pi-content-max-width: 100%;
+}
+
+html[data-tier="sm"],
+html[data-tier="md"] {
+  --pi-content-max-width: 100%;
+}
+
+html[data-tier="lg"] {
+  --pi-content-max-width: 1024px;
+}
+
+html[data-tier="xl"] {
+  --pi-content-max-width: 1280px;
+}
+
+html[data-tier="2xl"] {
+  --pi-content-max-width: 1600px;
+}
+
+html[data-tier="3xl"] {
+  --pi-content-max-width: 1920px;
+}
+
+html[data-tier="4xl"] {
+  --pi-content-max-width: 2560px;
+}
+
+/* ------------------------------------------------- reduced data / motion */
+
+/* Android/iOS low-power and any target with reduce-motion on: the appearance
+ * tokens already collapse durations; this removes the remaining decorative
+ * animation so nothing animates on a device that asked us not to. */
+html[data-reduce-motion="true"] *,
+html[data-reduce-motion="true"] *::before,
+html[data-reduce-motion="true"] *::after {
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 1ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* --------------------------------------------------------- print (last OS) */
+
+@media print {
+  .pi-bottom-bar {
+    display: none !important;
+  }
+}
