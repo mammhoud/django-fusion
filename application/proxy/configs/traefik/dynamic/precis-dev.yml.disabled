@@ -1,6 +1,15 @@
 # =============================================================================
-# Precis Dev — Traefik router config  [ACTIVE]
+# Precis Dev — Traefik router config  [DISABLED — not provisioned]
 # =============================================================================
+# Parked as `.yml.disabled` because dev.structa.cloud has NO public A/AAAA
+# record (NXDOMAIN), so HTTP-01 validation can never succeed and every retry
+# logged `Unable to obtain ACME certificate for domains [dev.structa.cloud]`.
+# The file provider only loads *.yml, so this config is inert.
+#
+# To enable: create the A/AAAA record for dev.structa.cloud, confirm it with
+#   make proxy-dns-check
+# then rename this file back to precis-dev.yml and `make restart`.
+#
 # Containers: precis-dev-backend (Django/Wagtail, port 8074)
 #             precis-dev-frontend (Astro static, port 3000)
 # Domain: dev.structa.cloud

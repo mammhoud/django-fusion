@@ -3,7 +3,14 @@
 # =============================================================================
 # Containers: loop-crm-backend  (Django + django-fusion, port 8074)
 #             loop-crm-frontend (Astro static shell, port 3000)
-# Domain: crm.structa.cloud / www.crm.structa.cloud
+# Domain: crm.structa.cloud
+#
+# www.crm.structa.cloud was removed from every rule: it has no public A/AAAA
+# record, and a router's certResolver requests ONE certificate for ALL of the
+# rule's hostnames, so the unresolvable www name failed the whole request and
+# left crm.structa.cloud serving the development self-signed certificate.
+# Re-add the www host (to the rules AND to DNS) only once it resolves —
+# `make proxy-dns-check` reports the mismatch.
 # Backend paths (/accounts, /api, /apis, /bolt, /billing, /admin, /django-admin, /cms, /static,
 #   /media, /fragment, /fragments, /ws, /connect, /account, /sse) are routed
 #   to the backend with
@@ -15,13 +22,13 @@
 http:
   routers:
     loop-crm-backend-http:
-      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/bolt`) || PathPrefix(`/billing`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
+      rule: 'Host(`crm.structa.cloud`) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/bolt`) || PathPrefix(`/billing`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: loop-crm-backend
       priority: 200
     loop-crm-backend-https:
-      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/bolt`) || PathPrefix(`/billing`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
+      rule: 'Host(`crm.structa.cloud`) && (PathPrefix(`/accounts`) || PathPrefix(`/api`) || PathPrefix(`/apis`) || PathPrefix(`/bolt`) || PathPrefix(`/billing`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/cms`) || PathPrefix(`/static`) || PathPrefix(`/media`) || PathPrefix(`/fragment`) || PathPrefix(`/fragments`) || PathPrefix(`/ws`) || PathPrefix(`/connect`) || PathPrefix(`/account`) || PathPrefix(`/sse`))'
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: loop-crm-backend
@@ -29,13 +36,13 @@ http:
       tls:
         certResolver: letsencrypt-http
     loop-crm-site-http:
-      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)'
+      rule: 'Host(`crm.structa.cloud`)'
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: loop-crm-frontend
       priority: 100
     loop-crm-site-https:
-      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)'
+      rule: 'Host(`crm.structa.cloud`)'
       entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: loop-crm-frontend

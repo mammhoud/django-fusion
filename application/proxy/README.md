@@ -14,10 +14,10 @@ front door. Self-hosted tools (Coder, Blinko, Mailpit) and the tools-proxy / ass
 | `tools.structa.cloud/notes/` | Blinko | `blinko:1111` (path-based) |
 | `tools.structa.cloud/` | Tools navigation + proxy | `tools-proxy:80` |
 | `structa.cloud/`, `www.structa.cloud/` | Precis Main | `precis-main-backend:8074` + `precis-main-frontend:3000` |
-| `dev.structa.cloud/` | Precis Dev (development) | `precis-dev-backend:8074` + `precis-dev-frontend:3000` |
+| `dev.structa.cloud/` | Precis Dev — **disabled**, no DNS record | `precis-dev-backend:8074` + `precis-dev-frontend:3000` (routers parked in `precis-dev.yml.disabled`) |
 | `lms.structa.cloud/` | Precis Main (compatibility) | `precis-main-backend:8074` + `precis-main-frontend:3000` |
 | `ctc-research.com/` | CTC Research | `precis-ctc` frontend + backend |
-| `crm.structa.cloud/` | Loop-CRM | frontend shell + backend path |
+| `crm.structa.cloud/` | Loop-CRM | frontend shell + backend path (`www.crm.structa.cloud` is not configured in DNS and is not routed) |
 
 ## Precis Main routing contract
 

@@ -20,8 +20,11 @@ DYNAMIC_CERTS_FILE  := $(DYNAMIC_DIR)/certs.yml
 COMPOSE_FILE        := $(PROXY_DIR)docker-compose.traefik.yml
 DEFAULT_PROXY_NAME  := default-proxy
 HOSTS_FILE          := /etc/hosts
-LOCAL_HOSTS         := fusion.localhost cms-fusion.localhost precis-lms.localhost code.localhost coder.localhost space.localhost
-LOCAL_CERT_SANS      := DNS:fusion.localhost,DNS:cms-fusion.localhost,DNS:precis-lms.localhost,DNS:code.localhost,DNS:coder.localhost,DNS:space.localhost,DNS:localhost,IP:127.0.0.1,IP:::1
+# Every .localhost vhost the routers actually declare, plus the shared legacy
+# names kept for existing /etc/hosts entries. A host that is missing here falls
+# back to Traefik's own default certificate and warns in the browser.
+LOCAL_HOSTS         := fusion.localhost cms-fusion.localhost precis-lms.localhost code.localhost coder.localhost space.localhost notes.localhost ops.localhost tools.localhost
+LOCAL_CERT_SANS      := DNS:fusion.localhost,DNS:cms-fusion.localhost,DNS:precis-lms.localhost,DNS:code.localhost,DNS:coder.localhost,DNS:space.localhost,DNS:notes.localhost,DNS:ops.localhost,DNS:tools.localhost,DNS:localhost,IP:127.0.0.1,IP:::1
 
 # ---------------------------------------------------------------------------
 # Standard verb aliases (consumed by the root Makefile delegation)
@@ -33,7 +36,8 @@ help: ## Show proxy commands
 	@echo "Proxy (Traefik) commands:"
 	@echo "  make deploy | up | down | status | validate | stop | restart   standard verbs (root delegation)"
 	@echo "  make proxy-up | proxy-down | proxy-restart | proxy-logs | proxy-status"
-	@echo "  make proxy-reload | proxy-validate | proxy-dns-check | proxy-dashboard"
+	@echo "  make proxy-reload | proxy-validate | proxy-dns-check | proxy-site-check | proxy-dashboard"
+	@echo "  proxy-site-check: HOST=notes.structa.cloud CHECK_PATH=/health (both optional)"
 	@echo "  make proxy-certs-selfsigned | proxy-certs-mkcert | proxy-certs-info"
 	@echo "  make proxy-hosts-check | proxy-hosts-add | proxy-verify"
 
@@ -119,6 +123,17 @@ proxy-validate:
 .PHONY: proxy-dns-check
 proxy-dns-check:
 	@python3 $(PROXY_DIR)scripts/check-dns-records.py
+
+# Post-deployment gate: does the site actually serve? Probes a live vhost over
+# TLS and fails when it is unreachable, returns 5xx, covers the wrong names, or
+# is about to expire. It also catches a host that silently fell back to the
+# development self-signed certificate — which is what happens when one router
+# requests a single certificate covering a hostname that does not resolve.
+# Defaults to the PlanInc vhost; override with HOST= / CHECK_PATH=.
+# (CHECK_PATH, not PATH: PATH is the shell search path.)
+.PHONY: proxy-site-check
+proxy-site-check:
+	@python3 $(PROXY_DIR)scripts/check-site-health.py --path $(or $(CHECK_PATH),/health) $(HOST)
 
 # ---------------------------------------------------------------------------
 # Dashboard helpers

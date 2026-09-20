@@ -12,8 +12,9 @@
 # Requires:
 #   • an A/AAAA record for notes.structa.cloud pointing at this server
 #   • the planinc container attached to the shared `common` network so the
-#     `planinc:1111` address resolves — deploy PlanInc with
-#     PLANINC_EXTERNAL_NETWORK=common PLANINC_NETWORK_NAME=common
+#     `planinc:1111` address resolves — create it once with
+#     `docker network create common`, then deploy PlanInc with
+#     PLANINC_EXTERNAL_NETWORK=true PLANINC_NETWORK_NAME=common
 #
 # TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
 # =============================================================================

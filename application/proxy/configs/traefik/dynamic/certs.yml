@@ -2,7 +2,11 @@
 # Dynamic TLS certificates
 # =============================================================================
 # For local .localhost development, Traefik serves a single self-signed
-# certificate that covers precis-lms.localhost.
+# certificate whose subjectAltName list matches the LOCAL_CERT_SANS variable in
+# application/proxy/Makefile — every vhost the routers declare (notes.localhost,
+# ops.localhost, precis-lms.localhost, space.localhost, tools.localhost) plus the
+# legacy names and localhost/127.0.0.1/::1. Keep the two in sync: a host missing
+# from that list falls back to the default certificate and warns in the browser.
 # Production domains still obtain certs via Let's Encrypt (certResolver in each
 # router config), but .localhost cannot pass public ACME validation, so this
 # static certificate is used instead.
