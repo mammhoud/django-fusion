@@ -66,6 +66,26 @@ by the live pipeline that regenerates each removed artifact.
 
 Verified after removal: `/`, `/static/css/fusion.css`, `/static/bundles/ctc-research/bundles.json`, `/admin/login/`, and `/static/admin/css/base.css` all serve 200 on ctc-research.com.
 
+## 2026-09-21 dead-config removal (owner-approved)
+
+Removed three settings symbols that no module, template, command, or CI check
+read anywhere in the repository (verified by a repository-wide reference scan).
+The two security dicts are the significant ones: they declared a posture —
+`REQUIRE_2FA`, `IP_WHITELIST`, `MAX_LOGIN_ATTEMPTS`, `LOCKOUT_TIME`,
+`SESSION_TIMEOUT` — that **nothing enforced**, so they invited operators to
+trust controls that did not exist. Each is recoverable from git history.
+
+Scope note: `projects/Clients/structa.cloud/projects/Clients/configs/` is a
+nested checkout of a separate repository and is deliberately **not** edited by
+this pass; it converges when that submodule is updated.
+
+| ID | Path | Action | Reason | Replacement | Archive path | Hash | Hold | Restore test | Change ID | Owner |
+|---|---|---|---|---|---|---|---|---|---|---|
+| DOC-0033 | `configs/base/admin_site.py`, `configs/settings/CD/production.py`, `configs/settings/CD/demo.py` — `ADMIN_SITE_HEADER`, `ADMIN_SITE_TITLE`, `ADMIN_INDEX_TITLE` | delete | Set as Django settings but read by nothing; duplicated Unfold's own `SITE_HEADER` / `SITE_TITLE` / `INDEX_TITLE`, which are the keys that actually render | `UNFOLD[...]` in `configs/base/admin_site.py` | Git history | completed in working tree | none | pending review | 2026-09-21 | Admin |
+| DOC-0034 | `configs/base/admin_site.py` — `ADMIN_PERMISSIONS` | delete | Never read; described superuser, log-view, and export gates that were not wired to any code path | Django permissions + per-app view checks | Git history | completed in working tree | none | pending review | 2026-09-21 | Admin |
+| DOC-0035 | `configs/base/admin_site.py` — `ADMIN_SECURITY` | delete | Never read; declared 2FA, IP allow-list, login lockout, and session timeout with no enforcement | `SESSION_COOKIE_AGE` (CD settings), `configs/base/security.py`, `allauth.mfa` (installed in `configs/base/apps.py`) | Git history | completed in working tree | none | pending review | 2026-09-21 | Admin |
+| DOC-0036 | `tests/fixtures/vresume/` and `projects/Clients/structa.cloud/tests/fixtures/vresume/` (README.md pointer dirs) | delete | VResume (portfolio) was merged into the unified product; these dirs held only a pointer README declaring the retired site as live, and were the last place its identity was presented as current | `tests/fixtures/INDEX.md` and the submodule copy now name the current products; `sites/site_dummy.json` in both copies no longer carries `vresume.structa.cloud` | Git history | completed in working tree | none | pending review | 2026-09-21 | Tests |
+
 ## Deletion gate
 
 A row may change to `delete` only when all are true:

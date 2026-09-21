@@ -28,3 +28,8 @@
 @import 'components/fu-alert';
 @import 'components/fu-nav';
 @import 'components/fu-table';
+
+/* ── Product-owned attribution band (Structa Cloud brand + copyright).
+   Authored here; carries no third-party template text. Distinct from the
+   vendored `.fu-footer` block in theme/default/components/. ── */
+@import 'components/fu-attribution';

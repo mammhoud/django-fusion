@@ -1,6 +1,6 @@
-# CTC-Research Fixtures Organization
+# Workspace Fixtures Organization
 
-**Location**: `/precis-ctc/assets/fixtures/`  
+**Location**: `tests/fixtures/` — present byte-identical in the root checkout and in the `structa.cloud` submodule  
 **Purpose**: Manage fixture data for database initialization and testing  
 **Status**: ✅ Organized and categorized
 
@@ -14,7 +14,7 @@ fixtures/
 ├── dump-data.json                 # Main fixture dump (source)
 ├── original/                      # Archive/original fixtures
 │   ├── wagtail_pages_dump.json
-│   └── precis-ctc-data.json
+│   └── ctc-research-data.json
 ├── cleaned/                       # Cleaned/filtered versions
 │   ├── filtered-dump-data.json
 │   └── essential-data.json
@@ -49,10 +49,10 @@ fixtures/
 **Loading**:
 ```bash
 # Recommended: Load just locales first
-docker exec web-precis-ctc python manage.py loaddata production/just-locales.json
+docker compose exec backend python manage.py loaddata production/just-locales.json
 
 # Or use the management command
-docker exec web-precis-ctc python manage.py load_initial_fixtures
+docker compose exec backend python manage.py load_initial_fixtures
 ```
 
 ### 🟡 Cleaned (Processed)
@@ -90,7 +90,7 @@ docker exec web-precis-ctc python manage.py load_initial_fixtures
 | Fixture | Size | Models | Notes |
 |---------|------|--------|-------|
 | `wagtail_pages_dump.json` | 1.3MB | Page records | Original Wagtail dump |
-| `precis-ctc-data.json` | 63KB | Mixed | Original CTC data |
+| `ctc-research-data.json` | 63KB | Mixed | Original CTC data |
 
 **Use When**: Reference, recovery, historical analysis
 
@@ -112,7 +112,7 @@ docker exec web-precis-ctc python manage.py load_initial_fixtures
 ### Step 1: Locales Only ✅
 ```bash
 # Load 6 language records
-docker exec web-precis-ctc python manage.py loaddata assets/fixtures/production/just-locales.json
+docker compose exec backend python manage.py loaddata tests/fixtures/production/just-locales.json
 ```
 
 **Why First**: Other fixtures may reference locales
@@ -120,7 +120,7 @@ docker exec web-precis-ctc python manage.py loaddata assets/fixtures/production/
 ### Step 2: Users (Optional)
 ```bash
 # Load test/demo users
-docker exec web-precis-ctc python manage.py loaddata assets/fixtures/test/users.json
+docker compose exec backend python manage.py loaddata tests/fixtures/test/users.json
 ```
 
 **Why Optional**: Create admin user separately with `createsuperuser`
@@ -128,7 +128,7 @@ docker exec web-precis-ctc python manage.py loaddata assets/fixtures/test/users.
 ### Step 3: Pages (Optional)
 ```bash
 # Load page structure
-docker exec web-precis-ctc python manage.py loaddata assets/fixtures/test/pages.json
+docker compose exec backend python manage.py loaddata tests/fixtures/test/pages.json
 ```
 
 **Why Optional**: Create pages via `populate_content` command instead
@@ -145,24 +145,24 @@ python manage.py load_initial_fixtures --list
 ### Load Recommended Sequence
 ```bash
 # Load all fixtures in order
-docker exec web-precis-ctc python manage.py load_initial_fixtures
+docker compose exec backend python manage.py load_initial_fixtures
 
 # Dry run - show what would load
-docker exec web-precis-ctc python manage.py load_initial_fixtures --dry-run
+docker compose exec backend python manage.py load_initial_fixtures --dry-run
 ```
 
 ### Load Specific Step
 ```bash
 # Load step 1 (locales)
-docker exec web-precis-ctc python manage.py load_initial_fixtures --step 1
+docker compose exec backend python manage.py load_initial_fixtures --step 1
 
 # Load step 2 (users)
-docker exec web-precis-ctc python manage.py load_initial_fixtures --step 2
+docker compose exec backend python manage.py load_initial_fixtures --step 2
 ```
 
 ### Load Single Fixture
 ```bash
-docker exec web-precis-ctc python manage.py load_initial_fixtures --fixture just-locales.json
+docker compose exec backend python manage.py load_initial_fixtures --fixture just-locales.json
 ```
 
 ---
@@ -173,29 +173,32 @@ Use the fixture manager script to inspect and manage fixtures:
 
 ```bash
 # Show directory structure
-python tests/scripts/manage_fixtures.py
+python tests/scripts/testing/manage_fixtures.py
 
 # List all fixtures
-python tests/scripts/manage_fixtures.py --list
+python tests/scripts/testing/manage_fixtures.py --list
 
 # List fixtures by type
-python tests/scripts/manage_fixtures.py --list --type production
+python tests/scripts/testing/manage_fixtures.py --list --type production
 
 # Verbose listing
-python tests/scripts/manage_fixtures.py --list --verbose
+python tests/scripts/testing/manage_fixtures.py --list --verbose
 
 # Get path for a fixture
-python tests/scripts/manage_fixtures.py --path just-locales.json
+python tests/scripts/testing/manage_fixtures.py --path just-locales.json
 
 # Show recommended loading order
-python tests/scripts/manage_fixtures.py --recommended
+python tests/scripts/testing/manage_fixtures.py --recommended
 ```
 
 ---
 
 ## 📊 Fixture Data Summary
 
-### Total Files: 12 JSON + 2 Directories
+### Total Files: 51 JSON (verified 2026-09-21)
+
+> The per-type breakdown below describes the *categorized* sets, not a file
+> count, and was not regenerated by this pass.
 
 ### By Type
 - **Production Ready**: 2 fixtures (647B, 251KB)
@@ -295,18 +298,18 @@ python tests/scripts/manage_fixtures.py --recommended
 
 ### Export All Data
 ```bash
-docker exec web-precis-ctc python manage.py dumpdata > fixtures/backup.json
+docker compose exec backend python manage.py dumpdata > fixtures/backup.json
 ```
 
 ### Export Specific Models
 ```bash
-docker exec web-precis-ctc python manage.py dumpdata wagtailcore.page > fixtures/pages.json
-docker exec web-precis-ctc python manage.py dumpdata wagtail_localize.locale > fixtures/locales.json
+docker compose exec backend python manage.py dumpdata wagtailcore.page > fixtures/pages.json
+docker compose exec backend python manage.py dumpdata wagtail_localize.locale > fixtures/locales.json
 ```
 
 ### Export with Pretty Printing
 ```bash
-docker exec web-precis-ctc python manage.py dumpdata --indent 2 > fixtures/backup.json
+docker compose exec backend python manage.py dumpdata --indent 2 > fixtures/backup.json
 ```
 
 ---
@@ -330,12 +333,12 @@ docker exec web-precis-ctc python manage.py dumpdata --indent 2 > fixtures/backu
 
 ## 📞 Support
 
-**Questions**: See `/root/site/websites/precis-ctc/www/apps/management/commands/load_initial_fixtures.py`  
+**Questions**: See `projects/Clients/ctc-research/backend/apps/core/management/commands/load_initial_fixtures.py`  
 **Issues**: Check fixture model compatibility (see Fixture Analysis section)  
 **Management**: Use `manage_fixtures.py` script in `tests/scripts/`
 
 ---
 
 **Last Updated**: June 2, 2026  
-**Maintainer**: Kiro Deployment System  
+**Maintainer**: Structa Cloud platform team  
 **Status**: ✅ Organized and Ready

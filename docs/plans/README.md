@@ -21,6 +21,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Loop-CRM | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) | Unified CRM + social scheduling (Twenty + Postiz merge) |
 | Loop-CRM Wagtail landing + billing + webapp | [`loop-crm/wagtail-landing-plan.md`](loop-crm/wagtail-landing-plan.md) | Wagtail-managed public landing (precis-landing pattern), Stripe subscriptions, sidenav/guided UX, employees + report catalog, shared-locale i18n, license removal |
 | **Workspace CRM program** | [`workspace-crm/README.md`](workspace-crm/README.md) | Six milestone plans extending Loop-CRM: schema-per-tenant domains + methodology, unified workspace session via proxy middleware, Unfold + Wagtail admin, landing subscriptions, per-project theme files, 20 landing samples, ThemeForest pack |
+| **Structa Cloud publish + ThemeForest rebrand** | [`structa-cloud/README.md`](structa-cloud/README.md) | Defining plan for the structa.cloud marketplace item: the plans that own its slices, the four rebrand surfaces, licensing blockers (vendored `theme/default/`, `fu-*` provenance), milestones S0–S6, and the rebrand/gate tool |
 | django-fusion | [`django-fusion/`](django-fusion/) | Shared framework, tasks, MCP, asset/component work; submodule-owned plan |
 | Blinko runtime | [`blinko/graph-enhancement-plan.md`](blinko/graph-enhancement-plan.md) · [`blinko/appearance-design-system-plan.md`](blinko/appearance-design-system-plan.md) | Anytype-aligned graph physics/inspection/filters plan + appearance token-system expansion (both IMPLEMENTED with review records 2026-09-17) |
 | Config cascade (all Django products) | [`django-fusion/config-cascade-plan.md`](django-fusion/config-cascade-plan.md) | Layered config cascade (`config.project`), project `configs/` dirs (Precis Main/CTC, Loop-CRM, Syntara, Formint Cloud), base-URL priority resolution, Docker env cascade, static-files read/output/deploy reference |
@@ -55,6 +56,7 @@ Do not create new plans in `docs/dev/plans/`, `docs/plans/migrated/`, or project
 | Loop-CRM merge | Foundation + tenancy/auth + tenant-scoped CRUD + channels + allauth + real screens shipped; AI hub & remaining adapters next | [`loop-crm/merge-plan.md`](loop-crm/merge-plan.md) |
 | Precis Dev multi-tenant platform | Proposed | [`repository/precis-dev-multitenant.md`](repository/precis-dev-multitenant.md) |
 | Workspace CRM program (M1–M6) | Proposed | [`workspace-crm/README.md`](workspace-crm/README.md) |
+| Structa Cloud publish + ThemeForest rebrand | Proposed | [`structa-cloud/README.md`](structa-cloud/README.md) |
 | CTC Research publish | Active | [`repository/ctc-research-publish-2026-08-18.md`](repository/ctc-research-publish-2026-08-18.md) |
 | Precis Dev multi-tenant | [`repository/precis-dev-multitenant.md`](repository/precis-dev-multitenant.md) | Schema-per-tenant via django-tenants, role-based auth (LMS/CRM manager), per-tenant Wagtail CMS landing pages, Dramatiq lifecycle workflows |
 | CTC Research MCP + django-fusion Integration | Proposed | [`repository/precis-ctc-mcp-django-fusion-integration.md`](repository/precis-ctc-mcp-django-fusion-integration.md) |
@@ -124,6 +126,7 @@ datastore future.
 | Analyzer + Skeleton + Asset APIs plan created | 2026-08-10 | Dynamic skeleton loading, per-page ordered components, component-level asset APIs, Astro minimal JS bridge |
 | Loop-CRM Wagtail landing + billing + shared locale plan | 2026-08-18 | Proposed — Wagtail landing (precis-landing pattern), Stripe billing, sidenav/guided UX, employees/reports, `projects/assets/locale` consolidation |
 | Workspace CRM program created | 2026-09-12 | Proposed — 6 milestone plans under `workspace-crm/`: multi-tenant domain schemas, workspace session + proxy middleware, Unfold/Wagtail admin + landing subscriptions, theme files + components, 20-sample landing library, theme guidelines + ThemeForest pack. Extends Loop-CRM; reuses `precis-dev-multitenant` and `THEME_DIRECTORY_STRATEGY` |
+| Structa Cloud publish + ThemeForest rebrand plan created | 2026-09-21 | Proposed — new `structa-cloud/` scope: inventories the plans that own structa.cloud slices, documents the four rebrand surfaces (stale `PUBLISH.md` kit, vendored `theme/default/` template, missing marketplace metadata, `precis-atelier` variation naming), records five blockers, and ships `tools/rebrand.mjs` + `tools/rebrand-map.json` as the executable gate. Consumes `workspace-crm` M4/M5/M6 rather than forking them |
 | Config cascade plan | 2026-08-20 | Active — `django_fusion.config.project` module (base-URL priority), `configs/` dirs for Precis Main/CTC, Loop-CRM, Syntara, Formint Cloud; frontend wire (`make config-front`), Docker override, `make config-show`/`config-check`, static-files read/output/deploy reference |
 | Startup docs enhancement plan created | 2026-08-20 | Analyzed the 14-doc startup pack vs the monorepo; added `startup/company-profile.md`, `startup/product-profiles.md`, `startup/revenue-model.md`, `startup/presentation.md`, module price book (`PRICING.md` §6); declined the pack's fictional `fusion.*` django-fusion package guide |
 | CTC Research publish plan | 2026-08-18 | Active — full content/component audit, es/sv/pt-br catalogs, media/bundles proxy, email parity + test, `make redeploy`, Nx, cross-module workflows |
@@ -152,6 +155,7 @@ docs/plans/
 ├── editions/                 # Formint edition execution chain
 ├── loop-crm/                 # Loop-CRM merge plan (Twenty + Postiz)
 ├── workspace-crm/            # Workspace CRM program (M1–M6: tenancy, session, admin, themes, samples, publish)
+├── structa-cloud/            # Structa Cloud publish + ThemeForest rebrand (surfaces, licensing, pack)
 ├── django-fusion/            # Shared framework plans
 ├── precis-landing.md         # Precis Landing plans (was `precis-landing/`)
 ├── document-lifecycle.md

@@ -14,9 +14,8 @@ TEMPLATE_DEBUG = DEBUG
 # 🏷️ Titling
 # -------------------------------------------------------------------
 WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "CTC Hub (Demo)")
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "CTC Demo Administration")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "CTC Demo Admin")
-ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Demo Management")
+# ADMIN_SITE_HEADER / ADMIN_SITE_TITLE / ADMIN_INDEX_TITLE removed 2026-09-21
+# (deletion-manifest DOC-0033): no reader anywhere in the repository.
 
 # -------------------------------------------------------------------
 # ⏱️ Timing

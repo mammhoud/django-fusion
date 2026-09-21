@@ -18,10 +18,10 @@ ALLOWED_HOSTS = globals().get("ALLOWED_HOSTS", [])
 # -------------------------------------------------------------------
 # 🏷️ Titling
 # -------------------------------------------------------------------
-WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "VResume")
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "VResume Administration")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "VResume Admin")
-ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Management")
+WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "Structa Cloud")
+# ADMIN_SITE_HEADER / ADMIN_SITE_TITLE / ADMIN_INDEX_TITLE removed 2026-09-21
+# (deletion-manifest DOC-0033): no reader anywhere in the repository. Unfold
+# titles are declared in configs/base/admin_site.py's UNFOLD dict instead.
 
 # -------------------------------------------------------------------
 # ⏱️ Timing

@@ -1,0 +1,356 @@
+{
+  "$comment": "Source of truth for the Structa Cloud -> ThemeForest rebrand. Consumed by tools/rebrand.mjs. Owning plan: docs/plans/structa-cloud/README.md. Edit this file, never hand-edit a generated publish set.",
+  "version": 1,
+
+  "product": {
+    "canonicalName": "Structa Cloud",
+    "canonicalSlug": "structa-cloud",
+    "demoUrl": "https://structa.cloud",
+    "retiredNames": ["Precis", "precis", "Cypercloud", "cypercloud", "VResume", "vresume"],
+    "note": "canonicalName / canonicalSlug identity the *owning product* for the kit, the plan and the internal docs. They are deliberately NOT used as marketplace item metadata - see marketplace.rule below."
+  },
+
+  "marketplace": {
+    "rule": "Brand-free standard naming. Marketplace item metadata (item name, slug, tags, listing copy) names the *product*, never the vendor brand. The owning product is identified in the kit's own docs and in this plan, both outside the listing fields.",
+    "pattern": "<Theme Name> - <Purpose descriptor>",
+    "slugPattern": "<theme>-<purpose>",
+    "separator": " - ",
+    "deniedTokens": ["structa", "precis", "cypercloud", "vresume"],
+    "rationale": "A buyer purchases a product, not the vendor's brand. Keeps every item portable across future vendor naming, and stops one brand's retired names from reaching a listing that outlives the rename.",
+    "decidedOn": "2026-09-21",
+    "owner": "Mahmoud",
+    "enforcement": "Scoped to listing metadata fields - deliberately NOT a file-wide denylist rule. A blanket `structa` regex would flag our own fu-attribution band (S2.3), which is required to carry the brand. Enforce where the listing is authored (S5.1), and against the kit's item-name string via R1/R2 only.",
+    "pack": [
+      {
+        "slug": "paper-ink-saas",
+        "itemName": "Paper & Ink - SaaS & Corporate Kit",
+        "theme": "fu-paper-ink",
+        "category": "Business / Corporate",
+        "pages": "M6: 01, 04, 06, 08, 10, 12, 13, 18, 20",
+        "titleSource": "derived here from M6's slug; M6 still owns the page set"
+      },
+      {
+        "slug": "loop-crm-ops",
+        "itemName": "Loop - CRM & Operations Suite",
+        "theme": "loop-crm",
+        "category": "Business / SaaS",
+        "pages": "M6: 02, 05, 07, 11, 14, 16, 19",
+        "titleSource": "derived here from M6's slug; M6 still owns the page set"
+      },
+      {
+        "slug": "atelier-learning",
+        "itemName": "Atelier - Education & Course Platform",
+        "theme": "precis-atelier",
+        "category": "Education",
+        "pages": "M6: 03, 09, 15, 17",
+        "titleSource": "derived here from M6's slug; M6 still owns the page set"
+      },
+      {
+        "slug": "aperture-suite",
+        "itemName": "Aperture - LMS, Landing & Research Suite",
+        "theme": "TBD - S1 answers M4.1 (structa.cloud theme home)",
+        "category": "Education / SaaS",
+        "pages": "assembled in S6.1 from the M5 page manifests",
+        "titleSource": "decided here 2026-09-21 - the brand-free 4th item this program adds"
+      }
+    ]
+  },
+
+  "decisions": [
+    {
+      "id": "B2",
+      "date": "2026-09-21",
+      "owner": "Mahmoud",
+      "decision": "Authored surfaces only",
+      "question": "Replace the upstream copyright notices and the 'Histudy' name in projects/assets/theme/default/?",
+      "resolution": "No. The archive is excluded from every publish set and is never rewritten. Structa Cloud attribution is added on authored surfaces instead (the fu-attribution band).",
+      "rationale": "Removing a copyright notice does not clear a licence: the markup, SCSS and imagery in that tree remain derivative of a commercial ThemeForest item. Renaming it would convert a defensible exclusion into a review-rejection and takedown risk.",
+      "consequences": [
+        "theme-default-archive stays rebrandable: false forever.",
+        "Structa Cloud branding lands in engine/components/_fu-attribution.scss and preview.html.",
+        "Any publish set must be assembled from authored surfaces only."
+      ]
+    },
+    {
+      "id": "B6-naming",
+      "date": "2026-09-21",
+      "owner": "Mahmoud",
+      "decision": "Brand-free marketplace naming",
+      "question": "Should the marketplace item carry the company brand, as the kit's existing title ('Precis - Unified LMS & Landing Platform') does?",
+      "resolution": "No. Marketplace item metadata is brand-free and follows the standard <Theme Name> - <Purpose descriptor> pattern with a <theme>-<purpose> slug. The brand-bearing item name is replaced by the brand-free 4th item, 'Aperture - LMS, Landing & Research Suite' (aperture-suite).",
+      "rationale": "The naming policy was set by the operator after the kit rebrand (S4) was first drafted with the brand in the item name. It supersedes the brand-bearing item name recorded in the previous revision of this map.",
+      "consequences": [
+        "R2 now installs a brand-free item name instead of a brand-bearing one.",
+        "R4 tags drop 'structa' and 'cloud'.",
+        "R1's kit title drops the brand for the same reason.",
+        "A file-wide brand denylist must NOT be added: it would flag the authored fu-attribution band, which is required to carry the brand."
+      ]
+    }
+  ],
+
+  "surfaces": [
+    {
+      "id": "marketplace-kit",
+      "label": "Marketplace publish kit",
+      "roots": ["projects/Clients/structa.cloud/projects/Clients/structa.cloud/PUBLISH.md"],
+      "licence": "authored",
+      "rebrandable": true,
+      "publishSet": true,
+      "owner": "Mahmoud",
+      "note": "The only surviving marketplace kit in the tree. Still titled 'Precis - Marketplace Publish Kit'."
+    },
+    {
+      "id": "theme-variations",
+      "label": "Token-only theme variations",
+      "roots": [
+        "projects/assets/theme/saas",
+        "projects/assets/theme/enterprise",
+        "projects/assets/theme/corporate",
+        "projects/assets/theme/educational",
+        "projects/assets/theme/retail",
+        "projects/assets/theme/minimal",
+        "projects/assets/theme/dark",
+        "projects/assets/theme/contrast"
+      ],
+      "licence": "authored",
+      "rebrandable": false,
+      "publishSet": false,
+      "blockedBy": "B1-namespace-provenance",
+      "owner": "Yahia",
+      "note": "Two files per variation (token partial + activation block). The palettes are authored, but every token name inherits the undecided fu-<name>-* prefix, so they wait on B1 like the engine."
+    },
+    {
+      "id": "theme-engine",
+      "label": "Theme engine (shared token/remap layer)",
+      "roots": [
+        "projects/assets/theme/engine",
+        "projects/assets/theme/_index.scss",
+        "projects/assets/theme/THEME-ENGINE.md",
+        "projects/assets/theme/DESIGN-SYSTEM.md",
+        "projects/assets/theme/THEME-VARIATIONS.md",
+        "projects/assets/theme/README.md",
+        "projects/assets/theme/preview.html"
+      ],
+      "licence": "unknown",
+      "rebrandable": false,
+      "publishSet": false,
+      "blockedBy": "B1-namespace-provenance",
+      "owner": "Yahia",
+      "note": "The fu-<theme>-* token prefix and fu-* BEM blocks are the product's public class contract AND the upstream template's class namespace. Provenance must be settled before a rename."
+    },
+    {
+      "id": "theme-default-archive",
+      "label": "Histudy-derived archive",
+      "roots": [
+        "projects/assets/theme/default/tokens",
+        "projects/assets/theme/default/templates",
+        "projects/assets/theme/default/components"
+      ],
+      "licence": "third-party",
+      "rebrandable": false,
+      "publishSet": false,
+      "owner": "Mahmoud",
+      "note": "Vendored from the commercial 'Histudy - Online Courses & Education Bootstrap5 Template' (Rainbow-Themes). Carries the upstream author's copyright notice and ThemeForest purchase link. Must be excluded from any publish set, not renamed."
+    },
+    {
+      "id": "theme-default-authored",
+      "label": "Authored layers over the default theme",
+      "roots": ["projects/assets/theme/default/design-systems", "projects/assets/theme/default/_index.scss"],
+      "licence": "authored",
+      "rebrandable": false,
+      "publishSet": false,
+      "blockedBy": "B1-namespace-provenance",
+      "owner": "Yahia",
+      "note": "Newly authored design systems, but they extend the fu-default-* token names inherited from the archive."
+    },
+    {
+      "id": "theme-attribution",
+      "label": "Product-owned attribution band",
+      "roots": [
+        "projects/assets/theme/engine/components/_fu-attribution.scss",
+        "projects/assets/theme/preview.html"
+      ],
+      "licence": "authored",
+      "rebrandable": true,
+      "publishSet": true,
+      "owner": "Mahmoud",
+      "note": "The authored colophon carrying the Structa Cloud mark, name and copyright. Block name fu-attribution is deliberately distinct from the vendored .fu-footer so the two never collide. Authored under the B2 decision (see decisions[])."
+    },
+    {
+      "id": "publish-docs",
+      "label": "Publishing documentation",
+      "roots": ["docs/publish"],
+      "licence": "authored",
+      "rebrandable": true,
+      "publishSet": false,
+      "owner": "Moustafa",
+      "note": "Covers deploy/release only. No marketplace listing page exists yet - that gap is milestone S5."
+    },
+    {
+      "id": "variation-contract",
+      "label": "Variation + theme directory contract",
+      "roots": ["docs/plans/THEME_DIRECTORY_STRATEGY.md"],
+      "licence": "authored",
+      "rebrandable": true,
+      "publishSet": false,
+      "owner": "Yahia",
+      "note": "The structa.cloud variation id is currently 'precis-atelier' - named after the retired product name."
+    },
+    {
+      "id": "test-fixtures",
+      "label": "structa.cloud test fixtures",
+      "roots": [
+        "projects/Clients/structa.cloud/tests/fixtures",
+        "tests/fixtures"
+      ],
+      "licence": "authored",
+      "rebrandable": false,
+      "publishSet": false,
+      "owner": "Mahmoud",
+      "note": "Not shipped, so gates do not scan it - but it is where retired product identities outlived the rename. Two byte-identical copies exist in two repos (the root checkout and the structa.cloud submodule); a fix must land in both or one goes stale. Fixed 2026-09-21: sites/site_dummy.json carried domain 'vresume.structa.cloud' and name 'vresume.structa.cloud dummy site'; the orphan tests/fixtures/vresume/ pointer dir is removed."
+    }
+  ],
+
+  "replacements": [
+    {
+      "id": "R1",
+      "surface": "marketplace-kit",
+      "kind": "literal",
+      "pattern": "Precis — Marketplace Publish Kit",
+      "replace": "Marketplace Publish Kit",
+      "reason": "Kit title. Brand-free per the B6-naming decision - the kit becomes the listing, and listing metadata names the product, not the vendor."
+    },
+    {
+      "id": "R2",
+      "surface": "marketplace-kit",
+      "kind": "literal",
+      "pattern": "Precis — Unified LMS & Landing Platform",
+      "replace": "Aperture - LMS, Landing & Research Suite",
+      "reason": "ThemeForest item name, brand-free per B6-naming. 40 chars, within the 100-char cap. Matches marketplace.pack[3]."
+    },
+    {
+      "id": "R3",
+      "surface": "marketplace-kit",
+      "kind": "literal",
+      "pattern": "Precis is a unified platform combining",
+      "replace": "Aperture is a unified platform combining",
+      "reason": "Short description subject - uses the brand-free item name, not the vendor brand."
+    },
+    {
+      "id": "R4",
+      "surface": "marketplace-kit",
+      "kind": "literal",
+      "pattern": "prec, lms, learning, course, education, landing, catalog, django, wagtail, astro, htmx, fusion, responsive, education",
+      "replace": "lms, learning, course, education, landing, catalog, research, django, wagtail, astro, htmx, fusion, responsive, saas, platform",
+      "reason": "Tag list: drop the 'prec' typo, the duplicated 'education', and the two brand tokens 'structa'/'cloud'. 15 tags, at the cap."
+    },
+    {
+      "id": "R5",
+      "surface": "marketplace-kit",
+      "kind": "literal",
+      "pattern": "The canonical product lives in `projects/structa.cloud/`",
+      "replace": "The canonical product lives in the structa.cloud client checkout (see docs/plans/structa-cloud/README.md)",
+      "reason": "Path does not resolve in this checkout."
+    },
+    {
+      "id": "R6",
+      "surface": "variation-contract",
+      "kind": "literal",
+      "pattern": "precis-atelier",
+      "replace": "structa-atelier",
+      "reason": "structa.cloud variation id still carries the retired product name."
+    },
+    {
+      "id": "R7",
+      "surface": "publish-docs",
+      "kind": "literal",
+      "pattern": "### mkdocs Site",
+      "replace": "### Marketplace Listing\n\nMarketplace packaging, listing metadata, previews, and the licence gate are\nplanned in [`../plans/structa-cloud/README.md`](../plans/structa-cloud/README.md).\nNothing in this section uploads or prices an item.\n\n### Documentation Site",
+      "reason": "docs/publish/README.md has no marketplace target."
+    }
+  ],
+
+  "denylist": [
+    {
+      "id": "D1",
+      "label": "Upstream theme attribution",
+      "kind": "regex",
+      "pattern": "(?i)histudy|rainbow-themes|fu-themes",
+      "reason": "Third-party template identity. A publish set must contain none of it."
+    },
+    {
+      "id": "D2",
+      "label": "Upstream purchase / author link",
+      "kind": "regex",
+      "pattern": "themeforest\\.net/(checkout|user|item)",
+      "reason": "Another author's ThemeForest URL must never appear in our item."
+    },
+    {
+      "id": "D3",
+      "label": "Copyright notice that is not ours",
+      "kind": "regex",
+      "pattern": "(?i)(?:copyright|\u00a9)(?![\\s\\S]{0,400}?Structa)[\\s\\S]{0,400}?all\\s+rights\\s+reserved",
+      "reason": "A rights notice that does not name Structa Cloud within 400 characters is someone else's claim (or one we cannot substantiate). The window is generous because vendored notices wrap across lines, and `\\s+` is required for the same reason. Our own authored notice names Structa Cloud and therefore passes."
+    },
+    {
+      "id": "D4",
+      "label": "External placeholder media",
+      "kind": "regex",
+      "pattern": "(?i)https?://[^\"')\\s]*(?:picsum\\.photos|placehold\\.co|loremflickr|via\\.placeholder)",
+      "reason": "M6 claim gate: no external placeholder media. Matches a live URL only, so the checklist that names these hosts is not flagged."
+    },
+    {
+      "id": "D5",
+      "label": "Retired product name",
+      "kind": "regex",
+      "pattern": "\\bPrecis\\b|\\bprecis-(lms|main|landing)\\b|Cypercloud|\\bVResume\\b|\\bvresume\\b",
+      "reason": "Retired names must not ship in a publish set. VResume added 2026-09-21: the portfolio product was merged into the unified product, and its name survived in test fixtures (fixed) and in the marketplace kit's title."
+    },
+    {
+      "id": "D6",
+      "label": "Unsubstantiated authorship claim",
+      "kind": "regex",
+      "pattern": "(?i)entirely my own|full rights to sell",
+      "reason": "True only once the publish set is authored-only (milestone S2)."
+    },
+    {
+      "id": "D7",
+      "label": "Unresolved rework marker",
+      "kind": "regex",
+      "pattern": "(?i)TODO|FIXME|XXX|lorem ipsum",
+      "reason": "Buyer-facing output carries no authoring leftovers."
+    }
+  ],
+
+  "excludeDirs": [
+    ".git",
+    "node_modules",
+    ".venv",
+    "__pycache__",
+    ".ruff_cache",
+    ".pytest_cache",
+    ".archives",
+    "dist",
+    "build",
+    "logs",
+    "backups",
+    "coverage",
+    ".next",
+    ".astro"
+  ],
+
+  "neverWrite": [
+    "projects/Clients/ctc-research",
+    "application/tools/PlanInc",
+    "projects/CMS",
+    "projects/CRM",
+    "projects/POS",
+    "libs/django-fusion"
+  ],
+
+  "textExtensions": [
+    ".md", ".mdx", ".txt", ".scss", ".css", ".sass", ".html", ".htm",
+    ".json", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".vue",
+    ".py", ".po", ".pot", ".yaml", ".yml", ".toml", ".ini", ".env", ".example"
+  ]
+}

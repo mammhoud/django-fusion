@@ -11,6 +11,16 @@ domain (`default`, `lms`, `crm`, `pos`).
 projects/assets/theme/
 ├── _index.scss               # master import (imports all four themes)
 ├── README.md                 # this file
+├── engine/                   # theme engine — runtime layer (authored)
+│   ├── _index.scss           # engine entry (tokens → engine → components)
+│   ├── _fu-tokens.scss       # --fu-token-* semantic alias layer
+│   ├── _fu-engine.scss       # [data-theme] / .dark / [data-brand] remaps
+│   └── components/           # theme-agnostic BEM components
+│       ├── _fu-form.scss         # forms
+│       ├── _fu-alert.scss        # alerts & toasts
+│       ├── _fu-nav.scss          # navigation & tabs
+│       ├── _fu-table.scss        # data tables
+│       └── _fu-attribution.scss  # product-owned colophon (brand + copyright)
 ├── default/                  # canonical base theme (fu-default-*)
 │   ├── _index.scss
 │   ├── tokens/               # fu-default-* custom properties
@@ -211,6 +221,45 @@ In a product's SCSS entry point:
 The path assumes `projects/assets/` is in the SCSS `includePath` (which it is
 for every Django-fusion and Astro product in the monorepo).
 
+## Product attribution (`fu-attribution`)
+
+The engine ships one colophon band that belongs to us: `fu-attribution`. It
+renders the product mark, name, resource links, and the copyright line, and it
+consumes `--fu-token-*` only — so it re-themes correctly with every variation:
+
+```html
+<footer class="fu-attribution">
+  <div class="fu-attribution__inner">
+    <a class="fu-attribution__brand" href="https://structa.cloud">
+      <span class="fu-attribution__mark" aria-hidden="true">SC</span>
+      <span>
+        <span class="fu-attribution__name">Structa Cloud</span>
+        <span class="fu-attribution__tagline">Tokens, components, and variations</span>
+      </span>
+    </a>
+    <nav aria-label="Theme resources">
+      <ul class="fu-attribution__links">
+        <li><a class="fu-attribution__link" href="docs">Docs</a></li>
+      </ul>
+    </nav>
+    <div class="fu-attribution__legal">
+      <span class="fu-attribution__copyright">Copyright &copy; 2026 Structa Cloud</span>
+      <span class="fu-attribution__licence">All strings authored in this repository</span>
+    </div>
+  </div>
+</footer>
+```
+
+Variants: `--compact` for dense layouts and `--stacked` to stack the legal line
+under the brand on narrow viewports (also the default below 640px).
+
+**Why the block is `fu-attribution`, not `fu-footer`.** The vendored base
+already defines a `.fu-footer` block in `default/components/_fu-footer.scss`, so
+a second one would collide. This block is the authored replacement band for
+authored pages, not an override of the archived one.
+
+---
+
 ## Archived source
 
 The `default/` theme's `tokens/` directory contains the original archived SCSS
@@ -225,3 +274,22 @@ components on top.
 All stylesheets are `.scss` partials (prefixed with `_`). The archived
 `style.scss` is at `default/tokens/_style.scss`. No plain `.css` files remain
 in the theme library — everything compiles through the SCSS pipeline.
+
+### Archived means excluded, not ours to rename
+
+The `default/` theme's `tokens/`, `templates/`, and `components/` trees are a
+vendored copy of a **commercial** education template (its own `tokens/_style.scss`
+names the upstream item, and several templates still carry the upstream author's
+copyright notice and purchase link). Two consequences, both permanent:
+
+1. **They are excluded from every publish set.** Removing a copyright notice
+does not clear a licence — the markup, SCSS, and imagery remain derivative. The
+marketplace publish path (`docs/plans/structa-cloud/`) therefore builds only
+from authored surfaces, and `tools/rebrand.mjs` refuses to rewrite anything on
+the `theme-default-archive` surface.
+2. **They are not the branding surface.** Structa Cloud attribution belongs in
+the authored `fu-attribution` band above, not in an edit of an archived footer.
+
+Authored surfaces — `engine/`, the token-only variations (`saas`, `corporate`,
+…), and `design-systems/` — carry no third-party text and are the only ones a
+rebrand may touch.

@@ -3,8 +3,8 @@
     "model": "sites.site",
     "pk": 101,
     "fields": {
-      "domain": "vresume.structa.cloud",
-      "name": "vresume.structa.cloud dummy site"
+      "domain": "localhost",
+      "name": "localhost dummy site"
     }
   }
 ]

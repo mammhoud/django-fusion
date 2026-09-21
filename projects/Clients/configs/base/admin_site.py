@@ -8,10 +8,11 @@ from ..settings.conf import settings
 # -------------------------------
 # Admin Configuration
 # -------------------------------
+# Unfold titles come from the UNFOLD dict's own SITE_HEADER / SITE_TITLE /
+# INDEX_TITLE keys (below). The former module-level ADMIN_SITE_HEADER /
+# ADMIN_SITE_TITLE / ADMIN_INDEX_TITLE settings had no reader anywhere in the
+# repository and were removed 2026-09-21 (deletion-manifest DOC-0033).
 ADMIN_URL = settings.get("ADMIN_URL", "admin/")
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "VResume Admin")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "VResume Admin")
-ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Administration")
 
 # -------------------------------
 # Site Admins & Managers
@@ -23,7 +24,7 @@ SITE_ID = settings.get("SITE_ID", 1)
 # -------------------------------
 # Wagtail Settings
 # -------------------------------
-WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "VResume")
+WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "Structa Cloud")
 WAGTAILADMIN_BASE_URL = settings.get("WAGTAILADMIN_BASE_URL", "http://localhost:8000")
 BASE_URL = settings.get("BASE_URL", WAGTAILADMIN_BASE_URL)
 WAGTAIL_ENABLE_UPDATE_CHECK = settings.get("WAGTAIL_ENABLE_UPDATE_CHECK", False)
@@ -39,17 +40,18 @@ MIGRATION_MODULES = settings.get("MIGRATION_MODULES", {})
 # Admin Template Configuration (Unfold)
 # -------------------------------
 # This is a minimal shared baseline.  Each website overrides branding,
-# sidebar navigation, and site-specific items in its own settings.py
-# (after ``from configs.settings import *``).  See:
-#   projects/portfolio/settings.py  — full VResume sidebar with page-model links
-#   projects/fusion-cms/settings.py
-#   projects/lms/settings.py
+# sidebar navigation, and site-specific items in its own settings module
+# (after ``from configs.default import *``).  See:
+#   projects/Clients/ctc-research/backend/settings/site.py — CTC Research identity
+#   projects/Clients/platform/backend/settings.py          — platform site
+# The previously listed paths (projects/portfolio, projects/fusion-cms,
+# projects/lms) do not exist in this repository.
 UNFOLD = {
     # ── Branding ──────────────────────────────────────────────────────────
-    "SITE_HEADER": _("Admin"),
-    "SITE_TITLE": _("Site Admin"),
+    "SITE_HEADER": _("Structa Cloud"),
+    "SITE_TITLE": _("Structa Cloud Admin"),
     "INDEX_TITLE": _("Dashboard"),
-    "SITE_SYMBOL": "school",
+    "SITE_SYMBOL": "cloud",
 
     # ── Display Options ────────────────────────────────────────────────────
     "SHOW_LANGUAGES": True,
@@ -68,7 +70,8 @@ UNFOLD = {
     # ── Sidebar Navigation ─────────────────────────────────────────────────
     # ``show_all_applications=True`` lets Django auto-discover registered
     # apps so LMS sites get a correct sidebar without hardcoded model links.
-    # VResume overrides this in its settings.py with a curated navigation.
+    # A site may override this with a curated navigation in its own
+    # settings.py. The retired per-site override is gone, so none does.
     "SIDEBAR": {
         "show_search": True,
         "show_all_applications": True,
@@ -124,21 +127,22 @@ UNFOLD = {
 # -------------------------------
 # Admin Permission Settings
 # -------------------------------
-ADMIN_PERMISSIONS = {
-    "CREATE_SUPERUSER": settings.get("ADMIN_CREATE_SUPERUSER", True),
-    "DELETE_SUPERUSER": settings.get("ADMIN_DELETE_SUPERUSER", False),
-    "EDIT_SUPERUSER": settings.get("ADMIN_EDIT_SUPERUSER", True),
-    "VIEW_LOGS": settings.get("ADMIN_VIEW_LOGS", True),
-    "EXPORT_DATA": settings.get("ADMIN_EXPORT_DATA", True),
-}
+# Removed 2026-09-21 (deletion-manifest DOC-0034): ADMIN_PERMISSIONS was never
+# read by any module, template, or command. Its keys described gates that were
+# not wired to anything, so it advertised an access-control posture the code
+# did not enforce. Real authorization lives in Django permissions, Wagtail's
+# page/workflow permissions, and each app's view-level checks.
 
 # -------------------------------
 # Admin Security Settings
 # -------------------------------
-ADMIN_SECURITY = {
-    "SESSION_TIMEOUT": settings.get("ADMIN_SESSION_TIMEOUT", 120),  # minutes
-    "MAX_LOGIN_ATTEMPTS": settings.get("ADMIN_MAX_LOGIN_ATTEMPTS", 5),
-    "LOCKOUT_TIME": settings.get("ADMIN_LOCKOUT_TIME", 15),  # minutes
-    "REQUIRE_2FA": settings.get("ADMIN_REQUIRE_2FA", settings.is_production),
-    "IP_WHITELIST": settings.get("ADMIN_IP_WHITELIST", []),
-}
+# Removed 2026-09-21 (deletion-manifest DOC-0035): ADMIN_SECURITY was never
+# read by any module, template, or command, so REQUIRE_2FA, IP_WHITELIST,
+# MAX_LOGIN_ATTEMPTS, LOCKOUT_TIME and SESSION_TIMEOUT were inert -- a declared
+# security posture that nothing enforced.
+#
+# Real settings, so operators stop reaching for the removed dict:
+#   session lifetime  -> SESSION_COOKIE_AGE (set in configs/settings/CD/*.py)
+#   admin URL gate    -> configs/base/urls.py + the ADMIN_URL setting above
+#   HTTPS/HSTS/cookies-> configs/base/security.py
+#   two-factor auth   -> the installed `mfa` app's own settings, not this file

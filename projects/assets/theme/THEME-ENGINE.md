@@ -108,7 +108,8 @@ projects/assets/theme/
 │       ├── _fu-form.scss       # forms (input, label, switch, check)
 │       ├── _fu-alert.scss      # alerts & toasts
 │       ├── _fu-nav.scss        # navigation & tabs
-│       └── _fu-table.scss      # data tables
+│       ├── _fu-table.scss      # data tables
+│       └── _fu-attribution.scss # product-owned colophon (brand + copyright)
 ├── default/                    # base theme (fu-default-*)
 │   ├── _index.scss
 │   ├── tokens/

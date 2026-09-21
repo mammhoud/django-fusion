@@ -1,6 +1,6 @@
 # Fixtures Organized by Model
 
-**Location**: `/assets/fixtures/by-model/`  
+**Location**: `tests/fixtures/by-model/`  
 **Purpose**: Fixture files separated and organized by model type  
 **Status**: ✅ Automatically organized  
 **Structure**: Hierarchical by app/model
@@ -23,7 +23,7 @@ by-model/
 │   ├── modules-activitytype.json
 │   ├── modules-derivedstatus.json
 │   └── modules-statuschoice.json
-├── wagtailprojects/                           # Wagtail core models
+├── wagtailcore/                               # Wagtail core models
 │   ├── wagtailcore-collection.json
 │   ├── wagtailcore-locale.json
 │   ├── wagtailcore-page.json
@@ -56,14 +56,14 @@ by-model/
 **Load Order**: Before other data that references users
 
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/auth/auth-group.json \
-  assets/fixtures/by-model/auth/auth-user.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/auth/auth-group.json \
+  tests/fixtures/by-model/auth/auth-user.json
 ```
 
 ---
 
-### 🌍 wagtailprojects/
+### 🌍 wagtailcore/
 **Purpose**: Core Wagtail CMS models  
 **Models**:
 - `wagtailcore-locale.json` - Languages/locales (6 items)
@@ -81,10 +81,10 @@ docker exec web-precis-ctc python manage.py loaddata \
 **Load Order**: After auth, before images
 
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-locale.json \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-site.json \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-page.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-locale.json \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-site.json \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-page.json
 ```
 
 ---
@@ -99,9 +99,9 @@ docker exec web-precis-ctc python manage.py loaddata \
 **Load Order**: After wagtailcore collections
 
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailimages/wagtailimages-image.json \
-  assets/fixtures/by-model/wagtailimages/wagtailimages-rendition.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailimages/wagtailimages-image.json \
+  tests/fixtures/by-model/wagtailimages/wagtailimages-rendition.json
 ```
 
 ---
@@ -117,8 +117,8 @@ docker exec web-precis-ctc python manage.py loaddata \
 **Load Order**: Any time (independent)
 
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/modules/modules-*.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/modules/modules-*.json
 ```
 
 ---
@@ -137,40 +137,40 @@ docker exec web-precis-ctc python manage.py loaddata \
 
 ### Step 1: Locales (Required)
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-locale.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-locale.json
 ```
 
 ### Step 2: Sites (Required)
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-site.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-site.json
 ```
 
 ### Step 3: Collections (Optional)
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-collection.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-collection.json
 ```
 
 ### Step 4: Auth (Optional)
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/auth/auth-group.json \
-  assets/fixtures/by-model/auth/auth-user.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/auth/auth-group.json \
+  tests/fixtures/by-model/auth/auth-user.json
 ```
 
 ### Step 5: Pages (Optional)
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-page.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-page.json
 ```
 
 ### Step 6: Images (Optional)
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailimages/wagtailimages-image.json \
-  assets/fixtures/by-model/wagtailimages/wagtailimages-rendition.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailimages/wagtailimages-image.json \
+  tests/fixtures/by-model/wagtailimages/wagtailimages-rendition.json
 ```
 
 ---
@@ -233,7 +233,7 @@ jq '.models.wagtailcore | .[].file' by-model/INDEX.json
 The `by-model/` directory is automatically generated from mixed fixtures using:
 
 ```bash
-python tests/scripts/organize_fixtures_by_model.py
+python tests/scripts/testing/organize_fixtures_by_model.py
 ```
 
 ### What It Does
@@ -247,10 +247,10 @@ python tests/scripts/organize_fixtures_by_model.py
 ### Regenerating
 ```bash
 # Remove old organized files
-rm -rf assets/fixtures/by-model/
+rm -rf tests/fixtures/by-model/
 
 # Regenerate
-python tests/scripts/organize_fixtures_by_model.py
+python tests/scripts/testing/organize_fixtures_by_model.py
 ```
 
 ---
@@ -259,32 +259,32 @@ python tests/scripts/organize_fixtures_by_model.py
 
 ### Case 1: Load Only Locales
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailprojects/wagtailcore-locale.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailcore/wagtailcore-locale.json
 ```
 ✅ Safe for initial setup
 
 ### Case 2: Load All Auth Data
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/auth/*.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/auth/*.json
 ```
 ✅ Loads users, groups, permissions
 
 ### Case 3: Load All Wagtail Core
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/wagtailprojects/*.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/wagtailcore/*.json
 ```
 ⚠️ May have FK constraints - use in order
 
 ### Case 4: Load Everything
 ```bash
-docker exec web-precis-ctc python manage.py loaddata \
-  assets/fixtures/by-model/auth/*.json \
-  assets/fixtures/by-model/wagtailprojects/*.json \
-  assets/fixtures/by-model/wagtailimages/*.json \
-  assets/fixtures/by-model/modules/*.json
+docker compose exec backend python manage.py loaddata \
+  tests/fixtures/by-model/auth/*.json \
+  tests/fixtures/by-model/wagtailcore/*.json \
+  tests/fixtures/by-model/wagtailimages/*.json \
+  tests/fixtures/by-model/modules/*.json
 ```
 ⚠️ Requires correct order and FK handling
 
@@ -302,15 +302,15 @@ docker exec web-precis-ctc python manage.py loaddata \
 **Solution**: Clear database or use `--no-input` flag
 
 ### Issue: Files not found
-**Solution**: Run organizer: `python tests/scripts/organize_fixtures_by_model.py`
+**Solution**: Run organizer: `python tests/scripts/testing/organize_fixtures_by_model.py`
 
 ---
 
 ## 📚 References
 
 - [Main Fixtures README](../README.md)
-- [Fixture Manager](../../tests/scripts/manage_fixtures.py)
-- [Load Command](../../www/apps/management/commands/load_initial_fixtures.py)
+- [Fixture Manager](../../tests/scripts/testing/manage_fixtures.py)
+- [Load Command](../../projects/Clients/ctc-research/backend/apps/core/management/commands/load_initial_fixtures.py)
 - [Django Fixtures](https://docs.djangoproject.com/en/stable/howto/initial-data/)
 
 ---
@@ -333,5 +333,5 @@ docker exec web-precis-ctc python manage.py loaddata \
 
 **Last Updated**: June 2, 2026  
 **Auto-Generated**: Yes  
-**Regenerate Command**: `python tests/scripts/organize_fixtures_by_model.py`  
+**Regenerate Command**: `python tests/scripts/testing/organize_fixtures_by_model.py`  
 **Status**: ✅ Ready for use
