@@ -1,0 +1,170 @@
+services:
+  backend:
+    build:
+      context: ../..
+      dockerfile: projects/structa.cloud/backend/Dockerfile
+    image: structa-cloud-backend:latest
+    container_name: structa-cloud-backend
+    restart: unless-stopped
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-structa-cloud-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: structa.cloud,localhost,127.0.0.1,structa-cloud-backend,structa-cloud-frontend
+      CSRF_TRUSTED_ORIGINS: https://structa.cloud,http://localhost:3001,http://127.0.0.1:3001
+      CORS_ALLOWED_ORIGINS: https://structa.cloud,http://localhost:3001,http://127.0.0.1:3001
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME:-db_precis_lms}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      WAGTAILADMIN_BASE_URL: https://structa.cloud
+      FUSION_RENDER_FIRST: "0"
+      PROJECT_PATH: ${PROJECT_PATH:-precis-main}
+      SOURCE_PATH: ${SOURCE_PATH:-structa.cloud}
+    volumes:
+      - ../../projects/assets:/app/precis-main/backend/assets/media
+      - ../../projects/assets:/app/precis-main/backend/assets/staticfiles
+      - structa-cloud-media:/app/precis-main/backend/assets/media
+      - structa-cloud-static:/app/precis-main/backend/assets/staticfiles
+    networks:
+      - common
+      - traefik-net
+    command: >-
+      sh -c "python manage.py migrate --noinput
+      && python manage.py collectstatic --noinput
+      && exec gunicorn wsgi:application --bind 0.0.0.0:8074 --workers 2 --timeout 120 --access-logfile - --error-logfile -"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8074/health/\", timeout=4)' "]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+  scheduler:
+    build:
+      context: ../..
+      dockerfile: projects/structa.cloud/backend/Dockerfile
+    image: structa-cloud-backend:latest
+    container_name: structa-cloud-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-structa-cloud-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,structa-cloud-scheduler
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME:-db_precis_lms}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      WAGTAILADMIN_BASE_URL: https://structa.cloud
+    volumes:
+      - ../../projects/assets:/app/precis-main/backend/assets/media
+      - structa-cloud-media:/app/precis-main/backend/assets/media
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+    command: python -m django_fusion.tasks.scheduler
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: projects/structa.cloud/backend/Dockerfile
+    image: structa-cloud-backend:latest
+    container_name: structa-cloud-worker
+    restart: unless-stopped
+    env_file:
+      - path: ../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_MAIN_DJANGO_SECRET_KEY:-structa-cloud-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,structa-cloud-worker
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME:-db_precis_lms}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/2
+      WAGTAILADMIN_BASE_URL: https://structa.cloud
+    volumes:
+      - ../../projects/assets:/app/precis-main/backend/assets/media
+      - structa-cloud-media:/app/precis-main/backend/assets/media
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues email,content,system,default
+
+  frontend:
+    build:
+      context: ../..
+      dockerfile: projects/structa.cloud/frontend/Dockerfile
+    image: structa-cloud-frontend:latest
+    container_name: structa-cloud-frontend
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3001"
+      PUBLIC_FUSION_API_URL: http://structa-cloud-backend:8074
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+      - traefik-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  structa-cloud-media:
+    name: structa-cloud-media
+  structa-cloud-static:
+    name: structa-cloud-static
