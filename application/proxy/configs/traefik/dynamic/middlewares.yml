@@ -1,0 +1,59 @@
+# =============================================================================
+# Shared middlewares — Traefik config  [INFRASTRUCTURE]
+# =============================================================================
+# Reusable middleware definitions used by all site router configs.
+# Always active — no backend dependency.
+# Middlewares: redirect-to-https, security-headers, compress,
+#             csrf-headers, rate-limit, basic-auth, redirect-www-to-root.
+# =============================================================================
+
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: https
+        permanent: true
+
+    security-headers:
+      headers:
+        customResponseHeaders:
+          X-Content-Type-Options: "nosniff"
+          X-Frame-Options: "SAMEORIGIN"
+          X-XSS-Protection: "1; mode=block"
+          Referrer-Policy: "strict-origin-when-cross-origin"
+          Permissions-Policy: "camera=(), microphone=(), geolocation=()"
+        forceSTSHeader: true
+        sslRedirect: true
+        contentTypeNosniff: true
+        browserXssFilter: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        stsSeconds: 63072000
+        stsIncludeSubdomains: true
+        stsPreload: true
+
+    compress:
+      compress: {}
+
+    csrf-headers:
+      headers:
+        hostsProxyHeaders:
+          - "X-CSRFToken"
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1s
+
+    basic-auth:
+      basicAuth:
+        users:
+          - "admin:$apr1$H6uskkkW$IgXLP6ewTrSuBkTrqE8wj/"   # user: admin / pass: admin
+
+    redirect-www-to-root:
+      redirectRegex:
+        regex: "^https://www\\.(.*)"
+        replacement: "https://${1}"
+        permanent: true

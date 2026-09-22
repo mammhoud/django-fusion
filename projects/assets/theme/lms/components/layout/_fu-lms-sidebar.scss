@@ -1,0 +1,88 @@
+/* ═══════════════════════════════════════════════════════════════════
+   LMS Component: fu-lms-sidebar — BEM dashboard sidebar for LMS theme.
+   Uses fu-lms-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-lms-sidebar {
+  background: hsl(var(--fu-lms-card));
+  border-radius: var(--fu-lms-radius-lg);
+  box-shadow: var(--fu-lms-shadow-card);
+  padding: 1.5rem;
+  height: 100%;
+
+  &__profile {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid hsl(var(--fu-lms-line));
+    margin-bottom: 1.5rem;
+
+    img {
+      width: 5rem;
+      height: 5rem;
+      border-radius: var(--fu-lms-radius-full);
+      object-fit: cover;
+      border: 3px solid hsl(var(--fu-lms-primary-light));
+      margin-bottom: 0.75rem;
+    }
+  }
+
+  &__name {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: hsl(var(--fu-lms-ink));
+    margin-bottom: 0.25rem;
+  }
+
+  &__email {
+    font-size: 0.8125rem;
+    color: hsl(var(--fu-lms-muted));
+  }
+
+  &__nav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin-bottom: 0.25rem;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.875rem;
+        border-radius: var(--fu-lms-radius-md);
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: hsl(var(--fu-lms-muted));
+        transition: var(--fu-lms-transition-standard);
+
+        i {
+          font-size: 1rem;
+          width: 1.25rem;
+          text-align: center;
+        }
+
+        &:hover {
+          background: hsl(var(--fu-lms-primary-light));
+          color: hsl(var(--fu-lms-primary));
+        }
+      }
+
+      &.active a {
+        background: hsl(var(--fu-lms-primary));
+        color: hsl(var(--fu-lms-card));
+      }
+    }
+  }
+
+  &__section {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: hsl(var(--fu-lms-muted) / 0.6);
+    margin: 1.5rem 0 0.75rem;
+    padding: 0 0.875rem;
+  }
+}

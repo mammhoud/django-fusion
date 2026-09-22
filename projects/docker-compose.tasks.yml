@@ -1,0 +1,131 @@
+# ============================================================
+# Shared Background Tasks (Dramatiq only)
+# ============================================================
+# One infrastructure-owned worker/scheduler for cross-site background work.
+# Website-specific code submits tasks to the shared Redis broker with an
+# explicit `website`/`site` argument; task execution persists its audit record
+# in the configured shared Django database before and after execution.
+#
+# This stack is deliberately not an LMS/Fusion site container. The image uses
+# the shared sentinel settings module and mounts the workspace task/runtime
+# code only; product web containers remain responsible for their own HTTP
+# routes and database migrations.
+#
+# Prerequisites:
+#   docker compose -f application/databases/docker-compose.yml up -d postgres default-redis
+#
+# Start:
+#   DB_NAME=db_precis_lms docker compose -f application/docker-compose.tasks.yml up -d
+# ============================================================
+
+networks:
+  common:
+    name: common
+    external: true
+
+x-shared-tasks-base: &shared-tasks-base
+  build:
+    # This file sits one level deep (application/), unlike projects/<site>/
+    # which is two deep, so all host paths below use `..` (repo root).
+    context: ..
+    # Generic backend image: supplies Django's shared management/settings
+    # bootstrap. Product task packages are mounted separately below; no LMS
+    # task package is included in the shared worker.
+    dockerfile: projects/precis/precis-ctc/compose/Dockerfile.backend
+    args:
+      SOURCE_PATH: precis/precis-ctc
+      # The generic backend image supplies Django's shared management/settings
+      # bootstrap. Product task packages are mounted separately below; no LMS
+      # task package is included in the shared worker.
+      PROJECT_PATH: shared
+  image: structa-shared-tasks:latest
+  restart: unless-stopped
+  working_dir: /app
+  env_file:
+    - path: ../.env
+      required: false
+  environment: &shared-tasks-env
+    RUNNING_ENV: docker
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+    SERVER_ENV: ${SERVER_ENV:-production}
+    DEBUG: ${DEBUG:-False}
+    DJANGO_SETTINGS_MODULE: configs.management.settings
+    # `shared` is a non-tenant sentinel used only for worker bootstrap. Each
+    # task may still select its real website before touching website data.
+    DJANGO_SITE: shared
+    DJANGO_WEBSITE: shared
+    WEBSITE: shared
+    DJANGO_WEBSITE_DIR: /app/shared
+    WEBSITE_DIR: /app/shared
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-postgres}
+    DB_PORT: ${DB_PORT:-5432}
+    # Shared task audit records have one explicit persistence database. This
+    # is configurable per deployment and never silently falls back to an LMS
+    # queue or site identity.
+    DB_NAME: ${DB_NAME:-db_precis_lms}
+    DB_USER: ${POSTGRES_USER:-admin}
+    DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    # Redis requires auth (default-redis runs `--requirepass`); the bare
+    # URL would make Dramatiq fail with "NOAUTH Authentication
+    # required". Password resolves from the root .env via env_file above.
+    REDIS_URL: redis://:${REDIS_PASSWORD}@default-redis:6379/0
+    # Dramatiq uses Redis database 1 for the shared broker. Database 0 is
+    # reserved for cache traffic from product services.
+    DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD}@default-redis:6379/1
+    FUSION_TASK_BACKEND: dramatiq
+    LOG_DIR: /app/logs
+    PYTHONPATH: /app/shared:/app
+    # Comma-separated project/backend paths are resolved by
+    # django_fusion.tasks.TaskRegistry via importlib. Keep this list explicit
+    # so the shared worker cannot accidentally import Precis/LMS tasks.
+    FUSION_TASK_PROJECT_PATHS: ${FUSION_TASK_PROJECT_PATHS:-/app/task-projects/precis-landing/backend,/app/task-projects/loop-crm/backend,/app/task-projects/formint-cloud/backend}
+  networks:
+    - common
+
+services:
+  shared-worker:
+    <<: *shared-tasks-base
+    container_name: shared-worker
+    volumes:
+      - ../projects/cli.py:/app/cli.py:z
+      - ../projects/manage.py:/app/manage.py:z
+      - ../projects/__main__.py:/app/__main__.py:z
+      # NOTE: projects/assets (media/static/bundles data) is intentionally NOT
+      # mounted into the shared worker. The worker executes task code only;
+      # product web containers and the assets-proxy own asset data. Keeping
+      # the assets tree out keeps this stack minimal and avoids needlessly
+      # syncing media into a task runtime.
+      - ../libs:/app/libs:z
+      - ../projects/logs:/app/logs:z
+      # Shared task/config code is hot-reloadable without rebuilding the image.
+      # The management/settings bootstrap is shared infrastructure; this
+      # mount does not expose Precis application tasks to discovery.
+      - ../projects/precis/configs:/app/shared/configs:z
+      - ../projects/precis/precis-landing/backend:/app/task-projects/precis-landing/backend:ro
+      - ../projects/loop-crm/backend:/app/task-projects/loop-crm/backend:ro
+      - ../projects/formints/formint-cloud/backend:/app/task-projects/formint-cloud/backend:ro
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues shared,email,content,system,crm,marketing,finance,default
+
+  shared-scheduler:
+    <<: *shared-tasks-base
+    container_name: shared-scheduler
+    volumes:
+      - ../projects/cli.py:/app/cli.py:z
+      - ../projects/manage.py:/app/manage.py:z
+      - ../projects/__main__.py:/app/__main__.py:z
+      # NOTE: projects/assets is intentionally not mounted here either (see
+      # shared-worker above) — the scheduler only registers cron jobs and
+      # needs no asset data.
+      - ../libs:/app/libs:z
+      - ../projects/logs:/app/logs:z
+      - ../projects/precis/configs:/app/shared/configs:z
+      - ../projects/precis/precis-landing/backend:/app/task-projects/precis-landing/backend:ro
+      - ../projects/loop-crm/backend:/app/task-projects/loop-crm/backend:ro
+      - ../projects/formints/formint-cloud/backend:/app/task-projects/formint-cloud/backend:ro
+    command: >
+      python -m django_fusion.tasks.scheduler

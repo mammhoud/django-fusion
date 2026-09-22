@@ -1,0 +1,91 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Corporate Theme Tokens — fu-corporate-*
+   ─────────────────────────────────────────────────────────────────────
+   Navy-steel palette inspired by classic corporate identity. Formal,
+   trustworthy, conservative. Serif display headings, flat surfaces,
+   subtle shadows, small radius.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink ── */
+  --fu-corporate-paper:        220 15% 99%;
+  --fu-corporate-ink:          220 35% 12%;
+  --fu-corporate-muted:        220 12% 42%;
+  --fu-corporate-line:         220 14% 90%;
+  --fu-corporate-card:         0 0% 100%;
+  --fu-corporate-link:         220 70% 30%;
+  --fu-corporate-link-dark:    220 65% 24%;
+  --fu-corporate-mark:         40 90% 48%;
+  --fu-corporate-live:         150 55% 35%;
+
+  /* ── Brand accent palette (navy / steel) ── */
+  --fu-corporate-primary:       220 70% 30%;
+  --fu-corporate-primary-dark:  220 65% 24%;
+  --fu-corporate-primary-light: 220 50% 94%;
+  --fu-corporate-secondary:     215 40% 45%;
+  --fu-corporate-secondary-light: 215 30% 95%;
+  --fu-corporate-accent:        40 90% 48%;
+  --fu-corporate-success:       150 55% 35%;
+  --fu-corporate-warning:       38 90% 46%;
+  --fu-corporate-error:         0 65% 46%;
+  --fu-corporate-info:          199 85% 42%;
+
+  /* ── Spacing (conservative, tight) ── */
+  --fu-corporate-space-xs:  0.25rem;
+  --fu-corporate-space-sm:  0.5rem;
+  --fu-corporate-space-md:  0.9375rem;
+  --fu-corporate-space-lg:  1.375rem;
+  --fu-corporate-space-xl:  1.875rem;
+  --fu-corporate-space-2xl: 2.75rem;
+  --fu-corporate-space-3xl: 3.75rem;
+
+  --fu-corporate-section-lg: 4.5rem;
+  --fu-corporate-section-xl: 5.5rem;
+
+  /* ── Radius (small, classic) ── */
+  --fu-corporate-radius-sm:   0.125rem;
+  --fu-corporate-radius-md:   0.25rem;
+  --fu-corporate-radius-lg:   0.375rem;
+  --fu-corporate-radius-xl:   0.625rem;
+  --fu-corporate-radius-full: 9999px;
+
+  /* ── Shadows (subtle, flat) ── */
+  --fu-corporate-shadow-card:        0 1px 2px 0 hsl(220 35% 12% / 0.04);
+  --fu-corporate-shadow-card-hover:  0 2px 6px 0 hsl(220 35% 12% / 0.08);
+  --fu-corporate-shadow-modal:       0 12px 40px 0 hsl(220 35% 12% / 0.14);
+  --fu-corporate-shadow-toast:       0 4px 16px 0 hsl(220 35% 12% / 0.08);
+
+  /* ── Transitions (steady) ── */
+  --fu-corporate-transition-fast:     100ms ease;
+  --fu-corporate-transition-standard: 180ms ease;
+  --fu-corporate-transition-slow:     280ms ease;
+  --fu-corporate-transition-reveal:   420ms ease-out;
+
+  /* ── Z-index scale ── */
+  --fu-corporate-z-dropdown:       100;
+  --fu-corporate-z-sticky:         200;
+  --fu-corporate-z-modal-backdrop: 300;
+  --fu-corporate-z-modal:          400;
+  --fu-corporate-z-toast:          500;
+  --fu-corporate-z-tooltip:        600;
+
+  /* ── Typography (serif display + clean sans body) ── */
+  --fu-corporate-font-sans:    'Source Sans Pro', 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --fu-corporate-font-serif:   'Source Serif Pro', Georgia, 'Times New Roman', serif;
+  --fu-corporate-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --fu-corporate-font-display: 'Source Serif Pro', Georgia, serif;
+}
+
+/* ── Dark mode override ── */
+.dark[data-theme="corporate"],
+[data-theme="corporate"].dark {
+  --fu-corporate-paper:      220 20% 7%;
+  --fu-corporate-ink:        220 18% 93%;
+  --fu-corporate-muted:      220 10% 60%;
+  --fu-corporate-line:       220 12% 16%;
+  --fu-corporate-card:       220 14% 10%;
+  --fu-corporate-link:       220 70% 62%;
+  --fu-corporate-link-dark:  220 65% 52%;
+  --fu-corporate-mark:       40 90% 60%;
+  --fu-corporate-live:       150 55% 50%;
+}

@@ -1,0 +1,212 @@
+# ═════════════════════════════════════════════════════════════════════════════
+# precis-dev — standalone development copy of the unified Precis product
+# ═════════════════════════════════════════════════════════════════════════════
+# Deploys alongside precis-main (structa.cloud) and precis-ctc
+# (ctc-research.com) with zero container-name collisions.  Served at
+# dev.structa.cloud through the Traefik router
+# (application/proxy/configs/traefik/dynamic/precis-dev.yml).
+#
+# Bring up:
+#   docker compose --env-file ../../../.env -f docker-compose.yml up -d --build
+#   docker compose --env-file ../../../.env -f docker-compose.yml down
+#
+# Networks:     common, traefik-net (external — created by application/databases)
+# PostgreSQL:   db_precis_dev (shared ``postgres`` container)
+# Redis:        default-redis (shared), broker DB 3
+# Backend port: 8075 (internal + host-published via override)
+# Frontend:     3001 (internal + host-published via override)
+# ═════════════════════════════════════════════════════════════════════════════
+
+services:
+  backend:
+    build:
+      context: ../../..
+      dockerfile: projects/structa.cloud/backend/Dockerfile
+    image: precis-dev-backend:latest
+    container_name: precis-dev-backend
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_DEV_DJANGO_SECRET_KEY:-precis-dev-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: dev.structa.cloud,localhost,127.0.0.1,precis-dev-backend,precis-dev-frontend
+      CSRF_TRUSTED_ORIGINS: https://dev.structa.cloud,http://localhost:3001,http://127.0.0.1:3001
+      CORS_ALLOWED_ORIGINS: https://dev.structa.cloud,http://localhost:3001,http://127.0.0.1:3001
+      # ── Database ───────────────────────────────────────────────────
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME_DEV:-db_precis_dev}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      # ── Email ──────────────────────────────────────────────────────
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      # ── Redis / Dramatiq ───────────────────────────────────────────
+      # Cache DB 0, broker DB 3 — avoids colliding with precis-ctc (DB 1)
+      # and precis-main (DB 2) on the same cluster.
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/3
+      WAGTAILADMIN_BASE_URL: https://dev.structa.cloud
+      FUSION_RENDER_FIRST: "0"
+    volumes:
+      - precis-dev-media:/app/precis-main/backend/assets/media
+      - precis-dev-static:/app/precis-main/backend/assets/staticfiles
+      - ./Env:/app/precis-main/Env:ro
+      - ./configs:/app/precis-main/configs:ro
+    networks:
+      - common
+      - traefik-net
+    command: >-
+      sh -c "python manage.py migrate --noinput
+      && python manage.py collectstatic --noinput
+      && python manage.py seed_pages --force
+      && python manage.py seed_learning
+      && exec gunicorn wsgi:application --bind 0.0.0.0:8075 --workers 2 --timeout 120 --access-logfile - --error-logfile -"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8075/apis/pages/\", timeout=4)' "]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+  scheduler:
+    build:
+      context: ../../..
+      dockerfile: projects/structa.cloud/backend/Dockerfile
+    image: precis-dev-backend:latest
+    container_name: precis-dev-scheduler
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_DEV_DJANGO_SECRET_KEY:-precis-dev-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,precis-dev-backend
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME_DEV:-db_precis_dev}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/3
+      WAGTAILADMIN_BASE_URL: https://dev.structa.cloud
+    volumes:
+      - ./Env:/app/precis-main/Env:ro
+      - ./configs:/app/precis-main/configs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+    command: python -m django_fusion.tasks.scheduler
+
+  worker:
+    build:
+      context: ../../..
+      dockerfile: projects/structa.cloud/backend/Dockerfile
+    image: precis-dev-backend:latest
+    container_name: precis-dev-worker
+    restart: unless-stopped
+    env_file:
+      - path: ../../../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      SERVER_ENV: production
+      DJANGO_SECRET_KEY: ${PRECIS_DEV_DJANGO_SECRET_KEY:-precis-dev-change-me}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,precis-dev-backend
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-django.db.backends.postgresql}
+      DJANGO_DB_NAME: ${DB_NAME_DEV:-db_precis_dev}
+      DJANGO_DB_USER: ${POSTGRES_USER:-admin}
+      DJANGO_DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD (shared) in .env}
+      DJANGO_DB_HOST: postgres
+      DJANGO_DB_PORT: "5432"
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-Structa Cloud <structa.cloud@gmail.com>}
+      EMAIL_BACKEND: ${EMAIL_BACKEND:-django.core.mail.backends.console.EmailBackend}
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.gmail.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USE_TLS: ${EMAIL_USE_TLS:-true}
+      EMAIL_USE_SSL: ${EMAIL_USE_SSL:-false}
+      EMAIL_HOST_USER: ${EMAIL_HOST_USER:-}
+      EMAIL_HOST_PASSWORD: ${EMAIL_HOST_PASSWORD:-}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/0
+      DRAMATIQ_BROKER_URL: redis://:${REDIS_PASSWORD:-}@default-redis:6379/3
+      FUSION_TASK_BACKEND: dramatiq
+      FUSION_TASK_MODULES: plugins.workers.email_tasks,plugins.workers.legacy_email_tasks,plugins.workers.content_tasks
+      WAGTAILADMIN_BASE_URL: https://dev.structa.cloud
+    volumes:
+      - ./Env:/app/precis-main/Env:ro
+      - ./configs:/app/precis-main/configs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+    command: >
+      python manage.py rundramatiq
+      --processes ${DRAMATIQ_PROCESSES:-2}
+      --threads ${DRAMATIQ_THREADS:-4}
+      --queues email,content,system,default
+
+  frontend:
+    build:
+      context: ../../..
+      dockerfile: projects/structa.cloud/frontend/Dockerfile
+    image: precis-dev-frontend:latest
+    container_name: precis-dev-frontend
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: "3001"
+      PUBLIC_FUSION_API_URL: http://precis-dev-backend:8075
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - common
+      - traefik-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:3000/ >/dev/null"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  precis-dev-media:
+    name: precis-dev-media
+  precis-dev-static:
+    name: precis-dev-static

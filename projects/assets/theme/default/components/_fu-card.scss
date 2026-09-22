@@ -1,0 +1,122 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-card — BEM card primitives for the default theme.
+   Extracted and converted from .archives/theme/elements/_card.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-card {
+  overflow: hidden;
+  box-shadow: var(--fu-default-shadow-card);
+  padding: 1.875rem;
+  border-radius: var(--fu-default-radius-md);
+  background: hsl(var(--fu-default-card));
+  position: relative;
+  height: 100%;
+  transition: all var(--fu-default-transition-slow);
+
+  &__img {
+    position: relative;
+    a {
+      display: block;
+      img {
+        width: 100%;
+        transition: var(--fu-default-transition-slow);
+        object-fit: cover;
+        border-radius: var(--fu-default-radius-md);
+      }
+    }
+  }
+
+  &__body {
+    padding-top: 1.875rem;
+    .fu-card__meta {
+      margin-bottom: 0.875rem;
+    }
+  }
+
+  &__title {
+    margin-bottom: 0.625rem;
+    font-size: 1.625rem;
+    a {
+      color: hsl(var(--fu-default-ink));
+      transition: var(--fu-default-transition-standard);
+      &:hover {
+        color: hsl(var(--fu-default-primary));
+      }
+    }
+  }
+
+  &__text {
+    color: hsl(var(--fu-default-muted));
+    margin-bottom: 1.25rem;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.25rem;
+    margin-top: -0.625rem;
+  }
+
+  &__bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* ── Variations ── */
+  &--minimal {
+    box-shadow: var(--fu-default-shadow-card-hover);
+    .fu-card__body {
+      padding: 3.125rem 2.5rem;
+    }
+  }
+
+  &--list {
+    display: flex;
+    border-radius: var(--fu-default-radius-sm);
+    align-items: center;
+    height: 100%;
+
+    .fu-card__img {
+      height: 100%;
+      a {
+        height: 100%;
+        img {
+          border-radius: var(--fu-default-radius-sm) 0 0 var(--fu-default-radius-sm);
+          max-width: 18rem;
+          min-width: 18rem;
+          object-fit: cover;
+          height: 100%;
+        }
+      }
+    }
+
+    .fu-card__body {
+      padding: 1.875rem;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  &--interactive {
+    cursor: pointer;
+    &:hover {
+      transform: translateY(-0.125rem);
+      box-shadow: var(--fu-default-shadow-card-hover);
+    }
+  }
+
+  &--gradient {
+    background: hsl(var(--fu-default-ink));
+    color: hsl(var(--fu-default-paper));
+    border-color: hsl(var(--fu-default-line));
+  }
+
+  &--padded { padding: 1.5rem; }
+  &--compact { padding: 1rem; }
+}

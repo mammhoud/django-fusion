@@ -1,0 +1,10 @@
+[
+  {
+    "model": "sites.site",
+    "pk": 101,
+    "fields": {
+      "domain": "localhost",
+      "name": "localhost dummy site"
+    }
+  }
+]

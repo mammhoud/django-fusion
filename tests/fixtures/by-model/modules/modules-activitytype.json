@@ -1,0 +1,167 @@
+[
+  {
+    "model": "modules.activitytype",
+    "pk": 1,
+    "fields": {
+      "code": "CALL",
+      "name": "Phone Call",
+      "description": "Outbound or inbound telephone communication",
+      "is_active": true,
+      "icon": "phone"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 2,
+    "fields": {
+      "code": "EMAIL",
+      "name": "Email",
+      "description": "Electronic mail communication",
+      "is_active": true,
+      "icon": "envelope"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 3,
+    "fields": {
+      "code": "MEETING",
+      "name": "Meeting",
+      "description": "In-person or virtual meeting",
+      "is_active": true,
+      "icon": "calendar"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 4,
+    "fields": {
+      "code": "NOTE",
+      "name": "Note",
+      "description": "General note or memo",
+      "is_active": true,
+      "icon": "sticky-note"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 5,
+    "fields": {
+      "code": "TASK",
+      "name": "Task",
+      "description": "Action item or to-do",
+      "is_active": true,
+      "icon": "check-circle"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 6,
+    "fields": {
+      "code": "FOLLOW_UP",
+      "name": "Follow Up",
+      "description": "Follow-up action required",
+      "is_active": true,
+      "icon": "reply"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 7,
+    "fields": {
+      "code": "DEMO",
+      "name": "Product Demo",
+      "description": "Product demonstration activity",
+      "is_active": true,
+      "icon": "laptop"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 8,
+    "fields": {
+      "code": "PROPOSAL",
+      "name": "Proposal Sent",
+      "description": "Proposal sent to customer",
+      "is_active": true,
+      "icon": "file-alt"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 9,
+    "fields": {
+      "code": "QUOTE",
+      "name": "Quote Sent",
+      "description": "Price quote sent to customer",
+      "is_active": true,
+      "icon": "file-invoice-dollar"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 10,
+    "fields": {
+      "code": "NEGOTIATION",
+      "name": "Negotiation",
+      "description": "Negotiation phase activity",
+      "is_active": true,
+      "icon": "handshake"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 11,
+    "fields": {
+      "code": "CLOSING",
+      "name": "Closing Activity",
+      "description": "Closing stage of deal or project",
+      "is_active": true,
+      "icon": "check"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 12,
+    "fields": {
+      "code": "FEEDBACK",
+      "name": "Customer Feedback",
+      "description": "Customer feedback session",
+      "is_active": true,
+      "icon": "comments"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 13,
+    "fields": {
+      "code": "TRAINING",
+      "name": "Training Session",
+      "description": "Training or onboarding activity",
+      "is_active": true,
+      "icon": "chalkboard-teacher"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 14,
+    "fields": {
+      "code": "SITE_VISIT",
+      "name": "Site Visit",
+      "description": "On-site visit to customer or project location",
+      "is_active": true,
+      "icon": "map-marker-alt"
+    }
+  },
+  {
+    "model": "modules.activitytype",
+    "pk": 15,
+    "fields": {
+      "code": "WEBINAR",
+      "name": "Webinar",
+      "description": "Web-based seminar or workshop",
+      "is_active": true,
+      "icon": "video"
+    }
+  }
+]

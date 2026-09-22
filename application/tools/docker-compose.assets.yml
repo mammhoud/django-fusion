@@ -1,0 +1,68 @@
+# =============================================================================
+# Assets-proxy Nginx — static/media server for all Structa Cloud sites
+# =============================================================================
+# Serves per-site /static/ and /media/ volumes for ctc-research, lms, vresume,
+# and precis-lms. Replaces the static/media portion of the old shared-proxy (now split into tools-proxy + assets-proxy).
+#
+# Deploy with:
+#   docker compose -f application/tools/docker-compose.assets.yml up -d
+#   make deploy-assets                     (if added to root Makefile)
+#
+# Start/stop independent of tools-proxy, Docus, and Blinko.
+# =============================================================================
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true
+
+services:
+  assets-proxy:
+    build:
+      context: ../..
+      dockerfile: application/tools/nginx/Dockerfile.assets
+    restart: unless-stopped
+    container_name: assets-proxy
+    networks:
+      - traefik-net
+      - common
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.assets-proxy.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.vresume.structa.cloud`)"
+      - "traefik.http.services.assets-proxy.loadbalancer.server.port=80"
+    volumes:
+      # Current checkout: the unified Precis product lives at
+      # projects/Clients/ctc-research (formerly projects/precis/precis-ctc).
+      - ../../projects/Clients/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      # Sites not present in this checkout — re-enable when their trees exist:
+      # - ../../projects/structa.cloud/assets/staticfiles:/var/www/sites/lms/static:ro
+      # - ../../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
+      - precis-lms-static:/var/www/sites/precis-lms/static:ro
+      - ../../projects/assets/static:/var/www/static:ro
+      - ../../projects/assets/media/ctc-research:/var/www/media/ctc-research:ro
+      # - ../../projects/structa.cloud/assets/media:/var/www/media/lms:ro
+      # - ../../projects/portfolio/assets/media:/var/www/media/vresume:ro
+      - precis-lms-media:/var/www/media/precis-lms:ro
+    healthcheck:
+      test: ["CMD-SHELL", "nginx -t >/dev/null 2>&1 && wget -qO- http://127.0.0.1/health/ | grep -qx healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+volumes:
+  precis-lms-static:
+    name: precis-lms-static
+    external: true
+  precis-lms-media:
+    name: precis-lms-media
+    external: true

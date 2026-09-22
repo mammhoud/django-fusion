@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:anytype:schema:2026-08-04:type-workspace:ver-1.0",
+  "type": "object",
+  "title": "Workspace",
+  "x-app": "Anytype",
+  "x-icon-name": "folder",
+  "x-plural": "Workspaces",
+  "x-schema-version": "1.0",
+  "x-type-key": "workspace",
+  "properties": {
+    "Object type": {
+      "const": "Workspace",
+      "type": "string",
+      "x-format": "object",
+      "x-key": "type"
+    },
+    "Tags": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "tag",
+      "x-key": "tags"
+    },
+    "Status": {
+      "enum": ["Draft", "Active", "Paused", "Completed", "Archived", "Deprecated"],
+      "type": "string",
+      "x-key": "status"
+    },
+    "Purpose": {"type": "string", "x-key": "purpose"},
+    "Related Projects": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedProjects"
+    },
+    "Related Products": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedProducts"
+    },
+    "Related Plans": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedPlans"
+    },
+    "Related Teams": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedTeams"
+    },
+    "Related Research": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedResearch"
+    },
+    "Related Channels": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "relatedChannels"
+    }
+  },
+  "required": ["Object type", "Tags", "Status"]
+}

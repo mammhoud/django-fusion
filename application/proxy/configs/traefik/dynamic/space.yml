@@ -1,0 +1,46 @@
+# =============================================================================
+# Workspace control plane — space.structa.cloud (Coder)
+# =============================================================================
+# Routes space.localhost / space.structa.cloud to the Coder control plane
+# (coder container, port 7080). The workspace product is branded "space";
+# coder.structa.cloud and code.structa.cloud are retired aliases.
+#
+# AFFiNE is served at tools.structa.cloud/space/ (path-based split performed
+# by the shared-proxy Nginx, see application/tools/nginx/default.conf.template).
+#
+# Public host uses Let's Encrypt; the .localhost host stays on the mkcert
+# default cert. They are split because a single certResolver router bundling
+# a .localhost SAN fails ACME (".localhost" is not a public suffix), which
+# would block issuance for the public domain too.
+# =============================================================================
+http:
+  routers:
+    space-http:
+      rule: 'Host(`space.localhost`) || Host(`space.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: space-service
+      priority: 150
+
+    space-https:
+      rule: 'Host(`space.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: space-service
+      tls:
+        certResolver: letsencrypt-http
+      priority: 150
+
+    space-localhost-https:
+      rule: 'Host(`space.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: space-service
+      priority: 150
+
+  services:
+    space-service:
+      loadBalancer:
+        servers:
+          - url: 'http://coder:7080'
+        passHostHeader: true

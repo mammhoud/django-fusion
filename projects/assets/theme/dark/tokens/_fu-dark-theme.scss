@@ -1,0 +1,100 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Dark Theme Tokens — fu-dark-*
+   ─────────────────────────────────────────────────────────────────────
+   Dark-first theme: the base palette IS dark. Electric violet-cyan
+   accents with subtle glow shadows. Optimised for developer tools,
+   monitoring dashboards, and night-mode-first products.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink (dark-first) ── */
+  --fu-dark-paper:        240 20% 7%;
+  --fu-dark-ink:          240 25% 95%;
+  --fu-dark-muted:        240 15% 62%;
+  --fu-dark-line:         240 12% 18%;
+  --fu-dark-card:         240 16% 10%;
+  --fu-dark-link:         260 90% 70%;
+  --fu-dark-link-dark:    260 80% 58%;
+  --fu-dark-mark:         48 96% 62%;
+  --fu-dark-live:         145 65% 52%;
+
+  /* ── Brand accent palette (electric violet / cyan / pink) ── */
+  --fu-dark-primary:       260 90% 64%;
+  --fu-dark-primary-dark:  260 80% 50%;
+  --fu-dark-primary-light: 260 70% 18%;
+  --fu-dark-secondary:     190 90% 55%;
+  --fu-dark-secondary-light: 190 70% 18%;
+  --fu-dark-accent:        330 90% 62%;
+  --fu-dark-success:       145 65% 52%;
+  --fu-dark-warning:       38 95% 56%;
+  --fu-dark-error:         0 75% 60%;
+  --fu-dark-info:          199 89% 58%;
+
+  /* ── Elevated surfaces (raised panels) ── */
+  --fu-dark-raised:        240 18% 13%;
+  --fu-dark-hover:         240 20% 16%;
+  --fu-dark-active:        240 22% 19%;
+
+  /* ── Gradient accents (glow) ── */
+  --fu-dark-gradient-primary: linear-gradient(135deg, hsl(260 90% 64%), hsl(190 90% 55%));
+  --fu-dark-gradient-surface: linear-gradient(180deg, hsl(240 18% 10%), hsl(240 20% 7%));
+
+  /* ── Spacing (dense, telemetry-friendly) ── */
+  --fu-dark-space-xs:  0.25rem;
+  --fu-dark-space-sm:  0.5rem;
+  --fu-dark-space-md:  0.875rem;
+  --fu-dark-space-lg:  1.25rem;
+  --fu-dark-space-xl:  1.75rem;
+  --fu-dark-space-2xl: 2.5rem;
+  --fu-dark-space-3xl: 3.5rem;
+
+  --fu-dark-section-lg: 4rem;
+  --fu-dark-section-xl: 5rem;
+
+  /* ── Radius (medium, technical) ── */
+  --fu-dark-radius-sm:   0.25rem;
+  --fu-dark-radius-md:   0.5rem;
+  --fu-dark-radius-lg:   0.75rem;
+  --fu-dark-radius-xl:   1rem;
+  --fu-dark-radius-full: 9999px;
+
+  /* ── Shadows (glow, luminous) ── */
+  --fu-dark-shadow-card:        0 1px 3px 0 hsl(0 0% 0% / 0.4), inset 0 0 0 1px hsl(240 20% 20% / 0.3);
+  --fu-dark-shadow-card-hover:  0 8px 24px -4px hsl(260 90% 64% / 0.20), inset 0 0 0 1px hsl(260 90% 64% / 0.25);
+  --fu-dark-shadow-modal:       0 24px 64px -12px hsl(0 0% 0% / 0.7);
+  --fu-dark-shadow-toast:       0 8px 24px 0 hsl(0 0% 0% / 0.5);
+
+  /* ── Transitions (snappy, technical) ── */
+  --fu-dark-transition-fast:     100ms ease;
+  --fu-dark-transition-standard: 180ms ease;
+  --fu-dark-transition-slow:     300ms ease;
+  --fu-dark-transition-reveal:   450ms ease-out;
+
+  /* ── Z-index scale ── */
+  --fu-dark-z-dropdown:       100;
+  --fu-dark-z-sticky:         200;
+  --fu-dark-z-modal-backdrop: 300;
+  --fu-dark-z-modal:          400;
+  --fu-dark-z-toast:          500;
+  --fu-dark-z-tooltip:        600;
+
+  /* ── Typography (mono-forward) ── */
+  --fu-dark-font-sans:    'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --fu-dark-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --fu-dark-font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Dark mode is the DEFAULT for this theme.
+   Adding .dark keeps it dark (no change needed); removing it is not
+   supported for a dark-first theme. We still provide a light override
+   for completeness via [data-theme="dark"]:not(.dark) but it is
+   intentionally a dimmed, low-light surface. */
+[data-theme="dark"]:not(.dark) {
+  --fu-dark-paper:        240 15% 12%;
+  --fu-dark-ink:          240 20% 90%;
+  --fu-dark-muted:        240 12% 60%;
+  --fu-dark-line:         240 12% 20%;
+  --fu-dark-card:         240 14% 15%;
+  --fu-dark-link:         260 90% 66%;
+  --fu-dark-link-dark:    260 80% 54%;
+}

@@ -1,0 +1,17 @@
+# ============================================================
+# Root Docker Compose – thin aggregator over the sub-compose files
+# ============================================================
+# Networks and volumes are owned by the included files (databases, proxy),
+# where the shared networks are declared `external: true`. `make
+# create-networks` (invoked via `make deploy`'s preflight chain) creates
+# them before any service comes up, so this file must not re-declare them
+# with `driver: bridge` (that conflicts with the included declarations).
+#
+# The former `application/compose/docker-compose.applications.yml` is gone:
+# per-site Django containers moved to project-level compose files
+# (projects/structa.cloud/docker-compose.yml, projects/precis/precis-landing/docker-compose.yml),
+# and Coder now lives in application/databases/docker-compose.yml.
+
+include:
+  - application/databases/docker-compose.yml
+  - application/proxy/docker-compose.yml

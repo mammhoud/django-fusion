@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:anytype:schema:2026-08-04:type-people:ver-1.0",
+  "type": "object",
+  "title": "People",
+  "x-app": "Anytype",
+  "x-icon-name": "user",
+  "x-plural": "People",
+  "x-schema-version": "1.0",
+  "x-type-key": "people",
+  "properties": {
+    "Object type": {
+      "const": "People",
+      "type": "string",
+      "x-format": "object",
+      "x-key": "type"
+    },
+    "Tags": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "tag",
+      "x-key": "tags"
+    },
+    "Status": {
+      "enum": ["Active", "Inactive", "Archived"],
+      "type": "string",
+      "x-key": "status"
+    },
+    "Role": {"type": "string", "x-key": "role"},
+    "Email": {"type": "string", "x-format": "email", "x-key": "email"},
+    "Description": {"type": "string", "x-key": "description"},
+    "Links": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "links"
+    }
+  },
+  "required": ["Object type", "Tags"]
+}

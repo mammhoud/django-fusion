@@ -1,0 +1,175 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component Standard: fu-form — theme-agnostic BEM form primitives.
+   Consumes --fu-token-* semantic aliases, so it restyles automatically
+   when the active theme changes.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Text input, textarea, select ── */
+.fu-form-input,
+.fu-form-textarea,
+.fu-form-select {
+  width: 100%;
+  padding: var(--fu-token-space-sm) var(--fu-token-space-md);
+  border: 1px solid var(--fu-token-line);
+  border-radius: var(--fu-token-radius-md);
+  background: var(--fu-token-card);
+  color: var(--fu-token-ink);
+  font-family: var(--fu-token-font-sans);
+  font-size: var(--fu-token-text-sm);
+  line-height: var(--fu-token-leading-normal);
+  transition: border-color var(--fu-token-transition-fast),
+              box-shadow var(--fu-token-transition-fast);
+
+  &::placeholder {
+    color: var(--fu-token-muted);
+    opacity: 0.6;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--fu-token-primary);
+    box-shadow: 0 0 0 3px hsl(var(--fu-default-primary) / 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--fu-token-neutral-1);
+  }
+
+  &.is-invalid {
+    border-color: var(--fu-token-error);
+    &:focus {
+      box-shadow: 0 0 0 3px hsl(var(--fu-default-error) / 0.15);
+    }
+  }
+
+  &.is-valid {
+    border-color: var(--fu-token-success);
+  }
+}
+
+.fu-form-textarea {
+  min-height: 6rem;
+  resize: vertical;
+}
+
+/* ── Label ── */
+.fu-form-label {
+  display: block;
+  font-size: var(--fu-token-text-sm);
+  font-weight: var(--fu-token-weight-semibold);
+  color: var(--fu-token-ink);
+  margin-bottom: var(--fu-token-space-xs);
+
+  &__required::after {
+    content: " *";
+    color: var(--fu-token-error);
+  }
+}
+
+/* ── Field group (label + input + help) ── */
+.fu-form-group {
+  margin-bottom: var(--fu-token-space-md);
+}
+
+.fu-form-help {
+  font-size: var(--fu-token-text-xs);
+  color: var(--fu-token-muted);
+  margin-top: var(--fu-token-space-xs);
+}
+
+.fu-form-error-text {
+  font-size: var(--fu-token-text-xs);
+  color: var(--fu-token-error);
+  margin-top: var(--fu-token-space-xs);
+}
+
+/* ── Checkbox & Radio ── */
+.fu-form-check {
+  display: flex;
+  align-items: center;
+  gap: var(--fu-token-space-sm);
+  cursor: pointer;
+  font-size: var(--fu-token-text-sm);
+  color: var(--fu-token-ink);
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: var(--fu-token-primary);
+    cursor: pointer;
+  }
+}
+
+/* ── Switch / Toggle ── */
+.fu-form-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+
+  input {
+    appearance: none;
+    width: 2.75rem;
+    height: 1.5rem;
+    border-radius: var(--fu-token-radius-full);
+    background: var(--fu-token-line);
+    cursor: pointer;
+    transition: background var(--fu-token-transition-standard);
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: calc(1.5rem - 4px);
+      height: calc(1.5rem - 4px);
+      border-radius: var(--fu-token-radius-full);
+      background: var(--fu-token-card);
+      transition: transform var(--fu-token-transition-standard);
+      box-shadow: var(--fu-token-shadow-card);
+    }
+
+    &:checked {
+      background: var(--fu-token-primary);
+      &::after {
+        transform: translateX(1.25rem);
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--fu-token-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+/* ── Field row (inline) ── */
+.fu-form-row {
+  display: flex;
+  gap: var(--fu-token-space-md);
+  flex-wrap: wrap;
+
+  > .fu-form-group {
+    flex: 1;
+    min-width: 12rem;
+  }
+}
+
+/* ── Size variants ── */
+.fu-form-input--sm,
+.fu-form-textarea--sm,
+.fu-form-select--sm {
+  padding: var(--fu-token-space-xs) var(--fu-token-space-sm);
+  font-size: var(--fu-token-text-xs);
+}
+
+.fu-form-input--lg,
+.fu-form-textarea--lg,
+.fu-form-select--lg {
+  padding: var(--fu-token-space-md) var(--fu-token-space-lg);
+  font-size: var(--fu-token-text-base);
+}

@@ -1,0 +1,18 @@
+# Default 503 redirect configuration
+# This file can be customized as needed
+
+http:
+  routers:
+    catchall:
+      entryPoints:
+        - http
+        - https
+      service: noop
+      rule: PathPrefix(`/`)
+      tls:
+        certResolver: letsencrypt
+      priority: -1000
+  services:
+    noop:
+      loadBalancer:
+        servers: {  }

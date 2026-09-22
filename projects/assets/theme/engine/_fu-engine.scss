@@ -1,0 +1,381 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Theme Engine Core — Inheritance, Overrides, Dark Mode, Multi-brand,
+   Runtime Switching
+   ─────────────────────────────────────────────────────────────────────
+   This file implements the cascade layers that make runtime theme
+   switching work. The CSS cascade order is:
+
+     :root                            → fu-default-* (base, always present)
+     [data-theme="lms"]              → fu-lms-* overrides
+     [data-theme="crm"]              → fu-crm-* overrides
+     [data-theme="pos"]              → fu-pos-* overrides
+     [data-brand="…"]                → multi-brand color overrides
+     .dark                            → dark mode surface overrides
+     --fu-token-*                    → semantic aliases (resolves from above)
+     --fu-token-* (inside [data-theme]) → remaps semantic aliases
+
+   A product sets data-theme on <html> to activate a theme, and
+   data-brand for brand-level color customization. Dark mode is toggled
+   by adding/removing the .dark class on <html>.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────────────────────────────────────────────
+   1. THEME INHERITANCE — semantic alias remapping per active theme
+   ───────────────────────────────────────────────────────────────────
+   Each [data-theme] block remaps --fu-token-* to that theme's
+   fu-<theme>-* custom properties. Only the active theme's block
+   applies (via attribute selector specificity).
+   ─────────────────────────────────────────────────────────────────── */
+
+/* ── Theme remap mixin ──
+   Generates the full --fu-token-* remap block for a theme from its
+   fu-<theme>-* custom properties. New themes only need a token file
+   plus one [data-theme] block that calls this mixin — that is the
+   entire "override logic" for a variation. */
+@mixin fu-theme-remap($t) {
+  --fu-token-primary:        hsl(var(--fu-#{$t}-primary));
+  --fu-token-primary-dark:   hsl(var(--fu-#{$t}-primary-dark));
+  --fu-token-primary-light:  hsl(var(--fu-#{$t}-primary-light));
+  --fu-token-secondary:      hsl(var(--fu-#{$t}-secondary));
+  --fu-token-secondary-light: hsl(var(--fu-#{$t}-secondary-light));
+  --fu-token-accent:         hsl(var(--fu-#{$t}-accent));
+  --fu-token-success:        hsl(var(--fu-#{$t}-success));
+  --fu-token-warning:        hsl(var(--fu-#{$t}-warning));
+  --fu-token-error:          hsl(var(--fu-#{$t}-error));
+  --fu-token-info:           hsl(var(--fu-#{$t}-info));
+  --fu-token-paper:          hsl(var(--fu-#{$t}-paper));
+  --fu-token-ink:            hsl(var(--fu-#{$t}-ink));
+  --fu-token-muted:          hsl(var(--fu-#{$t}-muted));
+  --fu-token-line:           hsl(var(--fu-#{$t}-line));
+  --fu-token-card:           hsl(var(--fu-#{$t}-card));
+  --fu-token-link:           hsl(var(--fu-#{$t}-link));
+  --fu-token-link-dark:      hsl(var(--fu-#{$t}-link-dark));
+  --fu-token-mark:           hsl(var(--fu-#{$t}-mark));
+  --fu-token-live:           hsl(var(--fu-#{$t}-live));
+  --fu-token-neutral-0:      hsl(var(--fu-#{$t}-card));
+  --fu-token-neutral-1:      hsl(var(--fu-#{$t}-paper));
+  --fu-token-neutral-3:      hsl(var(--fu-#{$t}-line));
+  --fu-token-neutral-5:      hsl(var(--fu-#{$t}-muted) / 0.5);
+  --fu-token-neutral-7:      hsl(var(--fu-#{$t}-muted));
+  --fu-token-neutral-9:      hsl(var(--fu-#{$t}-ink));
+  --fu-token-font-sans:      var(--fu-#{$t}-font-sans);
+  --fu-token-font-mono:      var(--fu-#{$t}-font-mono);
+  --fu-token-font-display:   var(--fu-#{$t}-font-display);
+  --fu-token-space-xs:        var(--fu-#{$t}-space-xs);
+  --fu-token-space-sm:        var(--fu-#{$t}-space-sm);
+  --fu-token-space-md:        var(--fu-#{$t}-space-md);
+  --fu-token-space-lg:        var(--fu-#{$t}-space-lg);
+  --fu-token-space-xl:        var(--fu-#{$t}-space-xl);
+  --fu-token-space-2xl:      var(--fu-#{$t}-space-2xl);
+  --fu-token-space-3xl:      var(--fu-#{$t}-space-3xl);
+  --fu-token-section-lg:     var(--fu-#{$t}-section-lg);
+  --fu-token-section-xl:     var(--fu-#{$t}-section-xl);
+  --fu-token-radius-sm:      var(--fu-#{$t}-radius-sm);
+  --fu-token-radius-md:      var(--fu-#{$t}-radius-md);
+  --fu-token-radius-lg:      var(--fu-#{$t}-radius-lg);
+  --fu-token-radius-xl:      var(--fu-#{$t}-radius-xl);
+  --fu-token-radius-full:    var(--fu-#{$t}-radius-full);
+  --fu-token-shadow-card:        var(--fu-#{$t}-shadow-card);
+  --fu-token-shadow-card-hover:  var(--fu-#{$t}-shadow-card-hover);
+  --fu-token-shadow-modal:      var(--fu-#{$t}-shadow-modal);
+  --fu-token-shadow-toast:      var(--fu-#{$t}-shadow-toast);
+  --fu-token-transition-fast:     var(--fu-#{$t}-transition-fast);
+  --fu-token-transition-standard: var(--fu-#{$t}-transition-standard);
+  --fu-token-transition-slow:     var(--fu-#{$t}-transition-slow);
+  --fu-token-transition-reveal:   var(--fu-#{$t}-transition-reveal);
+}
+
+/* ── LMS theme activation ── */
+[data-theme="lms"] {
+  --fu-token-primary:        hsl(var(--fu-lms-primary));
+  --fu-token-primary-dark:   hsl(var(--fu-lms-primary-dark));
+  --fu-token-primary-light:  hsl(var(--fu-lms-primary-light));
+  --fu-token-secondary:      hsl(var(--fu-lms-secondary));
+  --fu-token-accent:         hsl(var(--fu-lms-accent));
+  --fu-token-success:        hsl(var(--fu-lms-success));
+  --fu-token-warning:        hsl(var(--fu-lms-warning));
+  --fu-token-error:          hsl(var(--fu-lms-error));
+  --fu-token-info:           hsl(var(--fu-lms-info));
+  --fu-token-paper:          hsl(var(--fu-lms-paper));
+  --fu-token-ink:            hsl(var(--fu-lms-ink));
+  --fu-token-muted:          hsl(var(--fu-lms-muted));
+  --fu-token-line:           hsl(var(--fu-lms-line));
+  --fu-token-card:           hsl(var(--fu-lms-card));
+  --fu-token-link:           hsl(var(--fu-lms-link));
+  --fu-token-mark:           hsl(var(--fu-lms-mark));
+  --fu-token-live:           hsl(var(--fu-lms-live));
+  --fu-token-neutral-0:      hsl(var(--fu-lms-card));
+  --fu-token-neutral-1:      hsl(var(--fu-lms-paper));
+  --fu-token-neutral-3:      hsl(var(--fu-lms-line));
+  --fu-token-neutral-5:      hsl(var(--fu-lms-muted) / 0.5);
+  --fu-token-neutral-7:      hsl(var(--fu-lms-muted));
+  --fu-token-neutral-9:      hsl(var(--fu-lms-ink));
+  --fu-token-font-sans:      var(--fu-lms-font-sans);
+  --fu-token-font-mono:      var(--fu-lms-font-mono);
+  --fu-token-font-display:   var(--fu-lms-font-sans);
+  --fu-token-space-xs:        var(--fu-lms-space-xs);
+  --fu-token-space-sm:        var(--fu-lms-space-sm);
+  --fu-token-space-md:        var(--fu-lms-space-md);
+  --fu-token-space-lg:        var(--fu-lms-space-lg);
+  --fu-token-space-xl:        var(--fu-lms-space-xl);
+  --fu-token-space-2xl:      var(--fu-lms-space-2xl);
+  --fu-token-space-3xl:      var(--fu-lms-space-3xl);
+  --fu-token-section-lg:     var(--fu-lms-section-lg);
+  --fu-token-section-xl:     var(--fu-lms-section-xl);
+  --fu-token-radius-sm:      var(--fu-lms-radius-sm);
+  --fu-token-radius-md:      var(--fu-lms-radius-md);
+  --fu-token-radius-lg:      var(--fu-lms-radius-lg);
+  --fu-token-radius-xl:      var(--fu-lms-radius-xl);
+  --fu-token-radius-full:    var(--fu-lms-radius-full);
+  --fu-token-shadow-card:        var(--fu-lms-shadow-card);
+  --fu-token-shadow-card-hover:  var(--fu-lms-shadow-card-hover);
+  --fu-token-shadow-modal:      var(--fu-lms-shadow-modal);
+  --fu-token-shadow-toast:      var(--fu-lms-shadow-toast);
+  --fu-token-transition-fast:     var(--fu-lms-transition-fast);
+  --fu-token-transition-standard: var(--fu-lms-transition-standard);
+  --fu-token-transition-slow:     var(--fu-lms-transition-slow);
+  --fu-token-transition-reveal:   var(--fu-lms-transition-reveal);
+}
+
+/* ── CRM theme activation ── */
+[data-theme="crm"] {
+  --fu-token-primary:        hsl(var(--fu-crm-primary));
+  --fu-token-primary-dark:   hsl(var(--fu-crm-primary-dark));
+  --fu-token-primary-light:  hsl(var(--fu-crm-primary-light));
+  --fu-token-secondary:      hsl(var(--fu-crm-secondary));
+  --fu-token-accent:         hsl(var(--fu-crm-accent));
+  --fu-token-success:        hsl(var(--fu-crm-success));
+  --fu-token-warning:        hsl(var(--fu-crm-warning));
+  --fu-token-error:          hsl(var(--fu-crm-error));
+  --fu-token-info:           hsl(var(--fu-crm-info));
+  --fu-token-paper:          hsl(var(--fu-crm-paper));
+  --fu-token-ink:            hsl(var(--fu-crm-ink));
+  --fu-token-muted:          hsl(var(--fu-crm-muted));
+  --fu-token-line:           hsl(var(--fu-crm-line));
+  --fu-token-card:           hsl(var(--fu-crm-card));
+  --fu-token-link:           hsl(var(--fu-crm-link));
+  --fu-token-mark:           hsl(var(--fu-crm-mark));
+  --fu-token-live:           hsl(var(--fu-crm-live));
+  --fu-token-neutral-0:      hsl(var(--fu-crm-card));
+  --fu-token-neutral-1:      hsl(var(--fu-crm-paper));
+  --fu-token-neutral-3:      hsl(var(--fu-crm-line));
+  --fu-token-neutral-5:      hsl(var(--fu-crm-muted) / 0.5);
+  --fu-token-neutral-7:      hsl(var(--fu-crm-muted));
+  --fu-token-neutral-9:      hsl(var(--fu-crm-ink));
+  --fu-token-font-sans:      var(--fu-crm-font-sans);
+  --fu-token-font-mono:      var(--fu-crm-font-mono);
+  --fu-token-font-display:   var(--fu-crm-font-display);
+  --fu-token-space-xs:        var(--fu-crm-space-xs);
+  --fu-token-space-sm:        var(--fu-crm-space-sm);
+  --fu-token-space-md:        var(--fu-crm-space-md);
+  --fu-token-space-lg:        var(--fu-crm-space-lg);
+  --fu-token-space-xl:        var(--fu-crm-space-xl);
+  --fu-token-space-2xl:      var(--fu-crm-space-2xl);
+  --fu-token-space-3xl:      var(--fu-crm-space-3xl);
+  --fu-token-section-lg:     var(--fu-crm-section-lg);
+  --fu-token-section-xl:     var(--fu-crm-section-xl);
+  --fu-token-radius-sm:      var(--fu-crm-radius-sm);
+  --fu-token-radius-md:      var(--fu-crm-radius-md);
+  --fu-token-radius-lg:      var(--fu-crm-radius-lg);
+  --fu-token-radius-xl:      var(--fu-crm-radius-xl);
+  --fu-token-radius-full:    var(--fu-crm-radius-full);
+  --fu-token-shadow-card:        var(--fu-crm-shadow-card);
+  --fu-token-shadow-card-hover:  var(--fu-crm-shadow-card-hover);
+  --fu-token-shadow-modal:      var(--fu-crm-shadow-modal);
+  --fu-token-shadow-toast:      var(--fu-crm-shadow-toast);
+  --fu-token-transition-fast:     var(--fu-crm-transition-fast);
+  --fu-token-transition-standard: var(--fu-crm-transition-standard);
+  --fu-token-transition-slow:     var(--fu-crm-transition-slow);
+  --fu-token-transition-reveal:   var(--fu-crm-transition-reveal);
+}
+
+/* ── POS theme activation ── */
+[data-theme="pos"] {
+  --fu-token-primary:        hsl(var(--fu-pos-primary));
+  --fu-token-primary-dark:   hsl(var(--fu-pos-primary-dark));
+  --fu-token-primary-light:  hsl(var(--fu-pos-primary-light));
+  --fu-token-secondary:      hsl(var(--fu-pos-secondary));
+  --fu-token-accent:         hsl(var(--fu-pos-accent));
+  --fu-token-success:        hsl(var(--fu-pos-success));
+  --fu-token-warning:        hsl(var(--fu-pos-warning));
+  --fu-token-error:          hsl(var(--fu-pos-error));
+  --fu-token-info:           hsl(var(--fu-pos-info));
+  --fu-token-paper:          hsl(var(--fu-pos-paper));
+  --fu-token-ink:            hsl(var(--fu-pos-ink));
+  --fu-token-muted:          hsl(var(--fu-pos-muted));
+  --fu-token-line:           hsl(var(--fu-pos-line));
+  --fu-token-card:           hsl(var(--fu-pos-card));
+  --fu-token-link:           hsl(var(--fu-pos-link));
+  --fu-token-mark:           hsl(var(--fu-pos-mark));
+  --fu-token-live:           hsl(var(--fu-pos-live));
+  --fu-token-neutral-0:      hsl(var(--fu-pos-card));
+  --fu-token-neutral-1:      hsl(var(--fu-pos-paper));
+  --fu-token-neutral-3:      hsl(var(--fu-pos-line));
+  --fu-token-neutral-5:      hsl(var(--fu-pos-muted) / 0.5);
+  --fu-token-neutral-7:      hsl(var(--fu-pos-muted));
+  --fu-token-neutral-9:      hsl(var(--fu-pos-ink));
+  --fu-token-font-sans:      var(--fu-pos-font-sans);
+  --fu-token-font-mono:      var(--fu-pos-font-mono);
+  --fu-token-font-display:   var(--fu-pos-font-display);
+  --fu-token-space-xs:        var(--fu-pos-space-xs);
+  --fu-token-space-sm:        var(--fu-pos-space-sm);
+  --fu-token-space-md:        var(--fu-pos-space-md);
+  --fu-token-space-lg:        var(--fu-pos-space-lg);
+  --fu-token-space-xl:        var(--fu-pos-space-xl);
+  --fu-token-space-2xl:      var(--fu-pos-space-2xl);
+  --fu-token-space-3xl:      var(--fu-pos-space-3xl);
+  --fu-token-section-lg:     var(--fu-pos-section-lg);
+  --fu-token-section-xl:     var(--fu-pos-section-xl);
+  --fu-token-radius-sm:      var(--fu-pos-radius-sm);
+  --fu-token-radius-md:      var(--fu-pos-radius-md);
+  --fu-token-radius-lg:      var(--fu-pos-radius-lg);
+  --fu-token-radius-xl:      var(--fu-pos-radius-xl);
+  --fu-token-radius-full:    var(--fu-pos-radius-full);
+  --fu-token-shadow-card:        var(--fu-pos-shadow-card);
+  --fu-token-shadow-card-hover:  var(--fu-pos-shadow-card-hover);
+  --fu-token-shadow-modal:      var(--fu-pos-shadow-modal);
+  --fu-token-shadow-toast:      var(--fu-pos-shadow-toast);
+  --fu-token-transition-fast:     var(--fu-pos-transition-fast);
+  --fu-token-transition-standard: var(--fu-pos-transition-standard);
+  --fu-token-transition-slow:     var(--fu-pos-transition-slow);
+  --fu-token-transition-reveal:   var(--fu-pos-transition-reveal);
+}
+
+/* ── Theme variations (generated via fu-theme-remap mixin) ──
+   Each variation is a token file + one activation block. Components
+   are shared and consume --fu-token-* only — zero component changes
+   are needed to add a new variation. */
+
+/* ── Modern SaaS theme activation ── */
+[data-theme="saas"] { @include fu-theme-remap(saas); }
+
+/* ── Enterprise theme activation ── */
+[data-theme="enterprise"] { @include fu-theme-remap(enterprise); }
+
+/* ── Corporate theme activation ── */
+[data-theme="corporate"] { @include fu-theme-remap(corporate); }
+
+/* ── Educational theme activation ── */
+[data-theme="educational"] { @include fu-theme-remap(educational); }
+
+/* ── Retail theme activation ── */
+[data-theme="retail"] { @include fu-theme-remap(retail); }
+
+/* ── Minimal theme activation ── */
+[data-theme="minimal"] { @include fu-theme-remap(minimal); }
+
+/* ── Dark theme activation ── */
+[data-theme="dark"] { @include fu-theme-remap(dark); }
+
+/* ── High Contrast theme activation ── */
+[data-theme="contrast"] { @include fu-theme-remap(contrast); }
+
+/* ───────────────────────────────────────────────────────────────────
+   2. DARK MODE — remaps semantic tokens for dark surfaces
+   ───────────────────────────────────────────────────────────────────
+   Each theme already defines its own .dark overrides for fu-<theme>-*
+   custom properties. Here we also remap the neutral ramp and ensure
+   the semantic tokens resolve correctly in dark mode regardless of
+   which theme is active.
+   ─────────────────────────────────────────────────────────────────── */
+
+.dark {
+  /* The fu-<theme>-* dark overrides (defined in each theme's token file)
+     already cascade here. We only need to remap the neutral ramp and
+     any cross-theme semantic adjustments. */
+  --fu-token-neutral-0: hsl(var(--fu-default-card));
+  --fu-token-neutral-1: hsl(var(--fu-default-paper));
+  --fu-token-neutral-3: hsl(var(--fu-default-line));
+  --fu-token-neutral-5: hsl(var(--fu-default-muted) / 0.5);
+  --fu-token-neutral-7: hsl(var(--fu-default-muted));
+  --fu-token-neutral-9: hsl(var(--fu-default-ink));
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   3. MULTI-BRAND SUPPORT — [data-brand] overrides
+   ───────────────────────────────────────────────────────────────────
+   Brand overrides are applied AFTER theme activation, so a brand can
+   recolour the primary/secondary/accent of any theme without touching
+   spacing, radius, or motion. This enables white-label deployments.
+   ─────────────────────────────────────────────────────────────────── */
+
+[data-brand="structa"] {
+  --fu-token-primary:       hsl(217 91% 43%);
+  --fu-token-primary-dark:  hsl(218 91% 34%);
+  --fu-token-secondary:     hsl(265 75% 65%);
+  --fu-token-accent:        hsl(48 100% 50%);
+}
+
+[data-brand="precis"] {
+  --fu-token-primary:       hsl(233 76% 56%);
+  --fu-token-primary-dark:  hsl(233 68% 40%);
+  --fu-token-secondary:     hsl(265 75% 65%);
+  --fu-token-accent:        hsl(48 96% 56%);
+}
+
+[data-brand="formint"] {
+  --fu-token-primary:       hsl(165 50% 32%);
+  --fu-token-primary-dark:  hsl(165 45% 25%);
+  --fu-token-secondary:     hsl(35 80% 50%);
+  --fu-token-accent:        hsl(48 96% 53%);
+}
+
+[data-brand="loop"] {
+  --fu-token-primary:       hsl(200 89% 44%);
+  --fu-token-primary-dark:  hsl(200 80% 35%);
+  --fu-token-secondary:     hsl(175 70% 38%);
+  --fu-token-accent:        hsl(48 96% 56%);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   4. RUNTIME THEME SWITCHING — smooth color transition
+   ───────────────────────────────────────────────────────────────────
+   When [data-theme] changes, all --fu-token-* values re-resolve.
+   Adding a transition on color-scheme properties makes the switch
+   smooth instead of instant. This is opt-in via .fu-theme-transition
+   on <html> so it doesn't affect initial paint.
+   ─────────────────────────────────────────────────────────────────── */
+
+.fu-theme-transition,
+.fu-theme-transition * {
+  transition:
+    background-color var(--fu-token-transition-standard),
+    border-color var(--fu-token-transition-standard),
+    color var(--fu-token-transition-standard),
+    fill var(--fu-token-transition-standard),
+    stroke var(--fu-token-transition-standard);
+}
+
+/* ───────────────────────────────────────────────────────────────────
+   5. DESIGN-TOKEN OVERRIDES — [style] inline escape hatch
+   ───────────────────────────────────────────────────────────────────
+   For one-off customisation, consumers can override any --fu-token-*
+   via inline style or a local CSS class. The cascade ensures these
+   win because they're more specific than [data-theme] attribute
+   selectors.
+
+   Example (inline):
+     <div style="--fu-token-primary: hsl(280 80% 50%)">…</div>
+
+   Example (scoped class):
+     .my-section { --fu-token-primary: hsl(280 80% 50%); }
+   ─────────────────────────────────────────────────────────────────── */
+
+/* ───────────────────────────────────────────────────────────────────
+   6. REDUCED MOTION — respects prefers-reduced-motion
+   ─────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fu-token-transition-fast:     0.01ms;
+    --fu-token-transition-standard: 0.01ms;
+    --fu-token-transition-slow:     0.01ms;
+    --fu-token-transition-reveal:   0.01ms;
+  }
+
+  .fu-theme-transition,
+  .fu-theme-transition * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

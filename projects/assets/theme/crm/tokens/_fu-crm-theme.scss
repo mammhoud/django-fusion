@@ -1,0 +1,102 @@
+/* ═══════════════════════════════════════════════════════════════════
+   CRM Theme Tokens — fu-crm-* prefix
+   ─────────────────────────────────────────────────────────────────────
+   Customer-relationship / Loop CRM palette. Cool blue-teal clinical
+   tones optimised for data-dense tables, pipelines, and dashboards.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink ── */
+  --fu-crm-paper: 200 20% 99%;
+  --fu-crm-ink: 210 35% 15%;
+  --fu-crm-muted: 210 10% 45%;
+  --fu-crm-line: 210 16% 90%;
+  --fu-crm-card: 0 0% 100%;
+  --fu-crm-link: 200 89% 44%;
+  --fu-crm-link-dark: 200 80% 35%;
+  --fu-crm-mark: 48 96% 56%;
+  --fu-crm-live: 144 68% 37%;
+
+  /* ── Brand accent palette (blue-teal) ── */
+  --fu-crm-primary: 200 89% 44%;
+  --fu-crm-primary-dark: 200 80% 35%;
+  --fu-crm-primary-light: 200 100% 95%;
+  --fu-crm-secondary: 175 70% 38%;
+  --fu-crm-secondary-light: 175 60% 95%;
+  --fu-crm-accent: 48 96% 56%;
+  --fu-crm-success: 144 68% 37%;
+  --fu-crm-warning: 38 92% 50%;
+  --fu-crm-error: 0 72% 51%;
+  --fu-crm-info: 199 89% 48%;
+
+  /* ── Pipeline stage colors ── */
+  --fu-crm-stage-lead: 48 96% 70%;
+  --fu-crm-stage-qualified: 200 89% 70%;
+  --fu-crm-stage-proposal: 265 60% 70%;
+  --fu-crm-stage-negotiation: 25 90% 60%;
+  --fu-crm-stage-won: 144 68% 50%;
+  --fu-crm-stage-lost: 0 72% 55%;
+
+  /* ── Spacing scale (compact for data density) ── */
+  --fu-crm-space-xs: 0.25rem;
+  --fu-crm-space-sm: 0.5rem;
+  --fu-crm-space-md: 0.875rem;
+  --fu-crm-space-lg: 1.25rem;
+  --fu-crm-space-xl: 1.75rem;
+  --fu-crm-space-2xl: 2.5rem;
+  --fu-crm-space-3xl: 3.5rem;
+
+  /* ── Section padding ── */
+  --fu-crm-section-lg: 4rem;
+  --fu-crm-section-xl: 5rem;
+
+  /* ── Radius (tight for tables) ── */
+  --fu-crm-radius-sm: 0.125rem;
+  --fu-crm-radius-md: 0.25rem;
+  --fu-crm-radius-lg: 0.375rem;
+  --fu-crm-radius-xl: 0.625rem;
+  --fu-crm-radius-full: 9999px;
+
+  /* ── Shadows (subtle for flat data surfaces) ── */
+  --fu-crm-shadow-card: 0 1px 2px 0 hsl(var(--fu-crm-ink) / 0.05);
+  --fu-crm-shadow-card-hover: 0 2px 6px 0 hsl(var(--fu-crm-ink) / 0.08);
+  --fu-crm-shadow-modal: 0 16px 48px 0 hsl(var(--fu-crm-ink) / 0.15);
+  --fu-crm-shadow-toast: 0 4px 16px 0 hsl(var(--fu-crm-ink) / 0.10);
+
+  /* ── Transitions (fast for interaction) ── */
+  --fu-crm-transition-fast: 100ms ease;
+  --fu-crm-transition-standard: 150ms ease;
+  --fu-crm-transition-slow: 250ms ease;
+  --fu-crm-transition-reveal: 400ms ease-out;
+
+  /* ── Z-index scale ── */
+  --fu-crm-z-dropdown: 100;
+  --fu-crm-z-sticky: 200;
+  --fu-crm-z-modal-backdrop: 300;
+  --fu-crm-z-modal: 400;
+  --fu-crm-z-toast: 500;
+  --fu-crm-z-tooltip: 600;
+
+  /* ── Typography ── */
+  --fu-crm-font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --fu-crm-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --fu-crm-font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Table sizing ── */
+  --fu-crm-table-row-height: 2.75rem;
+  --fu-crm-table-header-height: 2.5rem;
+  --fu-crm-table-cell-padding: 0.625rem;
+}
+
+/* ── Dark mode override ── */
+.dark {
+  --fu-crm-paper: 210 20% 7%;
+  --fu-crm-ink: 200 15% 92%;
+  --fu-crm-muted: 200 10% 62%;
+  --fu-crm-line: 210 15% 17%;
+  --fu-crm-card: 210 15% 10%;
+  --fu-crm-link: 200 90% 70%;
+  --fu-crm-link-dark: 200 80% 60%;
+  --fu-crm-mark: 48 96% 62%;
+  --fu-crm-live: 145 64% 52%;
+}

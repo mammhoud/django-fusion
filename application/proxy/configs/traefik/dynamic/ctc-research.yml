@@ -1,0 +1,102 @@
+# =============================================================================
+# CTC Research — Precis standalone stack routing
+# =============================================================================
+# Containers: precis-ctc-website   (Django + django-fusion, port 5070)
+#             precis-ctc-frontend  (Astro shell, port 3002)
+# Domain: ctc-research.com / www.ctc-research.com / arch.ctc-research.com
+#
+# Routing split:
+#   priority 110 — ctc-media   : /static/ /media/ /sites/ → shared-proxy (Nginx)
+#   priority 100 — ctc-backend : all Django-owned prefixes → precis-ctc-website:5070
+#   priority  10 — ctc-site    : everything else → precis-ctc-frontend:3002 (Astro static)
+#
+# Backend prefixes (Django URL map, grouped by app):
+#   Core API       /api/  /apis/
+#   Auth           /accounts/  /auth/  /api/auth/  /invite/
+#   Admin          /admin/  /django-admin/
+#   Fusion         /fusion/  /fragment/  /components/
+#   Learning       /learning/
+#   Cart/Checkout  /cart/  /checkout/
+#   Legal/Privacy  /legal/
+#   Newsletter     /newsletter/
+#   i18n           /i18n/
+#   Tasks          /tasks/
+#   Health         /health/  /assets/health/
+#
+# NOTE: /profile/ and /documents/ are Astro-owned routes (auth/learner summary
+# and the publications library) and must reach the static shell. The settings
+# subtree is the exception: it remains a Django-owned authenticated surface and
+# is matched explicitly below.
+#
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http).
+# =============================================================================
+
+# Shared host match expression — used in every router rule.
+# Traefik v3 supports YAML anchors only within the same mapping, so we
+# repeat the host clause rather than use an anchor (YAML anchors do not
+# survive Traefik's config parser in file-provider mode).
+
+http:
+  routers:
+    # ── HTTP → HTTPS redirect (all hosts, lowest priority) ──────────────────
+    ctc-site-http:
+      rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: ctc-frontend-service
+      priority: 10
+
+    # ── HTTPS frontend catch-all ─────────────────────────────────────────────
+    ctc-site-https:
+      rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: ctc-frontend-service
+      priority: 10
+      tls:
+        certResolver: letsencrypt-http
+
+    # ── Django backend — all server-rendered and API paths ───────────────────
+    # Covers: /api/ /apis/ /accounts/ /auth/ /admin/ /django-admin/ /fusion/
+    #         /fragment/ /components/ /learning/ /profile/settings/
+    #         /cart/ /checkout/ /legal/ /newsletter/ /i18n/ /tasks/
+    #         /health/ /assets/health/
+    # NOTE: exact Path() matchers for /admin and /django-admin (without the
+    # trailing slash) are required so Django's APPEND_SLASH handles the 301
+    # — otherwise the Astro catch-all serves its own 404 for /admin.
+    ctc-backend:
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/api/`) || PathPrefix(`/apis/`) || PathPrefix(`/accounts/`) || PathPrefix(`/auth/`) || PathPrefix(`/invite/`) || Path(`/admin`) || PathPrefix(`/admin/`) || Path(`/django-admin`) || PathPrefix(`/django-admin/`) || PathPrefix(`/fusion/`) || PathPrefix(`/fragment/`) || PathPrefix(`/components/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/settings`) || PathPrefix(`/cart/`) || PathPrefix(`/checkout/`) || PathPrefix(`/legal/`) || PathPrefix(`/newsletter/`) || PathPrefix(`/i18n/`) || PathPrefix(`/tasks/`) || PathPrefix(`/health/`) || PathPrefix(`/assets/health/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: ctc-backend-service
+      priority: 100
+
+    # ── Static + media assets → shared Nginx ────────────────────────────────
+    ctc-media:
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, security-headers]
+      service: ctc-media-service
+      priority: 110
+
+  services:
+    ctc-frontend-service:
+      loadBalancer:
+        servers:
+          - url: 'http://precis-ctc-frontend:3002'
+        healthCheck:
+          path: /
+          interval: 30s
+          timeout: 10s
+    ctc-backend-service:
+      loadBalancer:
+        servers:
+          - url: 'http://precis-ctc-website:5070'
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+    ctc-media-service:
+      loadBalancer:
+        servers:
+          - url: 'http://assets-proxy:80'

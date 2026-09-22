@@ -1,0 +1,99 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component Standard: fu-table — theme-agnostic BEM data table.
+   Consumes --fu-token-* semantic aliases. Includes responsive wrapper.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Responsive wrapper ── */
+.fu-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--fu-token-radius-lg);
+  box-shadow: var(--fu-token-shadow-card);
+}
+
+/* ── Table ── */
+.fu-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--fu-token-card);
+  font-size: var(--fu-token-text-sm);
+
+  thead th {
+    padding: var(--fu-token-space-sm) var(--fu-token-space-md);
+    text-align: left;
+    background: var(--fu-token-neutral-1);
+    color: var(--fu-token-ink);
+    font-weight: var(--fu-token-weight-semibold);
+    font-size: var(--fu-token-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--fu-token-tracking-wide);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--fu-token-line);
+  }
+
+  tbody td {
+    padding: var(--fu-token-space-sm) var(--fu-token-space-md);
+    color: var(--fu-token-muted);
+    border-bottom: 1px solid var(--fu-token-line);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background var(--fu-token-transition-fast);
+    &:hover { background: hsl(var(--fu-default-primary) / 0.04); }
+    &:last-child td { border-bottom: 0; }
+  }
+
+  tfoot th,
+  tfoot td {
+    padding: var(--fu-token-space-sm) var(--fu-token-space-md);
+    background: var(--fu-token-neutral-1);
+    color: var(--fu-token-ink);
+    font-weight: var(--fu-token-weight-semibold);
+    border-top: 2px solid var(--fu-token-line);
+  }
+
+  /* ── Variations ── */
+  &--striped tbody tr:nth-child(even) {
+    background: var(--fu-token-neutral-1);
+  }
+
+  &--bordered {
+    th, td { border: 1px solid var(--fu-token-line); }
+  }
+
+  &--compact {
+    thead th,
+    tbody td { padding: var(--fu-token-space-xs) var(--fu-token-space-sm); }
+    font-size: var(--fu-token-text-xs);
+  }
+
+  &--hover tbody tr { cursor: pointer; }
+}
+
+/* ── Cell modifiers ── */
+.fu-table__cell {
+  &--numeric {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--fu-token-font-mono);
+  }
+
+  &--mono {
+    font-family: var(--fu-token-font-mono);
+    font-size: var(--fu-token-text-xs);
+  }
+
+  &--truncate {
+    max-width: 12rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &--actions {
+    display: flex;
+    gap: 0.25rem;
+    white-space: nowrap;
+  }
+}

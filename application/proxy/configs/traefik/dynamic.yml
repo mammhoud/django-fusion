@@ -1,0 +1,73 @@
+# ============================================
+# Traefik Static Configuration (full)
+# ============================================
+
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+  format: common
+
+accessLog:
+  format: common
+  bufferingSize: 100
+
+api:
+  dashboard: true
+  debug: false
+  insecure: false          # dashboard is not exposed by default; use secure entrypoint
+
+ping: {}                   # health check endpoint – exposed on :8080
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: web-secure
+          scheme: https
+          permanent: true
+
+  web-secure:
+    address: ":443"
+    http:
+      tls: {}
+
+  # Optional UDP entrypoint (if you need explicit UDP routing)
+  # web-secure-udp:
+  #   address: ":443/udp"
+
+providers:
+  file:
+    directory: /etc/traefik/dynamic   # correct path for dynamic configs
+    watch: true
+
+# ===========================================================================
+# ACME / Let's Encrypt — certificate resolver (HTTP-01, no tokens)
+# ===========================================================================
+# All sites obtain trusted Let's Encrypt certs via HTTP-01 challenge on port 80.
+# No DNS provider credential is required. Traefik handles auto-renewal natively.
+#
+# Prerequisites:
+#   - application/proxy/configs/acme.json must exist with mode 0600
+#     Run: ./application/proxy/scripts/manage-certs.sh bootstrap-acme
+#   - DNS A records for each domain must point to this server (187.77.166.222)
+#   - Any AAAA record must point to this host (2a02:4780:28:4cb8::1) or be removed.
+#     An off-host AAAA makes Let's Encrypt resolve IPv6 first and fail with
+#     "acme: error: tls ... remote error: tls: internal error".
+#   - Port 80 must be reachable from the internet
+#
+# Run the pre-issuance DNS gate before triggering issuance:
+#   make -C application/proxy proxy-dns-check
+#
+certificatesResolvers:
+  letsencrypt-http:
+    acme:
+      email: structa.cloud@gmail.com
+      storage: /etc/traefik/acme/acme.json
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      httpChallenge:
+        entryPoint: web

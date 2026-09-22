@@ -1,0 +1,13 @@
+site: ctc-website
+canonical_site: precis-ctc
+aliases: [ctc, precis-ctc, ctc-research.com]
+base_url: http://ctc-website.local
+port: 5070
+commands:
+  check: python manage.py --site ctc check
+  build: npm --prefix assets run build -- --site ctc-website
+routes:
+  - path: /health/
+    status: 200
+  - path: /health/assets/
+    status: 200

@@ -1,0 +1,23 @@
+# Structa Cloud — compose-based development container
+#
+# AFFiNE is shared infrastructure managed by
+# application/proxy/docker-compose.nginx.yml. This compose file is limited to
+# the mounted monorepo development environment.
+
+name: structa-devcontainer
+
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    volumes:
+      - ${REPO_HOST_PATH:-..}:/workspaces/structa.cloud
+    networks:
+      - common
+    command: sleep infinity
+
+networks:
+  common:
+    external: true

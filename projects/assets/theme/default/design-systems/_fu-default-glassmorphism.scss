@@ -1,0 +1,94 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Design System: Glassmorphism — frosted translucent surfaces, blur,
+   subtle borders, floating depth. Extends fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  --fu-default-glass-blur: 16px;
+  --fu-default-glass-bg: hsl(var(--fu-default-card) / 0.6);
+  --fu-default-glass-border: hsl(var(--fu-default-card) / 0.2);
+  --fu-default-glass-shadow: 0 8px 32px 0 hsl(var(--fu-default-ink) / 0.15);
+}
+
+.fu-default-glass {
+  &__panel {
+    background: var(--fu-default-glass-bg);
+    backdrop-filter: blur(var(--fu-default-glass-blur));
+    -webkit-backdrop-filter: blur(var(--fu-default-glass-blur));
+    border: 1px solid var(--fu-default-glass-border);
+    border-radius: var(--fu-default-radius-xl);
+    box-shadow: var(--fu-default-glass-shadow);
+    padding: 1.5rem;
+    transition: var(--fu-default-transition-standard);
+
+    &:hover {
+      background: hsl(var(--fu-default-card) / 0.7);
+      border-color: hsl(var(--fu-default-primary) / 0.3);
+    }
+  }
+
+  &__card {
+    background: hsl(var(--fu-default-card) / 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--fu-default-card) / 0.15);
+    border-radius: var(--fu-default-radius-lg);
+    box-shadow: 0 4px 16px 0 hsl(var(--fu-default-ink) / 0.08);
+    padding: 1.25rem;
+    transition: var(--fu-default-transition-slow);
+
+    &:hover {
+      transform: translateY(-0.25rem);
+      box-shadow: 0 8px 32px 0 hsl(var(--fu-default-ink) / 0.12);
+    }
+  }
+
+  &__nav {
+    background: hsl(var(--fu-default-card) / 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--fu-default-card) / 0.2);
+    border-radius: var(--fu-default-radius-full);
+    padding: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    box-shadow: 0 4px 24px 0 hsl(var(--fu-default-ink) / 0.1);
+
+    a {
+      padding: 0.5rem 1rem;
+      border-radius: var(--fu-default-radius-full);
+      font-size: 0.875rem;
+      color: hsl(var(--fu-default-muted));
+      transition: var(--fu-default-transition-standard);
+      &:hover {
+        background: hsl(var(--fu-default-primary) / 0.1);
+        color: hsl(var(--fu-default-primary));
+      }
+      &.active {
+        background: hsl(var(--fu-default-primary));
+        color: hsl(var(--fu-default-card));
+      }
+    }
+  }
+
+  &__hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--fu-default-gradient-primary, hsl(var(--fu-default-ink)));
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        circle at 30% 50%,
+        hsl(var(--fu-default-primary) / 0.3),
+        transparent 60%
+      );
+    }
+
+    .fu-default-glass__panel {
+      position: relative;
+      z-index: 1;
+    }
+  }
+}

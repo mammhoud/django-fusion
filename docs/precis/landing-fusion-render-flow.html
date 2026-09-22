@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Precis Main Fusion render flow, local and production commands, and Nx integration.">
+  <title>Precis Main — Fusion Render Flow</title>
+  <style>
+    :root { color-scheme: light; --paper:#f3f1eb; --ink:#22211f; --muted:#68665f; --line:#d8d4c9; --card:#fffdf8; --accent:#a33d42; --dark:#292725; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.65 "Public Sans", ui-sans-serif, system-ui, sans-serif; }
+    body::before { content:""; position:fixed; inset:0; pointer-events:none; opacity:.035; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+    main { width:min(1120px,calc(100% - 32px)); margin:0 auto; padding:48px 0 80px; }
+    header { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(220px,.7fr); gap:32px; align-items:end; padding:32px 0 56px; border-bottom:1px solid var(--line); }
+    .eyebrow { color:var(--accent); font:700 .72rem/1.2 ui-monospace,SFMono-Regular,monospace; letter-spacing:.14em; text-transform:uppercase; }
+    h1,h2,h3 { font-family:"Bricolage Grotesque", "Public Sans", sans-serif; letter-spacing:-.035em; line-height:1.05; }
+    h1 { max-width:900px; margin:14px 0 18px; font-size:clamp(2.8rem,7vw,6.6rem); }
+    h2 { margin:0 0 16px; font-size:clamp(1.7rem,3vw,2.8rem); }
+    h3 { margin:0 0 8px; font-size:1.2rem; }
+    p { max-width:70ch; }
+    .lede { max-width:58ch; margin:0; color:var(--muted); font-size:1.08rem; }
+    .meta { color:var(--muted); font: .78rem/1.7 ui-monospace,SFMono-Regular,monospace; }
+    section { padding:72px 0; border-bottom:1px solid var(--line); }
+    .section-grid { display:grid; grid-template-columns:minmax(180px,.55fr) minmax(0,1.45fr); gap:40px; }
+    .section-kicker { color:var(--muted); font:700 .72rem/1.4 ui-monospace,SFMono-Regular,monospace; letter-spacing:.12em; text-transform:uppercase; }
+    .flow { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }
+    .flow article { min-height:180px; padding:20px; background:var(--card); }
+    .flow article strong { display:block; margin-bottom:12px; color:var(--accent); font:700 .72rem/1.2 ui-monospace,SFMono-Regular,monospace; letter-spacing:.1em; text-transform:uppercase; }
+    .flow article p { margin:0; color:var(--muted); font-size:.9rem; }
+    .commands { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+    .command { padding:22px; background:var(--dark); color:#f4f0e8; border:1px solid #403c38; box-shadow:10px 10px 0 rgba(71,61,52,.16); }
+    .command h3 { color:#fff9ef; }
+    pre { margin:14px 0 0; overflow:auto; color:#f2b6a6; font: .82rem/1.7 ui-monospace,SFMono-Regular,monospace; white-space:pre-wrap; }
+    table { width:100%; border-collapse:collapse; background:var(--card); }
+    th,td { padding:13px 14px; border:1px solid var(--line); text-align:start; vertical-align:top; }
+    th { color:var(--muted); font:700 .72rem/1.3 ui-monospace,SFMono-Regular,monospace; letter-spacing:.08em; text-transform:uppercase; }
+    code { padding:.12em .35em; background:#e8e4d9; border:1px solid #d9d4c8; font: .9em ui-monospace,SFMono-Regular,monospace; }
+    .note { padding:18px 20px; border-inline-start:4px solid var(--accent); background:#ebe6dc; }
+    footer { padding-top:28px; color:var(--muted); font-size:.9rem; }
+    @media (max-width:760px) { main { width:min(100% - 24px,640px); padding-top:20px; } header,.section-grid,.commands { grid-template-columns:1fr; gap:20px; } header { padding-bottom:36px; } section { padding:48px 0; } .flow { grid-template-columns:1fr; } .flow article { min-height:auto; } table { display:block; overflow-x:auto; white-space:nowrap; } }
+    @media (prefers-reduced-motion:no-preference) { section,.command { animation:rise .7s cubic-bezier(.32,.72,0,1) both; } section:nth-of-type(2){animation-delay:80ms} section:nth-of-type(3){animation-delay:140ms} section:nth-of-type(4){animation-delay:200ms} @keyframes rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <div class="eyebrow">Precis Main / Operations</div>
+        <h1>Fusion render flow, without the guesswork.</h1>
+        <p class="lede">The unified Precis product serves one content source through Django and django-fusion, HTMX fragments, or Astro data APIs. This page is the command and contract reference for local work, production rollout, and Nx automation.</p>
+      </div>
+      <div class="meta">Canonical path<br><strong>projects/structa.cloud/</strong> (renamed from precis/precis-main)<br><br>Compatibility aliases<br><strong>precis-lms · precis-landing</strong></div>
+    </header>
+
+    <section>
+      <div class="section-grid">
+        <div class="section-kicker">The contract</div>
+        <div>
+          <h2>One content source, three response shapes.</h2>
+          <div class="flow">
+            <article><strong>Browser</strong><p>Traefik or the local Astro dev server receives a page, fragment, or API request.</p></article>
+            <article><strong>Route</strong><p>Django URLs select Wagtail, a PageHandler, a fragment endpoint, or a data endpoint.</p></article>
+            <article><strong>Render</strong><p>Fusion resolves the effective render preference from settings and request headers.</p></article>
+            <article><strong>Response</strong><p>Full HTML serves SEO pages, HTMX returns a fragment, and JSON feeds Astro islands.</p></article>
+            <article><strong>Assets</strong><p>Tailwind and webpack source assets are built once and consumed by both roads.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-grid">
+        <div class="section-kicker">Commands</div>
+        <div>
+          <h2>Choose the environment explicitly.</h2>
+          <div class="commands">
+            <article class="command"><h3>Local Compose</h3><p>Loads the local overlay, publishes Django on 8074 and Astro on 3000, and keeps debug behavior local.</p><pre>cd projects/structa.cloud
+make validate-local
+make deploy-local</pre></article>
+            <article class="command"><h3>Production Compose</h3><p>Uses the base stack only and reads the root deployment environment. It preserves named volumes.</p><pre>cd projects/structa.cloud
+make validate-production
+make deploy-production</pre></article>
+            <article class="command"><h3>Project quality gates</h3><p>Run the narrow checks from the project boundary before a rollout.</p><pre>make config-check
+make check
+make backend-test
+make build-prod</pre></article>
+            <article class="command"><h3>Dispatcher aliases</h3><p>Use the repository dispatcher when working from <code>projects/</code>.</p><pre>cd projects
+make show-config WEBSITE=structa.cloud
+make check WEBSITE=structa.cloud
+make test WEBSITE=structa.cloud
+make docker-up WEBSITE=structa.cloud</pre></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-grid">
+        <div class="section-kicker">Nx bridge</div>
+        <div>
+          <h2>Make remains the source of truth; Nx supplies the graph.</h2>
+          <p>The <code>precis-main-assets</code> project exposes cache-aware targets that delegate to the project Makefile. This prevents Nx and direct project commands from drifting.</p>
+          <table>
+            <thead><tr><th>Nx target</th><th>Delegates to</th><th>Use</th></tr></thead>
+            <tbody>
+              <tr><td><code>check</code></td><td><code>make check</code></td><td>Astro diagnostics, config validation, and backend checks.</td></tr>
+              <tr><td><code>test</code></td><td><code>make backend-test</code></td><td>Backend test boundary for the unified product.</td></tr>
+              <tr><td><code>build</code></td><td><code>make build</code></td><td>Assets, CSS, skeleton manifest, and Astro production build.</td></tr>
+              <tr><td><code>deploy-local</code></td><td><code>make deploy-local</code></td><td>Explicit local Compose overlay.</td></tr>
+              <tr><td><code>deploy-production</code></td><td><code>make deploy-production</code></td><td>Explicit base Compose production rollout.</td></tr>
+            </tbody>
+          </table>
+          <pre>npx nx run precis-main-assets:check
+npx nx run precis-main-assets:build
+npx nx run precis-main-assets:deploy-local
+npx nx run precis-main-assets:deploy-production</pre>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-grid">
+        <div class="section-kicker">Use cases</div>
+        <div>
+          <h2>Where each road belongs.</h2>
+          <table>
+            <thead><tr><th>Use case</th><th>Preferred road</th><th>Reason</th></tr></thead>
+            <tbody>
+              <tr><td>Public catalog, blog, and SEO pages</td><td>Full Django/Fusion HTML</td><td>Content is available to crawlers and keeps Wagtail as the editorial source.</td></tr>
+              <tr><td>Enroll, save, filter, and other small interactions</td><td>HTMX fragment</td><td>Only the changed region is returned; Alpine handles local state and feedback.</td></tr>
+              <tr><td>Learner dashboard and course player</td><td>Astro plus JSON API</td><td>Interactive islands can hydrate without turning every public page into a client application.</td></tr>
+              <tr><td>Local design and route work</td><td><code>make deploy-local</code></td><td>Uses the overlay and published ports without changing production configuration.</td></tr>
+              <tr><td>Release candidate or host rollout</td><td><code>make deploy-production</code></td><td>Uses the base stack and root secret/config contract after validation.</td></tr>
+            </tbody>
+          </table>
+          <p class="note">Do not add client-only fallback content when the API is unavailable. A missing Wagtail response is an operational error that should remain visible to the check or error state.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>Source of truth: <code>projects/precis/structa.cloud/Makefile</code>, <code>project.json</code>, <code>docker-compose.yml</code>, and <code>docker-compose.override.yml</code>. Review generated output and environment values before any production rollout.</footer>
+  </main>
+</body>
+</html>

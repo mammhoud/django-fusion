@@ -1,0 +1,32 @@
+# =============================================================================
+# Self-hosted tools — aggregate Compose file
+# =============================================================================
+# Brings up every tool under application/tools/ via Compose `include`. Each
+# tool keeps its own docker-compose.yml + Makefile so it can be started/stopped
+# independently; this file is the one-shot entry point for the whole toolbelt.
+#
+# Included by: application/docker-compose.yml (full-stack orchestrator)
+#
+#   docker compose -f application/tools/docker-compose.yml up -d
+#   make deploy-tools            (root)
+#
+# All tools join the external `common` and `traefik-net` networks (created by
+# `make create-networks`), and are routed path-based from tools.structa.cloud
+# by the tools-proxy Nginx (application/tools/nginx/default.conf.template).
+# Static/media files are served by the separate assets-proxy.
+#
+# NOTE: Docus is intentionally NOT included here — it is a product service
+# deployed from docs/docker-compose.yml (see `make deploy-docs`).
+# =============================================================================
+
+include:
+  - coder/docker-compose.yml
+  - planing/planing/docker-compose.yml
+  - xyops/docker-compose.yml
+  - mailpit/docker-compose.yml
+  # - adminer/docker-compose.yml
+  - monitoring/docker-compose.yml
+  - tools-web/docker-compose.yml
+
+  - ./docker-compose.nginx.yml
+  - ./docker-compose.assets.yml

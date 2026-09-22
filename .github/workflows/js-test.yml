@@ -1,0 +1,114 @@
+# js-test: Runs frontend smoke/build tests across the Astro and Next projects.
+name: JS Tests (frontend builds + smoke tests)
+
+on:
+  pull_request:
+    paths:
+      - 'projects/structa.cloud/frontend/**'
+      - 'projects/cms-fusion/frontend/**'
+      - 'projects/formints/tests/pos-e2e/**'
+      - 'projects/formints/**'
+      - '.github/workflows/js-test.yml'
+  push:
+    branches: ['**']
+    paths:
+      - 'projects/structa.cloud/frontend/**'
+      - 'projects/cms-fusion/frontend/**'
+      - 'projects/formints/tests/pos-e2e/**'
+      - 'projects/formints/**'
+      - '.github/workflows/js-test.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: js-test-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  precis-frontend-build:
+    name: Precis Front-End — Astro Build + Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/structa.cloud/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/structa.cloud/frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Check Astro types
+        run: npm run check
+      - name: Build Astro frontend
+        run: npm run build
+      - name: Run frontend smoke tests
+        run: npm run test
+
+  cms-test:
+    name: CMS — Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/cms-fusion/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/cms-fusion/frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+
+  cms-e2e:
+    name: CMS — Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/cms-fusion/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/cms-fusion/frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Run E2E tests
+        run: npm run test:e2e
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-playwright-report
+          path: projects/cms-fusion/frontend/playwright-report/
+          retention-days: 7
+
+  pos-e2e:
+    name: POS — API E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/formints/tests/pos-e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/formints/tests/pos-e2e/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run API E2E tests
+        run: npx playwright test tests/api/ --project=pos-full

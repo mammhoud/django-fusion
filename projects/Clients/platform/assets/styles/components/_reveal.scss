@@ -1,0 +1,17 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Components: Reveal — scroll-triggered entrance animations.
+   Works with Alpine.js x-intersect plugin.
+   ═══════════════════════════════════════════════════════════════════ */
+
+[x-cloak] { display: none !important; }
+
+.fusion-reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity var(--transition-reveal), transform var(--transition-reveal);
+
+  &--visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

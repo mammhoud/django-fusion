@@ -1,0 +1,60 @@
+# =============================================================================
+# Monitoring — Prometheus + Grafana (self-hosted metrics)
+# =============================================================================
+# Prometheus scrapes configured product targets (django-prometheus /metrics)
+# and stores TSDB under ./data (gitignored). Grafana is the operator UI,
+# routed by Traefik → tools-proxy Nginx at tools.structa.cloud/grafana/ (see
+# application/proxy/configs/traefik/dynamic/tools.yml). SERVE_FROM_SUB_PATH
+# keeps Grafana's assets under the /grafana/ prefix.
+# =============================================================================
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+services:
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION:-latest}
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - monitoring-prometheus-data:/prometheus
+    networks:
+      - common
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:9090/-/healthy >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-latest}
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_SERVER_ROOT_URL: https://tools.structa.cloud/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - monitoring-grafana-data:/var/lib/grafana
+    networks:
+      - common
+      - traefik-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  monitoring-prometheus-data:
+    name: monitoring-prometheus-data
+  monitoring-grafana-data:
+    name: monitoring-grafana-data

@@ -1,0 +1,61 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# precis-main — defaults.yml (project-level cascade layer)
+# ─────────────────────────────────────────────────────────────────────────────
+# Local-dev and deployment *defaults* for the unified Precis product. This is
+# the lowest project-owned layer of the config cascade; every value here can be
+# overridden by `Env/_site.yml`, the project `.env`, or environment variables
+# (Docker Compose `environment:` wins over everything).
+#
+# Cascade order (low → high):
+#   1. Shared product defaults   projects/precis/configs/Env/*.yml
+#   2. THIS FILE + configs/*.yml (project dir, beside frontend/backend)
+#   3. Site overrides            Env/_site.yml
+#   4. Dotenv                    <repo>/.env → <project>/.env
+#   5. Environment variables     DJANGO_* / bare KEY
+#
+# Loaded by django-fusion's `config.project` loader (used by
+# backend/settings.py for env-read defaults and by `make config-show` /
+# `make config-front`). See configs/README.md.
+# ─────────────────────────────────────────────────────────────────────────────
+
+default:
+  # ── Local-dev defaults ──────────────────────────────────────────────
+  DEBUG: true
+  ALLOWED_HOSTS:
+    - localhost
+    - 127.0.0.1
+    - precis-dev-backend
+    - precis-dev-frontend
+  PORT: 8074
+  FRONTEND_PORT: 3000
+  # Dual-mode render: false = data-API road (Astro renders /apis/* JSON),
+  # true = Django fusion-render-first HTML. Production compose sets 0.
+  FUSION_RENDER_FIRST: false
+
+  # ── Static files reference (read → output → deploy) ────────────────
+  # Mirrors backend/settings.py (STATICFILES_DIRS / STATIC_ROOT / MEDIA_ROOT)
+  # and the Docker volumes declared in docker-compose.yml. `make css`
+  # compiles the Tailwind design system into css_path; collectstatic copies
+  # read_dirs + bundle output into output_dir (STATIC_ROOT).
+  STATIC:
+    read_dirs:            # STATICFILES_DIRS — what collectstatic reads
+      - backend/assets/static
+      - assets/static
+      - frontend/public
+    output_dir: backend/assets/staticfiles   # STATIC_ROOT — collectstatic output
+    media_dir: backend/assets/media          # MEDIA_ROOT — editor/user uploads
+    bundle_stats: backend/assets/static/bundles/bundles.json  # webpack stats
+    css_path: assets/static/css/fusion.css   # compiled design system (make css)
+    deploy:
+      static_volume: precis-dev-static      # Docker named volume
+      media_volume: precis-dev-media        # Docker named volume
+      static_url: /static/
+      media_url: /media/
+      static_server: "whitenoise (backend) behind traefik /static/"
+      media_server: "shared-proxy nginx (application/proxy)"
+
+development:
+  DEBUG: true
+
+production:
+  DEBUG: false

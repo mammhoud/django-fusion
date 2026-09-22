@@ -1,0 +1,80 @@
+# ── Node.js ──────────────────────────────────────────────────────────
+node_modules/
+.npm
+.eslintcache
+.next
+
+# ── Rust (Tauri) ─────────────────────────────────────────────────────
+**/target/
+**/*.rs.bk
+cargo-lock.toml
+
+# ── Python ───────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.import_linter_cache/
+
+# ── Environment & Secrets ────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+secret.key.txt
+secrets.yml
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ── Django media (uploaded at runtime) ───────────────────────────────
+# Whole runtime MEDIA_ROOT targets (precis shared tree, per-site trees).
+# Previous `projects/*/...` patterns were dead: with a slash in the pattern
+# git anchors it at this .gitignore's directory, so they never matched.
+**/backend/media/
+**/backend/assets/media/
+**/assets/media/
+# Shared media tree (FileGator uploads served at media.structa.cloud/media/)
+# Runtime uploads are ignored, but the directory skeleton (incl. the
+# FileGator repo dir) ships tracked so a fresh clone keeps the bind-mount
+# target with www-data ownership instead of Docker root:root.
+assets/media/*
+!assets/media/filegator/
+!assets/media/filegator/.gitkeep
+
+# ── Django generated artifacts ───────────────────────────────────────
+**/staticfiles/
+**/bundles/
+dist/
+
+# ── Database artifacts ───────────────────────────────────────────────
+*.sqlite3
+*.dump
+*.sql.gz
+tests/test_db.sqlite3
+.freebuff/desktop.db*
+
+# ── Logs ─────────────────────────────────────────────────────────────
+logs/
+*.log
+gunicorn-error.log
+
+# ── Backups & temp ───────────────────────────────────────────────────
+backups/
+application/tmp/
+application/proxy/backups/
+compose/data/
+compose/postgres/postgres_data/
+compose/postgres/backups/
+
+# ── Transient / generated ────────────────────────────────────────────
+**/sync_state.json
+/media/email_templates/
+../libs/.venv/
+
+# ── macOS ────────────────────────────────────────────────────────────
+.DS_Store

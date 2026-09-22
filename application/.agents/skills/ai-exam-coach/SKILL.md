@@ -1,0 +1,123 @@
+---
+name: ai-exam-coach
+description: Generate, grade, and adapt Vietnamese AI practice exams from a knowledge base. Use for de on tap, mock exam, MCQ, multi-select, fill-in-blank, rubric grading, and updating learner knowledge profiles.
+---
+
+# AI Exam Coach
+
+## Overview
+
+Create Vietnamese AI practice exams for AI Thực Chiến-style review, then grade submissions and update the learner knowledge base. This skill handles study repository setup, question generation, answer keys, rubrics, feedback, and proficiency tracking; it does not fabricate learner scores, expose hidden source paths, or change unrelated project files.
+
+## Default Behavior
+
+1. If the user asks to create a practice exam, generate 20 questions by default.
+2. If the user supplies parameters, follow them: question count, topic, track, difficulty, duration, output path, answer-key visibility.
+3. Use Vietnamese with full diacritics unless the user explicitly requests another language or no-diacritic text.
+4. Never generate Vietnamese exam content as ASCII/no-diacritic text. Use `Đề ôn tập`, `Mã đề`, `Câu hỏi`, `Đáp án`, `Giải thích`, not `De on tap`, `Ma de`, `Cau hoi`, `Dap an`, `Giai thich`.
+5. If the user only says "tạo đề", "tạo đề ôn tập", "mock exam", or similar without a topic, check KB status first with `scripts/study_repo.py kb-status`.
+6. If the KB is empty, ask exactly one onboarding question: diagnostic tổng hợp first or luyện từng kỹ năng. Do not create a personalized exam from an empty KB.
+7. If the KB has prior evidence, create a mixed 20-question exam from `references/exam-blueprint.md` without asking for Day folders.
+8. Use the topic taxonomy in `references/topic-map.md`.
+9. Enforce item-writing rules in `references/question-quality.md`.
+10. Before generating or grading, ensure a study repository exists using `scripts/study_repo.py init`.
+11. Save exams and answer keys as Markdown files using `scripts/study_repo.py new-exam`; do not only print questions in chat.
+12. Save or update knowledge base artifacts using `references/knowledge-base-workflow.md`.
+
+## Workflow Decision Tree
+
+- **Initialize study repo:** Run `python scripts/study_repo.py init --root <path>` → creates `docs/user-knowledge-base.md`, `exams/`, answer folders, and optional git repo.
+- **Empty KB onboarding:** Run `python scripts/study_repo.py kb-status --root <path>` → if empty, ask diagnostic vs skill drill before generating.
+- **Generate exam:** Ensure repo → read learner KB → select topics → run `new-exam` → write exam file → write answer key → append a generation note to KB → return file paths.
+- **Grade exam:** Read exam + learner answers + answer key/rubric → score → explain misses → append grading report → update KB weaknesses/proficiency.
+- **Review weak areas:** Read KB → identify low-confidence topics → produce targeted 20-question drill or short theory review.
+- **Refresh KB:** Normalize topic names, merge duplicate weakness notes, add new topic coverage without deleting prior history.
+
+## Initialize Study Repository
+
+Run the bundled script whenever the user starts a new study workspace, asks to "init repo", or asks to create an exam but the expected structure is missing:
+
+```bash
+python <skill-dir>/scripts/study_repo.py init --root <study-repo-path> --title "AI Practice Study"
+```
+
+Use `--no-git` only if the user does not want a git repository.
+
+The script is idempotent: it creates missing folders/files and keeps existing KB/exam files intact.
+
+## Generate Exam
+
+1. Parse user parameters:
+   - `count`: default 20.
+   - `scope`: common, business, infrastructure, app-build, mixed, or named topics.
+   - `difficulty`: default 30% easy, 50% medium, 20% hard unless a real exam format says otherwise.
+   - `formats`: default MCQ + multi-select + fill-in-blank + short scenario.
+2. Ensure the study repository exists; if not, run `scripts/study_repo.py init`.
+3. Check KB status:
+   ```bash
+   python <skill-dir>/scripts/study_repo.py kb-status --root <study-repo-path>
+   ```
+4. If `is_empty` is true and the user did not explicitly request a specific topic/skill, ask:
+   "Knowledge base hiện chưa có dữ liệu năng lực. Bạn muốn làm bài diagnostic tổng hợp trước hay luyện từng kỹ năng?"
+   Offer only:
+   - Diagnostic tổng hợp 20 câu (Recommended): đo baseline ban đầu.
+   - Luyện từng kỹ năng: người dùng chọn RAG, Agent, Prompt Engineering, RAGAS, AI Product, Model Serving, hoặc chủ đề khác.
+5. If the user chooses diagnostic, create a `diagnostic`/`mixed` exam using the diagnostic blueprint.
+6. If the user chooses skill drill or already specified a topic, create a scoped drill and mark it as not-yet-personalized until graded.
+7. If `is_empty` is false, read the learner knowledge base before selecting topics.
+8. Create the exam/answer files before writing content:
+   ```bash
+   python <skill-dir>/scripts/study_repo.py new-exam --root <study-repo-path> --scope mixed --count 20
+   ```
+   Use the script output paths for all generated content.
+9. Prioritize weak, stale, or under-tested topics only when KB has evidence; otherwise use diagnostic/scoped coverage.
+10. Generate questions only from available course/KB context and stable domain knowledge.
+11. Write the student-facing exam to the exam file and the key/rubric to the answer file.
+12. Include metadata: title, code, timestamp, scope, count, estimated time, scoring.
+13. Update KB after generation with exam code, topics covered, intended difficulty, and pending status.
+14. In chat, return only the created file paths and brief next step; do not duplicate the full exam unless requested.
+
+## Clarification Policy
+
+- Do not ask the user to choose among discovered Day folders when the request is broad.
+- Do not turn source folder names such as `day-22`, `day-24`, or `day-26` into user-facing exam options unless the user explicitly asks for a day-specific drill.
+- Use discovered course notes only as grounding material mapped into the blueprint sections: Common, Business, Infrastructure, App Build.
+- Ask a clarification only when a required output location cannot be inferred or when the user requests multiple incompatible scopes.
+- For broad generation, always proceed with the default mixed distribution: Common 10, Business 3, Infrastructure 3, App Build 4.
+
+## Grade Exam
+
+1. Collect learner answers from chat or file.
+2. Use exact matching for single-answer MCQ/fill-in-blank; use rubric for multi-select, short answer, scenario debug, case study, and code.
+3. Award partial credit only when the rubric permits it.
+4. Explain every incorrect or partial answer with the smallest useful correction.
+5. Identify root-cause weaknesses by topic, not just by question number.
+6. Update KB with score, topic performance, fixed misconceptions, new weaknesses, and next drill recommendation.
+7. Do not overwrite prior history; append or revise the relevant matrix row.
+
+## Output Contracts
+
+- Exam file: questions only, student-facing.
+- Answer key: correct answers, rationale, rubric, topic tags, difficulty.
+- Grading report: total score, section scores, missed concepts, next actions.
+- KB update: factual record of generated/graded exams and proficiency deltas.
+
+Use `references/output-formats.md` for concrete Markdown templates.
+
+## Security And Privacy
+
+- Never include private paths, hidden source locations, credentials, phone numbers, or personal data in generated exams or reports unless the user explicitly asks to edit a personal document that already contains them.
+- Do not reveal internal source locations used to build context.
+- Treat learner performance records as personal study data. Keep updates scoped to the KB files the user is working with.
+- Refuse requests to generate answer leaks for an active real exam; offer practice questions instead.
+- Do not invent official policy, grading, or legal claims. Mark uncertain legal/regulatory details as needing verification.
+
+## References
+
+- `references/exam-blueprint.md`: exam structure, scoring, default distributions.
+- `references/topic-map.md`: AI topic taxonomy by common section and three tracks.
+- `references/question-quality.md`: MCQ, multi-select, fill-in-blank, short-answer rules.
+- `references/knowledge-base-workflow.md`: generation/grading KB update rules.
+- `references/output-formats.md`: Markdown templates.
+- `references/research-notes.md`: condensed research rationale and citations.
+- `scripts/study_repo.py`: initialize study repo and create exam/answer Markdown files.

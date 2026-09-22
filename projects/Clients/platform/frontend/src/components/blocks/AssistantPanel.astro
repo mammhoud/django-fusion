@@ -1,0 +1,61 @@
+---
+/**
+ * AssistantPanel — the Precis Assistant surface.
+ *
+ * The assistant lives on the Django/HTMX render road (`apps.chat`): this
+ * component only embeds the backend-rendered `/assistant/panel/` fragment, it
+ * does not reimplement the conversation/SSE client. While the fragment is in
+ * flight a chat-shaped skeleton shows; when no backend is configured (or the
+ * fragment errors) a quiet note renders instead — never a hard-coded demo reply.
+ */
+import AssistantPanelTarget from '@/components/ui/AssistantPanelTarget.astro';
+import { fusionApiUrl } from '@/lib/site';
+
+interface Props {
+  /** Backend route to fetch, e.g. '/assistant/panel/'. */
+  route?: string;
+  /** Panel label shown in the eyebrow. */
+  label?: string;
+}
+
+const { route = '/assistant/panel/', label = 'assistant' } = Astro.props;
+
+const endpoint = `${fusionApiUrl.replace(/\/+$/, '')}/${route.replace(/^\/+/, '')}`;
+
+// Only fire HTMX when a backend is configured; otherwise show the quiet note.
+const hasBackend =
+  fusionApiUrl !== '' || import.meta.env.PUBLIC_ENABLE_BACKEND === 'true';
+---
+
+<section class="assistant-panel doc-sheet bg-fu-paper py-16 md:py-20" data-live-fragment>
+  <div class="container-fusion">
+    <div class="mx-auto max-w-3xl">
+      <div class="card overflow-hidden">
+        <!-- Panel header -->
+        <header class="assistant-panel__header flex flex-wrap items-center justify-between gap-3 border-b border-fu-line px-6 py-4">
+          <div class="flex items-center gap-3">
+            <p class="tag-marker">{label}</p>
+            <span class="status-line">
+              <span class="dot" aria-hidden="true"></span> online
+            </span>
+          </div>
+          <span class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted">
+            htmx · sse
+          </span>
+        </header>
+
+        {hasBackend ? (
+          <AssistantPanelTarget endpoint={endpoint} route={route} />
+        ) : (
+          <div class="assistant-panel__offline p-10 text-center">
+            <p class="mb-2 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted">offline</p>
+            <p class="text-sm text-fu-muted">
+              The assistant needs the Django backend. Rebuild the frontend with
+              <code class="font-mono">PUBLIC_ENABLE_BACKEND=true</code> to enable it.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</section>

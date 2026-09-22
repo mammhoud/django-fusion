@@ -1,0 +1,34 @@
+# ═════════════════════════════════════════════════════════════════════════════
+# precis-dev docker-compose.override.yml — LOCAL DEVELOPMENT overlay
+# ═════════════════════════════════════════════════════════════════════════════
+# Compose loads this file automatically when running from this directory:
+#
+#     docker compose up -d --build
+#
+# Precedence (high → low): override file → docker-compose.yml →
+# project .env → root .env → built-in defaults.
+#
+# Ports differ from precis-main (8074/3000) so both stacks can run
+# simultaneously on the same host during local development.
+# ═════════════════════════════════════════════════════════════════════════════
+
+services:
+  backend:
+    ports:
+      - "8075:8075"
+    environment:
+      DJANGO_DEBUG: "1"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,dev.structa.cloud,precis-dev-backend,precis-dev-frontend
+      WAGTAILADMIN_BASE_URL: http://localhost:8075
+    volumes:
+      - ./configs:/app/precis-main/configs:ro
+
+  frontend:
+    ports:
+      - "3001:3001"
+    environment:
+      PUBLIC_BROWSER_API_URL: http://localhost:8075
+
+  scheduler:
+    volumes:
+      - ./configs:/app/precis-main/configs:ro

@@ -1,0 +1,47 @@
+# =============================================================================
+# Dynamic TLS certificates
+# =============================================================================
+# For local .localhost development, Traefik serves a single self-signed
+# certificate whose subjectAltName list matches the LOCAL_CERT_SANS variable in
+# application/proxy/Makefile — every vhost the routers declare (notes.localhost,
+# ops.localhost, precis-lms.localhost, space.localhost, tools.localhost) plus the
+# legacy names and localhost/127.0.0.1/::1. Keep the two in sync: a host missing
+# from that list falls back to the default certificate and warns in the browser.
+# Production domains still obtain certs via Let's Encrypt (certResolver in each
+# router config), but .localhost cannot pass public ACME validation, so this
+# static certificate is used instead.
+#
+# To switch certificate strategies, see application/proxy/Makefile:
+#   make proxy-certs-selfsigned   # use the cert below (default for local dev)
+#   make proxy-certs-mkcert       # generate locally-trusted certs with mkcert
+#   make proxy-certs-default      # remove static cert and use Traefik default
+#
+# The legacy production self-signed certificates below remain commented for
+# emergency rollback only.
+# =============================================================================
+
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/localhost.crt
+      keyFile: /etc/traefik/certs/localhost.key
+
+  # Default certificate served when no SNI matches or when a request is made
+  # without a known hostname. This prevents the browser from receiving the
+  # generic Traefik default cert for the two local hosts.
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/localhost.crt
+        keyFile: /etc/traefik/certs/localhost.key
+
+# Legacy production self-signed certificates (kept for reference/rollback):
+# tls:
+#   certificates:
+#     - certFile: /etc/traefik/certs/ctc-research.crt
+#       keyFile:  /etc/traefik/certs/ctc-research.key
+#     - certFile: /etc/traefik/certs/structa-cloud.crt
+#       keyFile:  /etc/traefik/certs/structa-cloud.key
+#     - certFile: /etc/traefik/certs/vresume.crt
+#       keyFile:  /etc/traefik/certs/vresume.key
+#     - certFile: /etc/traefik/certs/crm.crt
+#       keyFile:  /etc/traefik/certs/crm.key

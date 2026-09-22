@@ -1,0 +1,47 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Design Tokens — StructAI Softwares BEM variables.
+   Mirrors globals.css :root custom properties, exposed as SCSS vars
+   for use in @extend and mixin patterns.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Spacing scale ── */
+  --fusion-space-xs: 0.25rem;
+  --fusion-space-sm: 0.5rem;
+  --fusion-space-md: 1rem;
+  --fusion-space-lg: 1.5rem;
+  --fusion-space-xl: 2rem;
+  --fusion-space-2xl: 3rem;
+  --fusion-space-3xl: 4rem;
+
+  /* ── Section padding ── */
+  --section-padding-lg: 5rem;   /* py-20 */
+  --section-padding-xl: 6rem;   /* py-24 */
+
+  /* ── Radius ── */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-card: 0 1px 3px 0 hsl(var(--fu-line) / 0.3);
+  --shadow-card-hover: 0 4px 12px 0 hsl(var(--fu-line) / 0.4);
+  --shadow-modal: 0 20px 60px 0 hsl(var(--fu-ink) / 0.15);
+  --shadow-toast: 0 8px 24px 0 hsl(var(--fu-ink) / 0.12);
+
+  /* ── Transitions ── */
+  --transition-fast: 150ms ease;
+  --transition-standard: 200ms ease;
+  --transition-slow: 300ms ease;
+  --transition-reveal: 550ms ease-out;
+
+  /* ── Z-index scale ── */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal-backdrop: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+  --z-tooltip: 600;
+}

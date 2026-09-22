@@ -1,0 +1,21 @@
+# Per-tool runtime data, secrets, and generated files.
+# None of these belong in git; several contain credentials or keys.
+
+# AFFiNE (contains private keys + blobs)
+affine/affine-data/
+
+# Ollama model cache (large; pull models at runtime)
+ollama/data/
+
+# Monitoring state (Grafana DB, Prometheus TSDB)
+monitoring/data/
+monitoring/grafana/
+
+# Local env overrides (copy from ../.env.example)
+**/.env
+
+# tools-web (vanilla dashboard)
+tools-web/node_modules/
+tools-web/test-results/
+tools-web/playwright-report/
+tools-web/package-lock.json

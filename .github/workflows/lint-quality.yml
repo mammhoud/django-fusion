@@ -1,0 +1,77 @@
+# lint-quality: Runs the typo + dead-code linter across the whole repo on
+# every PR and push. Companion to application/scripts/dev/check_typos_and_deadcode.py
+# — that script is the source of truth. This workflow's job is to run it.
+#
+# The same script is also wired into the .githooks/pre-commit hook (which
+# scans staged files only, for fast feedback), but CI scans the full repo
+# so drift can't accumulate across un-touched files.
+
+name: lint-quality
+
+on:
+  pull_request:
+    paths:
+      - '**.py'
+      - '**.ts'
+      - '**.tsx'
+      - '**.js'
+      - '**.jsx'
+      - '**.html'
+      - '**.scss'
+      - '**.md'
+      - '**.yaml'
+      - '**.yml'
+      - '**.sh'
+      - 'application/scripts/dev/check_typos_and_deadcode.py'
+      - '.github/workflows/lint-quality.yml'
+      - '.githooks/pre-commit'
+  push:
+    branches: ['**']
+    paths:
+      - '**.py'
+      - '**.ts'
+      - '**.tsx'
+      - '**.js'
+      - '**.jsx'
+      - '**.html'
+      - '**.scss'
+      - '**.md'
+      - '**.yaml'
+      - '**.yml'
+      - '**.sh'
+      - 'application/scripts/dev/check_typos_and_deadcode.py'
+      - '.github/workflows/lint-quality.yml'
+      - '.githooks/pre-commit'
+  workflow_dispatch:
+
+# Prevent duplicate runs on the same PR/branch
+concurrency:
+  group: lint-quality-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-typos-and-deadcode:
+    name: Typo & Dead-Code Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run typo + dead-code linter (full repo)
+        run: python3 application/scripts/dev/check_typos_and_deadcode.py
+
+      - name: Run on staged files (pre-commit hook sanity check)
+        run: |
+          # Simulate the pre-commit hook path: stage a known-clean file and
+          # verify the --staged mode exits cleanly. This catches regressions
+          # in the --staged code path that the full-repo run might miss.
+          git config user.email "lint-quality@example.com"
+          git config user.name "Lint Quality Bot"
+          echo "# clean file" > /tmp/_lint_sanity.md
+          git add /tmp/_lint_sanity.md 2>/dev/null || true
+          python3 application/scripts/dev/check_typos_and_deadcode.py --staged

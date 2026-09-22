@@ -1,0 +1,50 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Structa Cloud — Shared Theme Library Index
+   ─────────────────────────────────────────────────────────────────────
+   This is the master entry point for the shared theme system at
+   projects/assets/theme/. Import the specific theme(s) a product needs:
+
+   @import 'theme/default';   // base palette + all components
+   @import 'theme/lms';      // LMS course/learning theme
+   @import 'theme/crm';      // CRM data-dense theme
+   @import 'theme/pos';      // POS register/tactile theme
+   @import 'theme/saas';     // Modern SaaS variation
+   @import 'theme/enterprise'; // Enterprise variation
+   @import 'theme/corporate';  // Corporate variation
+   @import 'theme/educational'; // Educational variation
+   @import 'theme/retail';   // Retail variation
+   @import 'theme/minimal';  // Minimal variation
+   @import 'theme/dark';     // Dark-first variation
+   @import 'theme/contrast'; // High-contrast variation
+
+   Each theme exports:
+     tokens/         — fu-<name>-* CSS custom properties
+     components/     — BEM SCSS component partials
+     templates/      — HTML reference templates (not compiled)
+     design-systems/ — higher-order design system variations
+
+   Token naming: fu-<theme-name>-<property>
+     e.g. fu-default-primary, fu-lms-card, fu-crm-table-row-height
+
+   BEM block naming: fu-<theme-name>-<block>
+     e.g. .fu-lms-course-card, .fu-crm-table, .fu-pos-receipt
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Import one or more themes as needed by the consuming product. */
+@import 'default';
+@import 'lms';
+@import 'crm';
+@import 'pos';
+@import 'saas';
+@import 'enterprise';
+@import 'corporate';
+@import 'educational';
+@import 'retail';
+@import 'minimal';
+@import 'dark';
+@import 'contrast';
+
+/* ── Theme engine: semantic token aliases + runtime switching ──
+   The engine remaps --fu-token-* to the active theme's tokens
+   based on <html data-theme="…" data-brand="…" class="dark?">. */
+@import 'engine';

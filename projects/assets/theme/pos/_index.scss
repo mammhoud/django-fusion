@@ -1,0 +1,12 @@
+/* ═══════════════════════════════════════════════════════════════════
+   POS Theme Index — imports all tokens and BEM components.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ── */
+@import 'tokens/fu-pos-theme';
+
+/* ── BEM Components ── */
+@import 'components/products/fu-pos-product-card';
+@import 'components/receipt/fu-pos-receipt';
+@import 'components/register/fu-pos-register';
+@import 'components/kpi/fu-pos-kpi';

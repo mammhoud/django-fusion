@@ -1,0 +1,10 @@
+{
+  "packagesToCopy": [
+    "bootstrap-select",
+    "isotope-layout",
+    "jquery.easy-pie-chart",
+    "jquery.magnify",
+    "odometer",
+    "sal.js"
+  ]
+}

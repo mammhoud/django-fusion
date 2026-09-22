@@ -1,0 +1,130 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 10,
+        "fields": {
+            "username": "fixture_staff",
+            "email": "fixture_staff@example.com",
+            "password": "pbkdf2_sha256$600000$testsalt$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+            "is_staff": true,
+            "is_active": true,
+            "is_superuser": false,
+            "first_name": "Fixture",
+            "last_name": "Staff",
+            "date_joined": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "blog.blogcategory",
+        "pk": 10,
+        "fields": {
+            "name": "Tech",
+            "slug": "tech",
+            "description": "Technology posts"
+        }
+    },
+    {
+        "model": "blog.blogcategory",
+        "pk": 11,
+        "fields": {
+            "name": "Science",
+            "slug": "science",
+            "description": "Science posts"
+        }
+    },
+    {
+        "model": "blog.blogtag",
+        "pk": 10,
+        "fields": {
+            "name": "Python",
+            "slug": "python-fx"
+        }
+    },
+    {
+        "model": "blog.blogtag",
+        "pk": 11,
+        "fields": {
+            "name": "Django",
+            "slug": "django-fx"
+        }
+    },
+    {
+        "model": "blog.blogtag",
+        "pk": 12,
+        "fields": {
+            "name": "Unused Tag",
+            "slug": "unused-fx"
+        }
+    },
+    {
+        "model": "blog.blogpost",
+        "pk": 10,
+        "fields": {
+            "title": "Published Python Post",
+            "slug": "published-python-post",
+            "author": 10,
+            "content": "<p>Python content here.</p>",
+            "excerpt": "A published Python post.",
+            "status": "published",
+            "published_date": "2024-03-01T10:00:00Z",
+            "created_at": "2024-03-01T09:00:00Z",
+            "updated_at": "2024-03-01T09:00:00Z",
+            "likes_count": 0,
+            "meta_description": "",
+            "featured_image": null,
+            "categories": [
+                10
+            ],
+            "tags": [
+                10
+            ]
+        }
+    },
+    {
+        "model": "blog.blogpost",
+        "pk": 11,
+        "fields": {
+            "title": "Published Django Post",
+            "slug": "published-django-post",
+            "author": 10,
+            "content": "<p>Django content here.</p>",
+            "excerpt": "A published Django post.",
+            "status": "published",
+            "published_date": "2024-03-05T10:00:00Z",
+            "created_at": "2024-03-05T09:00:00Z",
+            "updated_at": "2024-03-05T09:00:00Z",
+            "likes_count": 0,
+            "meta_description": "",
+            "featured_image": null,
+            "categories": [
+                10
+            ],
+            "tags": [
+                10,
+                11
+            ]
+        }
+    },
+    {
+        "model": "blog.blogpost",
+        "pk": 12,
+        "fields": {
+            "title": "Draft Fixture Post",
+            "slug": "draft-fixture-post",
+            "author": 10,
+            "content": "<p>Draft content.</p>",
+            "excerpt": "A draft post.",
+            "status": "draft",
+            "published_date": null,
+            "created_at": "2024-03-10T09:00:00Z",
+            "updated_at": "2024-03-10T09:00:00Z",
+            "likes_count": 0,
+            "meta_description": "",
+            "featured_image": null,
+            "categories": [],
+            "tags": [
+                10
+            ]
+        }
+    }
+]

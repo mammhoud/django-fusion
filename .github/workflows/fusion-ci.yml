@@ -1,0 +1,294 @@
+# fusion-ci: Runs Django checks + tests, Astro builds + unit tests, and
+# Django checks + tests, Astro builds + unit tests for the unified Precis product
+# (projects/structa.cloud, formerly precis-main; runtime identity keeps precis-main names).
+# Failures are isolated per job.
+#
+# Triggered on changes to fusion project files, lib submodules, or this
+# workflow file.
+
+name: Fusion CI (structa.cloud)
+
+on:
+  pull_request:
+    paths:
+      - 'projects/structa.cloud/**'
+      - 'libs/django-fusion/**'
+      - 'libs/ceptor-ai/**'
+      - 'libs/django-bolt/**'
+      - 'application/scripts/dev/check_domain_drift.sh'
+      - '.github/workflows/fusion-ci.yml'
+  push:
+    branches: ['**']
+    paths:
+      - 'projects/structa.cloud/**'
+      - 'libs/django-fusion/**'
+      - 'libs/ceptor-ai/**'
+      - 'libs/django-bolt/**'
+      - '.github/workflows/fusion-ci.yml'
+  workflow_dispatch:
+
+# Prevent duplicate runs on the same PR/branch
+concurrency:
+  group: fusion-lms-ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── CMS-Fusion Backend (Python/Django) ────────────────────────────────
+
+  # ── LMS-Fusion Backend (Python/Django) ───────────────────────────────
+
+  precis-main-backend:
+    name: LMS-Fusion — Django Checks + Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: 'latest'
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Run Django system checks
+        run: make check WEBSITE=structa.cloud
+
+      - name: Verify root Makefile convenience target
+        working-directory: ${{ github.workspace }}
+        run: make structa-cloud check
+
+      - name: Run migrations
+        working-directory: ${{ github.workspace }}
+        run: make structa-cloud migrate
+
+      - name: Run Django tests (pages + learning)
+        run: uv run python projects/structa.cloud/backend/manage.py test apps.pages apps.learning --verbosity=2
+
+  # ── LMS-Fusion Frontend (Astro) ─────────────────────────────────────
+
+  precis-main-frontend:
+    name: LMS-Fusion — Build & Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/structa.cloud/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/structa.cloud/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Astro frontend
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+  # ── LMS-Fusion integration smoke (Astro + Django) ────────────────
+
+  precis-main-e2e:
+    name: LMS-Fusion — Astro + Django Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      POSTGRES_PASSWORD: ci-postgres-password
+      REDIS_PASSWORD: ci-redis-password
+    defaults:
+      run:
+        working-directory: projects/structa.cloud/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/structa.cloud/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Astro types
+        run: npm run check
+
+      - name: Build Astro frontend
+        run: npm run build
+
+      # spin up the backend so the homepage content tests can exercise the
+      # full backend ↔ frontend pipeline (title/nav/hero/API consistency).
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create required Docker networks
+        run: |
+          for net in common traefik-net warehouse-net; do
+            docker network inspect $net >/dev/null 2>&1 || docker network create $net
+          done
+
+      - name: Build precis-main backend image
+        run: |
+          docker compose -f projects/structa.cloud/docker-compose.yml build \
+            --build-arg PROJECT_PATH=precis-main --build-arg SOURCE_PATH=structa.cloud backend
+
+      - name: Start precis-main backend (SQLite for CI E2E)
+        run: |
+          DB_TYPE=sqlite DB_HOST=127.0.0.1 \
+            docker compose -f projects/structa.cloud/docker-compose.yml up -d --remove-orphans backend
+
+      - name: Wait for precis-main backend health
+        run: |
+          for i in $(seq 1 24); do
+            if curl -sf http://127.0.0.1:5074/health/ >/dev/null 2>&1; then
+              echo "✓ LMS-Fusion backend healthy"
+              exit 0
+            fi
+            echo "  attempt $i/24 — waiting..."
+            sleep 10
+          done
+          echo "✗ LMS-Fusion backend did not become healthy"
+          docker compose -f projects/structa.cloud/docker-compose.yml logs --tail=50 backend
+          exit 1
+
+      # AI tests fetch homepage data from this URL. The fallback in
+      # homepage-content.spec.ts handles the case where the backend is
+      # unavailable (API-dependent assertions degrade gracefully).
+      - name: Run Astro frontend smoke tests
+        run: npm run test
+
+      - name: Start Astro preview server
+        run: |
+          nohup npm run preview -- --host 127.0.0.1 --port 3001 > /tmp/precis-main-astro-preview.log 2>&1 &
+          echo $! > /tmp/precis-main-astro-preview.pid
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3001/ >/dev/null; then
+              echo "✓ LMS-Fusion frontend healthy"
+              exit 0
+            fi
+            echo "  attempt $i/30 — waiting for frontend..."
+            sleep 2
+          done
+          echo "✗ LMS-Fusion frontend did not become healthy"
+          cat /tmp/precis-main-astro-preview.log
+          exit 1
+
+      - name: Run LMS-Fusion Compose E2E tests
+        env:
+          E2E_BACKEND_URL: http://127.0.0.1:5074
+          E2E_FRONTEND_URL: http://127.0.0.1:3001
+        run: npm run test:e2e
+
+      # Reclaim disk after the image build: prunes build caches, dangling
+      # images and generated files while keeping volumes and the images the
+      # running containers reference. See the root Makefile clean family.
+      - name: Clean up Docker disk after build (make clean-unused)
+        working-directory: ${{ github.workspace }}
+        run: make clean-unused
+
+  # ── Domain Drift Check ─────────────────────────────────────────────
+
+  domain-drift-check:
+    name: Domain Drift — precis-main
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check domain code for drift
+        run: bash application/scripts/dev/check_domain_drift.sh
+
+  # ── Deploy to Staging (manual only, requires all checks to pass) ────
+
+  deploy-staging:
+    name: Deploy to Staging
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      POSTGRES_PASSWORD: ci-postgres-password
+      REDIS_PASSWORD: ci-redis-password
+    needs:
+      - precis-main-backend
+      - precis-main-frontend
+      - precis-main-e2e
+      - domain-drift-check
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Create required Docker networks
+        run: |
+          for net in common traefik-net warehouse-net; do
+            docker network inspect $net >/dev/null 2>&1 || docker network create $net
+          done
+
+      # ── Build & deploy LMS-Fusion ───────────────────────────────────
+
+      - name: Build precis-main backend image
+        run: |
+          docker compose -f projects/structa.cloud/docker-compose.yml build \
+            --build-arg PROJECT_PATH=precis-main --build-arg SOURCE_PATH=structa.cloud backend
+
+      - name: Build precis-main frontend image
+        run: |
+          docker compose -f projects/structa.cloud/docker-compose.yml build frontend
+
+      - name: Start precis-main services (SQLite for staging)
+        run: |
+          DB_TYPE=sqlite DB_HOST=127.0.0.1 \
+            docker compose -f projects/structa.cloud/docker-compose.yml up -d --remove-orphans backend frontend
+
+      - name: Wait for precis-main backend health
+        run: |
+          for i in $$(seq 1 12); do
+            if curl -sf http://127.0.0.1:5074/health/ >/dev/null 2>&1; then
+              echo "✓ LMS-Fusion backend is healthy"
+              exit 0
+            fi
+            echo "  attempt $$i/12 — waiting..."
+            sleep 10
+          done
+          echo "✗ LMS-Fusion backend did not become healthy"
+          echo "=== LMS-Fusion backend logs ==="
+          docker compose -f projects/structa.cloud/docker-compose.yml logs --tail=50 backend
+          exit 1
+
+      - name: Show deployment status
+        run: |
+          echo "=== Docker Services Status ==="
+          echo ""
+          docker compose -f projects/structa.cloud/docker-compose.yml ps
+          echo ""
+          echo "=== Health Checks ==="
+          curl -s http://127.0.0.1:5074/health/ && echo " — LMS-Fusion"
+
+      # Post-deploy disk reclaim: prunes build caches and unused images while
+      # keeping volumes and the images the running staging containers
+      # reference. Uses the root Makefile's clean-unused (clean + clean-docker).
+      - name: Clean up Docker disk after deploy (make clean-unused)
+        run: make clean-unused

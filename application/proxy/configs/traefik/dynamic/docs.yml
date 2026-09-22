@@ -1,0 +1,43 @@
+# =============================================================================
+# Docs — Structa Cloud documentation (docs.structa.cloud)
+# =============================================================================
+# Docus runs as the `docus` Nuxt server from docs/docker-compose.yml (the app
+# lives at the root of docs/). The media host keeps `/docs/` as its base path;
+# the docs host preserves the `/docs/` prefix so Docus receives the base path
+# it is configured to emit.
+# Requires an A record for docs.structa.cloud pointing at this server.
+# =============================================================================
+
+http:
+  routers:
+    docs-http:
+      rule: Host(`docs.structa.cloud`)
+      entryPoints:
+        - web
+      middlewares:
+        - redirect-to-https
+      service: docs-service
+
+    docs-https:
+      rule: Host(`docs.structa.cloud`)
+      entryPoints:
+        - web-secure
+      middlewares:
+        - compress
+        - security-headers
+      service: docs-service
+      tls:
+        certResolver: letsencrypt-http
+
+  services:
+    docs-service:
+      loadBalancer:
+        servers:
+          # Shared-proxy Nginx selects its Docus virtual host from the original
+          # Host header and proxies the resulting request to `docus:3000`.
+          - url: http://tools-proxy:80
+        healthCheck:
+          path: /
+          hostname: docs.structa.cloud
+          interval: 60s
+          timeout: 5s

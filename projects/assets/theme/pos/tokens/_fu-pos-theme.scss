@@ -1,0 +1,104 @@
+/* ═══════════════════════════════════════════════════════════════════
+   POS Theme Tokens — fu-pos-* prefix
+   ─────────────────────────────────────────────────────────────────────
+   Point-of-sale palette for Formint editions. Warm cream-paper substrate
+   with verdigris (teal-green) brand accent and amber call-to-action.
+   Optimised for register readability and compact touch targets.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink (warm cream paper) ── */
+  --fu-pos-paper: 60 20% 98%;
+  --fu-pos-ink: 40 15% 18%;
+  --fu-pos-muted: 40 8% 42%;
+  --fu-pos-line: 40 10% 88%;
+  --fu-pos-card: 60 15% 99%;
+  --fu-pos-link: 165 50% 32%;
+  --fu-pos-link-dark: 165 45% 25%;
+  --fu-pos-mark: 48 96% 56%;
+  --fu-pos-live: 144 68% 37%;
+
+  /* ── Brand accent palette (verdigris + amber) ── */
+  --fu-pos-primary: 165 50% 32%;
+  --fu-pos-primary-dark: 165 45% 25%;
+  --fu-pos-primary-light: 165 40% 92%;
+  --fu-pos-secondary: 35 80% 50%;
+  --fu-pos-secondary-light: 35 60% 95%;
+  --fu-pos-accent: 48 96% 53%;
+  --fu-pos-accent-dark: 35 80% 42%;
+  --fu-pos-success: 144 68% 37%;
+  --fu-pos-warning: 38 92% 50%;
+  --fu-pos-error: 0 72% 51%;
+  --fu-pos-info: 199 89% 48%;
+
+  /* ── Register / receipt tones ── */
+  --fu-pos-receipt-bg: 60 10% 99%;
+  --fu-pos-receipt-ink: 40 10% 20%;
+  --fu-pos-receipt-line: 40 5% 85%;
+  --fu-pos-till-green: 120 40% 88%;
+  --fu-pos-till-amber: 45 80% 88%;
+
+  /* ── Spacing scale (touch-dense) ── */
+  --fu-pos-space-xs: 0.25rem;
+  --fu-pos-space-sm: 0.5rem;
+  --fu-pos-space-md: 0.75rem;
+  --fu-pos-space-lg: 1rem;
+  --fu-pos-space-xl: 1.5rem;
+  --fu-pos-space-2xl: 2rem;
+  --fu-pos-space-3xl: 3rem;
+
+  /* ── Section padding ── */
+  --fu-pos-section-lg: 3.5rem;
+  --fu-pos-section-xl: 5rem;
+
+  /* ── Radius (medium, tactile) ── */
+  --fu-pos-radius-sm: 0.375rem;
+  --fu-pos-radius-md: 0.5rem;
+  --fu-pos-radius-lg: 0.75rem;
+  --fu-pos-radius-xl: 1.125rem;
+  --fu-pos-radius-full: 9999px;
+
+  /* ── Shadows (warm, diffused) ── */
+  --fu-pos-shadow-card: 0 1px 2px hsl(var(--fu-pos-ink) / 0.06);
+  --fu-pos-shadow-card-hover: 0 4px 12px hsl(var(--fu-pos-ink) / 0.08);
+  --fu-pos-shadow-modal: 0 12px 40px 0 hsl(var(--fu-pos-ink) / 0.15);
+  --fu-pos-shadow-toast: 0 4px 16px 0 hsl(var(--fu-pos-ink) / 0.10);
+
+  /* ── Transitions (snappy for register) ── */
+  --fu-pos-transition-fast: 100ms ease;
+  --fu-pos-transition-standard: 150ms ease;
+  --fu-pos-transition-slow: 250ms ease;
+  --fu-pos-transition-reveal: 350ms ease-out;
+
+  /* ── Z-index scale ── */
+  --fu-pos-z-dropdown: 100;
+  --fu-pos-z-sticky: 200;
+  --fu-pos-z-modal-backdrop: 300;
+  --fu-pos-z-modal: 400;
+  --fu-pos-z-toast: 500;
+  --fu-pos-z-tooltip: 600;
+
+  /* ── Typography ── */
+  --fu-pos-font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --fu-pos-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --fu-pos-font-display: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Touch target sizing ── */
+  --fu-pos-touch-min: 2.75rem;
+  --fu-pos-touch-lg: 3.5rem;
+  --fu-pos-button-height: 2.75rem;
+  --fu-pos-button-height-lg: 3.5rem;
+}
+
+/* ── Dark mode override (warm near-black) ── */
+.dark {
+  --fu-pos-paper: 40 8% 9%;
+  --fu-pos-ink: 40 10% 90%;
+  --fu-pos-muted: 40 5% 62%;
+  --fu-pos-line: 40 6% 18%;
+  --fu-pos-card: 40 6% 12%;
+  --fu-pos-link: 165 50% 58%;
+  --fu-pos-link-dark: 165 45% 48%;
+  --fu-pos-mark: 48 96% 62%;
+  --fu-pos-live: 145 64% 52%;
+}

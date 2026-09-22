@@ -1,0 +1,153 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-team — BEM team/member card for the default theme.
+   Extracted and converted from .archives/theme/elements/_team.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-team {
+  margin-top: 4.6875rem;
+  position: relative;
+
+  &__inner {
+    background: hsl(var(--fu-default-card));
+    border-radius: var(--fu-default-radius-md);
+    box-shadow: var(--fu-default-shadow-card);
+    transition: var(--fu-default-transition-slow);
+  }
+
+  &__thumbnail {
+    max-width: 9.375rem;
+    max-height: 9.375rem;
+    border-radius: var(--fu-default-radius-full);
+    border: 0.375rem solid hsl(var(--fu-default-line));
+    top: -4.6875rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 9.375rem;
+    min-height: 9.375rem;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      object-fit: cover;
+    }
+  }
+
+  &__content {
+    text-align: center;
+    padding: 1.25rem;
+    padding-top: 5.3125rem;
+    padding-bottom: 2.1875rem;
+  }
+
+  &__title {
+    font-size: 2.125rem;
+    line-height: 1.4;
+    font-weight: 700;
+    margin-bottom: 0.375rem;
+    color: hsl(var(--fu-default-ink));
+  }
+
+  &__subtitle {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    margin-bottom: 0.9375rem;
+    display: inline-block;
+    color: hsl(var(--fu-default-muted));
+  }
+
+  &__role {
+    display: block;
+    font-size: 0.875rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.04em;
+    font-style: italic;
+    color: hsl(var(--fu-default-muted));
+  }
+
+  &__description {
+    margin-bottom: 0;
+    padding: 0 5%;
+    color: hsl(var(--fu-default-muted));
+    line-height: 1.6;
+  }
+
+  &__social {
+    display: flex;
+    justify-content: center;
+    gap: 0.625rem;
+    margin-top: 1.25rem;
+
+    a {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--fu-default-radius-full);
+      color: hsl(var(--fu-default-muted));
+      transition: var(--fu-default-transition-standard);
+
+      &:hover {
+        background: hsl(var(--fu-default-primary));
+        color: hsl(var(--fu-default-card));
+      }
+    }
+  }
+
+  /* ── Variations ── */
+  &--style-2 {
+    margin-top: 1.875rem;
+    .fu-team__inner {
+      padding-top: 2.1875rem;
+    }
+    .fu-team__thumbnail {
+      top: 0;
+      position: static;
+      left: inherit;
+      transform: none;
+    }
+    .fu-team__content {
+      padding-top: 0.625rem;
+    }
+  }
+
+  &--style-3 {
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 0;
+
+    .fu-team__inner {
+      padding: 1.875rem;
+    }
+    .fu-team__thumbnail {
+      top: 0;
+      position: static;
+      left: inherit;
+      transform: none;
+      min-width: 100%;
+      min-height: inherit;
+      max-height: inherit;
+      margin: 0 auto;
+      border-radius: var(--fu-default-radius-md);
+      border: 0;
+      img {
+        border-radius: var(--fu-default-radius-md);
+      }
+    }
+    .fu-team__content {
+      padding: 1.25rem 0 0 0;
+    }
+  }
+
+  &:hover {
+    .fu-team__inner {
+      box-shadow: var(--fu-default-shadow-card-hover);
+      transform: translateY(-0.25rem);
+    }
+  }
+}

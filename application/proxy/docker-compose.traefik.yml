@@ -1,0 +1,69 @@
+# ============================================================
+# Proxy – Traefik (default-proxy)
+# ============================================================
+# Static config: ./configs/traefik/dynamic.yml
+# Dynamic routers: ./configs/traefik/dynamic/*.yml
+# ============================================================
+
+x-proxy-common: &proxy-common
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - common
+
+services:
+  default-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: default-proxy:latest
+    <<: *proxy-common
+    container_name: default-proxy
+    security_opt:
+      - no-new-privileges:true
+    env_file:
+      - path: ./.env
+        required: false
+    ports:
+      # Ensure host firewall/security groups allow inbound TCP 80 and 443.
+      - "80:80"
+      - "443:443"
+      # Enable only when HTTP/3 or explicit UDP routing is configured.
+      - "443:443/udp"
+      - "8080:8080"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./configs/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./configs/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./data/certs:/etc/traefik/certs:ro
+      # ACME storage for Let's Encrypt (HTTP-01, no DNS tokens). The file MUST
+      # exist with mode 0600 before the container starts — run
+      # `./scripts/manage-certs.sh bootstrap-acme` to create it. See
+      # application/proxy/LETSENCRYPT.md.
+      - ./configs/acme.json:/etc/traefik/acme/acme.json:rw
+    environment:
+      - TRAEFIK_LOG_LEVEL=INFO
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@structa.cloud}
+    command:
+      - "--configFile=/etc/traefik/dynamic.yml"   # matches the copy in Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true

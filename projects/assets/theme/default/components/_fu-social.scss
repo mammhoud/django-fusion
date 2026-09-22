@@ -1,0 +1,76 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-social — BEM social icon list for the default theme.
+   Extracted and converted from .archives/theme/elements/_social.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-social {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  &__item {
+    a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: var(--fu-default-radius-full);
+      font-size: 0.875rem;
+      transition: var(--fu-default-transition-standard);
+      color: hsl(var(--fu-default-muted));
+
+      &:hover {
+        transform: translateY(-0.125rem);
+      }
+    }
+  }
+
+  /* ── Variations ── */
+  &--filled {
+    .fu-social__item a {
+      background: hsl(var(--fu-default-line));
+      color: hsl(var(--fu-default-ink));
+      &:hover {
+        background: hsl(var(--fu-default-primary));
+        color: hsl(var(--fu-default-card));
+      }
+    }
+  }
+
+  &--transparent {
+    .fu-social__item a {
+      background: transparent;
+      color: hsl(var(--fu-default-muted));
+      &:hover {
+        background: hsl(var(--fu-default-line) / 0.3);
+        color: hsl(var(--fu-default-ink));
+      }
+    }
+  }
+
+  &--bordered {
+    .fu-social__item a {
+      background: transparent;
+      border: 1px solid hsl(var(--fu-default-line));
+      color: hsl(var(--fu-default-muted));
+      &:hover {
+        border-color: hsl(var(--fu-default-primary));
+        color: hsl(var(--fu-default-primary));
+      }
+    }
+  }
+
+  &--brand {
+    .fu-social__item--facebook a { background: #3b5997; color: white; }
+    .fu-social__item--twitter a { background: #1ba1f2; color: white; }
+    .fu-social__item--linkedin a { background: #0077b5; color: white; }
+    .fu-social__item--instagram a { background: #c231a1; color: white; }
+    .fu-social__item--youtube a { background: #ed4141; color: white; }
+  }
+}

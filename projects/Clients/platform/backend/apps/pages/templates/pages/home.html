@@ -1,0 +1,10 @@
+{% extends "pages/base.html" %}
+{% load components %}
+
+{% block title %}{{ localized_content.title|default:page.title|default:"Structa Cloud" }}{% endblock %}
+
+{% block content %}
+  {# Focused entry page: hero, public learning preview, and CTA. #}
+  {# The full editorial document lives on /about/. #}
+  {% comp "pages/partials/page_content.html" /%}
+{% endblock %}

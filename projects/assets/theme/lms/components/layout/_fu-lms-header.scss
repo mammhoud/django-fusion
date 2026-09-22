@@ -1,0 +1,124 @@
+/* ═══════════════════════════════════════════════════════════════════
+   LMS Component: fu-lms-header — BEM header for LMS platform.
+   Uses fu-lms-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-lms-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--fu-lms-z-sticky);
+  background: hsl(var(--fu-lms-card) / 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid hsl(var(--fu-lms-line));
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid hsl(var(--fu-lms-line));
+    font-size: 0.8125rem;
+    color: hsl(var(--fu-lms-muted));
+  }
+
+  &__contact {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    a {
+      color: hsl(var(--fu-lms-muted));
+      transition: var(--fu-lms-transition-standard);
+      &:hover { color: hsl(var(--fu-lms-primary)); }
+    }
+  }
+
+  &__main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+  }
+
+  &__logo {
+    a {
+      display: inline-flex;
+      align-items: center;
+      img { max-height: 2.5rem; }
+    }
+  }
+
+  &__nav {
+    ul {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        a {
+          font-size: 0.9375rem;
+          font-weight: 500;
+          color: hsl(var(--fu-lms-ink));
+          transition: var(--fu-lms-transition-standard);
+          display: inline-flex;
+          align-items: center;
+          gap: 0.25rem;
+          &:hover { color: hsl(var(--fu-lms-primary)); }
+        }
+        &.active a {
+          color: hsl(var(--fu-lms-primary));
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__search {
+    position: relative;
+    input {
+      width: 12rem;
+      padding: 0.5rem 1rem 0.5rem 2.25rem;
+      border: 1px solid hsl(var(--fu-lms-line));
+      border-radius: var(--fu-lms-radius-full);
+      font-size: 0.875rem;
+      transition: var(--fu-lms-transition-standard);
+      background: hsl(var(--fu-lms-paper));
+      &:focus {
+        outline: none;
+        border-color: hsl(var(--fu-lms-primary));
+        width: 16rem;
+      }
+    }
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1rem;
+      height: 1rem;
+      background: hsl(var(--fu-lms-muted));
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E") no-repeat center;
+    }
+  }
+
+  &__mobile-toggle {
+    display: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    @media (max-width: 1024px) { display: flex; flex-direction: column; gap: 4px; }
+    span {
+      width: 1.5rem;
+      height: 2px;
+      background: hsl(var(--fu-lms-ink));
+    }
+  }
+}

@@ -1,0 +1,114 @@
+/* ═══════════════════════════════════════════════════════════════════
+   LMS Design System: Bento Grid — asymmetric grid for dashboards.
+   Extends fu-lms-* tokens with bento-specific layout utilities.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-lms-bento {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: minmax(7rem, auto);
+  gap: 1rem;
+
+  &__item {
+    background: hsl(var(--fu-lms-card));
+    border-radius: var(--fu-lms-radius-xl);
+    box-shadow: var(--fu-lms-shadow-card);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: var(--fu-lms-transition-slow);
+
+    &:hover {
+      box-shadow: var(--fu-lms-shadow-card-hover);
+      transform: translateY(-0.125rem);
+    }
+
+    &--col-3 { grid-column: span 3; }
+    &--col-4 { grid-column: span 4; }
+    &--col-6 { grid-column: span 6; }
+    &--col-8 { grid-column: span 8; }
+    &--col-12 { grid-column: span 12; }
+    &--row-2 { grid-row: span 2; }
+    &--row-3 { grid-row: span 3; }
+
+    @media (max-width: 1024px) {
+      &--col-3, &--col-4 { grid-column: span 6; }
+      &--col-8 { grid-column: span 12; }
+    }
+    @media (max-width: 640px) {
+      grid-column: span 12 !important;
+    }
+  }
+
+  &__hero {
+    grid-column: span 12;
+    grid-row: span 2;
+    background: var(--fu-lms-gradient-primary, hsl(var(--fu-lms-primary)));
+    color: hsl(var(--fu-lms-card));
+    justify-content: center;
+    align-items: flex-start;
+
+    h2 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 0.75rem;
+    }
+    p {
+      font-size: 1.0625rem;
+      opacity: 0.9;
+      max-width: 32rem;
+    }
+  }
+
+  &__stat {
+    .fu-lms-bento__label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: hsl(var(--fu-lms-muted));
+      margin-bottom: 0.5rem;
+    }
+    .fu-lms-bento__value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: hsl(var(--fu-lms-ink));
+      line-height: 1;
+    }
+    .fu-lms-bento__delta {
+      font-size: 0.8125rem;
+      color: hsl(var(--fu-lms-success));
+      margin-top: 0.25rem;
+    }
+  }
+
+  &__chart {
+    grid-column: span 8;
+    grid-row: span 2;
+    min-height: 18rem;
+  }
+
+  &__list {
+    .fu-lms-bento__list-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.625rem 0;
+      border-bottom: 1px solid hsl(var(--fu-lms-line));
+
+      &:last-child { border-bottom: 0; }
+
+      .thumb {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--fu-lms-radius-md);
+        object-fit: cover;
+      }
+      .info {
+        flex: 1;
+        .title { font-weight: 600; font-size: 0.875rem; color: hsl(var(--fu-lms-ink)); }
+        .meta { font-size: 0.75rem; color: hsl(var(--fu-lms-muted)); }
+      }
+    }
+  }
+}

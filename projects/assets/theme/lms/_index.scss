@@ -1,0 +1,13 @@
+/* ═══════════════════════════════════════════════════════════════════
+   LMS Theme Index — imports all tokens and BEM components.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ── */
+@import 'tokens/fu-lms-theme';
+
+/* ── BEM Components ── */
+@import 'components/cards/fu-lms-course-card';
+@import 'components/cards/fu-lms-instructor-card';
+@import 'components/cards/fu-lms-quiz-card';
+@import 'components/layout/fu-lms-header';
+@import 'components/layout/fu-lms-sidebar';

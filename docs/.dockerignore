@@ -1,0 +1,11 @@
+# Build context is docs/ — exclude everything regenerated at build time
+# or installed by the Dockerfile itself. Keeps the context small and the
+# image lean (previously node_modules/.nuxt/.output inflated it to ~2 GB).
+node_modules
+.nuxt
+.output
+dist
+.data
+content
+public
+.DS_Store

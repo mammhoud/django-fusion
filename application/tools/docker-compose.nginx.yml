@@ -1,0 +1,53 @@
+# =============================================================================
+# Tools-proxy Nginx — reverse proxy for self-hosted tools and docs
+# =============================================================================
+# Routes path-based from tools.structa.cloud/<tool>/ to each tool container.
+# Proxies docs.structa.cloud to Docus. Static/media file serving now lives on
+# the separate assets-proxy (docker-compose.assets.yml).
+#
+# Included by: application/tools/docker-compose.yml
+#
+# Deploy with: make deploy-tools (root)
+# =============================================================================
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true
+
+x-tools-proxy-base: &tools-proxy-base
+  build:
+    context: ../..
+    dockerfile: application/tools/nginx/Dockerfile
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - common
+  healthcheck:
+    test: ["CMD-SHELL", "nginx -t >/dev/null 2>&1 && wget -qO- http://127.0.0.1/health/ | grep -qx healthy"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+    start_period: 30s
+
+services:
+  tools-proxy:
+    <<: *tools-proxy-base
+    container_name: tools-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tools-proxy.rule=Host(`docs.structa.cloud`) || Host(`tools.structa.cloud`)"
+      - "traefik.http.services.tools-proxy.loadbalancer.server.port=80"
+    volumes:
+      - ./nginx/htpasswd:/etc/nginx/htpasswd:ro
+    # No static/media volume mounts — assets-proxy owns those.
+    # The nginx config and tools www/ content are baked into the image.
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M

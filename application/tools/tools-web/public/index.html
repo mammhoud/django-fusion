@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Structa Cloud — Application Tools</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="/logo.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+    /* Theme boot: apply saved theme (or system default) before paint. */
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('tools-theme'); } catch (e) {}
+      var dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', dark);
+    })();
+  </script>
+</head>
+<body
+  x-data="toolsApp"
+  x-init="init()"
+  class="body"
+  :class="bodyClass"
+>
+  <div class="shell">
+
+    <!-- ── Sidebar navigation ─────────────────────────────────────── -->
+    <aside class="side">
+      <a class="brand" href="/" aria-label="Structa Cloud tools index">
+        <span class="brand__logo">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Structa Cloud">
+            <rect width="64" height="64" fill="#0a0a0a"/>
+            <path d="M23 17 13 27l10 10" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path d="M41 17 51 27 41 37" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/>
+            <path d="m36 14-8 36" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="square"/>
+          </svg>
+        </span>
+        <span class="brand__name">Structa Cloud<small>application tools</small></span>
+      </a>
+
+      <nav class="nav" aria-label="Tools navigation">
+        <p class="nav__label">Platform</p>
+        <a class="nav__link is-active" href="/">Tools index<code>/</code></a>
+        <a class="nav__link" href="/docs/" @click.prevent="openTool('/docs/', 'Docs · Docus')">Documentation<code>/docs</code></a>
+        <a class="nav__link" href="/notes/" @click.prevent="openTool('/notes/', 'Blinko')">Notes · Blinko<code>/notes</code></a>
+
+        <p class="nav__label">Data</p>
+        <a class="nav__link" href="/adminer/" @click.prevent="openTool('/adminer/', 'Adminer')">Adminer<code>/adminer</code></a>
+
+        <p class="nav__label">Operations</p>
+        <a class="nav__link" href="/grafana/" @click.prevent="openTool('/grafana/', 'Grafana')">Grafana<code>/grafana</code></a>
+        <a class="nav__link" href="https://ops.structa.cloud" @click.prevent="openTool('https://ops.structa.cloud', 'xyOps')">xyOps<code>ops↗</code></a>
+        <a class="nav__link" href="https://space.structa.cloud" @click.prevent="openTool('https://space.structa.cloud', 'Space')">Space<code>space↗</code></a>
+
+        <p class="nav__label">Email</p>
+        <a class="nav__link" href="/mailpit/" @click.prevent="openTool('/mailpit/', 'Mailpit')">Mailpit<code>/mailpit</code></a>
+      </nav>
+
+      <footer class="side__foot">
+        application/tools · tools-web (vanilla)<br>
+        Auth <b x-text="sessionName">…</b> ·
+        <a href="#" @click.prevent="logout()">Sign out</a><br>
+        <button class="theme-toggle" @click="toggleTheme()" :aria-label="dark ? 'Switch to light theme' : 'Switch to dark theme'">
+          <span x-show="!dark">☾ Dark</span>
+          <span x-show="dark" x-cloak>☀ Light</span>
+        </button>
+      </footer>
+    </aside>
+
+    <!-- ── Main content ───────────────────────────────────────────── -->
+    <main class="main">
+      <p class="tag">Structa Cloud · Self-Hosted Tools</p>
+      <h1>Application <em>tools</em></h1>
+      <p class="sub">
+        One authenticated door for the utilities running on this server. Each
+        tool is a Docker service under <code>application/tools/</code>, proxied
+        here by path through <code>tools-proxy</code> (Nginx). Click a tool and
+        enter the shared unlock password to open it.
+      </p>
+
+      <div class="grid" id="toolsGrid">
+        <template x-for="tool in tools" :key="tool.path || tool.host">
+          <a
+            class="card"
+            :href="tool.path || tool.host"
+            @click.prevent="openTool(tool.path || tool.host, tool.name)"
+          >
+            <span class="k" x-text="tool.category"></span>
+            <span class="t" x-text="tool.name"></span>
+            <span class="d" x-text="tool.description"></span>
+            <span class="p"><b x-text="tool.external ? 'host' : 'path'"></b> <span x-text="tool.external ? tool.host : tool.path"></span></span>
+          </a>
+        </template>
+      </div>
+
+      <footer class="main__foot">
+        <span>tools.structa.cloud · <b>tools-web</b> vanilla + <b>tools-proxy</b> nginx</span>
+        <span>media on <b>media.structa.cloud</b></span>
+        <span>docs on <b>docs.structa.cloud</b></span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ── Sign-in modal (shown when not authenticated) ─────────────── -->
+  <div
+    class="modal-backdrop"
+    x-show="showLogin"
+    x-cloak
+    x-transition.opacity
+    @keydown.escape.window="if (showLogin && authenticated) showLogin = false"
+  >
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" @click.outside="if (authenticated) showLogin = false">
+      <div class="modal__head">
+        <h2 id="loginTitle" class="modal__title">Sign in</h2>
+        <p class="modal__sub">Access the self-hosted tools dashboard</p>
+      </div>
+      <form
+        class="auth-form"
+        @submit.prevent="doLogin()"
+        x-data="{ busy: false, error: '' }"
+      >
+        <div>
+          <label for="username" class="field-label">Username</label>
+          <input type="text" id="username" name="username" class="auth-input" x-model="loginUsername" autocomplete="username" required>
+        </div>
+        <div>
+          <label for="password" class="field-label">Password</label>
+          <input type="password" id="password" name="password" class="auth-input" x-model="loginPassword" autocomplete="current-password" required>
+        </div>
+        <p class="auth-error" x-show="loginError" x-cloak x-text="loginError"></p>
+        <button type="submit" class="auth-btn" :disabled="busy" x-text="busy ? 'Signing in…' : 'Sign In'"></button>
+        <p class="modal__hint">Accounts: <code>admin / admin</code> · <code>supervisor / supervisor</code></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── Unlock modal (per-tool password gate) ────────────────────── -->
+  <div
+    class="modal-backdrop"
+    x-show="showUnlock"
+    x-cloak
+    x-transition.opacity
+    @keydown.escape.window="showUnlock = false"
+  >
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="unlockTitle" @click.outside="showUnlock = false">
+      <div class="modal__head">
+        <h2 id="unlockTitle" class="modal__title" x-text="'Open ' + pendingToolName"></h2>
+        <p class="modal__sub">Enter the shared unlock password (from <code>.env</code>) to continue.</p>
+      </div>
+      <form class="auth-form" @submit.prevent="doUnlock()">
+        <div>
+          <label for="unlockPassword" class="field-label">Unlock password</label>
+          <input type="password" id="unlockPassword" name="password" class="auth-input" x-model="unlockPassword" autocomplete="current-password" required>
+        </div>
+        <p class="auth-error" x-show="unlockError" x-cloak x-text="unlockError"></p>
+        <button type="submit" class="auth-btn" :disabled="unlockBusy" x-text="unlockBusy ? 'Opening…' : 'Open tool'"></button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/vendor/htmx.min.js"></script>
+  <script defer src="/vendor/alpine.min.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

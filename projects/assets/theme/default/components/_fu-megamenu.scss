@@ -1,0 +1,114 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component: fu-megamenu — BEM mega menu dropdown for the default theme.
+   Extracted and converted from .archives/theme/header/_mega-menu.scss.
+   Uses fu-default-* tokens.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-megamenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: hsl(var(--fu-default-card));
+  box-shadow: var(--fu-default-shadow-modal);
+  border-radius: var(--fu-default-radius-lg);
+  padding: 1.5rem;
+  z-index: var(--fu-default-z-dropdown);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(0.5rem);
+  transition: var(--fu-default-transition-standard);
+
+  &.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  &__wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+    gap: 1rem;
+  }
+
+  &__item {
+    .thumbnail {
+      margin-bottom: 0.625rem;
+      overflow: hidden;
+      border-radius: var(--fu-default-radius-md);
+
+      a {
+        display: block;
+        img {
+          width: 100%;
+          height: 5rem;
+          object-fit: cover;
+          transition: var(--fu-default-transition-slow);
+        }
+      }
+    }
+
+    .content {
+      .title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        a {
+          color: hsl(var(--fu-default-ink));
+          transition: var(--fu-default-transition-standard);
+          &:hover {
+            color: hsl(var(--fu-default-primary));
+          }
+        }
+      }
+    }
+
+    &.coming-soon {
+      .thumbnail {
+        opacity: 0.5;
+      }
+      .title a {
+        color: hsl(var(--fu-default-muted));
+        cursor: default;
+      }
+    }
+  }
+
+  &__section-title {
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: hsl(var(--fu-default-ink));
+    margin-bottom: 0.75rem;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      margin-bottom: 0.375rem;
+
+      a {
+        color: hsl(var(--fu-default-muted));
+        font-size: 0.8125rem;
+        transition: var(--fu-default-transition-standard);
+        &:hover {
+          color: hsl(var(--fu-default-primary));
+        }
+      }
+    }
+  }
+
+  &--dark {
+    background: hsl(var(--fu-default-ink));
+    color: hsl(var(--fu-default-paper));
+    .fu-megamenu__item .content .title a {
+      color: hsl(var(--fu-default-paper));
+    }
+    .fu-megamenu__section-title {
+      color: hsl(var(--fu-default-paper));
+    }
+  }
+}

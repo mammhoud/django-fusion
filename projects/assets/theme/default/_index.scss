@@ -1,0 +1,140 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Default Theme Index — imports all tokens and BEM components.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Tokens ── */
+@import 'tokens/fu-default-theme';
+
+/* ── Archived SCSS (original reference styles) ── */
+@import 'tokens/variables/variables';
+@import 'tokens/variables/mixins';
+@import 'tokens/base/reset';
+@import 'tokens/base/typography';
+@import 'tokens/base/spacing';
+@import 'tokens/base/animations';
+@import 'tokens/base/extend';
+@import 'tokens/base/forms';
+@import 'tokens/base/shortcode';
+@import 'tokens/base/text-animation';
+@import 'tokens/base/edu-common';
+
+/* ── BEM Components ── */
+@import 'components/fu-card';
+@import 'components/fu-btn';
+@import 'components/fu-badge';
+@import 'components/fu-breadcrumb';
+@import 'components/fu-accordion';
+@import 'components/fu-team';
+@import 'components/fu-testimonial';
+@import 'components/fu-counter';
+@import 'components/fu-pricing';
+@import 'components/fu-header';
+@import 'components/fu-footer';
+@import 'components/fu-megamenu';
+@import 'components/fu-pagination';
+@import 'components/fu-social';
+@import 'components/fu-section-title';
+@import 'components/fu-progressbar';
+@import 'components/fu-modal';
+
+/* ── Archived elements SCSS (all converted to SCSS partials) ── */
+@import 'tokens/elements/card';
+@import 'tokens/elements/button';
+@import 'tokens/elements/badge';
+@import 'tokens/elements/breadcrumb';
+@import 'tokens/elements/accordion';
+@import 'tokens/elements/team';
+@import 'tokens/elements/testimonial';
+@import 'tokens/elements/counterup';
+@import 'tokens/elements/pricingtable';
+@import 'tokens/elements/section-title';
+@import 'tokens/elements/progressbar';
+@import 'tokens/elements/pagination';
+@import 'tokens/elements/social';
+@import 'tokens/elements/modal';
+@import 'tokens/elements/about';
+@import 'tokens/elements/brands';
+@import 'tokens/elements/brand';
+@import 'tokens/elements/breadcrumb';
+@import 'tokens/elements/button';
+@import 'tokens/elements/callto-action';
+@import 'tokens/elements/card-example';
+@import 'tokens/elements/category';
+@import 'tokens/elements/category-box';
+@import 'tokens/elements/check-blog-section';
+@import 'tokens/elements/contact';
+@import 'tokens/elements/course-filter';
+@import 'tokens/elements/course-meta';
+@import 'tokens/elements/counterdown-area';
+@import 'tokens/elements/feature';
+@import 'tokens/elements/image-gallery';
+@import 'tokens/elements/instagram';
+@import 'tokens/elements/list';
+@import 'tokens/elements/newsletterform';
+@import 'tokens/elements/portfolio';
+@import 'tokens/elements/search';
+@import 'tokens/elements/service';
+@import 'tokens/elements/slider';
+@import 'tokens/elements/split';
+@import 'tokens/elements/swiper';
+@import 'tokens/elements/teacher-section';
+@import 'tokens/elements/video';
+@import 'tokens/elements/404';
+@import 'tokens/elements/advance-tab';
+@import 'tokens/elements/backtotop';
+@import 'tokens/elements/breadcrumb';
+@import 'tokens/elements/cart';
+@import 'tokens/elements/checkout';
+@import 'tokens/elements/connect-area';
+@import 'tokens/elements/countdown';
+@import 'tokens/elements/lesson';
+@import 'tokens/elements/testimonials';
+
+/* ── Archived header/footer SCSS ── */
+@import 'tokens/header/header';
+@import 'tokens/header/header-common';
+@import 'tokens/header/headertopbar';
+@import 'tokens/header/headertop';
+@import 'tokens/header/mega-menu';
+@import 'tokens/header/mobilemenu';
+@import 'tokens/header/nav';
+@import 'tokens/header/offcanvas';
+@import 'tokens/header/offcanbas';
+@import 'tokens/header/offertopbar';
+@import 'tokens/header/one-page-navigation';
+@import 'tokens/header/search';
+@import 'tokens/header/social-share';
+@import 'tokens/footer/footer';
+@import 'tokens/footer/back-to-top';
+@import 'tokens/footer/copyright';
+@import 'tokens/footer/dark';
+
+/* ── Archived template SCSS ── */
+@import 'tokens/template/about-us';
+@import 'tokens/template/banner';
+@import 'tokens/template/blog-details';
+@import 'tokens/template/connect-area';
+@import 'tokens/template/contact';
+@import 'tokens/template/contact-page';
+@import 'tokens/template/course-action-bottom';
+@import 'tokens/template/course-details';
+@import 'tokens/template/course-sidebar';
+@import 'tokens/template/course-slidebar';
+@import 'tokens/template/error-page';
+@import 'tokens/template/events-details';
+@import 'tokens/template/events-page';
+@import 'tokens/template/grid-course';
+@import 'tokens/template/instructor-dashboard';
+@import 'tokens/template/lesson';
+@import 'tokens/template/list-course';
+@import 'tokens/template/my-account';
+@import 'tokens/template/preview';
+@import 'tokens/template/profile-page';
+@import 'tokens/template/product-details';
+@import 'tokens/template/shop';
+@import 'tokens/template/shop-details';
+@import 'tokens/template/shop-page';
+@import 'tokens/template/sidebar';
+@import 'tokens/template/single-zoom-section';
+@import 'tokens/template/teacher-details';
+@import 'tokens/template/about-us';

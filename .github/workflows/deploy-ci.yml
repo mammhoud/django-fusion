@@ -1,0 +1,56 @@
+# deploy-ci (preflight only) — thin wrapper around the
+# `.github/actions/deploy-preflight` Composite Action, used as a CI
+# lint step BEFORE any `make deploy` job so misconfig failures
+# surface as a failed lint rather than a mid-deploy abort.
+#
+# All real work (docker daemon probe, `make deploy-ci`) lives in the
+# Composite Action so other repos in this workspace (and external
+# consumers) can drop in a single `uses: ./deploy-preflight` line
+# without duplicating the inline 3-step workflow.
+name: deploy-ci (preflight + docs validation)
+
+on:
+  pull_request:
+    paths:
+      - 'Makefile'
+      - 'Makefile.*'
+      - '.github/workflows/deploy-ci.yml'
+      - '.github/actions/deploy-preflight/**'
+      - '**/docker-compose*.yml'
+      - '**/docker-compose*.yaml'
+      - 'libs/**/*.md'
+      - 'application/scripts/staging/check_markdown_links.py'
+  push:
+    branches: ['**']
+    paths:
+      - 'Makefile'
+      - 'Makefile.*'
+      - '.github/workflows/deploy-ci.yml'
+      - '.github/actions/deploy-preflight/**'
+      - '**/docker-compose*.yml'
+      - '**/docker-compose*.yaml'
+      - 'libs/**/*.md'
+      - 'application/scripts/staging/check_markdown_links.py'
+  workflow_dispatch:
+
+jobs:
+  preflight:
+    name: Preflight gates (no deploy)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/deploy-preflight
+  markdown-links:
+    name: Validate Markdown cross-links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check Markdown links
+        run: python3 application/scripts/staging/check_markdown_links.py
+        env:
+          CI: 'true'

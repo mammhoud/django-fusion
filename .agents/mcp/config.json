@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "deployment": {
+      "command": "python",
+      "args": [
+        "mcp_server.py"
+      ],
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "core.settings",
+        "PYTHONPATH": "libs/ceptor-ai/src"
+      }
+    },
+    "ceptor-ai": {
+      "command": "uvicorn",
+      "args": [
+        "ceptor_ai.mcp_server:app",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8002"
+      ],
+      "env": {
+        "PYTHONPATH": "libs/ceptor-ai/src"
+      }
+    }
+  }
+}

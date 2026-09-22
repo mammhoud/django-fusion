@@ -1,0 +1,94 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Modern SaaS Theme Tokens — fu-saas-*
+   ─────────────────────────────────────────────────────────────────────
+   Indigo-violet palette inspired by Stripe / Linear. Soft gradients,
+   generous radius, light-elevated surfaces. Optimised for SaaS
+   dashboards, marketing pages, and product UIs.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink ── */
+  --fu-saas-paper:        240 30% 99%;
+  --fu-saas-ink:          240 40% 12%;
+  --fu-saas-muted:        240 15% 45%;
+  --fu-saas-line:         240 20% 91%;
+  --fu-saas-card:         0 0% 100%;
+  --fu-saas-link:         248 90% 60%;
+  --fu-saas-link-dark:    248 80% 45%;
+  --fu-saas-mark:         48 96% 60%;
+  --fu-saas-live:         144 70% 40%;
+
+  /* ── Brand accent palette ── */
+  --fu-saas-primary:       248 90% 60%;
+  --fu-saas-primary-dark:  248 80% 45%;
+  --fu-saas-primary-light: 248 100% 96%;
+  --fu-saas-secondary:     199 89% 48%;
+  --fu-saas-secondary-light: 199 100% 95%;
+  --fu-saas-accent:        48 96% 56%;
+  --fu-saas-success:       144 70% 40%;
+  --fu-saas-warning:       38 92% 50%;
+  --fu-saas-error:         0 72% 51%;
+  --fu-saas-info:          199 89% 48%;
+
+  /* ── Gradient accents ── */
+  --fu-saas-gradient-primary: linear-gradient(135deg, hsl(248 90% 60%), hsl(280 80% 60%));
+  --fu-saas-gradient-surface: linear-gradient(180deg, hsl(240 30% 99%), hsl(248 100% 97%));
+
+  /* ── Spacing (generous) ── */
+  --fu-saas-space-xs:  0.25rem;
+  --fu-saas-space-sm:  0.5rem;
+  --fu-saas-space-md:  1.125rem;
+  --fu-saas-space-lg:  1.75rem;
+  --fu-saas-space-xl:  2.5rem;
+  --fu-saas-space-2xl: 3.5rem;
+  --fu-saas-space-3xl: 5rem;
+
+  --fu-saas-section-lg: 5.5rem;
+  --fu-saas-section-xl: 7rem;
+
+  /* ── Radius (generous, soft) ── */
+  --fu-saas-radius-sm:   0.375rem;
+  --fu-saas-radius-md:   0.625rem;
+  --fu-saas-radius-lg:   0.875rem;
+  --fu-saas-radius-xl:   1.25rem;
+  --fu-saas-radius-full: 9999px;
+
+  /* ── Shadows (soft, elevated) ── */
+  --fu-saas-shadow-card:        0 1px 3px 0 hsl(240 40% 12% / 0.05), 0 1px 2px 0 hsl(240 40% 12% / 0.03);
+  --fu-saas-shadow-card-hover:  0 10px 30px -5px hsl(240 40% 12% / 0.10), 0 4px 12px -2px hsl(240 40% 12% / 0.06);
+  --fu-saas-shadow-modal:      0 24px 64px -12px hsl(240 40% 12% / 0.20);
+  --fu-saas-shadow-toast:      0 12px 32px -8px hsl(240 40% 12% / 0.12);
+
+  /* ── Transitions (smooth, premium) ── */
+  --fu-saas-transition-fast:     150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --fu-saas-transition-standard: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --fu-saas-transition-slow:     400ms cubic-bezier(0.4, 0, 0.2, 1);
+  --fu-saas-transition-reveal:   600ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Z-index scale ── */
+  --fu-saas-z-dropdown:       100;
+  --fu-saas-z-sticky:         200;
+  --fu-saas-z-modal-backdrop: 300;
+  --fu-saas-z-modal:          400;
+  --fu-saas-z-toast:          500;
+  --fu-saas-z-tooltip:        600;
+
+  /* ── Typography ── */
+  --fu-saas-font-sans:    'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --fu-saas-font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --fu-saas-font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ── Dark mode override ── */
+.dark[data-theme="saas"],
+[data-theme="saas"].dark {
+  --fu-saas-paper:      240 20% 8%;
+  --fu-saas-ink:        240 25% 95%;
+  --fu-saas-muted:      240 15% 65%;
+  --fu-saas-line:       240 12% 18%;
+  --fu-saas-card:       240 15% 11%;
+  --fu-saas-link:       248 90% 75%;
+  --fu-saas-link-dark:  248 80% 60%;
+  --fu-saas-mark:       48 96% 65%;
+  --fu-saas-live:       145 65% 52%;
+}

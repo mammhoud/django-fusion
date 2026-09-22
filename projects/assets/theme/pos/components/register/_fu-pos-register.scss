@@ -1,0 +1,182 @@
+/* ═══════════════════════════════════════════════════════════════════
+   POS Component: fu-pos-register — BEM register/checkout panel for POS.
+   Uses fu-pos-* tokens. Split layout: cart list + totals keypad.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-pos-register {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: hsl(var(--fu-pos-card));
+  border-radius: var(--fu-pos-radius-lg);
+  box-shadow: var(--fu-pos-shadow-card);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid hsl(var(--fu-pos-line));
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: hsl(var(--fu-pos-ink));
+    }
+  }
+
+  &__cart {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem;
+
+    &-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem;
+      border-radius: var(--fu-pos-radius-md);
+      transition: var(--fu-pos-transition-fast);
+
+      &:hover {
+        background: hsl(var(--fu-pos-primary-light));
+      }
+
+      .thumb {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--fu-pos-radius-md);
+        background: hsl(var(--fu-pos-till-amber));
+        overflow: hidden;
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+
+      .info {
+        flex: 1;
+        min-width: 0;
+        .name {
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: hsl(var(--fu-pos-ink));
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .price {
+          font-size: 0.75rem;
+          color: hsl(var(--fu-pos-muted));
+        }
+      }
+
+      .qty {
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+
+        button {
+          width: 1.75rem;
+          height: 1.75rem;
+          border-radius: var(--fu-pos-radius-sm);
+          border: 1px solid hsl(var(--fu-pos-line));
+          background: hsl(var(--fu-pos-card));
+          cursor: pointer;
+          font-weight: 700;
+          color: hsl(var(--fu-pos-ink));
+          transition: var(--fu-pos-transition-fast);
+          min-height: var(--fu-pos-touch-min);
+          min-width: var(--fu-pos-touch-min);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+            border-color: hsl(var(--fu-pos-primary));
+            color: hsl(var(--fu-pos-primary));
+          }
+        }
+
+        .count {
+          font-weight: 700;
+          font-size: 0.875rem;
+          min-width: 1.5rem;
+          text-align: center;
+          color: hsl(var(--fu-pos-ink));
+        }
+      }
+
+      .line-total {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: hsl(var(--fu-pos-ink));
+        white-space: nowrap;
+      }
+    }
+  }
+
+  &__totals {
+    padding: 1rem;
+    border-top: 1px solid hsl(var(--fu-pos-line));
+    background: hsl(var(--fu-pos-paper));
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.25rem 0;
+      font-size: 0.8125rem;
+      color: hsl(var(--fu-pos-muted));
+
+      &.grand {
+        font-size: 1.125rem;
+        font-weight: 800;
+        color: hsl(var(--fu-pos-ink));
+        padding-top: 0.5rem;
+        margin-top: 0.25rem;
+        border-top: 1px solid hsl(var(--fu-pos-line));
+      }
+    }
+  }
+
+  &__actions {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-top: 1px solid hsl(var(--fu-pos-line));
+  }
+
+  &__checkout {
+    padding: 0 1rem 1rem;
+    .checkout-btn {
+      width: 100%;
+      height: var(--fu-pos-button-height-lg);
+      border: 0;
+      border-radius: var(--fu-pos-radius-md);
+      background: hsl(var(--fu-pos-primary));
+      color: hsl(var(--fu-pos-card));
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--fu-pos-transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+
+      &:hover {
+        background: hsl(var(--fu-pos-primary-dark));
+      }
+      &:active {
+        transform: scale(0.98);
+      }
+      &:disabled {
+        background: hsl(var(--fu-pos-muted));
+        cursor: not-allowed;
+      }
+    }
+  }
+}

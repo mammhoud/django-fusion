@@ -1,0 +1,46 @@
+# =============================================================================
+# xyOps — self-hosted operations automation platform
+# =============================================================================
+# Job scheduling, visual workflows, server monitoring, alerting, tickets, and
+# incident management. Served at its own subdomain ops.structa.cloud
+# (routed by Traefik directly to xyops:5522 — no nginx path prefix needed).
+#
+# Default credentials: admin / admin — change immediately after first login.
+# xyOps has NO sub-path support, so it gets a dedicated subdomain.
+# =============================================================================
+
+http:
+  routers:
+    xyops-http:
+      rule: 'Host(`ops.localhost`) || Host(`ops.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: xyops-service
+      priority: 150
+
+    xyops-https:
+      rule: 'Host(`ops.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: xyops-service
+      tls:
+        certResolver: letsencrypt-http
+      priority: 150
+
+    xyops-localhost-https:
+      rule: 'Host(`ops.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress]
+      service: xyops-service
+      priority: 150
+
+  services:
+    xyops-service:
+      loadBalancer:
+        servers:
+          - url: 'http://xyops:5522'
+        passHostHeader: true
+        healthCheck:
+          path: /api/app/ping
+          interval: 30s
+          timeout: 5s

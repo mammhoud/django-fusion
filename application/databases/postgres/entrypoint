@@ -1,0 +1,134 @@
+#!/bin/bash
+set -e
+
+# ------------------------------------------------------------
+# 1. Determine if we need to run init scripts
+# ------------------------------------------------------------
+INIT_MARKER="/var/lib/postgresql/data/.init_done"
+RUN_INIT="false"
+
+if [ "${FORCE_REINIT:-false}" = "true" ]; then
+    echo "FORCE_REINIT=true – removing marker and re‑running init."
+    rm -f "$INIT_MARKER"
+    RUN_INIT="true"
+elif [ ! -f "$INIT_MARKER" ]; then
+    RUN_INIT="true"
+fi
+
+# ------------------------------------------------------------
+# 2. If init is required, start PostgreSQL in background,
+#    run the scripts, then stop it.
+# ------------------------------------------------------------
+if [ "$RUN_INIT" = "true" ]; then
+    echo "Running initialization scripts in /docker-entrypoint-initdb.d/ ..."
+
+    # Start PostgreSQL in background using the official entrypoint
+    /usr/local/bin/docker-entrypoint.sh postgres &
+    
+    # Wait for PostgreSQL to be ready
+    echo "Waiting for PostgreSQL to start..."
+    until pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h localhost -p 5432; do
+        sleep 1
+    done
+    echo "PostgreSQL is ready."
+
+    # Execute all scripts in the init directory
+    for f in /docker-entrypoint-initdb.d/*; do
+        case "$f" in
+            *.sh)
+                echo "Executing $f"
+                . "$f"
+                ;;
+            *.sql)
+                echo "Executing $f"
+                psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -h localhost -f "$f"
+                ;;
+            *)
+                echo "Ignoring $f"
+                ;;
+        esac
+    done
+
+    # Stop the background PostgreSQL server gracefully using the postgres user
+    echo "Stopping background PostgreSQL..."
+    gosu postgres pg_ctl -D "$PGDATA" stop -m fast
+    wait
+
+    # Mark initialization as done
+    touch "$INIT_MARKER"
+    echo "Initialization complete."
+else
+    echo "Init already done; skipping."
+fi
+
+# ------------------------------------------------------------
+# 3. Always-on idempotent migration for every INITDB_MULTIPLE_DATABASES
+#    entry. Runs on EVERY container start (not gated by .init_done) so that
+#    an existing postgres_data volume picks up new entries (e.g. affine)
+#    without requiring a destructive FORCE_REINIT.
+# ------------------------------------------------------------
+ensure_platform_databases() {
+    echo "Ensuring databases/roles from INITDB_MULTIPLE_DATABASES (idempotent)…"
+    /usr/local/bin/docker-entrypoint.sh postgres >/dev/null 2>&1 &
+    local bg_pid=$!
+    trap 'kill -TERM "$bg_pid" 2>/dev/null || true; wait "$bg_pid" 2>/dev/null || true' RETURN
+
+    # Wait until the cluster is ready
+    for _ in $(seq 1 30); do
+        if pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h localhost -p 5432 >/dev/null 2>&1; then
+            break
+        fi
+        sleep 1
+    done
+
+    if [ -z "${INITDB_MULTIPLE_DATABASES:-}" ]; then
+        echo "INITDB_MULTIPLE_DATABASES is empty – nothing to ensure."
+    else
+        IFS=',' read -ra DB_SPECS <<< "$INITDB_MULTIPLE_DATABASES"
+        for spec in "${DB_SPECS[@]}"; do
+            spec=$(echo "$spec" | xargs)
+            IFS=':' read -r db_name db_user db_password <<< "$spec"
+            [ -z "$db_name" ] && continue
+            db_user="${db_user:-${db_name}_user}"
+            db_password="${db_password:-${db_name}_pass}"
+            echo "Ensuring database '$db_name' / role '$db_user'…"
+            # Create the role + DB only if missing; errors are non-fatal because
+            # the init script will already have done this on first boot.
+            psql -v ON_ERROR_STOP=0 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -h localhost <<EOSQL || true
+DO \$\$
+BEGIN
+    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '$db_user') THEN
+        CREATE USER $db_user WITH ENCRYPTED PASSWORD '$db_password';
+    END IF;
+END \$\$;
+SELECT 'CREATE DATABASE $db_name'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$db_name')\gexec
+GRANT ALL PRIVILEGES ON DATABASE $db_name TO $db_user;
+EOSQL
+            # Schema-level wiring inside the database (only if it now exists).
+            psql -v ON_ERROR_STOP=0 --username "$POSTGRES_USER" --dbname "$db_name" -h localhost <<EOSQL || true
+GRANT ALL ON SCHEMA public TO $db_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO $db_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO $db_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO $db_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $db_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $db_user;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO $db_user;
+EOSQL
+        done
+    fi
+
+    # Stop the background PostgreSQL cleanly so the foreground exec below
+    # handles the actual server startup.
+    gosu postgres pg_ctl -D "$PGDATA" stop -m fast >/dev/null 2>&1 || true
+    wait "$bg_pid" 2>/dev/null || true
+    trap - RETURN
+    echo "Platform databases ready."
+}
+
+ensure_platform_databases
+
+# ------------------------------------------------------------
+# 4. Execute the official PostgreSQL entrypoint (foreground)
+# ------------------------------------------------------------
+exec /usr/local/bin/docker-entrypoint.sh postgres

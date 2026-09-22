@@ -1,0 +1,466 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Hero from '@/components/blocks/Hero.astro';
+import FAQ from '@/components/blocks/FAQ.astro';
+import CTA from '@/components/blocks/CTA.astro';
+import Gallery from '@/components/blocks/Gallery.astro';
+import Breadcrumb from '@/components/ui/Breadcrumb.astro';
+import ContentError from '@/components/ui/ContentError.astro';
+import HtmxBootstrap from '@/components/HtmxBootstrap.astro';
+import Toast from '@/components/ui/Toast.astro';
+import ProductLogo from '@/components/ui/ProductLogo.astro';
+import StackLinks from '@/components/ui/StackLinks.astro';
+import { cachedSiteSettings, cachedNavigation, cachedPageData, fetchPageList } from '@/lib/api';
+import { SEEDED_FALLBACK_SLUGS } from '@/lib/seeded-routes';
+import type { SiteSettings, NavigationData, PageData } from '@/lib/api';
+
+export async function getStaticPaths() {
+  try {
+    const list = await fetchPageList();
+    const slugs = list.pages
+      .filter((p) => p.type === 'ProductPage')
+      .map((p) => p.slug);
+    if (slugs.length) return slugs.map((slug) => ({ params: { slug } }));
+  } catch {
+    // The backend may be starting after the Astro build.
+  }
+  return SEEDED_FALLBACK_SLUGS.products.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+
+let siteSettings: SiteSettings | undefined;
+let navData: NavigationData | undefined;
+let pageData: PageData | undefined;
+try {
+  [siteSettings, navData, pageData] = await Promise.all([
+    cachedSiteSettings(), cachedNavigation(), cachedPageData(slug!),
+  ]);
+} catch {
+  // Keep the known route renderable during a backend-first restart. The live
+  // Wagtail payload remains authoritative whenever it is reachable.
+  pageData = {
+    id: 0,
+    slug: slug!,
+    title: slug!.replace(/[-_]+/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase()),
+    type: 'ProductPage',
+    show_in_nav: false,
+    seo_title: slug!,
+    search_description: 'Product details are temporarily unavailable.',
+    hero: {
+      badge: 'product · preview',
+      title: 'Product preview',
+      subtitle: 'The content service is restarting. Please refresh shortly for the full product dossier.',
+    },
+  };
+}
+
+const pageHero = pageData?.hero;
+const pageCta = pageData?.cta;
+const pageTech = (pageData?.tech as any[] | undefined);
+const pageEditions = (pageData?.editions as any[] | undefined);
+const pageComparison = (pageData?.comparison as any[] | undefined);
+const pageApplications = (pageData?.applications as any[] | undefined)?.[0] as any | undefined;
+const pagePreviewGallery = (pageData?.preview_gallery as any[] | undefined);
+const pageFeatures = (pageData?.features as any[] | undefined);
+const pageFaq = (pageData?.faq as any[] | undefined);
+const pageGallery = (pageData?.gallery as any[] | undefined);
+const pageProfile = (pageData?.profile as any[] | undefined)?.[0] as any | undefined;
+const profileIcp = (pageProfile?.icps || []) as { title: string; who: string; behaviour: string }[];
+const profileReports = (pageProfile?.reports || []) as string[];
+
+const techItems = pageTech?.map((t: any) => String(t || '')).filter(Boolean);
+const editions = pageEditions?.map((e: any) => ({
+  name: String(e.name || ''),
+  tagline: String(e.tagline || ''),
+  price: String(e.price || ''),
+  period: String(e.period || ''),
+  features: (e.features || []) as string[],
+  offerLabel: String(e.offer_label || ''),
+  offerOldPrice: String(e.offer_old_price || ''),
+  cta: { label: String(e.cta_label || ''), href: String(e.cta_href || '') },
+  previewHref: String(e.preview_href || ''),
+  tier: String(e.tier || 'default'),
+}));
+
+// Edition card treatment per tier — mirrors the Django edition.html block.
+function editionCardClass(tier: string): string {
+  if (tier === 'featured') return 'edition__card--featured md:-translate-y-1';
+  if (tier === 'managed') return 'edition__card--managed overflow-hidden';
+  if (tier === 'outline') return 'edition__card--outline';
+  return '';
+}
+const firstEditionPreviewHref = editions?.find((edition) => edition.previewHref)?.previewHref;
+const comparison = pageComparison?.[0] && ({
+  eyebrow: String(pageComparison[0].eyebrow || ''),
+  title: String(pageComparison[0].title || ''),
+  description: String(pageComparison[0].description || ''),
+  columns: (pageComparison[0].columns || []) as string[],
+  rows: (pageComparison[0].rows || []) as { feature: string; cells: string[] }[],
+});
+const previewGallery = pagePreviewGallery?.map((media: any) => ({
+  url: String(media.url || ''),
+  kind: String(media.kind || 'image') as 'image' | 'gif' | 'video',
+  poster: String(media.poster || ''),
+  label: String(media.label || ''),
+  alt: String(media.alt || 'Product preview'),
+})).filter((media) => media.url);
+const capabilities = pageFeatures?.map((f: any) => ({
+  icon: String(f.icon || ''),
+  title: String(f.title || ''),
+  description: String(f.description || ''),
+}));
+const faqItems = pageFaq?.map((f: any) => ({
+  question: String(f.question || ''),
+  answer: String(f.answer || ''),
+}));
+---
+
+
+<Layout
+  title={pageData?.title}
+  description={pageData?.search_description}
+  navItems={navData?.nav_items}
+  siteSettings={siteSettings}
+  pageData={pageData}
+  pageSlug={slug}
+>
+  <Breadcrumb
+    items={[{ label: 'Home', href: '/' }, { label: 'Products', href: '/products/' }]}
+    current={pageData?.title || slug}
+  />
+
+  <Hero
+    eyebrow={pageHero?.badge}
+    heading={pageHero?.title || pageData?.title}
+    accent=''
+    intro={pageHero?.subtitle}
+    primaryCta={pageHero?.primary_cta ? { label: pageHero.primary_cta.label, href: pageHero.primary_cta.href } : undefined}
+    secondaryCta={pageHero?.secondary_cta ? { label: pageHero.secondary_cta.label, href: pageHero.secondary_cta.href } : undefined}
+    status='200 OK · text/html · the product, in one response'
+  />
+
+  {/* The stack entry strip — links to the stack doc and services */}
+  <StackLinks />
+
+  {pageData?.logo_style && (
+    <section class='container-fusion' style='padding-top:1.75rem'>
+      <div class='product-lockup flex flex-wrap items-center gap-4'>
+        <ProductLogo style={pageData.logo_style} />
+        <div>
+          <div>
+            <h2 class='font-display text-2xl font-bold tracking-tight text-fu-ink' style='margin:0'>{pageData.title}</h2>
+            {pageData.version && <p class='mt-0.5 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted' style='margin:0'>{pageData.version}</p>}
+            {pageData.tagline && <p class='mt-0.5 text-sm text-fu-muted' style='margin:0'>{pageData.tagline}</p>}
+          </div>
+        </div>
+        <button
+          type='button'
+          data-open-brand={slug}
+          aria-label={`${pageData.title} brand kit`}
+          title='Brand kit — the story behind the mark'
+          class='ml-auto inline-flex items-center gap-2 rounded-full border border-fu-line bg-fu-card px-3.5 py-2 font-mono text-[0.62rem] uppercase tracking-[0.14em] text-fu-muted transition-colors hover:border-fu-link/50 hover:text-fu-link'
+        >
+          <svg class='h-3.5 w-3.5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2' aria-hidden='true'><circle cx='12' cy='12' r='9'/><path stroke-linecap='round' d='M12 11v5M12 8h.01'/></svg>
+          brand
+        </button>
+      </div>
+    </section>
+  )}
+
+  {pageData?.status === 'development' && (
+    <section class='container-fusion pt-6'>
+      <span class='badge-dev' role='note'>under development</span>
+      <p class='mt-3 max-w-2xl text-sm text-fu-muted'>
+        This product is an early preview. Its APIs, editions and pricing may
+        change before the 1.0 release. Treat what you see as a roadmap, not a contract.
+      </p>
+    </section>
+  )}
+
+  {techItems?.length ? (
+    <section class='doc-sheet bg-fu-paper py-16 md:py-20'>
+      <div class='container-fusion'>
+        <div class='mb-8 max-w-2xl'>
+          <h2 class='font-display text-2xl font-bold tracking-tight text-fu-ink md:text-3xl'>Built on</h2>
+        </div>
+        <div class='flex flex-wrap items-center justify-center gap-2.5'>
+          {techItems.map((t) => (
+            <span class='inline-flex items-center rounded-md border border-fu-line bg-fu-card px-3 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-muted'>{t}</span>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {editions?.length ? (
+    <section id='editions' class='doc-sheet bg-fu-surface py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-14 max-w-2xl'>
+          <p class='tag-marker mb-4'>editions &amp; pricing</p>
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>Editions</h2>
+        </div>
+        <div class:list={['grid grid-cols-1 items-stretch gap-6 md:grid-cols-2', editions.length === 4 ? 'xl:grid-cols-4' : editions.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3']}>
+          {editions.map((ed) => (
+            <div class:list={['card edition__card relative flex flex-col p-6 sm:p-8', editionCardClass(ed.tier)]}>
+              {ed.tier === 'featured' && <span class='badge-primary absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap'>most shipped</span>}
+              {ed.tier === 'managed' && <span class='managed-ribbon' aria-hidden='true'>managed</span>}
+              <p class='tag-marker mb-1'>{ed.name}</p>
+              {ed.tagline && <p class='mb-6 text-sm text-fu-muted'>{ed.tagline}</p>}
+              <div class='mb-7 flex flex-wrap items-baseline gap-2'>
+                {ed.offerOldPrice && <span class='offer-old-price'>{ed.offerOldPrice}</span>}
+                <span class='font-mono text-[2rem] font-semibold tracking-tight text-fu-ink'>{ed.price}</span>
+                {ed.period && <span class='font-mono text-xs uppercase tracking-wider text-fu-muted'>{ed.period}</span>}
+                {ed.offerLabel && <span class='badge-offer self-center'>{ed.offerLabel}</span>}
+              </div>
+              <ul class='mb-8 space-y-2.5 border-t border-fu-line pt-6 text-sm'>
+                {ed.features.map((f) => (
+                  <li class='flex items-start gap-2.5'>
+                    <svg class='mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-fu-link' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'>
+                      <path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/>
+                    </svg>
+                    <span class='text-fu-ink/80'>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <div class='mt-auto flex flex-wrap gap-2'>
+                <a href={ed.cta.href} class:list={['w-full', ed.tier === 'featured' ? 'btn-primary' : 'btn-secondary']}>{ed.cta.label}</a>
+                {ed.previewHref && <a href={ed.previewHref} class='w-full text-center font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>View edition preview →</a>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {pageApplications?.applications?.length ? (
+    <section id='applications' class='doc-sheet bg-fu-surface py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-12 max-w-2xl'>
+          {pageApplications.eyebrow && <p class='tag-marker mb-4'>{pageApplications.eyebrow}</p>}
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{pageApplications.title}</h2>
+          {pageApplications.description && <p class='text-fu-muted'>{pageApplications.description}</p>}
+        </div>
+        <div class='grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+          {pageApplications.applications.map((app: any, i: number) => (
+            <a href={app.href || app.url || '#'} class='card application__card reveal p-6' style={`--reveal-i: ${i}`} x-data x-intersect="$el.classList.add('reveal-visible')">
+              <div class='flex items-center justify-between gap-3'>
+                <span class='tag-marker' style='margin:0'>{app.name}</span>
+                {app.edition && <span class='edition-chip'>{app.edition}</span>}
+              </div>
+              {app.description && <p class='mt-3 text-sm leading-relaxed text-fu-muted'>{app.description}</p>}
+              <span class='mt-auto font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link'>Open preview →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {comparison?.rows?.length ? (
+    <section id='comparison' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-12 max-w-2xl'>
+          {comparison.eyebrow && <p class='tag-marker mb-4'>{comparison.eyebrow}</p>}
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{comparison.title}</h2>
+          {comparison.description && <p class='text-fu-muted'>{comparison.description}</p>}
+        </div>
+        <div class='overflow-x-auto rounded-xl border border-fu-line bg-fu-card'>
+          <table class='w-full min-w-[640px] border-collapse text-left text-sm'>
+            <thead>
+              <tr class='border-b border-fu-line bg-fu-paper/60'>
+                <th scope='col' class='px-4 py-3.5 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-fu-muted'>Feature</th>
+                {comparison.columns.map((col: string) => (
+                  <th scope='col' class='px-4 py-3.5 text-center font-display text-[0.95rem] font-semibold text-fu-ink'>{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {comparison.rows.map((row: { feature: string; cells: string[] }) => (
+                <tr class='border-b border-fu-line/50 last:border-b-0'>
+                  <th scope='row' class='px-4 py-3 align-top font-medium text-fu-ink'>{row.feature}</th>
+                  {row.cells.map((cell) => (
+                    <td class='px-4 py-3 text-center'>
+                      {cell === 'Yes' ? (
+                        <span class='inline-flex items-center justify-center text-fu-live' title='Included' aria-label='Included'>
+                          <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/></svg>
+                        </span>
+                      ) : cell === 'No' ? (
+                        <span class='inline-flex items-center justify-center text-fu-muted/70' title='Not included' aria-label='Not included'>
+                          <svg class='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'><path stroke-linecap='round' stroke-linejoin='round' d='M6 6l12 12M18 6L6 18'/></svg>
+                        </span>
+                      ) : (
+                        <span class='text-fu-text/80'>{cell}</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  ) : null}
+
+  {previewGallery?.length ? (
+    <section id='previews' class='doc-sheet bg-fu-paper py-20 md:py-24' aria-labelledby='product-preview-title'>
+      <div class='container-fusion'>
+        <div class='mb-14 max-w-2xl'>
+          <p class='tag-marker mb-4'>product preview</p>
+          <h2 id='product-preview-title' class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>See it in motion</h2>
+          <p class='text-fu-muted'>Real screens and captures from the editions, served from the same gallery as the focused preview pages.</p>
+        </div>
+        <div class='grid grid-cols-1 gap-6 md:grid-cols-2'>
+          {previewGallery.map((media, i) => (
+            <figure class='preview-gallery__item card reveal overflow-hidden bg-fu-card' style={`--reveal-i: ${i}`} x-data x-intersect.once='$el.classList.add("reveal-visible")'>
+              <div class='preview-gallery__media'>
+                {media.kind === 'video' ? (
+                  <>
+                    <video src={media.url} poster={media.poster || undefined} controls muted playsinline preload='metadata' aria-label={media.alt || media.label || 'Product preview video'} class='block aspect-[16/10] w-full object-cover object-top' onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+                      Your browser cannot play this video.
+                    </video>
+                    <p hidden class='preview-media-fallback p-5 text-sm text-fu-muted' role='status'>Video preview unavailable. <a href={media.url}>Open the recording</a>.</p>
+                  </>
+                ) : (
+                  <>
+                    <img src={media.url} alt={media.alt} loading='lazy' decoding='async' class='block aspect-[16/10] w-full object-cover object-top' onerror="this.hidden=true;this.nextElementSibling.hidden=false;" />
+                    <p hidden class='preview-media-fallback p-5 text-sm text-fu-muted' role='status'>Preview unavailable. <a href={media.url}>Open this capture</a>.</p>
+                  </>
+                )}
+              </div>
+              {media.label && <figcaption class='border-t border-fu-line px-4 py-3 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted'>{media.label}</figcaption>}
+            </figure>
+          ))}
+        </div>
+        {firstEditionPreviewHref && <a href={firstEditionPreviewHref} class='mt-6 inline-block font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fu-link transition-colors hover:text-fu-ink'>Open an edition preview →</a>}
+      </div>
+    </section>
+  ) : null}
+
+  {pageGallery?.length ? (
+    (() => {
+      const gal = pageGallery[0];
+      const items = (gal?.items || []).map((item: any) => ({
+        url: String(item.url || ''),
+        kind: (String(item.kind || 'image')) as 'image' | 'gif' | 'video',
+        poster: String(item.poster || ''),
+        label: String(item.label || ''),
+        alt: String(item.alt || item.label || 'Gallery preview'),
+      })).filter((m: any) => m.url);
+      return items.length ? (
+        <Gallery
+          eyebrow={gal?.eyebrow || ''}
+          title={gal?.title || ''}
+          description={gal?.description || ''}
+          display={(gal?.display || 'grid') as 'grid' | 'carousel' | 'stack'}
+          items={items}
+        />
+      ) : null;
+    })()
+  ) : null}
+
+  {capabilities?.length ? (
+    <section class='doc-sheet bg-fu-surface py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-14 max-w-2xl'>
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>What it ships</h2>
+        </div>
+        <div class='grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3'>
+          {capabilities.map((cap, i) => (
+            <div class='card reveal p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
+              <div class='mb-4 inline-flex h-10 w-10 items-center justify-center rounded-md border border-fu-line bg-fu-card text-fu-link'>
+                <svg class='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='1.8' aria-hidden='true'>
+                  <path stroke-linecap='round' stroke-linejoin='round' d={cap.icon} />
+                </svg>
+              </div>
+              <h3 class='mb-2 font-display text-[1.05rem] font-semibold text-fu-ink'>{cap.title}</h3>
+              <p class='text-sm leading-relaxed text-fu-muted'>{cap.description}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  ) : <ContentError label="Product data unavailable" />}
+
+  {pageProfile ? (
+    <section id='profile' class='doc-sheet bg-fu-paper py-20 md:py-24'>
+      <div class='container-fusion'>
+        <div class='mb-10 max-w-2xl'>
+          {pageProfile.eyebrow && <p class='tag-marker mb-4'>{pageProfile.eyebrow}</p>}
+          <h2 class='mb-4 font-display text-3xl font-bold tracking-tight text-fu-ink md:text-4xl'>{pageProfile.title}</h2>
+          {pageProfile.icp_intro && <p class='text-fu-muted'>{pageProfile.icp_intro}</p>}
+        </div>
+
+        {profileIcp.length ? (
+          <div class='grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3'>
+            {profileIcp.map((persona, i) => (
+              <div class='card reveal p-6' x-data x-intersect="$el.classList.add('reveal-visible')" style={`--reveal-i: ${i}`}>
+                <span class='tag-marker' style='margin:0'>ideal customer</span>
+                <h3 class='mt-4 font-display text-lg font-semibold text-fu-ink'>{persona.title}</h3>
+                <div class='mt-4'>
+                  <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>who</span>
+                  <p class='mt-1 text-sm leading-relaxed text-fu-ink/80'>{persona.who}</p>
+                </div>
+                <div class='mt-4'>
+                  <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>behaviour</span>
+                  <p class='mt-1 text-sm leading-relaxed text-fu-muted'>{persona.behaviour}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        {pageProfile.capacity && (
+          <div class='card mt-8 p-6'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>capacity &amp; scale</span>
+            <p class='mt-2 leading-relaxed text-fu-ink/80'>{pageProfile.capacity}</p>
+          </div>
+        )}
+
+        {profileReports.length ? (
+          <div class='card mt-8 p-6'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>dashboards &amp; reports</span>
+            <ul class='mt-4 grid gap-2.5 sm:grid-cols-2'>
+              {profileReports.map((report) => (
+                <li class='flex items-start gap-2.5 text-sm text-fu-ink/80'>
+                  <svg class='mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-fu-link' fill='none' viewBox='0 0 24 24' stroke='currentColor' stroke-width='2.5' aria-hidden='true'>
+                    <path stroke-linecap='round' stroke-linejoin='round' d='M5 13l4 4L19 7'/>
+                  </svg>
+                  <span>{report}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
+        {pageProfile.channels && (
+          <div class='card mt-8 p-6'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>channels &amp; loyalty</span>
+            <p class='mt-2 leading-relaxed text-fu-ink/80'>{pageProfile.channels}</p>
+          </div>
+        )}
+
+        {pageProfile.tone && (
+          <div class='mt-8 border-l-2 border-fu-link pl-5'>
+            <span class='font-mono text-[0.6rem] uppercase tracking-[0.14em] text-fu-muted'>marketing tone</span>
+            <p class='mt-2 max-w-2xl italic leading-relaxed text-fu-ink/80'>{pageProfile.tone}</p>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null}
+
+  {faqItems?.length ? <FAQ items={faqItems} /> : null}
+
+  <CTA
+    heading={pageCta?.title}
+    intro={pageCta?.subtitle}
+    ctaLabel={pageCta?.primary_cta?.label}
+    ctaHref={pageCta?.primary_cta?.href}
+    secondaryCta={pageCta?.secondary_cta ? { label: pageCta.secondary_cta.label, href: pageCta.secondary_cta.href } : undefined}
+  />
+  <Toast />
+  <HtmxBootstrap />
+</Layout>

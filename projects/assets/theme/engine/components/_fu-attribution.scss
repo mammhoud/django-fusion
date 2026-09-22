@@ -1,0 +1,166 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Component Standard: fu-attribution — product-owned colophon band.
+
+   Carries the Structa Cloud brand mark, product name, and the copyright
+   / licence line for an authored surface. Every string it renders is
+   authored by this repository — it deliberately contains no text derived
+   from any third-party template.
+
+   Why "fu-attribution" and not "fu-footer": the vendored base already
+   defines a `.fu-footer` block (theme/default/components/_fu-footer.scss),
+   so a second one would collide. This block is the authored, portable
+   replacement for that band, not an override of it.
+
+   Consumes --fu-token-* semantic aliases only. No hex literals.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.fu-attribution {
+  display: block;
+  border-top: 1px solid var(--fu-token-line);
+  background: var(--fu-token-paper);
+  color: var(--fu-token-muted);
+  font-size: var(--fu-token-text-sm);
+  line-height: var(--fu-token-leading-relaxed);
+
+  &__inner {
+    max-width: var(--fu-token-container-xl);
+    margin: 0 auto;
+    padding: var(--fu-token-space-2xl) var(--fu-token-space-lg);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--fu-token-space-lg);
+  }
+
+  /* ── Brand cluster ── */
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-token-space-sm);
+    color: var(--fu-token-ink);
+    text-decoration: none;
+    font-weight: var(--fu-token-weight-semibold);
+
+    &:focus-visible {
+      outline: 2px solid var(--fu-token-primary);
+      outline-offset: 3px;
+    }
+  }
+
+  /* Square mono mark — renders the product initials, no image asset. */
+  &__mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--fu-token-radius-md);
+    background: var(--fu-token-primary);
+    color: var(--fu-token-card);
+    font-family: var(--fu-token-font-mono);
+    font-size: var(--fu-token-text-xs);
+    font-weight: var(--fu-token-weight-bold);
+    letter-spacing: var(--fu-token-tracking-wider);
+    text-transform: uppercase;
+  }
+
+  &__name {
+    font-size: var(--fu-token-text-base);
+    letter-spacing: var(--fu-token-tracking-tight);
+  }
+
+  &__tagline {
+    display: block;
+    font-size: var(--fu-token-text-xs);
+    font-weight: var(--fu-token-weight-regular);
+    color: var(--fu-token-muted);
+  }
+
+  /* ── Link column ── */
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--fu-token-space-lg);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__link {
+    color: var(--fu-token-muted);
+    text-decoration: none;
+    transition: color var(--fu-token-transition-fast);
+
+    &:hover,
+    &:focus-visible {
+      color: var(--fu-token-link);
+    }
+  }
+
+  /* ── Legal / copyright line ── */
+  &__legal {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    font-family: var(--fu-token-font-mono);
+    font-size: var(--fu-token-text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--fu-token-tracking-widest);
+  }
+
+  &__copyright {
+    color: var(--fu-token-ink);
+  }
+
+  &__licence {
+    color: var(--fu-token-muted);
+    text-transform: none;
+    letter-spacing: var(--fu-token-tracking-normal);
+    font-family: var(--fu-token-font-sans);
+  }
+
+  /* ── Variants ── */
+  &--compact {
+    font-size: var(--fu-token-text-xs);
+
+    .fu-attribution__inner {
+      padding: var(--fu-token-space-lg);
+    }
+
+    .fu-attribution__mark {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .fu-attribution__name {
+      font-size: var(--fu-token-text-sm);
+    }
+  }
+
+  /* Stacks the legal line under the brand on narrow viewports. */
+  &--stacked {
+    .fu-attribution__inner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .fu-attribution__legal {
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    &__inner {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: var(--fu-token-space-lg);
+    }
+
+    &__legal {
+      align-items: flex-start;
+    }
+  }
+}

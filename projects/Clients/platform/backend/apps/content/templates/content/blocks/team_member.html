@@ -1,0 +1,21 @@
+{% load wagtailcore_tags %}
+{% comment %} A single team member card — initials avatar, name, role, bio, social links. {% endcomment %}
+<article class="card flex flex-col p-6 reveal" x-data x-intersect="$el.classList.add('reveal-visible')" style="--reveal-i: {{ reveal_i|default:0 }}">
+  <div class="mb-4 flex items-center gap-4">
+    <div class="flex h-12 w-12 items-center justify-center rounded-full border border-fu-line bg-fu-card font-mono text-sm font-semibold text-fu-link">
+      {{ value.initials|default:"ME" }}
+    </div>
+    <div>
+      <h3 class="font-display text-lg font-semibold text-fu-ink" style="margin:0;">{{ value.name }}</h3>
+      {% if value.role %}<p class="font-mono text-[0.65rem] uppercase tracking-[0.14em] text-fu-muted" style="margin:.1rem 0 0;">{{ value.role }}</p>{% endif %}
+    </div>
+  </div>
+  {% if value.bio %}<p class="text-sm leading-relaxed text-fu-muted" style="margin:0 0 1rem;">{{ value.bio }}</p>{% endif %}
+  {% if value.links %}
+  <div class="mt-auto flex flex-wrap gap-2 pt-2">
+    {% for link in value.links %}
+      <a href="{{ link.url }}" target="_blank" rel="noopener" class="btn btn-secondary" style="padding:.35rem .8rem;font-size:.72rem;">{{ link.platform }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</article>

@@ -1,0 +1,461 @@
+/**
+ * Section-placement & seeded-content tests.
+ *
+ * Proves, against the *built* HTML (the real artifact the browser gets),
+ * that the static site renders the content seeded by the Wagtail backend
+ * (apps/pages/management/commands/seed_pages.py) and that each page shows
+ * exactly the sections its design intends:
+ *
+ *   - `/`        (Home)    — hero + CTA only; no course preview (the /learning/
+ *     catalog page is the single course destination) and no framework demo
+ *   - `/about`   (About)   — full document: stats, features, testimonials, faq, cta
+ *   - `/features`          — capabilities + testimonials + faq
+ *   - `/products`          — stats + the five product lines
+ *   - `/projects`          — the repo project grid (editions + shared/own flags)
+ *   - `/contact`, `/faq`, `/privacy` — seeded contact methods / FAQ items / body
+ *
+ * Because the frontend is API-driven (src/lib/api.ts), the build bakes the
+ * backend's seeded content in at build time. The Django backend must be
+ * reachable on :8074 (`cd backend && make dev`) so the build fetches real
+ * seeded data — otherwise this suite fails with a clear message.
+ *
+ * Run:  npm test
+ */
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+// The Astro build fetches all content from the backend. Require it so the
+// assertions run against seeded data, not silent fallbacks.
+function backendReachable() {
+  try {
+    const res = execSync('curl -sf -o /dev/null http://localhost:8074/apis/pages/home/', { stdio: 'pipe' });
+    return res !== null;
+  } catch {
+    return false;
+  }
+}
+if (!backendReachable()) {
+  throw new Error(
+    'The Django backend is not reachable on http://localhost:8074. ' +
+    'Start it first (cd projects/precis/precis-landing/backend && make dev) so the build bakes seeded content.',
+  );
+}
+
+// Build once before the suite so assertions run against a fresh dist/.
+execSync('npm run build', { cwd: root, stdio: 'pipe' });
+
+const dist = join(root, 'dist');
+function readPage(...segments) {
+  return readFileSync(join(dist, ...segments), 'utf8');
+}
+
+const home = readPage('index.html');
+const about = readPage('about', 'index.html');
+const benefits = readPage('services', 'benefits', 'index.html');
+const legacyFeatures = readPage('features', 'index.html');
+const products = readPage('products', 'index.html');
+const projects = readPage('projects', 'index.html');
+const contact = readPage('contact', 'index.html');
+const faq = readPage('faq', 'index.html');
+const privacy = readPage('privacy', 'index.html');
+const blog = readPage('blog', 'index.html');
+const pricing = readPage('pricing', 'index.html');
+const services = readPage('services', 'index.html');
+const brand = readPage('brand', 'index.html');
+const formintsPos = readPage('products', 'formint-pos', 'index.html');
+const legacyForgePos = readPage('products', 'forge-pos', 'index.html');
+const lms = readPage('products', 'lms', 'index.html');
+const cms = readPage('products', 'cms', 'index.html');
+const blogDoc = readPage('blog', 'why-landing-pages-as-documents', 'index.html');
+const blogHtmx = readPage('blog', 'htmx-fragments-vs-json-apis', 'index.html');
+const advancedBlog = readPage('blog', 'advanced-content-architecture', 'index.html');
+const htmlSampleBlog = readPage('blog', 'html-component-render-preview', 'index.html');
+
+// Sections seeded only for the full-document pages — must NOT appear on the
+// slim home page. ("data unavailable" cards are a defect, not a section.)
+const fullDocumentMarkers = [
+  'Numbers that speak for themselves', // stats section title
+  'Everything you need to launch',     // features section title
+  'Trusted by developers',             // testimonials section title
+  'Sarah Mitchell',                    // seeded testimonial author
+  'What is structa.cloud?',            // seeded FAQ question
+  '>503<',                             // ContentError cards must never render
+];
+
+test('home is a focused hero + CTA entry page with seeded hero/CTA', () => {
+  // Seeded hero: title "Digital products, shipped as" + accent "documents".
+  assert.match(home, /Digital products, shipped as/);
+  assert.match(home, /documents/);
+  assert.match(home, /structa\.cloud · digital product partner/);
+  // Seeded CTA.
+  assert.match(home, /A useful first release beats a noisy roadmap/);
+  // Products preview section — the simple themed card grid (frontend design).
+  assert.match(home, /tag-marker mb-4">products/);
+  assert.match(home, /card reveal group flex flex-col gap-3 p-6 hover:-translate-y-0\.5/);
+  // The homepage preview is curated: flagship + main products, never the
+  // vResume subproduct (it stays catalog-only on /products/ and pricing).
+  assert.ok(home.includes('/products/formint-pos/'), 'home should link the flagship product');
+  assert.ok(!home.includes('/products/vresume/'), 'home should NOT link the vResume subproduct');
+  // The product dropdown is also curated from the same backend flag, so the
+  // catalog-only and hidden records never leak into header navigation.
+  assert.ok(!home.includes('/products/ceptor-ai/'), 'home should NOT link hidden ceptor-ai');
+  // The former framework demo is intentionally gone, and the full course
+  // preview was removed too (2026-08-12). The home now carries ONE quiet
+  // `[ LEARNING / PREVIEW ]` link card into /learning/ — but only on the
+  // live roads (Django fragment + data-API JSON), never statically, so it
+  // can never appear twice. The static build therefore has no learning
+  // markers at all (the live region is a skeleton until the client fetches).
+  assert.ok(!home.includes('Learn by shipping'), 'home should NOT carry a course preview section');
+  assert.ok(!home.includes('Browse all courses'), 'home should NOT carry the course preview CTA');
+  assert.ok(!home.includes('LEARNING / PUBLIC CATALOG'), 'home should NOT carry the catalog kicker');
+  assert.ok(!home.includes('This page is the framework'), 'home should hide the framework demo heading');
+  assert.ok(!home.includes('No React, no Vue, no Svelte'), 'home should hide implementation-pitch copy');
+  assert.ok(!home.includes('/fragment/ping/'), 'home should not expose the old framework ping demo');
+  // Home still avoids the full document stack and error cards.
+  for (const marker of fullDocumentMarkers) {
+    assert.ok(!home.includes(marker), `home should NOT contain: ${marker}`);
+  }
+});
+
+test('about carries the full seeded document', () => {
+  // Seeded hero: title "A clearer path to market" (founder/company story).
+  assert.match(about, /A clearer path to market/);
+  // Seeded stats (values animate client-side; labels are server-rendered).
+  for (const label of ['Open-source repos', 'Blog posts', 'Production sites', 'Years building']) {
+    assert.ok(about.includes(label), `about should contain stat label: ${label}`);
+  }
+  // Seeded features reframed around the founder + company.
+  assert.match(about, /A founder who ships/);
+  assert.match(about, /Your team owns the content/);
+  assert.match(about, /Arabic and English by design/);
+  assert.match(about, /A system that can be handed over/);
+  // Seeded testimonials (the Astro component renders its own section heading;
+  // the seeded authors/quotes are what the page must show).
+  for (const author of ['Sarah Mitchell', 'David Chen', 'Amira Hassan']) {
+    assert.ok(about.includes(author), `about should contain testimonial author: ${author}`);
+  }
+  // FAQ is deduplicated onto /faq/ — About carries no duplicate FAQ section,
+  // and instead links to the team subpage.
+  assert.ok(!about.includes('Frequently asked questions'), 'about should NOT contain a duplicate FAQ section');
+  assert.match(about, /Meet the team/);
+  assert.match(about, /\/about\/team\//);
+  // Seeded CTA.
+  assert.match(about, /Built in the open, shipped as HTML/);
+});
+
+test('services benefits subpage is a full document like about', () => {
+  // Seeded hero: "Built to ship as" + accent "documents".
+  assert.match(benefits, /Built to ship as/);
+  // Seeded capabilities (features section item cards — shared about section).
+  assert.match(benefits, /A founder who ships/);
+  assert.match(benefits, /Your team owns the content/);
+  assert.match(benefits, /Arabic and English by design/);
+  // Seeded testimonials. FAQ is deduplicated onto /faq/ only.
+  assert.match(benefits, /Sarah Mitchell/);
+  assert.ok(!benefits.includes('Frequently asked questions'), 'benefits should NOT contain a duplicate FAQ section');
+  // Seeded CTA.
+  assert.match(benefits, /Built in the open, shipped as HTML/);
+});
+
+test('products is the merged catalog: renamed product cards with logos, status, monorepo link', () => {
+  // Seeded hero: "Most of what we build, shipped as" + accent "open source".
+  assert.match(products, /Most of what we build, shipped as/);
+  assert.match(products, /open source/);
+  // Seeded stats.
+  assert.ok(products.includes('Open-source repos'), 'products should contain seeded stat label');
+  // The merged section heading + monorepo link (product line + project grid folded together).
+  assert.match(products, /Projects in this repo/);
+  assert.match(products, /Browse the monorepo on GitHub/);
+  // Data-driven catalog — renamed products, no removed/hidden ones.
+  for (const name of ['Formints', 'Precis LMS', 'Loop', 'vResume']) {
+    assert.ok(products.includes(name), `products should contain product: ${name}`);
+  }
+  // Removed/hidden products get no card and no link (prose mentions in the
+  // shared FAQ are fine — ceptor-ai is still the AI library).
+  assert.ok(!products.includes('django-bolt'), 'products should NOT contain: django-bolt');
+  assert.ok(!products.includes('/products/ceptor-ai/'), 'products should NOT link to hidden ceptor-ai');
+  assert.ok(!products.includes('The product line'), 'products should NOT contain: The product line');
+  // vResume is public catalog-only; ceptor-ai is internal and excluded from
+  // both the catalog and its product-dropdown navigation.
+  assert.ok(products.includes('/products/vresume/'), 'catalog should link to vResume');
+  assert.ok(!products.includes('/products/ceptor-ai/'), 'catalog should exclude ceptor-ai');
+  // The flagship card shows the Formints editions + pricing inline.
+  for (const marker of ['Community', 'Standard', 'Pro', 'Cloud']) {
+    assert.ok(products.includes(marker), `products should show POS edition: ${marker}`);
+  }
+  // Category badges render on the cards.
+  assert.match(products, /application/);
+  assert.match(products, /platform/);
+  // Logo marks + edition chips render (the merged-card design).
+  assert.match(products, /product-logo/);
+  assert.match(products, /edition-chip/);
+  // Each product renders its own brand-identity chip (no shared generic mark).
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="vresume"', 'data-brand="precis-ctc"']) {
+    assert.ok(products.includes(chip), `products should render mark chip: ${chip}`);
+  }
+  // Seeded CTA (full-document pages close with the about-style CTA).
+  assert.match(products, /Built in the open, shipped as HTML/);
+});
+
+test('legacy product slug redirects to canonical Formints route', () => {
+  // Static Astro output emits a redirect document; the dev server/proxy also
+  // serves it as a 301, covered by the live smoke test.
+  assert.match(legacyForgePos, /redirect/i);
+  assert.match(legacyForgePos, /\/products\/formint-pos\//);
+});
+
+test('projects is a permanent redirect to the merged products catalog', () => {
+  // The legacy route now redirects — Astro emits a meta-refresh document.
+  assert.match(projects, /redirect/i);
+  assert.match(projects, /\/products/);
+});
+
+test('features redirects to the benefits subpage under services', () => {
+  // Benefits moved under Services — the legacy /features/ route emits a
+  // meta-refresh redirect document to /services/benefits/.
+  assert.match(legacyFeatures, /redirect/i);
+  assert.match(legacyFeatures, /\/services\/benefits\//);
+});
+
+test('contact shows seeded contact methods + topic choices', () => {
+  assert.match(contact, /We'd love to hear from you/);
+  assert.match(contact, /structa\.cloud@gmail\.com/);
+  assert.match(contact, /\+1 \(555\) 010-2030/);
+  // The topic select offers the product/service choices.
+  assert.match(contact, /Formints POS/);
+  assert.match(contact, /Precis LMS/);
+  assert.match(contact, /Loop CMS/);
+});
+
+test('faq page shows seeded FAQ items', () => {
+  assert.match(faq, /Frequently Asked Questions/);
+  assert.match(faq, /What is structa\.cloud\?/);
+  assert.match(faq, /How do I get started\?/);
+});
+
+test('privacy page renders its legal document', () => {
+  // The Astro privacy page ships its own full legal policy (8 sections); the
+  // backend seeds a short RichText body used by the backend render only.
+  assert.match(privacy, /What we collect/);
+  // The restructured policy has a dedicated cookies/consent section (section 3)
+  // covering what data is collected and what accepting consent enables.
+  assert.match(privacy, /Cookies and consent/);
+  assert.match(privacy, /When you accept, no additional data is collected/);
+  assert.match(privacy, /Your rights/);
+});
+
+test('blog page shows the seeded post grid', () => {
+  assert.match(blog, /Ideas from real launches/);
+  // Grid cards carry the current seeded titles (seed_pages.py renamed the
+  // posts while keeping their stable slugs).
+  assert.match(blog, /A fast first visit is a product decision/);
+  assert.match(blog, /Designing bilingual journeys without duplication/);
+  assert.match(blog, /monorepo-six-products/);
+});
+
+test('pricing page shows per-product tabs + faq', () => {
+  assert.match(pricing, /Pick a product, see its editions/);
+  for (const product of ['Formints', 'Precis LMS', 'Loop', 'vResume']) {
+    assert.ok(pricing.includes(product), `pricing should contain product tab: ${product}`);
+  }
+  // The default tab shows Formints' four editions incl. the new pricing.
+  for (const marker of ['Community', 'Standard', 'Pro', 'Cloud', '$119', '$79']) {
+    assert.ok(pricing.includes(marker), `pricing should contain: ${marker}`);
+  }
+  // Hidden products are not tabbed.
+  assert.ok(!pricing.includes('/products/ceptor-ai/'), 'pricing should not link to hidden products');
+  assert.ok(pricing.includes('/products/vresume/'), 'pricing should link to catalog-only vResume');
+  // FAQ is deduplicated — pricing points buyers to the dedicated page.
+  assert.ok(!pricing.includes('Frequently asked questions'), 'pricing should NOT contain a duplicate FAQ section');
+  assert.match(pricing, /Read the FAQ/);
+  assert.match(pricing, /\/faq\//);
+});
+
+test('services page shows the three service lines + build-as-you-go process', () => {
+  // Mirrors the backend contract in apps/pages/tests.py::test_services_carries_offering_and_process.
+  assert.match(services, /Build for the market you serve/);
+  for (const line of ['Market-ready websites', 'Digital product delivery', 'Improve what already works']) {
+    assert.ok(services.includes(line), `services should contain: ${line}`);
+  }
+  assert.match(services, /A measured path to launch/);
+  assert.match(services, /Discover/);
+  assert.match(services, /Ship &amp; grow/);  // `&` is HTML-escaped in the build
+});
+
+test('brand page renders the identity system: one board per product with its constructed mark', () => {
+  assert.match(brand, /five constructed marks, one family/);
+  // Each brand's essence line + its own data-brand mark chip.
+  for (const essence of ['The till, made trustworthy.', 'Learning, precisely.', 'From impression to deal.', 'Your career, on the record.', 'Evidence, carried forward.']) {
+    assert.ok(brand.includes(essence), `brand should contain essence: ${essence}`);
+  }
+  for (const chip of ['data-brand="formints"', 'data-brand="precis"', 'data-brand="loop"', 'data-brand="vresume"', 'data-brand="precis-ctc"']) {
+    assert.ok(brand.includes(chip), `brand should render mark chip: ${chip}`);
+  }
+  // Brand story labels + construction notes are present.
+  assert.match(brand, /construction/);
+  assert.match(brand, /palette/);
+  // The palette is driven by the spec — brand accent swatch + shared system
+  // tokens render on every board (brand-swatch chips with token titles).
+  assert.match(brand, /brand-swatch/);
+  assert.match(brand, /title="paper"/);
+  assert.match(brand, /title="ink"/);
+  assert.match(brand, /title="line"/);
+});
+
+test('products page lists every product page card incl. the vResume subproduct', () => {
+  assert.match(products, /Projects in this repo/);
+  for (const href of ['/products/formint-pos/', '/products/lms/', '/products/cms/', '/products/vresume/', '/products/precis-ctc/']) {
+    assert.ok(products.includes(href), `products should link to: ${href}`);
+  }
+});
+
+test('formints page shows all four tiered editions with per-edition pricing', () => {
+  assert.match(formintsPos, /Formints/);
+  for (const marker of ['Community', 'Standard', 'Pro', 'Cloud', '$0', '$119', '$79', 'Custom']) {
+    assert.ok(formintsPos.includes(marker), `formints should contain: ${marker}`);
+  }
+  // The visual tiering system: outline Community, featured Pro, managed Cloud.
+  assert.match(formintsPos, /edition__card--outline/);
+  assert.match(formintsPos, /most shipped/);
+  assert.match(formintsPos, /managed-ribbon/);
+  // Product details use visual captures instead of public code/snippet blocks.
+  assert.match(formintsPos, /See it in motion/);
+  assert.match(formintsPos, /preview-gallery__item/);
+  assert.match(formintsPos, /alt="Animated walkthrough of the Formints Standard point-of-sale interface"/);
+  assert.doesNotMatch(formintsPos, /Models &amp; snippets/);
+  assert.doesNotMatch(formintsPos, /CREATE TABLE sales/);
+  assert.doesNotMatch(formintsPos, /Diesel migration \(up\.sql\)/);
+  assert.doesNotMatch(formintsPos, /source-panel|view-source:/);
+  assert.doesNotMatch(formintsPos, /Tauri command \(invoice PDF\)/);
+  // New capability chips + roadmap cards (the Astro road flattens feature
+  // blocks into cards; the block title "Product roadmap" renders on Django).
+  assert.match(formintsPos, /Offline-first mode/);
+  assert.match(formintsPos, /Loyalty &amp; rewards program/);
+  assert.match(formintsPos, /Loyalty &amp; rewards engine/);
+  assert.match(formintsPos, /Multi-currency &amp; tax profiles/);
+  assert.match(formintsPos, /Automatic cloud backups/);
+});
+
+test('formint-pos page ships the full feature-comparison table', () => {
+  // The Wagtail-managed comparison block: ~26 capability rows across 4 editions.
+  assert.match(formintsPos, /Compare editions/);
+  assert.match(formintsPos, /Community vs Standard vs Pro vs Cloud/);
+  for (const row of [
+    'React 19 + TypeScript frontend',
+    'Tauri 2 + Rust backend',
+    'SQLite database',
+    'High-end interface design',
+    'Inventory adjustments + stock control',
+    'Food &amp; beverage (F&amp;B) menu support',
+    'Kitchen display system',
+    'WebSocket real-time streaming',
+    'High-throughput Rust API (60k+ RPS)',
+    'Hosted deployment + managed backups',
+    'Offline-first mode',
+    'Refunds &amp; returns',
+    'Loyalty &amp; rewards program',
+    'Multi-currency &amp; tax profiles',
+    'Custom roles &amp; permissions',
+    'Data export (CSV/JSON)',
+    'Automatic cloud backups',
+  ]) {
+    assert.ok(formintsPos.includes(row), `formint-pos comparison should contain row: ${row}`);
+  }
+  // Cells render as plain text where a note is present (not only Yes/No).
+  assert.match(formintsPos, /cloud master/);
+});
+
+test('precis-lms and loop pages render their editions', () => {
+  assert.match(lms, /Precis LMS/);
+  assert.match(lms, /Solo/);
+  assert.match(lms, /Business/);
+  assert.match(lms, /SSO &amp; role management/);
+  assert.match(lms, /Dedicated success manager/);
+  assert.match(lms, /High-end learning experience design/);
+  assert.doesNotMatch(lms, /For solo creators publishing their first course/);
+  assert.doesNotMatch(lms, /Up to 3 courses/);
+  assert.match(cms, /Loop/);
+  assert.match(cms, /Community/);
+  assert.match(cms, /Business/);
+});
+
+test('edition cards link to flexible preview subpages (both roads)', () => {
+  // Every Formints edition card carries a “Preview this edition →” link.
+  for (const edition of ['community', 'standard', 'pro', 'cloud']) {
+    assert.ok(
+      formintsPos.includes(`/products/formint-pos/preview/${edition}/`),
+      `formint-pos card should link the ${edition} preview`,
+    );
+  }
+  // The dedicated pricing page carries a preview link per edition card.
+  assert.ok(pricing.includes('Preview this edition'), 'pricing should show preview links');
+});
+
+test('loop is a coming-soon CRM placeholder (CMS content lives in Precis)', () => {
+  // Loop was repositioned as the coming-soon CRM; the old Loop CMS
+  // applications grid was removed. Mirrors the backend contract in
+  // apps/pages/tests.py::test_loop_crm_placeholder.
+  assert.match(cms, /Loop CRM/);
+  assert.match(cms, /Join the waitlist/);
+  assert.match(cms, /under development/);
+  assert.match(cms, /Twenty/);
+  assert.match(cms, /Postiz/);
+  assert.match(cms, /django-fusion/);
+  // The placeholder links out to Precis (where the CMS now lives).
+  assert.ok(cms.includes('/products/lms/'), 'cms placeholder should link to Precis LMS');
+  // The old Loop CMS applications grid is gone.
+  assert.doesNotMatch(cms, /Sites and apps running on Loop/);
+});
+
+test('edition preview subpages render the live product mock', () => {
+  const formintCommunity = readPage('products', 'formint-pos', 'preview', 'community', 'index.html');
+  const vresumeCommunity = readPage('products', 'vresume', 'preview', 'community', 'index.html');
+  // The POS preview shows the register mock; the vResume preview the resume.
+  assert.match(formintCommunity, /live preview/);
+  assert.match(formintCommunity, /Espresso/);
+  assert.match(vresumeCommunity, /live preview/);
+  assert.match(vresumeCommunity, /Mina Mammhoud/);
+});
+
+test('blog post detail pages render seeded bodies and link back to /blog', () => {
+  // The index grid links to the detail pages.
+  assert.match(blog, /\/blog\/why-landing-pages-as-documents\//);
+  assert.match(blog, /\/blog\/htmx-fragments-vs-json-apis\//);
+  // Detail pages render their own body copy (the seeded RichText).
+  assert.match(blogDoc, /The document model/);
+  assert.match(blogDoc, /No SPA shell, no hydration waterfall/);
+  assert.match(blogHtmx, /The API contract tax/);
+  assert.match(blogHtmx, /Half the frontend state/);
+  // Meta row + back link present.
+  assert.match(blogDoc, /All posts/);
+  assert.match(blogDoc, /AHA stack/);
+  assert.match(blogDoc, /6 min read/);
+  assert.match(advancedBlog, /When content becomes a product surface/);
+  assert.match(advancedBlog, /Model intent before appearance/);
+  assert.match(advancedBlog, /Design for safe change/);
+  assert.doesNotMatch(advancedBlog, /code sections/);
+});
+
+test('HTML component blog sample exposes code, render preview, and collected variants', () => {
+  assert.match(blog, /html-component-render-preview/);
+  assert.match(htmlSampleBlog, /A self-contained HTML component, rendered safely/);
+  assert.match(htmlSampleBlog, /component\.html/);
+  assert.match(htmlSampleBlog, /Render preview/);
+  assert.match(htmlSampleBlog, /data-preview-pane/);
+  assert.match(htmlSampleBlog, /sandbox/);
+  assert.match(htmlSampleBlog, /referrerpolicy/);
+  assert.match(htmlSampleBlog, /standard-checkout\.jpg/);
+  assert.match(htmlSampleBlog, /pro-admin-dashboard\.jpg/);
+  assert.match(htmlSampleBlog, /Open the product preview/);
+  // The client toggle switches only this post's code/pane pair and keeps the
+  // preview iframe isolated; product and prompt routes have no such control.
+  assert.match(htmlSampleBlog, /showingPreview/);
+  assert.match(htmlSampleBlog, /code\.hidden = !showingPreview/);
+  assert.match(htmlSampleBlog, /pane\.hidden = showingPreview/);
+});

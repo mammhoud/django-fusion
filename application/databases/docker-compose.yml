@@ -1,0 +1,22 @@
+# =============================================================================
+# Shared Databases — include-based orchestrator
+# =============================================================================
+# Brings up PostgreSQL and Redis together via Compose `include`. Each service
+# keeps its own docker-compose.yml (postgres/ and redis/) so they can be
+# started independently or together.  All credentials come from the .env file
+# in *this* directory (application/databases/.env).
+#
+# Quick start:
+#   cd application/databases && make setup   # create .env from .env.example
+#   docker compose up -d                     # postgres + redis
+#
+# Root-level deploy:
+#   make deploy-databases                    # from the repo root
+#
+# Networks are managed by each service file — they share `common`,
+# `warehouse-net`, `internal`, `traefik-net`, and `site_network`.
+# =============================================================================
+
+include:
+  - postgres/docker-compose.yml
+  - redis/docker-compose.yml

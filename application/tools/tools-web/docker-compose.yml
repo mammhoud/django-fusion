@@ -1,0 +1,44 @@
+# tools-web — vanilla Node.js server for tools.structa.cloud
+# Serves the dashboard at / and the auth API at /api/*. Proxied by
+# tools-proxy Nginx. Build context is the repository root.
+#
+# Users are defined in application/tools/tools-web/users.yml.
+# TOOLS_UNLOCK_PASSWORD (shared per-tool unlock password) is required and
+# should come from the environment / .env (see application/tools/.env.example).
+
+services:
+  tools-web:
+    build:
+      context: ../../..
+      dockerfile: application/tools/tools-web/Dockerfile
+    container_name: tools-web
+    restart: unless-stopped
+    networks:
+      - traefik-net
+      - common
+    environment:
+      - NODE_ENV=production
+      - PORT=4321
+      - HOST=0.0.0.0
+      - TOOLS_UNLOCK_PASSWORD=${TOOLS_UNLOCK_PASSWORD:-}
+      - TOOLS_SESSION_SECRET=${TOOLS_SESSION_SECRET:-}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4321/health/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true

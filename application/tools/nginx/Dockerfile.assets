@@ -1,0 +1,9 @@
+# Assets-proxy Nginx — static/media file server only.
+# No tool proxying, no Docus, no Blinko.
+# Build context is repository root.
+FROM nginx:1.27-alpine
+
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY application/tools/nginx/assets.conf.template /etc/nginx/templates/default.conf.template
+COPY application/tools/nginx/www /var/www/html

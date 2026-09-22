@@ -1,0 +1,96 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Design System: Editorial — wide typography, minimalist surfaces.
+   Extends fu-default-* tokens with editorial-specific overrides.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Editorial overrides ── */
+  --fu-default-ed-font-display: 'Source Serif Pro', Georgia, serif;
+  --fu-default-ed-font-sans: 'Inter', sans-serif;
+  --fu-default-ed-leading-display: 1.1;
+  --fu-default-ed-leading-body: 1.75;
+  --fu-default-ed-tracking-tight: -0.03em;
+  --fu-default-ed-tracking-wide: 0.08em;
+  --fu-default-ed-max-prose: 42rem;
+}
+
+/* ── Editorial text scale (exponential, not linear) ── */
+.fu-default-editorial {
+  font-family: var(--fu-default-ed-font-sans);
+  line-height: var(--fu-default-ed-leading-body);
+  color: hsl(var(--fu-default-ink));
+
+  &__display {
+    font-family: var(--fu-default-ed-font-display);
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 700;
+    line-height: var(--fu-default-ed-leading-display);
+    letter-spacing: var(--fu-default-ed-tracking-tight);
+  }
+
+  &__h1 {
+    font-family: var(--fu-default-ed-font-display);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: var(--fu-default-ed-tracking-tight);
+  }
+
+  &__h2 {
+    font-family: var(--fu-default-ed-font-display);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  &__lede {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: hsl(var(--fu-default-muted));
+    max-width: var(--fu-default-ed-max-prose);
+  }
+
+  &__body {
+    font-size: 1.0625rem;
+    line-height: var(--fu-default-ed-leading-body);
+    max-width: var(--fu-default-ed-max-prose);
+  }
+
+  &__caption {
+    font-family: var(--fu-default-font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: var(--fu-default-ed-tracking-wide);
+    color: hsl(var(--fu-default-muted));
+  }
+
+  &__dropcap {
+    &::first-letter {
+      font-family: var(--fu-default-ed-font-display);
+      font-size: 4rem;
+      font-weight: 700;
+      float: left;
+      line-height: 0.85;
+      padding-right: 0.75rem;
+      padding-top: 0.25rem;
+      color: hsl(var(--fu-default-primary));
+    }
+  }
+
+  &__rule {
+    border: 0;
+    border-top: 1px solid hsl(var(--fu-default-line));
+    margin: 2rem 0;
+  }
+
+  &__pullquote {
+    font-family: var(--fu-default-ed-font-display);
+    font-size: 1.5rem;
+    font-style: italic;
+    line-height: 1.4;
+    border-left: 3px solid hsl(var(--fu-default-primary));
+    padding-left: 1.5rem;
+    margin: 2rem 0;
+    color: hsl(var(--fu-default-ink));
+  }
+}

@@ -1,0 +1,104 @@
+# =============================================================================
+# precis-lms (Precis LMS) — Traefik router config
+# =============================================================================
+# Source tree: projects/structa.cloud (renamed from projects/structa.cloud)
+# Containers: precis-main-backend  (Django + django-fusion, port 8074)
+#             precis-main-frontend (Astro shell, port 3000)
+# Public domain: lms.structa.cloud
+# Backend paths (/admin, /django-admin, /api, /apis/, /fragment/, /accounts/, /learning/,
+#   /profile/*) route to the backend; static/media/sites assets route to
+#   shared-proxy; everything else is served from the frontend.
+# Local development host: precis-lms.localhost (mkcert, no ACME).
+# TLS: Let's Encrypt HTTP-01 (certResolver: letsencrypt-http) for the public host.
+# =============================================================================
+
+http:
+  routers:
+    # ---- Public: lms.structa.cloud ----------------------------------------
+    precis-lms-backend-http:
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`) || PathPrefix(`/i18n/`))'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: precis-lms-backend-service
+      priority: 200
+    precis-lms-backend-https:
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/learning/`) || PathPrefix(`/profile/`) || PathPrefix(`/i18n/`))'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: precis-lms-backend-service
+      priority: 200
+      tls:
+        certResolver: letsencrypt-http
+    precis-lms-media-public:
+      rule: '(Host(`lms.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, security-headers]
+      service: precis-lms-media-service
+      priority: 210
+    precis-lms-site-http:
+      rule: 'Host(`lms.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: precis-lms-frontend-service
+      priority: 100
+    precis-lms-site-https:
+      rule: 'Host(`lms.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: precis-lms-frontend-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt-http
+
+    # ---- Local dev: precis-lms.localhost (mkcert, no ACME) -----------------
+    precis-lms-site-local-http:
+      rule: 'Host(`precis-lms.localhost`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: precis-lms-frontend-service
+      priority: 10
+
+    precis-lms-site-localhost-https:
+      rule: 'Host(`precis-lms.localhost`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: precis-lms-frontend-service
+      priority: 10
+
+    precis-lms-api-localhost:
+      rule: '(Host(`precis-lms.localhost`)) && (PathPrefix(`/api`) || PathPrefix(`/apis/`) || PathPrefix(`/fragment/`) || PathPrefix(`/accounts/`) || PathPrefix(`/admin`) || PathPrefix(`/django-admin`) || PathPrefix(`/learning/`) || PathPrefix(`/i18n/`) || PathPrefix(`/profile/dashboard/`) || PathPrefix(`/profile/profile/`) || PathPrefix(`/profile/edit/`) || PathPrefix(`/profile/courses/`) || PathPrefix(`/profile/certifications/`) || PathPrefix(`/profile/notes/`) || PathPrefix(`/profile/settings/`) || PathPrefix(`/profile/messages/`) || PathPrefix(`/profile/blog/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: precis-lms-backend-service
+      priority: 100
+
+    precis-lms-media-local:
+      rule: '(Host(`precis-lms.localhost`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, security-headers]
+      service: precis-lms-media-service
+      priority: 110
+
+  services:
+    precis-lms-frontend-service:
+      loadBalancer:
+        servers:
+          - url: 'http://precis-main-frontend:3000'
+        healthCheck:
+          path: /
+          interval: 30s
+          timeout: 10s
+
+    precis-lms-backend-service:
+      loadBalancer:
+        servers:
+          - url: 'http://precis-main-backend:8074'
+        healthCheck:
+          path: /apis/pages/
+          interval: 30s
+          timeout: 10s
+
+    precis-lms-media-service:
+      loadBalancer:
+        servers:
+          - url: 'http://assets-proxy:80'

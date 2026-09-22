@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "ai-exam-coach": {
+      "source": "blu1606/blue-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ai-exam-coach/SKILL.md",
+      "computedHash": "c84d660ac114549a6b06e041cddbe73e0eceb6a77a8b34a635cf6d43fc086b2b"
+    },
+    "book-study": {
+      "source": "sanyuan0704/sanyuan-skills",
+      "sourceType": "github",
+      "skillPath": "skills/book-study/SKILL.md",
+      "computedHash": "f02c38de9b640428987156ffd7d219e12beacf222bb633a06de48698ff466be9"
+    },
+    "knowledge-base": {
+      "source": "inkeep/open-knowledge-skills",
+      "sourceType": "github",
+      "skillPath": "skills/starter-packs/knowledge-base/knowledge-base/SKILL.md",
+      "computedHash": "8e0ea2cde44db8a2abd31e8fbc5669dd45715c2e5cd10ffcd1d17e0811bb3b40"
+    },
+    "obsidian-vault-builder": {
+      "source": "belumume/claude-skills",
+      "sourceType": "github",
+      "skillPath": "obsidian-vault-builder/SKILL.md",
+      "computedHash": "4f0d3fef1514f07dcbd0e14d7f0527134d347251e81631cb10f45e0fe0a96163"
+    }
+  }
+}

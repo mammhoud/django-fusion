@@ -1,0 +1,22 @@
+{
+  "name": "tools-web",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Vanilla Node.js tools dashboard for tools.structa.cloud — Alpine + htmx frontend, no framework",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs",
+    "check": "node --check server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

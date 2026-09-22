@@ -1,0 +1,65 @@
+# =============================================================================
+# Application — full-stack orchestrator (include-based)
+# =============================================================================
+# This file is the single entry point for the entire structa.cloud application
+# layer.  It does NOT define any services directly — every service is owned by
+# its own docker-compose.yml in a subdirectory and included here via `include`.
+#
+# Included stacks (in recommended start order):
+#   1. databases/    — PostgreSQL + Redis (shared infrastructure)
+#   2. tools/         — Coder, Blinko, Mailpit, Adminer, Monitoring, shared-proxy
+#   3. proxy/         — Traefik TLS termination + routing
+#
+# Networks and volumes declared in each included file are merged automatically
+# by Compose.  This file also declares the common networks so they are created
+# when the full stack is brought up from here.
+#
+# Quick start (full stack):
+#   docker compose -f application/docker-compose.yml up -d
+#
+# Start order matters for healthchecks: databases first, then tools + proxy.
+#   make deploy-databases
+#   make deploy-tools
+#   make deploy-proxy
+#
+# Environment:
+#   Compose reads .env from the directory containing the first compose file
+#   (this directory).  Place a .env file here (copy from .env.example) or let
+#   values resolve from the repo-root .env.  Individual service files read
+#   their own local .env for service-specific overrides.
+# =============================================================================
+
+# ── Networks ─────────────────────────────────────────────────────────────────
+# Declared here so `docker compose up` from this file creates them if they
+# don't already exist.  Each service's own compose file references these as
+# `external: true` so they can be brought up independently without this file.
+networks:
+  common:
+    name: common
+  warehouse-net:
+    name: warehouse-net
+  internal:
+    name: internal
+  traefik-net:
+    name: traefik-net
+  site_network:
+    name: site_network
+
+# ── Volumes ──────────────────────────────────────────────────────────────────
+# Named volumes declared at the orchestrator level so `docker compose down -v`
+# from here cleans everything.  Individual service files should NOT duplicate
+# these top-level volume declarations — they declare them in their own
+# services: section, and Compose merges them.
+volumes:
+  postgres_data:
+  redis_data:
+  coder_data:
+
+# ── Includes ─────────────────────────────────────────────────────────────────
+# Every substack is included so a single `docker compose -f application/docker-compose.yml up -d`
+# brings up the entire application layer.  Each include file can also be used
+# independently for granular control.
+include:
+  - databases/docker-compose.yml
+  - tools/docker-compose.yml
+  - proxy/docker-compose.yml

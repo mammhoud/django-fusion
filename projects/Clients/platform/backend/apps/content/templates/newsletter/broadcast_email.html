@@ -1,0 +1,49 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+
+{% block titletag %}{% trans "Email subscribers" %}{% endblock %}
+
+{% block content %}
+  {% include "wagtailadmin/shared/header.html" with title="Email subscribers" icon="mail" %}
+
+  <div class="nice-padding">
+    <div class="help-block help-info" style="margin-bottom:1.25rem;">
+      <p>
+        Sends the newsletter to <strong>{{ active_count }}</strong> active
+        subscriber{% if active_count != 1 %}s{% endif %}
+        {% if total_count != active_count %}of {{ total_count }} total (the rest are paused){% endif %}
+        through the branded broadcast shell. Uses the same mail backend as the
+        welcome email — the console backend in dev, SMTP in production.
+      </p>
+    </div>
+
+    <form method="post" action="{% url 'wagtailadmin_newsletter_broadcast' %}">
+      {% csrf_token %}
+      <ul class="fields">
+        {% for field in form %}
+          <li class="{% if field.errors %}error{% endif %}">
+            <div class="field {% if field.field.required %}required{% endif %}">
+              <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+              <div class="field-content">
+                {{ field }}
+                {% if field.help_text %}<p class="help">{{ field.help_text }}</p>{% endif %}
+                {% if field.errors %}
+                  {% for error in field.errors %}<p class="error-message">{{ error }}</p>{% endfor %}
+                {% endif %}
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+      <input
+        type="submit"
+        value="{% trans 'Send to active subscribers' %}"
+        class="button button-primary button-longrunning"
+        data-clicked-text="{% trans 'Sending…' %}"
+      />
+      <a href="{% url 'wagtailsnippets_content_newslettersubscriber:list' %}" class="button button-secondary" style="margin-left:.5rem;">
+        {% trans "Back to subscribers" %}
+      </a>
+    </form>
+  </div>
+{% endblock %}

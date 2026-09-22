@@ -1,0 +1,668 @@
+/* ==========================================================================
+ * PlanInc — design token contract
+ * --------------------------------------------------------------------------
+ * Programme: PI-011 (Blinko parity / design system) · Phase P1
+ * Contract:  docs/10-blinko-parity-and-design-plan.md §6 P1
+ *
+ * FOUR TIERS — each tier may only reference the tier below it
+ *
+ *   1. global    --pi-color-<family>-<step>   raw OKLCH values. Never consumed
+ *                                            by components.
+ *   2. alias     --background, --primary …    semantic roles. The only colour
+ *                                            tokens components may use.
+ *                                            Light lives in `:root`, dark is an
+ *                                            alias REMAP in `.dark` — never a
+ *                                            component-level `dark:` branch.
+ *   3. channel   --<slot>-channels            HSL channel triplets ("H S% L%")
+ *                                            for the HeroUI bridge. HeroUI
+ *                                            composes colours as
+ *                                            `hsl(var(--heroui-<slot>))`, so it
+ *                                            needs channels, not full colours.
+ *   4. component --editor-*, --shadow, …      scoped usage (a chip radius, an
+ *                                            editor surface, a motion curve).
+ *
+ * RULES
+ *   - Components consume alias/component tokens only (never tier 1, never hex).
+ *   - No raw `#hex` / `rgb()` / `hsl()` literal may appear outside tier 1 and the
+ *     channel tier. Enforced by `scripts/lint-tokens.mjs`.
+ *   - Adding a token requires a consumer and a reason; see the programme doc.
+ *
+ * PROVENANCE
+ *   The alias values reproduce the previous `globals.css` `:root` / `.dark`
+ *   values EXACTLY (converted to OKLCH with the sRGB→OKLab transform), so this
+ *   change is a representation change, not a visual one. `scripts/validate-tokens.mjs`
+ *   asserts that equivalence from the fixtures in that script.
+ * ========================================================================== */
+
+@layer base {
+  /* ======================================================================
+   * TIER 1 — GLOBAL (raw values, OKLCH)
+   * ==================================================================== */
+  :root {
+    /* neutrals — achromatic, used for surfaces, text and shadows */
+    --pi-color-white: oklch(1 0 0);
+    --pi-color-neutral-5: oklch(0.997 0 0);
+    --pi-color-neutral-25: oklch(0.9821 0 0);
+    --pi-color-neutral-50: oklch(0.9791 0 0);
+    --pi-color-neutral-100: oklch(0.9612 0 0);
+    --pi-color-neutral-150: oklch(0.948 0.0094 99.9875);
+    --pi-color-neutral-200: oklch(0.9274 0.0027 106.4515);
+    --pi-color-neutral-225: oklch(0.9097 0 0);
+    --pi-color-neutral-300: oklch(0.879 0.0029 264.5408);
+    --pi-color-neutral-400: oklch(0.7889 0 0);
+    --pi-color-neutral-425: oklch(0.7604 0 0);
+    --pi-color-neutral-450: oklch(0.7958 0.0028 286.3363);
+    --pi-color-neutral-500: oklch(0.683 0 0);
+    --pi-color-neutral-550: oklch(0.4135 0.0033 286.2552);
+    --pi-color-neutral-600: oklch(0.5999 0 0);
+    --pi-color-neutral-700: oklch(0.5348 0 0);
+    --pi-color-neutral-750: oklch(0.3092 0 0);
+    --pi-color-neutral-800: oklch(0.2809 0 0);
+    --pi-color-neutral-825: oklch(0.2739 0.0055 286.0326);
+    --pi-color-neutral-850: oklch(0.2273 0.0038 286.0916);
+    --pi-color-neutral-900: oklch(0.2221 0 0);
+    --pi-color-neutral-925: oklch(0.2055 0.0039 286.0495);
+
+    /* ink — blue-tinted darks: the app's "black" end of the ramp */
+    --pi-color-ink-800: oklch(0.1284 0.0267 261.5937);
+    --pi-color-ink-850: oklch(0.2941 0.027 269.1414);
+    --pi-color-ink-900: oklch(0.2079 0.0399 265.7275);
+    --pi-color-ink-950: oklch(0.15 0.0021 286.1415);
+    --pi-color-ink-975: oklch(0.1408 0.0044 285.8229);
+    --pi-color-ink-1000: oklch(0 0 0);
+
+    /* slate / mist / azure — cool grays for secondary text, inputs, borders */
+    --pi-color-slate-25: oklch(0.9846 0.0017 247.8389);
+    --pi-color-slate-150: oklch(0.9276 0.0058 264.5313);
+    --pi-color-slate-200: oklch(0.7107 0.0351 256.7877);
+    --pi-color-slate-350: oklch(0.6418 0.036 257.4318);
+    --pi-color-slate-400: oklch(0.5547 0.0407 257.4404);
+    --pi-color-slate-850: oklch(0.9264 0.0127 253.3094);
+    --pi-color-slate-870: oklch(0.2663 0.0085 255.1029);
+    --pi-color-slate-900: oklch(0.2763 0.0369 258.3);
+    --pi-color-mist-50: oklch(0.9838 0.0035 247.8583);
+    --pi-color-mist-100: oklch(0.9684 0.0068 247.8951);
+    --pi-color-azure-100: oklch(0.929 0.0126 255.5317);
+    --pi-color-azure-400: oklch(0.6962 0.1465 247.9985);
+    --pi-color-accent-100: oklch(0.9683 0.0014 286.3748);
+
+    /* brand-adjacent hues */
+    --pi-color-violet-500: oklch(0.5641 0.1646 290.0754);
+    --pi-color-red-500: oklch(0.628 0.2577 29.2339);
+    --pi-color-red-800: oklch(0.3996 0.1348 25.7682);
+    --pi-color-purple-50: oklch(0.9647 0.0258 321.9359);
+    --pi-color-purple-400: oklch(0.6639 0.2336 312.5715);
+    --pi-color-amber-400: oklch(0.8432 0.1412 85.5248);
+    --pi-color-purple-500: oklch(0.6268 0.2325 303.9004); /* #a855f7 */
+    --pi-color-pink-500: oklch(0.6559 0.2118 354.3084); /* #ec4899 */
+    --pi-color-yellow-500: oklch(0.7952 0.1617 86.0468); /* #EAB308 */
+
+    /* status ramps — migrated from raw `text-green-500` / `bg-red-50` style
+     * utilities found across progress, toast and analytics surfaces */
+    --pi-color-green-50: oklch(0.9819 0.0181 155.8263);
+    --pi-color-green-300: oklch(0.8712 0.1363 154.4491);
+    --pi-color-green-400: oklch(0.8003 0.1821 151.711);
+    --pi-color-green-500: oklch(0.7227 0.192 149.5793);
+    --pi-color-green-600: oklch(0.6271 0.1699 149.2138);
+    --pi-color-green-700: oklch(0.5273 0.1371 150.0693);
+    --pi-color-green-950: oklch(0.2664 0.0628 152.9343);
+
+    --pi-color-red-50: oklch(0.9705 0.0129 17.3797);
+    --pi-color-red-300: oklch(0.8077 0.1035 19.5706);
+    --pi-color-red-400: oklch(0.7106 0.1661 22.2162);
+    --pi-color-red-700: oklch(0.5054 0.1905 27.5181);
+    --pi-color-red-950: oklch(0.2575 0.0886 26.0418);
+
+    --pi-color-blue-50: oklch(0.9705 0.0142 254.6042);
+    --pi-color-blue-300: oklch(0.8091 0.0956 251.8128);
+    --pi-color-blue-400: oklch(0.7137 0.1434 254.624);
+    --pi-color-blue-500: oklch(0.6231 0.188 259.8145);
+    --pi-color-blue-700: oklch(0.4882 0.2172 264.3763);
+    --pi-color-blue-950: oklch(0.2823 0.0874 267.9352);
+
+    --pi-color-amber-50: oklch(0.9869 0.0214 95.2774);
+    --pi-color-amber-300: oklch(0.879 0.1534 91.6054);
+    --pi-color-amber-500: oklch(0.7686 0.1647 70.0804);
+    --pi-color-amber-700: oklch(0.5553 0.1455 48.9975);
+    --pi-color-amber-950: oklch(0.2791 0.0742 45.6352);
+
+    /* selectable theme palettes (user-pickable accents; see lib/themePalettes.ts).
+     * These are data, not semantic roles: they exist so a palette choice is
+     * defined once in the token layer instead of as hex in TypeScript. */
+    --pi-palette-preplixity-primary: oklch(0.5525 0.0864 208.5384);
+    --pi-palette-preplixity-on: oklch(0.9902 0.0039 106.4713);
+    --pi-palette-preplixity-accent: oklch(0.7189 0.1193 209.76);
+    --pi-palette-preplixity-surface: oklch(0.9902 0.0039 106.4713);
+    --pi-palette-ink-primary: oklch(0.1919 0.0196 195.6448);
+    --pi-palette-ink-on: oklch(0.9902 0.0039 106.4713);
+    --pi-palette-ink-accent: oklch(0.5525 0.0864 208.5384);
+    --pi-palette-ink-surface: oklch(0.9902 0.0039 106.4713);
+    --pi-palette-cyan-primary: oklch(0.7189 0.1193 209.76);
+    --pi-palette-cyan-on: oklch(0.2222 0.0337 191.6963);
+    --pi-palette-cyan-accent: oklch(0.5525 0.0864 208.5384);
+    --pi-palette-cyan-surface: oklch(0.9895 0.0063 197.0539);
+    --pi-palette-amber-primary: oklch(0.6226 0.1232 72.1153);
+    --pi-palette-amber-on: oklch(0.9838 0.0159 82.7923);
+    --pi-palette-amber-accent: oklch(0.7548 0.1446 79.0323);
+    --pi-palette-amber-surface: oklch(0.9862 0.0142 84.5826);
+    --pi-palette-violet-primary: oklch(0.5644 0.2032 283.9562);
+    --pi-palette-violet-on: oklch(0.9745 0.0134 295.3252);
+    --pi-palette-violet-accent: oklch(0.7043 0.1642 287.802);
+    --pi-palette-violet-surface: oklch(0.9846 0.008 293.9145);
+  }
+
+  /* ======================================================================
+   * TIER 2 — ALIAS (semantic roles · light)
+   * The names are the pre-existing contract: `bg-background`,
+   * `text-desc`, `text-foreground` … are used across the app, so they are
+   * preserved and re-pointed at tier 1 instead of being renamed.
+   * ==================================================================== */
+  :root {
+    --background: var(--pi-color-white);
+    --foreground: var(--pi-color-ink-900);
+    --secondbackground: var(--pi-color-neutral-50);
+
+    --hover: color-mix(in oklab, var(--pi-color-neutral-150) 85%, transparent);
+    --hover-foreground: var(--pi-color-slate-400);
+
+    --desc: var(--pi-color-neutral-600); /* timestamps, meta */
+    --ignore: var(--pi-color-neutral-400); /* empty states, disabled */
+
+    --tag: var(--pi-color-purple-400);
+    --tag-foreground: var(--pi-color-purple-50);
+    --scrollbar: var(--pi-color-neutral-300);
+
+    --popover: var(--pi-color-white);
+    --popover-foreground: var(--pi-color-ink-900);
+
+    --muted: var(--pi-color-mist-100);
+    --muted-foreground: var(--pi-color-slate-400);
+
+    --card: var(--pi-color-white);
+    --card-foreground: var(--pi-color-ink-900);
+
+    --border: var(--pi-color-neutral-200);
+    --input: var(--pi-color-azure-100);
+
+    --primary: var(--pi-color-ink-1000);
+    --primary-foreground: var(--pi-color-mist-50);
+
+    --secondary: var(--pi-color-violet-500);
+    --secondary-foreground: var(--pi-color-mist-50);
+
+    --accent: var(--pi-color-accent-100);
+    --accent-foreground: var(--pi-color-ink-900);
+
+    --destructive: var(--pi-color-red-500);
+    --destructive-foreground: var(--pi-color-mist-50);
+    --destructive-soft: var(--pi-color-red-50);
+    --destructive-soft-foreground: var(--pi-color-red-700);
+
+    --success: var(--pi-color-green-600);
+    --success-foreground: var(--pi-color-mist-50);
+    --success-soft: var(--pi-color-green-50);
+    --success-soft-foreground: var(--pi-color-green-700);
+
+    --warning: var(--pi-color-amber-500);
+    --warning-foreground: var(--pi-color-amber-950);
+    --warning-soft: var(--pi-color-amber-50);
+    --warning-soft-foreground: var(--pi-color-amber-700);
+
+    --info: var(--pi-color-blue-500);
+    --info-foreground: var(--pi-color-mist-50);
+    --info-soft: var(--pi-color-blue-50);
+    --info-soft-foreground: var(--pi-color-blue-700);
+
+    /* chart series — analytics surfaces pick from these instead of raw hex */
+    --chart-1: var(--pi-color-violet-500);
+    --chart-2: var(--pi-color-amber-500);
+    --chart-3: var(--pi-color-green-500);
+    --chart-4: var(--pi-color-blue-500);
+    --chart-5: var(--pi-color-purple-400);
+    --chart-6: var(--pi-color-red-500);
+
+    --ring: var(--pi-color-slate-200);
+
+    --header: color-mix(in oklab, var(--pi-color-slate-25) 90%, transparent);
+
+    /* responsive shell metric, not a design token per se — kept for parity */
+    --doc-height: 100vh;
+    --min-editor-height: 50vh;
+  }
+
+  /* ======================================================================
+   * TIER 3 — CHANNEL (HeroUI bridge · light)
+   * HeroUI's Tailwind plugin emits `hsl(var(--heroui-<slot>))`, so the value
+   * handed to `themes.*.colors` must be a channel triplet. These vars are that
+   * triplet, which keeps ONE source of truth: change the alias in tier 2 and
+   * both Tailwind utilities and HeroUI components follow.
+   * ==================================================================== */
+  :root {
+    --background-channels: 0 0% 100%;
+    --foreground-channels: 222.2 47.4% 11.2%;
+
+    --border-channels: 60 4% 90.1961%;
+    --ring-channels: 215 20.2% 65.1%;
+
+    --primary-channels: 0 0% 0%;
+    --primary-foreground-channels: 210 40% 98%;
+
+    --secondary-channels: 253 53% 59%;
+    --secondary-foreground-channels: 210 40% 98%;
+
+    --destructive-channels: 0 100% 50%;
+    --destructive-foreground-channels: 210 40% 98%;
+
+    --success-channels: 142.1277 76.2162% 36.2745%;
+    --success-foreground-channels: 210 40% 98%;
+
+    --warning-channels: 37.6923 92.126% 50.1961%;
+    --warning-foreground-channels: 20.9091 91.6667% 14.1176%;
+
+    --card-channels: 0 0% 100%;
+    --card-foreground-channels: 222.2 47.4% 11.2%;
+
+    --muted-channels: 210 40% 96.1%;
+    --muted-foreground-channels: 215.4 16.3% 46.9%;
+
+    --popover-channels: 0 0% 100%;
+    --popover-foreground-channels: 222.2 47.4% 11.2%;
+
+    --secondbackground-channels: 0 0% 97.2549%;
+    --accent-channels: 240 5% 96%;
+  }
+
+/* ==========================================================================
+   * TIER 4 — COMPONENT (light)
+   * ========================================================================== */
+   /* ==========================================================================
+    * RESPONSIVE EDGE/CURVE/RADIUS SYSTEM (PI-011 · P2)
+    * All values scale across the 8-tier responsive system (xs 360 → 4xl 2560).
+    * Base (no attribute) = xs tier defaults.
+    * Each tier overrides only what changes; the rest inherit.
+    * ========================================================================== */
+
+   /* ---- Responsive Border-Radius Scale ---- */
+   :root {
+     /* Base radii (xs/phone): compact for dense mobile UI */
+     --radius: 0.375rem;
+     --pi-radius-sm: 2px;
+     --pi-radius-md: 4px;
+     --pi-radius-lg: 6px;
+     --pi-radius-xl: 8px;
+     --pi-radius-2xl: 12px;
+     --pi-radius-3xl: 16px;
+
+     /* Component edge-rounding attributes */
+     --chip-radius: 4px;
+     --contextmenu-radius: 10px;
+     --contextmenu-item-radius: 6px;
+     --card-radius: var(--pi-radius-md);
+     --surface-radius: var(--pi-radius-sm);
+     --modal-radius: var(--pi-radius-lg);
+     --sheet-radius: var(--pi-radius-xl);
+     --avatar-radius: var(--pi-radius-sm);
+     --image-radius: var(--pi-radius-md);
+     --input-radius: var(--pi-radius-sm);
+     --button-radius: var(--pi-radius-sm);
+     --tag-radius: var(--chip-radius);
+     --tooltip-radius: var(--pi-radius-md);
+     --dropdown-radius: var(--pi-radius-lg);
+     --progress-radius: var(--pi-radius-sm);
+     --skeleton-radius: var(--pi-radius-sm);
+     --scrollbar-radius: 2px;
+
+     /* Responsive curves */
+     --curve-sharp: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+     --curve-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+     --curve-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+     --curve-enter: var(--curve-smooth);
+     --curve-exit: var(--curve-sharp);
+   }
+
+   /* sm (480px+) */
+   html[data-tier="sm"] {
+     --radius: 0.4rem;
+     --pi-radius-sm: 3px;
+     --pi-radius-md: 5px;
+     --pi-radius-lg: 7px;
+     --pi-radius-xl: 9px;
+     --pi-radius-2xl: 13px;
+     --pi-radius-3xl: 17px;
+     --chip-radius: 5px;
+     --contextmenu-radius: 12px;
+     --contextmenu-item-radius: 8px;
+     --card-radius: var(--pi-radius-md);
+     --surface-radius: var(--pi-radius-md);
+     --modal-radius: var(--pi-radius-xl);
+     --sheet-radius: var(--pi-radius-2xl);
+   }
+
+   /* md (768px+) */
+   html[data-tier="md"] {
+     --radius: 0.45rem;
+     --pi-radius-sm: 4px;
+     --pi-radius-md: 6px;
+     --pi-radius-lg: 8px;
+     --pi-radius-xl: 10px;
+     --pi-radius-2xl: 14px;
+     --pi-radius-3xl: 18px;
+     --chip-radius: 6px;
+     --contextmenu-radius: 14px;
+     --contextmenu-item-radius: 10px;
+     --card-radius: var(--pi-radius-lg);
+     --surface-radius: var(--pi-radius-md);
+     --modal-radius: var(--pi-radius-2xl);
+     --sheet-radius: var(--pi-radius-3xl);
+   }
+
+   /* lg (1024px+) */
+   html[data-tier="lg"] {
+     --radius: 0.5rem;
+     --pi-radius-sm: 5px;
+     --pi-radius-md: 7px;
+     --pi-radius-lg: 9px;
+     --pi-radius-xl: 12px;
+     --pi-radius-2xl: 16px;
+     --pi-radius-3xl: 20px;
+     --chip-radius: 7px;
+     --contextmenu-radius: 16px;
+     --contextmenu-item-radius: 12px;
+     --card-radius: var(--pi-radius-xl);
+     --surface-radius: var(--pi-radius-lg);
+     --modal-radius: var(--pi-radius-3xl);
+     --sheet-radius: var(--pi-radius-3xl);
+   }
+
+   /* xl (1280px+) */
+   html[data-tier="xl"] {
+     --radius: 0.55rem;
+     --pi-radius-sm: 6px;
+     --pi-radius-md: 8px;
+     --pi-radius-lg: 10px;
+     --pi-radius-xl: 14px;
+     --pi-radius-2xl: 18px;
+     --pi-radius-3xl: 22px;
+     --chip-radius: 8px;
+     --contextmenu-radius: 18px;
+     --contextmenu-item-radius: 14px;
+     --card-radius: var(--pi-radius-2xl);
+     --surface-radius: var(--pi-radius-xl);
+     --modal-radius: var(--pi-radius-3xl);
+     --sheet-radius: var(--pi-radius-3xl);
+   }
+
+   /* 2xl (1600px+) */
+   html[data-tier="2xl"] {
+     --radius: 0.625rem;
+     --pi-radius-sm: 7px;
+     --pi-radius-md: 9px;
+     --pi-radius-lg: 11px;
+     --pi-radius-xl: 16px;
+     --pi-radius-2xl: 20px;
+     --pi-radius-3xl: 24px;
+     --chip-radius: 9px;
+     --contextmenu-radius: 20px;
+     --contextmenu-item-radius: 16px;
+     --card-radius: var(--pi-radius-2xl);
+     --surface-radius: var(--pi-radius-2xl);
+     --modal-radius: calc(var(--pi-radius-3xl) * 1.2);
+     --sheet-radius: calc(var(--pi-radius-3xl) * 1.2);
+   }
+
+   /* 3xl (1920px+) */
+   html[data-tier="3xl"] {
+     --radius: 0.7rem;
+     --pi-radius-sm: 8px;
+     --pi-radius-md: 10px;
+     --pi-radius-lg: 12px;
+     --pi-radius-xl: 18px;
+     --pi-radius-2xl: 22px;
+     --pi-radius-3xl: 26px;
+     --chip-radius: 10px;
+     --contextmenu-radius: 22px;
+     --contextmenu-item-radius: 18px;
+     --card-radius: var(--pi-radius-3xl);
+     --surface-radius: var(--pi-radius-2xl);
+     --modal-radius: calc(var(--pi-radius-3xl) * 1.4);
+     --sheet-radius: calc(var(--pi-radius-3xl) * 1.4);
+   }
+
+   /* 4xl (2560px+) */
+   html[data-tier="4xl"] {
+     --radius: 0.8rem;
+     --pi-radius-sm: 9px;
+     --pi-radius-md: 12px;
+     --pi-radius-lg: 14px;
+     --pi-radius-xl: 20px;
+     --pi-radius-2xl: 24px;
+     --pi-radius-3xl: 28px;
+     --chip-radius: 12px;
+     --contextmenu-radius: 24px;
+     --contextmenu-item-radius: 20px;
+     --card-radius: var(--pi-radius-3xl);
+     --surface-radius: var(--pi-radius-3xl);
+     --modal-radius: calc(var(--pi-radius-3xl) * 1.6);
+     --sheet-radius: calc(var(--pi-radius-3xl) * 1.6);
+   }
+
+   /* ---- Responsive Motion Curves by Tier ---- */
+   html[data-tier="xs"] {
+     --motion-fast: 150ms;
+     --motion-base: 250ms;
+     --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-enter: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-exit: cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   html[data-tier="sm"] {
+     --motion-fast: 150ms;
+     --motion-base: 300ms;
+     --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-enter: cubic-bezier(0.16, 1, 0.3, 1);
+     --curve-exit: cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   html[data-tier="md"] {
+     --motion-fast: 200ms;
+     --motion-base: 350ms;
+     --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-enter: cubic-bezier(0.16, 1, 0.3, 1);
+     --curve-exit: cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   html[data-tier="lg"] {
+     --motion-fast: 200ms;
+     --motion-base: 400ms;
+     --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-enter: cubic-bezier(0.16, 1, 0.3, 1);
+     --curve-exit: cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   html[data-tier="xl"] {
+     --motion-fast: 250ms;
+     --motion-base: 450ms;
+     --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-enter: cubic-bezier(0.16, 1, 0.3, 1);
+     --curve-exit: cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   html[data-tier="2xl"] {
+     --motion-fast: 250ms;
+     --motion-base: 500ms;
+     --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-enter: cubic-bezier(0.16, 1, 0.3, 1);
+     --curve-exit: cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   html[data-tier="3xl"],
+   html[data-tier="4xl"] {
+     --motion-fast: 300ms;
+     --motion-base: 550ms;
+     --motion-ease: cubic-bezier(0.4, 0, 0.2, 1);
+     --curve-enter: cubic-bezier(0.16, 1, 0.3, 1);
+     --curve-exit: cubic-bezier(0.4, 0, 0.2, 1);
+   }
+
+   /* ---- Editor / Surface / Effect Tokens ---- */
+   :root {
+     --editor-bg: var(--pi-color-white);
+     --editor-text: var(--pi-color-ink-900);
+     --editor-separator: var(--pi-color-neutral-450);
+     --editor-border: var(--pi-color-slate-150);
+     --glass-bg: color-mix(in oklab, var(--pi-color-white) 85%, transparent);
+     --pi-chrome-blur: color-mix(in oklab, var(--pi-color-white) 50%, transparent);
+     --hero-glow: color-mix(in srgb, var(--primary) 12%, transparent);
+     --hero-base: color-mix(in srgb, var(--background) 92%, var(--primary));
+     --selection-bg: var(--pi-color-azure-400);
+     --selection-fg: var(--pi-color-neutral-5);
+     --swiper-3d-shadow: color-mix(in oklab, var(--pi-color-ink-1000) 15%, transparent);
+     --shadow: 1px 1px 7px 3px color-mix(in oklab, var(--pi-color-neutral-425) 25.88%, transparent);
+     --progress-from: var(--pi-color-pink-500);
+     --progress-to: var(--pi-color-yellow-500);
+     --editor-task-accent: var(--pi-color-yellow-500);
+     --chart-emphasis-shadow: color-mix(in oklab, var(--pi-color-ink-1000) 50%, transparent);
+     --chart-cell-border: color-mix(in oklab, var(--pi-color-ink-1000) 5%, transparent);
+     --chart-cell-shadow: color-mix(in oklab, var(--pi-color-ink-1000) 10%, transparent);
+     --music-scrim: color-mix(in srgb, var(--pi-color-white) 20%, transparent);
+     --music-fallback-gradient: linear-gradient(to right, var(--pi-color-neutral-200), var(--pi-color-neutral-100));
+     --font-family: 'Inter', sans-serif;
+     --pi-ui-scale: 1;
+     --pi-line-height: 1.55;
+     --md-editor-bg: var(--editor-bg);
+     --md-editor-text: var(--editor-text);
+    --md-editor-separator: var(--editor-separator);
+    --md-editor-border: var(--editor-border);
+  }
+
+  /* ======================================================================
+   * DARK — alias / channel / component REMAP ONLY
+   * No component may branch on `.dark` for colour; it inherits from here.
+   * ==================================================================== */
+  .dark {
+    /* tier 2 */
+    --background: var(--pi-color-ink-950);
+    --foreground: var(--pi-color-neutral-225);
+    --secondbackground: var(--pi-color-neutral-850);
+
+    --hover: var(--pi-color-neutral-800);
+    --hover-foreground: var(--pi-color-slate-400);
+
+    --desc: var(--pi-color-neutral-500);
+    --ignore: var(--pi-color-neutral-700);
+
+    --tag: var(--pi-color-purple-400);
+    --tag-foreground: var(--pi-color-neutral-900);
+    --scrollbar: var(--pi-color-neutral-900);
+
+    --popover: var(--pi-color-ink-800);
+    --popover-foreground: var(--pi-color-slate-200);
+
+    --muted: var(--pi-color-ink-850);
+    --muted-foreground: var(--pi-color-slate-350);
+
+    --card: var(--pi-color-ink-800);
+    --card-foreground: var(--pi-color-slate-850);
+
+    --border: var(--pi-color-ink-950);
+    --input: var(--pi-color-slate-900);
+
+    --primary: var(--pi-color-neutral-25);
+    --primary-foreground: var(--pi-color-ink-1000);
+
+    --secondary: var(--pi-color-violet-500);
+    --secondary-foreground: var(--pi-color-mist-50);
+
+    --accent: var(--pi-color-slate-870);
+    --accent-foreground: var(--pi-color-mist-50);
+
+    --destructive: var(--pi-color-red-800);
+    --destructive-foreground: var(--pi-color-mist-50);
+    --destructive-soft: var(--pi-color-red-950);
+    --destructive-soft-foreground: var(--pi-color-red-300);
+
+    --success: var(--pi-color-green-400);
+    --success-foreground: var(--pi-color-green-950);
+    --success-soft: var(--pi-color-green-950);
+    --success-soft-foreground: var(--pi-color-green-300);
+
+    /* amber-400 in tier 1 is the brand amber (`#f5c451`, the hero glow), not
+     * Tailwind's `#fbbf24` — dark warning uses amber-300 so the alias and its
+     * channel triplet stay the same colour. `validate-tokens` check 7 asserts it. */
+    --warning: var(--pi-color-amber-300);
+    --warning-foreground: var(--pi-color-amber-950);
+    --warning-soft: var(--pi-color-amber-950);
+    --warning-soft-foreground: var(--pi-color-amber-300);
+
+    --info: var(--pi-color-blue-400);
+    --info-foreground: var(--pi-color-blue-950);
+    --info-soft: var(--pi-color-blue-950);
+    --info-soft-foreground: var(--pi-color-blue-300);
+
+    --chart-1: var(--pi-color-violet-500);
+    --chart-2: var(--pi-color-amber-400);
+    --chart-3: var(--pi-color-green-400);
+    --chart-4: var(--pi-color-blue-400);
+    --chart-5: var(--pi-color-purple-400);
+    --chart-6: var(--pi-color-red-400);
+
+    --ring: var(--pi-color-slate-900);
+
+    --header: color-mix(in oklab, var(--pi-color-ink-1000) 80%, transparent);
+
+    /* tier 3 */
+    --background-channels: 240 4.3478% 4.5098%;
+    --foreground-channels: 0 0% 88.2353%;
+
+    --border-channels: 240 4.3478% 4.5098%;
+    --ring-channels: 216 34% 17%;
+
+    --primary-channels: 0 0% 97.6471%;
+    --primary-foreground-channels: 0 0% 0%;
+
+    --secondary-channels: 253 53% 59%;
+    --secondary-foreground-channels: 210 40% 98%;
+
+    --destructive-channels: 0 63% 31%;
+    --destructive-foreground-channels: 210 40% 98%;
+
+    --success-channels: 141.8919 69.1589% 58.0392%;
+    --success-foreground-channels: 144.878 80.3922% 10%;
+
+    --warning-channels: 45.9429 96.6851% 64.5098%;
+    --warning-foreground-channels: 20.9091 91.6667% 14.1176%;
+
+    --card-channels: 224 71% 4%;
+    --card-foreground-channels: 213 31% 91%;
+
+    --muted-channels: 224 20% 19%;
+    --muted-foreground-channels: 215.4 16.3% 56.9%;
+
+    --popover-channels: 224 71% 4%;
+    --popover-foreground-channels: 215 20.2% 65.1%;
+
+    --secondbackground-channels: 240 3.4483% 11.3725%;
+    --accent-channels: 214 9% 15%;
+
+    /* tier 4 */
+    --editor-bg: var(--pi-color-ink-975);
+    --editor-text: var(--pi-color-mist-50);
+    --editor-separator: var(--pi-color-neutral-550);
+    --editor-border: var(--pi-color-neutral-825);
+
+    /* single line: validate-tokens parses this file line by line */
+    --music-fallback-gradient: linear-gradient(to right, color-mix(in srgb, var(--pi-color-blue-500) 20%, transparent), color-mix(in srgb, var(--pi-color-purple-500) 20%, transparent));
+
+    --glass-bg: color-mix(in oklab, var(--pi-color-ink-950) 80%, transparent);
+    --pi-chrome-blur: color-mix(in oklab, var(--pi-color-ink-1000) 50%, transparent);
+    --hero-glow: color-mix(in srgb, var(--pi-color-amber-400) 14%, transparent);
+    --hero-base: var(--pi-color-neutral-925);
+    --swiper-3d-shadow: color-mix(in oklab, var(--pi-color-neutral-100) 15%, transparent);
+    --shadow: 0 0 1px 1px var(--pi-color-neutral-750);
+  }
+
+  /* ======================================================================
+   * REDUCED MOTION — every component that animates honours these
+   * ==================================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --motion-fast: 1ms;
+      --motion-base: 1ms;
+    }
+  }
+}

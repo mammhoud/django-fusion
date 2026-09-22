@@ -1,0 +1,147 @@
+---
+display_name: code-server
+description: VS Code in the browser
+icon: ../../../../.icons/code.svg
+verified: true
+tags: [ide, web, code-server]
+---
+
+# code-server
+
+Automatically install [code-server](https://github.com/coder/code-server) in a workspace, create an app to access it via the dashboard, install extensions, and pre-configure editor settings.
+
+```tf
+module "code-server" {
+  count    = data.coder_workspace.me.start_count
+  source   = "registry.coder.com/coder/code-server/coder"
+  version  = "1.5.2"
+  agent_id = coder_agent.example.id
+}
+```
+
+![Screenshot 1](https://github.com/coder/code-server/raw/main/docs/assets/screenshot-1.png?raw=true)
+
+## Examples
+
+### Pin Versions
+
+```tf
+module "code-server" {
+  count           = data.coder_workspace.me.start_count
+  source          = "registry.coder.com/coder/code-server/coder"
+  version         = "1.5.2"
+  agent_id        = coder_agent.example.id
+  install_version = "4.106.3"
+}
+```
+
+### Pre-install Extensions
+
+Install the Dracula theme from [OpenVSX](https://open-vsx.org/):
+
+```tf
+module "code-server" {
+  count    = data.coder_workspace.me.start_count
+  source   = "registry.coder.com/coder/code-server/coder"
+  version  = "1.5.2"
+  agent_id = coder_agent.example.id
+  extensions = [
+    "dracula-theme.theme-dracula"
+  ]
+}
+```
+
+Enter the `<author>.<name>` into the extensions array and code-server will automatically install on start.
+
+### Pre-configure User Settings
+
+Configure VS Code's [User settings.json](https://code.visualstudio.com/docs/getstarted/settings#_settings-json-file). These settings are merged with any existing user settings on startup:
+
+```tf
+module "code-server" {
+  count      = data.coder_workspace.me.start_count
+  source     = "registry.coder.com/coder/code-server/coder"
+  version    = "1.5.2"
+  agent_id   = coder_agent.example.id
+  extensions = ["dracula-theme.theme-dracula"]
+  settings = {
+    "workbench.colorTheme" = "Dracula"
+  }
+}
+```
+
+> [!WARNING]
+> Merging settings requires `jq` or `python3`. If neither is available, existing settings will be preserved.
+
+### Install multiple extensions
+
+Install multiple extensions from [OpenVSX](https://open-vsx.org/) by adding them to the `extensions` list:
+
+```tf
+module "code-server" {
+  count      = data.coder_workspace.me.start_count
+  source     = "registry.coder.com/coder/code-server/coder"
+  version    = "1.5.2"
+  agent_id   = coder_agent.example.id
+  extensions = ["dracula-theme.theme-dracula", "ms-azuretools.vscode-docker"]
+}
+```
+
+### Open a Workspace File
+
+Open a [`.code-workspace`](https://coder.com/docs/code-server/FAQ#how-does-code-server-decide-what-workspace-or-folder-to-open) file instead of a folder. `folder` and `workspace` are mutually exclusive.
+
+```tf
+module "code-server" {
+  count     = data.coder_workspace.me.start_count
+  source    = "registry.coder.com/coder/code-server/coder"
+  version   = "1.5.2"
+  agent_id  = coder_agent.example.id
+  workspace = "/home/coder/project/my.code-workspace"
+}
+```
+
+### Pass Additional Arguments
+
+You can pass additional command-line arguments to code-server using the `additional_args` variable. For example, to disable workspace trust:
+
+```tf
+module "code-server" {
+  count           = data.coder_workspace.me.start_count
+  source          = "registry.coder.com/coder/code-server/coder"
+  version         = "1.5.2"
+  agent_id        = coder_agent.example.id
+  additional_args = "--disable-workspace-trust"
+}
+```
+
+### Offline and Use Cached Modes
+
+By default the module looks for code-server at `/tmp/code-server` but this can be changed with `install_prefix`.
+
+Run an existing copy of code-server if found, otherwise download from GitHub:
+
+```tf
+module "code-server" {
+  count      = data.coder_workspace.me.start_count
+  source     = "registry.coder.com/coder/code-server/coder"
+  version    = "1.5.2"
+  agent_id   = coder_agent.example.id
+  use_cached = true
+  extensions = ["dracula-theme.theme-dracula", "ms-azuretools.vscode-docker"]
+}
+```
+
+Just run code-server in the background, don't fetch it from GitHub:
+
+```tf
+module "code-server" {
+  count    = data.coder_workspace.me.start_count
+  source   = "registry.coder.com/coder/code-server/coder"
+  version  = "1.5.2"
+  agent_id = coder_agent.example.id
+  offline  = true
+}
+```
+
+Some of the key differences between code-server and [VS Code Web](https://registry.coder.com/modules/coder/vscode-web) are listed in [docs](https://coder.com/docs/user-guides/workspace-access/code-server#differences-between-code-server-and-vs-code-web).

@@ -1,0 +1,73 @@
+# =============================================================================
+# Media servers — Traefik router config
+# =============================================================================
+# All media.* subdomains route to the running assets-proxy Nginx container.
+# Domains: media.structa.cloud, media.ctc-research.com, media.vresume.structa.cloud
+# (media.lms.com was removed — the domain no longer resolves and its certResolver
+# kept triggering failed Let's Encrypt attempts)
+# =============================================================================
+
+http:
+  routers:
+    assets-proxy-http:
+      rule: Host(`media.structa.cloud`)
+      entryPoints:
+      - web
+      middlewares:
+      - redirect-to-https
+      service: assets-proxy-service
+    assets-proxy-https:
+      rule: Host(`media.structa.cloud`)
+      entryPoints:
+      - web-secure
+      middlewares:
+      - compress
+      - security-headers
+      service: assets-proxy-service
+      tls:
+        certResolver: letsencrypt-http
+    ctc-media-http:
+      rule: Host(`media.ctc-research.com`)
+      entryPoints:
+      - web
+      middlewares:
+      - redirect-to-https
+      service: ctc-media-service
+    ctc-media-https:
+      rule: Host(`media.ctc-research.com`)
+      entryPoints:
+      - web-secure
+      middlewares:
+      - compress
+      - security-headers
+      service: ctc-media-service
+      tls:
+        certResolver: letsencrypt-http
+    vresume-media-http:
+      rule: Host(`media.vresume.structa.cloud`)
+      entryPoints:
+      - web
+      middlewares:
+      - redirect-to-https
+      service: vresume-media-service
+    vresume-media-https:
+      rule: Host(`media.vresume.structa.cloud`)
+      entryPoints:
+      - web-secure
+      middlewares:
+      - compress
+      - security-headers
+      service: vresume-media-service
+  services:
+    assets-proxy-service:
+      loadBalancer:
+        servers:
+        - url: http://assets-proxy:80
+    ctc-media-service:
+      loadBalancer:
+        servers:
+        - url: http://assets-proxy:80
+    vresume-media-service:
+      loadBalancer:
+        servers:
+        - url: http://assets-proxy:80

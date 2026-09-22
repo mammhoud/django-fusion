@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Enterprise Theme Tokens — fu-enterprise-*
+   ─────────────────────────────────────────────────────────────────────
+   Deep-blue palette inspired by IBM / Microsoft enterprise suites.
+   Structured, formal, data-dense but calm. Moderate radius, firm
+   shadows, system-first typography.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surface / Ink ── */
+  --fu-enterprise-paper:        215 20% 98%;
+  --fu-enterprise-ink:          215 35% 14%;
+  --fu-enterprise-muted:        215 15% 44%;
+  --fu-enterprise-line:         215 18% 90%;
+  --fu-enterprise-card:         0 0% 100%;
+  --fu-enterprise-link:         215 80% 40%;
+  --fu-enterprise-link-dark:    215 75% 32%;
+  --fu-enterprise-mark:         45 90% 50%;
+  --fu-enterprise-live:         150 60% 35%;
+
+  /* ── Brand accent palette ── */
+  --fu-enterprise-primary:       215 80% 40%;
+  --fu-enterprise-primary-dark:  215 75% 32%;
+  --fu-enterprise-primary-light: 215 70% 95%;
+  --fu-enterprise-secondary:     210 60% 45%;
+  --fu-enterprise-secondary-light: 210 50% 95%;
+  --fu-enterprise-accent:        45 90% 50%;
+  --fu-enterprise-success:       150 60% 35%;
+  --fu-enterprise-warning:       38 92% 48%;
+  --fu-enterprise-error:         0 68% 48%;
+  --fu-enterprise-info:          199 89% 44%;
+
+  /* ── Spacing (structured, moderate) ── */
+  --fu-enterprise-space-xs:  0.25rem;
+  --fu-enterprise-space-sm:  0.5rem;
+  --fu-enterprise-space-md:  1rem;
+  --fu-enterprise-space-lg:  1.5rem;
+  --fu-enterprise-space-xl:  2rem;
+  --fu-enterprise-space-2xl: 3rem;
+  --fu-enterprise-space-3xl: 4rem;
+
+  --fu-enterprise-section-lg: 5rem;
+  --fu-enterprise-section-xl: 6rem;
+
+  /* ── Radius (moderate, structured) ── */
+  --fu-enterprise-radius-sm:   0.25rem;
+  --fu-enterprise-radius-md:   0.375rem;
+  --fu-enterprise-radius-lg:   0.5rem;
+  --fu-enterprise-radius-xl:   0.75rem;
+  --fu-enterprise-radius-full: 9999px;
+
+  /* ── Shadows (firm, defined) ── */
+  --fu-enterprise-shadow-card:        0 1px 2px 0 hsl(215 35% 14% / 0.06), 0 1px 3px 0 hsl(215 35% 14% / 0.04);
+  --fu-enterprise-shadow-card-hover:  0 4px 12px 0 hsl(215 35% 14% / 0.10);
+  --fu-enterprise-shadow-modal:       0 16px 48px 0 hsl(215 35% 14% / 0.16);
+  --fu-enterprise-shadow-toast:       0 8px 24px 0 hsl(215 35% 14% / 0.10);
+
+  /* ── Transitions (measured) ── */
+  --fu-enterprise-transition-fast:     120ms ease;
+  --fu-enterprise-transition-standard: 200ms ease;
+  --fu-enterprise-transition-slow:     300ms ease;
+  --fu-enterprise-transition-reveal:   450ms ease-out;
+
+  /* ── Z-index scale ── */
+  --fu-enterprise-z-dropdown:       100;
+  --fu-enterprise-z-sticky:         200;
+  --fu-enterprise-z-modal-backdrop: 300;
+  --fu-enterprise-z-modal:          400;
+  --fu-enterprise-z-toast:          500;
+  --fu-enterprise-z-tooltip:        600;
+
+  /* ── Typography (system-first, conservative) ── */
+  --fu-enterprise-font-sans:    'Segoe UI', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --fu-enterprise-font-mono:    'Cascadia Code', 'JetBrains Mono', ui-monospace, monospace;
+  --fu-enterprise-font-display: 'Segoe UI', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* ── Table sizing (data-dense) ── */
+  --fu-enterprise-table-row-height:    2.5rem;
+  --fu-enterprise-table-header-height: 2.25rem;
+  --fu-enterprise-table-cell-padding:  0.5rem;
+}
+
+/* ── Dark mode override ── */
+.dark[data-theme="enterprise"],
+[data-theme="enterprise"].dark {
+  --fu-enterprise-paper:      215 25% 7%;
+  --fu-enterprise-ink:        215 20% 94%;
+  --fu-enterprise-muted:      215 12% 62%;
+  --fu-enterprise-line:       215 14% 17%;
+  --fu-enterprise-card:       215 16% 10%;
+  --fu-enterprise-link:       215 80% 68%;
+  --fu-enterprise-link-dark:  215 70% 55%;
+  --fu-enterprise-mark:       45 90% 60%;
+  --fu-enterprise-live:       150 60% 50%;
+}

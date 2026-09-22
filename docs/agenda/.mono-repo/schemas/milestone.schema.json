@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:anytype:schema:2026-08-04:type-milestone:ver-1.0",
+  "type": "object",
+  "title": "Milestone",
+  "x-app": "Anytype",
+  "x-icon-name": "flag",
+  "x-plural": "Milestones",
+  "x-schema-version": "1.0",
+  "x-type-key": "milestone",
+  "properties": {
+    "Object type": {
+      "const": "Milestone",
+      "type": "string",
+      "x-format": "object",
+      "x-key": "type"
+    },
+    "Tags": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "tag",
+      "x-key": "tags"
+    },
+    "Status": {
+      "enum": ["Planned", "In Progress", "Reached", "Cancelled"],
+      "type": "string",
+      "x-key": "status"
+    },
+    "Target": {
+      "format": "date-time",
+      "type": "string",
+      "x-format": "date",
+      "x-key": "targetDate"
+    },
+    "Description": {"type": "string", "x-key": "description"},
+    "Links": {
+      "items": {"type": "string"},
+      "type": "array",
+      "x-format": "object",
+      "x-key": "links"
+    }
+  },
+  "required": ["Object type", "Tags", "Status"]
+}
