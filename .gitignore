@@ -61,7 +61,7 @@ compose/config/secrets.yml
 *.a
 
 # Documentation builds
-site/
+/site/
 _build/
 docs/_build/
 docs-dist/
