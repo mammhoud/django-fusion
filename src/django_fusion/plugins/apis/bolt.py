@@ -31,7 +31,14 @@ This mirrors how the formint sidecar keeps ``django_bolt`` optional in
 ``INSTALLED_APPS``.
 """
 
-from __future__ import annotations
+# NOTE: deliberately NO ``from __future__ import annotations`` in this module.
+# The Bolt binder compiles request bodies with ``typing.get_type_hints`` at
+# decoration time, and the token/refresh endpoints annotate a ``msgspec.Struct``
+# defined *inside* their factory function. Stringified annotations are resolved
+# against module globals, where a function-local class does not exist, so the
+# binder failed with ``NameError: name 'TokenRequest' is not defined``. Eager
+# annotations let the local Struct bind correctly. Every annotation below
+# references a name that is already in scope when its definition runs.
 
 import importlib.util
 import inspect

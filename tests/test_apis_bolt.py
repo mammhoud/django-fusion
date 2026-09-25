@@ -51,6 +51,7 @@ def test_token_payload_round_trip_when_jwt_is_installed():
     assert claims["iss"] == "tests"
 
 
+@pytest.mark.django_db
 def test_user_token_verification_requires_a_live_django_user():
     pytest.importorskip("jwt")
     config = BoltTokenConfig(secret="test-secret-with-at-least-32-bytes", issuer="tests")
