@@ -1,8 +1,7 @@
 # Configuration — DF-007
 
 > Source of truth: `src/django_fusion/config/conf.py`, `conf_utils.py`,
-> `constants.py`, `loader.py`, `pyproject.toml`,
-> `src/django_fusion/projects/middlewares.py`.
+> `constants.py`, `loader.py`, and `pyproject.toml`.
 
 ## Required `INSTALLED_APPS`
 
@@ -142,14 +141,14 @@ layers only supply defaults.
 ```python
 from django_fusion.config.project import load_config, staticfiles_plan
 
-config = load_config(project_dir="projects/structa.cloud")
-domain = config.get("SITE.primary_domain", "structa.cloud")   # dotted keys
-admin = config.section("ADMIN")                                # section dict
+config = load_config(project_dir=BASE_DIR)
+domain = config.get("SITE.primary_domain", "example.com")   # dotted keys
+admin = config.section("ADMIN")                              # section dict
 
 # Base-URL priority: resolve identity for a specific origin (front/back road).
-backend_view = config.resolve("https://lms.structa.cloud", side="back")
+backend_view = config.resolve("https://app.example.com", side="back")
 
-plan = staticfiles_plan(project_dir="projects/structa.cloud")
+plan = staticfiles_plan(project_dir=BASE_DIR)
 print(plan.render())   # static read → output → deploy reference table
 ```
 
@@ -188,11 +187,11 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     # django-fusion opt-ins inserted by the importing site
-    # (specific class names live in src/django_fusion/projects/middlewares.py)
+    # (specific class names live in src/django_fusion/core/middlewares/)
 ]
 ```
 
-> Remark: read the source of `core.middlewares.py` for the exact
+> Remark: read the source of `django_fusion.core.middlewares` for the exact
 > class names you want to opt in to; this version does not export a
 > fixed list of `ComponentErrorMiddleware` / `PrivacyMiddleware` /
 > `LanguageMiddleware` constants. When adding error-tracking

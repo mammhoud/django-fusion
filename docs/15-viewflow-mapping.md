@@ -274,13 +274,13 @@ Usage:
 
 | Topic | File |
 |-------|------|
-| Component Tag Reference | [COMPONENT_TAG.md](./COMPONENT_TAG.md) |
-| Component System Overview | [COMPONENT_SYSTEM.md](./COMPONENT_SYSTEM.md) |
-| Routing System | [ROUTING_SYSTEM.md](./ROUTING_SYSTEM.md) |
-| Architecture Overview | [ARCHITECTURE_OVERVIEW.md](./ARCHITECTURE_OVERVIEW.md) |
+| Component Tag Reference | [COMPONENT_TAG.md](./04-component-tag.md) |
+| Component System Overview | [COMPONENT_SYSTEM.md](./03-component-system.md) |
+| Routing System | [ROUTING_SYSTEM.md](./05-routing.md) |
+| Architecture Overview | [ARCHITECTURE_OVERVIEW.md](./02-architecture.md) |
 | django-material demo source | https://github.com/viewflow/django-material/blob/vibe/demo/urls.py |
 | django-cotton docs | https://django-cotton.com/docs/components |
 
 ---
 
-**Next**: See [COMPONENT_TAG.md](./COMPONENT_TAG.md) for the full `{% comp %}` props/slots/vars API reference.
+**Next**: See [COMPONENT_TAG.md](./04-component-tag.md) for the full `{% comp %}` props/slots/vars API reference.

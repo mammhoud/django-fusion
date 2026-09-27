@@ -1,9 +1,10 @@
 # django-fusion — AI Prompt Reference
 
 Prompt entries below are tagged with the stable doc IDs (from
-`docs/INDEX.md`) they touch. Paths in `**Doc IDs**` lines are repo-relative
-and apply equally to the standalone repo or the Structa Cloud submodule at
-`projects/libs/django-fusion/`.
+`docs/INDEX.md`) they touch. Paths are relative to the django-fusion repository
+root. If the library is checked out as a submodule of a larger workspace, these
+paths are still relative to the *library* root — django-fusion is a standalone
+package and never resolves against a surrounding repository.
 
 ## PR-01 — Add a ModelViewset
 
@@ -39,8 +40,9 @@ a post is clicked.
 `summary`, `image` as props and has a `footer` named slot for action
 buttons.
 
-**Expected Input:** Component template directory under
-`assets/templates/components/`
+**Expected Input:** Component template directory — a project's
+`templates/components/`, or `src/django_fusion/templates/components/` when the
+component is generic enough to ship in the library
 
 **Expected Output:** Component template with `{% prop %}` declarations and
 `{% slot %}` blocks

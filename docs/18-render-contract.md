@@ -316,7 +316,6 @@ test suite. Cover:
 Run:
 
 ```bash
-cd libs/django-fusion
 uv run pytest tests/test_slot_prop_fixes.py -q
 ```
 

@@ -396,11 +396,11 @@ class PostPreviewFragment(FragmentComponent):
 
 | Topic | File |
 |-------|------|
-| Component System Overview | [COMPONENT_SYSTEM.md](./COMPONENT_SYSTEM.md) |
-| Routing System | [ROUTING_SYSTEM.md](./ROUTING_SYSTEM.md) |
-| Viewflow Mapping | [VIEWFLOW_MAPPING.md](./VIEWFLOW_MAPPING.md) |
-| Forms & Tables | [FORMS_TABLES_INTEGRATION.md](./FORMS_TABLES_INTEGRATION.md) |
-| Architecture Overview | [ARCHITECTURE_OVERVIEW.md](./ARCHITECTURE_OVERVIEW.md) |
+| Component System Overview | [COMPONENT_SYSTEM.md](./03-component-system.md) |
+| Routing System | [ROUTING_SYSTEM.md](./05-routing.md) |
+| Viewflow Mapping | [VIEWFLOW_MAPPING.md](./15-viewflow-mapping.md) |
+| Forms & Tables | [FORMS_TABLES_INTEGRATION.md](./06-forms-and-tables.md) |
+| Architecture Overview | [ARCHITECTURE_OVERVIEW.md](./02-architecture.md) |
 | Shared Components Inventory | `applications/assets/templates/components/AGENTS.md` |
 | django-bird (reference) | https://github.com/josemachado/django-bird |
 | django-cotton (reference) | https://django-cotton.com/docs/components |
@@ -416,4 +416,4 @@ class PostPreviewFragment(FragmentComponent):
 
 ---
 
-**Next**: See [VIEWFLOW_MAPPING.md](./VIEWFLOW_MAPPING.md) for django-material → django-fusion URL pattern mapping.
+**Next**: See [VIEWFLOW_MAPPING.md](./15-viewflow-mapping.md) for django-material → django-fusion URL pattern mapping.
