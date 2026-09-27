@@ -146,10 +146,6 @@ def fusion_branding(context: dict[str, Any]) -> str:
     secondary = branding.get("secondary_color") or os.environ.get(
         "FUSION_SECONDARY_COLOR", "#008080"
     )
-    site_name = branding.get("site_name") or os.environ.get(
-        "FUSION_SITE_NAME", "Fusion"
-    )
-
     return format_html(
         "<style>:root{{--fusion-primary-color:{primary};"
         "--fusion-secondary-color:{secondary};}}</style>",

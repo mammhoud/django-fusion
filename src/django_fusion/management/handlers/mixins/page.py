@@ -6,7 +6,6 @@ Pure Django mixins for page handlers without Wagtail dependencies.
 
 from typing import Any, Dict
 
-from django.contrib.auth.models import User
 from django.utils import timezone
 from django.views.generic.base import ContextMixin
 

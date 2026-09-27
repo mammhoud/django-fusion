@@ -17,7 +17,7 @@ except ImportError:
     django_filters = None
 
 if TYPE_CHECKING:
-    import django_filters as _django_filters
+    pass
 
 
 class BaseFilterMethod:

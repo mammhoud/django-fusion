@@ -32,7 +32,7 @@ from __future__ import annotations
 from functools import wraps
 from typing import Any, Callable
 
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse
 from django.template.loader import render_to_string
 
 from django_fusion.routes.rendering.render_mode import resolve_render_first

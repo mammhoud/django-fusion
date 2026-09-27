@@ -60,7 +60,9 @@ def component_logger() -> logging.Logger:
     if not logger.handlers:
         handler = TimedRotatingFileHandler(log_dir / "component_errors.log", when="midnight", backupCount=14)
         handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
-        logger.addHandler(handler); logger.setLevel(logging.INFO); logger.propagate = False
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+        logger.propagate = False
     return logger
 
 class ComponentErrorLoggingMiddleware:

@@ -37,8 +37,6 @@ from typing import Any
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
-from .parser import parse_template
-from .scanner import scan
 from .schemas import Component
 
 

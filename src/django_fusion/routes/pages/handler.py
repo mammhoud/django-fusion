@@ -25,7 +25,6 @@ from django_fusion.core.context.context import FragmentHandlerMixin
 from django_fusion.plugins.htmx.core import is_htmx_request
 from ..http.notifications import NotificationMixin
 from .paginators import HTMXPaginationMixin
-from django_fusion.plugins.htmx import HtmxDetails
 from ..http.response import HttpResponseClientRedirect
 
 logger = logging.getLogger(__name__)

@@ -10,6 +10,7 @@ Canonical imports::
 import logging
 
 from django.db import models
+from django.db.models import Q
 from django.db.models.aggregates import Count, Max
 from django.utils import timezone
 

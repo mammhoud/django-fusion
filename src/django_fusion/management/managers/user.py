@@ -244,7 +244,7 @@ class UserManager(CachedManager, BaseUserManager):
             # Hook: projects can override _sync_person_on_profile_update for person sync
             try:
                 pass  # No-op: person sync is project-specific
-            except:
+            except Exception:
                 pass  # Don't fail if person sync fails
 
             # Invalidate cache
@@ -289,7 +289,7 @@ class UserManager(CachedManager, BaseUserManager):
             # Hook: projects can override get_user_profile_context to add person data
             try:
                 pass  # No-op: person data is project-specific
-            except:
+            except Exception:
                 pass  # Don't fail if person/profile data unavailable
 
             # Add permissions and groups

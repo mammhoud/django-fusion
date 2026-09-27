@@ -301,13 +301,13 @@ class Command(BaseCommand):
         # SCSS partials — look for _<name>.scss or <name>.scss
         for f in comp_dir.iterdir():
             if f.suffix == ".scss" and (f.name.startswith("_") or f.name == f"{comp_dir.name}.scss"):
-                rel = f.relative_to(_FUSION_LIB_ROOT / "src")
+                rel = f.relative_to(_DF_ROOT.parent)
                 scss_files.append(str(rel))
 
         # JS files
         for f in comp_dir.iterdir():
             if f.suffix in (".js", ".jsx", ".ts", ".tsx"):
-                rel = f.relative_to(_FUSION_LIB_ROOT / "src")
+                rel = f.relative_to(_DF_ROOT.parent)
                 js_files.append(str(rel))
 
         return {"scss": scss_files, "js": js_files}
@@ -323,7 +323,6 @@ class Command(BaseCommand):
         ``entry`` field of ``webpack.config.js``.
         """
         per_component: dict[str, str] = {}
-        vendor: dict[str, str] = {}
 
         for comp_name, info in components_map.items():
             if not info["has_webpack_entry"]:

@@ -99,7 +99,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 if TYPE_CHECKING:
-    from django.db.models.manager import RelatedManager
+    pass
 
 logger = logging.getLogger("django_fusion.datatoken")
 

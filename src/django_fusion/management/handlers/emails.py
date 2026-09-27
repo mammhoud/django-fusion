@@ -12,10 +12,7 @@ Canonical imports:
     from django_fusion.management.managers.group_access import GroupAccessControl
 """
 
-from typing import List, Set, Tuple
 
-from django.contrib.auth.models import Group, Permission, User
-from django.db import transaction
 
 
 class DynamicComponentRenderer:
@@ -46,7 +43,7 @@ class DynamicComponentRenderer:
         try:
             import logging
 
-            from django.template import Context, Template
+            from django.template import Template
             from django.utils.safestring import mark_safe
 
             logger = logging.getLogger(__name__)
@@ -138,7 +135,7 @@ class EmailTemplateSelector:
             html_content = render_to_string(template_path, context)
             text_content = strip_tags(html_content)
             return html_content, text_content
-        except Exception as e:
+        except Exception:
             # Fallback to default template
             if role != 'default':
                 return cls.render_email('default', context, use_legacy)

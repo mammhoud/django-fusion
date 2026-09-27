@@ -62,7 +62,7 @@ def invalidate_cache_pattern(pattern: str) -> bool:
         if keys:
             conn.delete(*keys)
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -73,5 +73,5 @@ def is_redis_available() -> bool:
         conn = get_redis_connection("default")
         conn.ping()
         return True
-    except:
+    except Exception:
         return False

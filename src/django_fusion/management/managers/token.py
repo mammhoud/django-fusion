@@ -156,7 +156,7 @@ class TokenAwareManagerMixin:
         if hasattr(obj, 'user'):
             try:
                 return str(obj.user.id) == user_id
-            except:
+            except Exception:
                 pass
 
         return False

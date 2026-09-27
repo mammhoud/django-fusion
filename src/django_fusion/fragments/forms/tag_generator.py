@@ -179,5 +179,5 @@ class FormTagGenerator:
     def _get_choices(field) -> list[dict] | None:
         """Extract choices from a field if it has them."""
         if hasattr(field, "choices") and field.choices:
-            return [{"value": str(v), "label": str(l)} for v, l in field.choices]
+            return [{"value": str(v), "label": str(label)} for v, label in field.choices]
         return None

@@ -24,11 +24,9 @@ Usage::
 from __future__ import annotations
 
 import importlib
-from dataclasses import dataclass, field
 from threading import Lock
 from typing import Any
 
-from . import hookspecs
 from .catalog import PluginSpec, get_catalog
 from .manager import pm
 

@@ -15,7 +15,6 @@ Then in templates::
 
 import os
 
-from django.conf import settings
 
 
 def fusion_branding_context(request):

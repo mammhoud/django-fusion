@@ -48,7 +48,6 @@ from django.urls import URLResolver, path
 from django.urls.resolvers import RoutePattern
 
 from django_fusion.config.conf import get_settings
-from django_fusion.plugins.htmx.core import is_htmx_request
 from django_fusion.routes.pages.handler import ComponentViews
 
 from ..core.base import BaseViewset, _URLResolver

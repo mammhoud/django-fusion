@@ -11,7 +11,6 @@ from decimal import Decimal
 from typing import Any, Callable
 
 from django.db.models import Model, QuerySet
-from django.db.models.fields.related import ForeignKey
 
 
 class RowGenerator:

@@ -19,7 +19,11 @@ Functions:
     enable_livereload: Centralized switch for Django Livereload.
 """
 
+import os
 from typing import Any
+
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 try:
     from core import logger
@@ -45,12 +49,19 @@ from .config import (
 def is_debug_mode() -> bool:
     """
     Check if DEBUG mode is enabled.
+
+    Falls back to the ``DJANGO_DEBUG`` environment variable when Django
+    settings are unavailable -- bare scripts and pre-``django.setup()``
+    imports must not raise.
     """
     try:
-        return settings.DEBUG
-    except (ImportError, AttributeError):
-        # Fallback to environment variable
-        return tracker.debug
+        return bool(settings.DEBUG)
+    except (ImportError, AttributeError, ImproperlyConfigured):
+        return os.environ.get("DJANGO_DEBUG", "").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+        )
 
 
 def is_testing() -> bool:
@@ -61,7 +72,7 @@ def is_testing() -> bool:
         import sys
 
         return "test" in sys.argv or "pytest" in sys.modules
-    except:
+    except Exception:
         return False
 
 

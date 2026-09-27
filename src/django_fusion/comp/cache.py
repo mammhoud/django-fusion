@@ -70,11 +70,10 @@ from __future__ import annotations
 import json
 import logging
 import warnings
-from typing import Any, Optional
+from typing import Any
 from functools import wraps
 
 from django.core.cache import cache
-from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.conf import settings
 
 logger = logging.getLogger(__name__)

@@ -203,7 +203,14 @@ class AuthProcessorMixin(AuthBaseMixin, AuthValidatorMixin):
             user = User.objects.create_user(username=username, email=email, password=password)
 
             # Assign default group
-            group, _ = Group.objects.get_or_create(name=AuthConfig.DEFAULT_GROUP)
+            # Do NOT name the throwaway ``_``: this module imports ``gettext_lazy
+            # as _``, and a local assignment anywhere in the function makes ``_``
+            # local for its whole body -- so the earlier ``_("Registration
+            # failed")`` call raised UnboundLocalError on every invalid
+            # registration attempt.
+            group, _created = Group.objects.get_or_create(
+                name=AuthConfig.DEFAULT_GROUP
+            )
             user.groups.add(group)
 
             # Registration successful
