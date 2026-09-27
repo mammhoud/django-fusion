@@ -9,6 +9,7 @@ frontends. Zero runtime dependencies — import from any TS framework
 | Module | Export | Purpose |
 | ------ | ------ | ------- |
 | `modules/htmx.ts` | `attachHtmx`, `isHtmxRequest`, `isFragmentRequest`, `bindIndicator`, `onSwap` | Attach + configure an htmx runtime, detect HX requests, global request indicator |
+| `modules/nav.ts` | `htmxNavAttributes`, `isFragmentNavigable`, `installHtmxNavigation` | Render htmx attributes for content links from the fragment contract and keep title/active/revealed state in sync after swaps |
 | `modules/sse.ts` | `createSSEClient` | Typed EventSource client with reconnect/backoff + named events |
 | `modules/fragments.ts` | `loadFragment`, `refreshFragments` | Fetch + swap `/fragment/...` endpoints into `[data-fusion-fragment]` targets |
 | `modules/scroll.ts` | `initScrollReveal`, `initSmoothAnchors` | IntersectionObserver reveals + smooth anchors (reduced-motion aware) |

@@ -9,6 +9,7 @@
  */
 
 export * from './modules/htmx';
+export * from './modules/nav';
 export * from './modules/sse';
 export * from './modules/fragments';
 export * from './modules/scroll';
