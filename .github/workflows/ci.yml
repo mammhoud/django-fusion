@@ -1,0 +1,94 @@
+# ci.yml — django-fusion library CI.
+#
+# Scope is the library only. This repository is a reusable package, so there is
+# no monorepo, no product path, and no service to start: the suite runs against
+# the library's own test tree (tests/) with Django configured in-process by
+# tests/conftest.py.
+#
+# The package job builds a wheel and sdist and runs `twine check`, which catches
+# README/metadata problems before a release rather than during one.
+
+name: CI
+
+on:
+  push:
+    branches: [generic, main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: tests (py${{ matrix.python-version }}, django ${{ matrix.django }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+        django: ["4.2", "5.2"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Run the test suite
+        run: |
+          uv run --python ${{ matrix.python-version }} \
+                 --extra test \
+                 --with "django>=${{ matrix.django }},<${{ matrix.django }}.99" \
+                 pytest -q
+
+  package:
+    name: build + metadata check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Build sdist and wheel
+        run: uv build
+
+      - name: Check distribution metadata
+        run: uv run --with twine twine check dist/*
+
+      - name: Smoke-test the built wheel in a clean environment
+        run: |
+          python -m venv /tmp/wheel-smoke
+          /tmp/wheel-smoke/bin/pip install --quiet dist/*.whl
+          /tmp/wheel-smoke/bin/python - <<'PY'
+          import django_fusion
+          from pathlib import Path
+
+          package_dir = Path(django_fusion.__file__).parent
+          templates = package_dir / "templates"
+          assert templates.is_dir(), f"templates missing from wheel: {templates}"
+          assert any(templates.rglob("*.html")), "no templates shipped in the wheel"
+          print("wheel smoke test OK:", django_fusion.__file__)
+          PY
+
+  lint:
+    name: ruff
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Lint
+        run: uv run --with ruff ruff check src tests
