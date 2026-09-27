@@ -5,12 +5,9 @@ YAML), so these tests build fake project trees with tmp_path and verify layer
 precedence and base-URL priority resolution without booting Django.
 """
 
-import os
 
-import pytest
 
 from django_fusion.config.project import (
-    ProjectConfig,
     load_config,
     staticfiles_plan,
 )

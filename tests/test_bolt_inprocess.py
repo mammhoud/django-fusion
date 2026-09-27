@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import time
 
-import jwt
 import pytest
 
+# Both dependencies are optional extras (``django-fusion[bolt]``). Skip the
+# module before any third-party import so a base install still collects cleanly.
+jwt = pytest.importorskip("jwt")
 pytest.importorskip("django_bolt")
 
 from django_bolt.auth import IsAuthenticated

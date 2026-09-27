@@ -32,23 +32,13 @@ def test_shared_model_bases_are_public_and_abstract():
     """Promoted domain behavior is available from the package API."""
     from django_fusion.models import (
         AbstractBrandSettings,
-        AbstractCertificationTemplate,
-        AbstractCoupon,
-        AbstractCouponUsage,
         AbstractEmailSettings,
         AbstractGlobalSettings,
         AbstractLocalizedSettings,
-        AbstractNewsletter,
         AbstractNewsletterSubscription,
-        AbstractWorkspace,
     )
 
     for model in (
-        AbstractWorkspace,
-        AbstractCoupon,
-        AbstractCouponUsage,
-        AbstractCertificationTemplate,
-        AbstractNewsletter,
         AbstractLocalizedSettings,
         AbstractBrandSettings,
         AbstractEmailSettings,
@@ -56,6 +46,47 @@ def test_shared_model_bases_are_public_and_abstract():
         AbstractNewsletterSubscription,
     ):
         assert model._meta.abstract is True
+
+
+def test_product_vertical_models_are_not_shipped_in_the_library():
+    """LMS/CRM vocabulary belongs to the consuming projects, not the framework.
+
+    These six abstract bases (certificates, coupons, newsletters, workspaces,
+    notes) described one product's domain. Keeping them in the base package
+    forced every consumer to inherit vocabulary it did not use, so they were
+    moved to the projects that actually define those concepts.
+
+    ``Call``/``Notification`` (``models/interaction/``) deliberately stay: they
+    are concrete, migrated models, not abstract bases -- removing them would
+    require a schema migration for existing installs.
+
+    Note: this test does not import ``Call``/``Notification``. They are part of
+    the ``django_fusion`` app itself, which this suite does not put in
+    ``INSTALLED_APPS`` (only ``django_fusion.comp``), so Django refuses to
+    define them here.
+    """
+    import importlib
+
+    for module in (
+        "django_fusion.models.certificate",
+        "django_fusion.models.certification",
+        "django_fusion.models.coupon",
+        "django_fusion.models.newsletter",
+        "django_fusion.models.note",
+        "django_fusion.models.workspace",
+    ):
+        try:
+            importlib.import_module(module)
+        except ModuleNotFoundError:
+            continue
+        raise AssertionError(f"{module} is product-specific and must not ship")
+
+    from pathlib import Path
+
+    import django_fusion.models as models_pkg
+
+    interaction = Path(models_pkg.__file__).parent / "interaction"
+    assert interaction.is_dir(), "interaction/ holds migrated models and must stay"
 
 
 def test_context_exports_canonical_fragment_handler_without_dead_detection():

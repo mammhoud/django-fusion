@@ -33,6 +33,48 @@ def _pipeline_settings(stats_file, *, configured=None):
     }
 
 
+def test_shipped_webpack_workspace_build_files_resolve():
+    """The Node asset build ships complete and resolves the library root.
+
+    ``webpack.config.js`` is the entry point for ``make build`` and hard-requires
+    ``./webpack/workspace.config``, which in turn loads
+    ``webpack/workspaces/<name>.js`` and falls back to ``default``. Those files
+    are library infrastructure, not monorepo scaffolding: dropping them makes
+    the build fail with "Cannot find module" before any asset is emitted, and
+    nothing else in the Python tree would notice.
+
+    ``default.js`` lives in ``webpack/workspaces/``, so the library root is two
+    directories up. Getting that wrong silently repoints the ``fusion`` entry at
+    a path that does not exist, so the depth is pinned here too.
+    """
+    import re
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+
+    webpack_config = root / "webpack.config.js"
+    workspace_loader = root / "webpack" / "workspace.config.js"
+    default_workspace = root / "webpack" / "workspaces" / "default.js"
+
+    for path in (webpack_config, workspace_loader, default_workspace):
+        assert path.is_file(), f"missing asset-build file: {path.relative_to(root)}"
+
+    # webpack.config.js is the only consumer of the loader, and it requires it
+    # by relative path at module scope.
+    assert './webpack/workspace.config' in webpack_config.read_text(encoding="utf-8")
+
+    source = default_workspace.read_text(encoding="utf-8")
+    assert "entry.js" in source
+
+    # The library root must be reached with exactly two ".." hops.
+    root_dir = re.search(r"ROOT_DIR\s*=\s*path\.resolve\((.*?)\)", source)
+    assert root_dir, "default workspace no longer defines ROOT_DIR"
+    assert root_dir.group(1).count('".."') == 2
+
+    entry = root / "src" / "django_fusion" / "assets" / "entry.js"
+    assert entry.is_file(), "the default workspace entry point is missing"
+
+
 def test_asset_pipeline_options_derive_manifest_from_static_root(tmp_path):
     """The component manifest follows a customized STATIC_ROOT."""
     stats_file = tmp_path / "bundles.json"
