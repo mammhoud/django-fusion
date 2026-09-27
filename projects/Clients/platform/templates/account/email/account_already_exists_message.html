@@ -1,7 +1,0 @@
-{% extends "account/email/base_email.html" %}
-{% load account i18n %}
-{% block email_body %}
-<h1 style="margin:0 0 16px;font-size:20px;color:#1A1917;font-family:'Courier New',monospace;letter-spacing:-0.02em;">Account already exists</h1>
-<p style="margin:0 0 16px;">You're receiving this because you tried to sign up on <strong>{{ current_site.domain }}</strong> with {{ email }}, but an account with that address already exists.</p>
-<p style="margin:0;font-size:12px;color:#8A857C;">You can safely ignore this email, or <a href="{{ password_reset_url }}" style="color:#0B57D0;">reset your password</a> if you've forgotten it.</p>
-{% endblock %}
