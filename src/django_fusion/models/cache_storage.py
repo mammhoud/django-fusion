@@ -5,7 +5,6 @@ import json
 import logging
 import threading
 from datetime import datetime
-from typing import Any
 
 from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder

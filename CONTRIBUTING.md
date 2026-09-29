@@ -1,136 +1,170 @@
 # Contributing to django-fusion
 
-Thanks for contributing! This guide covers practical day-to-day workflow.
+Thanks for contributing! This guide covers the practical day-to-day workflow.
 
 ## Local development setup
 
 ```bash
-# Clone standalone
 git clone https://github.com/mammhoud/django-fusion.git
 cd django-fusion
 
-# Or, inside the Structa Cloud monorepo, the submodule lives at:
-#   projects/libs/django-fusion/
-
-# Create a virtualenv (Python 3.11+ per pyproject.toml requires-python)
-python3.11 -m venv .venv
-source .venv/bin/activate
-
-# Install in editable mode with test extras
-pip install -e ".[test]"
+# Python 3.11+ (see requires-python in pyproject.toml)
+uv sync --extra test          # or: uv run --extra test pytest
 ```
 
-> Remark: `requires-python = ">=3.11"` — Python 3.10 will fail to import some
-> type annotations used in `projects/services` and `projects/models`.
+`uv` is not required — `python -m venv .venv && .venv/bin/pip install -e ".[test,dev]"`
+works too.
+
+> **Remark:** `requires-python = ">=3.11"`. Python 3.10 fails to import some of
+> the annotations used in the package.
 
 ## Running the test suite
 
 ```bash
-# From the repo root (or submodule root if checked out standalone)
-pytest
+uv run --extra test pytest                  # full suite
+uv run --extra test pytest -q               # quiet
+uv run --extra test pytest tests/analyzer    # one directory
+uv run --extra test pytest tests/test_imports.py -v
 
-# Focused run
-pytest tests/test_comp_routes.py -v
-
-# Quiet-by-default opt-in verbose mode:
-DJANGO_DEBUG_CONFTEST=1 pytest -s tests/test_form_components.py
+# Opt-in verbose diagnostics (exact-match gate on "1"):
+DJANGO_DEBUG_CONFTEST=1 uv run --extra test pytest -s tests/test_form_components.py
 ```
 
-The `DJANGO_DEBUG_CONFTEST=1` env var opts into extra diagnostic logging from
-`tests/conftest.py` (Django TEMPLATES config, DJANGO_SETTINGS_MODULE). Without
-it, conftest stays quiet — this is enforced by `tests/test_conftest_debug_is_quiet.py`.
+The suite is self-contained: no database server, no network, no surrounding
+repository. Django settings live in `tests/_django_settings.py` and are applied
+by `tests/conftest.py`; do not add a `DJANGO_SETTINGS_MODULE`.
 
-The exact-match comparison (`os.environ.get("DJANGO_DEBUG_CONFTEST") == "1"`)
-means empty strings or accidental values do NOT trigger the print.
+Two facts about the suite are worth knowing before you add a test:
 
-## CI workflow (`.github/workflows/tests.yml`)
+1. **Django's template engine caches aggressively.** `tests/conftest.py` restores
+   `settings.TEMPLATES` and the engine caches between modules. If your test
+   rewrites `settings.TEMPLATES`, that guard is what keeps the next module
+   working — do not remove it.
+2. **Optional extras must skip, not error.** Guard the third-party import
+   *before* importing it, e.g. `jwt = pytest.importorskip("jwt")`. A collection
+   error from a missing extra breaks the whole run.
 
-The GitHub Actions workflow is **staged at `docs/ci/tests.yml`**, not at
-`.github/workflows/tests.yml`. This is intentional: the Personal Access
-Token used by the parent Structa Cloud monorepo's `make push-libs` target
-does not carry the **`workflow`** OAuth scope that GitHub requires to
-create or update files under `.github/workflows/`.
+## CI
 
-When you have a token with the `workflow` scope (a maintainer push
-under `mammhoud/django-fusion`), restore the workflow to its normal
-location with this snippet from the submodule root:
+`.github/workflows/ci.yml` runs on every push and pull request:
+
+| Job | What it does |
+|---|---|
+| `test` | pytest across Python 3.11/3.12 and Django 4.2/5.2 |
+| `package` | `uv build`, `twine check`, and a wheel smoke test |
+| `lint` | `ruff check src tests` |
+
+Run the same three locally before opening a PR:
 
 ```bash
-# Run this from inside the submodule root (e.g. projects/libs/django-fusion)
-cd projects/libs/django-fusion
-
-mkdir -p .github/workflows
-cp docs/ci/tests.yml .github/workflows/tests.yml
-git add .github/workflows/tests.yml
-git commit -m "ci: restore GitHub Actions workflow from docs/ci staging"
-git push origin generic
+uv run --extra test pytest -q
+uv run --with ruff ruff check src tests
+make dist && make check-dist
 ```
-
-Why the indirection? Without `workflow` scope, GitHub returns:
-
-```
-remote: Refusing to allow a Personal Access Token to create or update
-        workflow `.github/workflows/tests.yml` without `workflow` scope.
-```
-
-…and refuses the push. So the file lives in `docs/ci/` until a workflow-
-scoped token pushes it back. The content is identical between locations.
 
 ## Documentation
 
-The repo uses stable doc IDs `DF-0NN` (from [`docs/INDEX.md`](./docs/INDEX.md)).
-When you change code or add a feature:
+Docs use stable `DF-0NN` IDs from [`docs/INDEX.md`](./docs/INDEX.md). When you
+change code or add a feature:
 
 1. Find the matching `DF-0NN` row in `docs/INDEX.md`.
-2. Update or create the doc with the next free ID.
-3. Update the index row's status (`🟡 TODO` → `✅ Exists`).
-4. Reference the doc ID in commits and PR titles, e.g.:
+2. Update it, or create the next free ID for a new topic.
+3. Update the index row (`🟡 TODO` → `✅ Exists`).
+4. Reference the ID in commits and PR titles:
 
 ```text
-feat(comp): add `RoutableComponent.cache()` method (DF-003)
+feat(comp): add RoutableComponent.cache() method (DF-003)
 
-- Implement LRU cache decorator on routable components
+- Implement the cache decorator on routable components
 - Document in DF-003
-- Add test in tests/test_routable_components.py
+- Add tests in tests/analyzer/
 ```
 
-**Never mark a doc "✅ Exists" before its content is written.** That was the
-exact mistake in the previous iteration, and it created ~20 dead links.
+**Never mark a doc `✅ Exists` before its content is written.** Dead links were
+the exact failure mode that motivated the current index.
+
+If you document a new public import path, add it to
+`tests/test_documented_import_paths.py` in the same change — that test is what
+stops the docs from silently drifting away from the code.
+
+## What belongs where
+
+Keep the base package product-agnostic:
+
+- **In `django-fusion`** — generic component/routing/fragment behavior, shared
+  abstract model bases, framework settings, health and asset contracts.
+- **In the consuming project** — concrete models and migrations, page types,
+  component templates and their copy, URL mounts, task implementations, and
+  deployment policy.
+
+Two hard rules:
+
+1. No product names, product page types, or product model classes in `src/`.
+2. No monorepo paths anywhere in the repository — the library is published
+   standalone and must build and test outside any workspace.
+
+`tests/test_imports.py` and `tests/test_site_management_commands.py` pin both
+boundaries.
 
 ## Commit message convention
 
-- Reference `DF-NNN` for any doc change
-- Reference `PR-NN` if a prompt from `PROMPTS.md` drove the change
-- Use imperative mood ("add", not "added")
-- Wrap the subject at ~72 characters
-- Body explains *what* and *why*, not *how*
+- Reference `DF-NNN` for documentation changes.
+- Reference `PR-NN` if a prompt from `PROMPTS.md` drove the change.
+- Use the imperative mood ("add", not "added").
+- Keep the subject under ~72 characters.
+- The body explains *what* and *why*, not *how*.
 
 ## Pull request expectations
 
-PRs should include:
-
-- Tests for any new public method or behavior
-- A matching doc update with a `DF-0NN` ID
-- Cross-references from related docs (e.g. DF-003 should mention DF-004)
-- No unrelated formatting/whitespace changes
+- Tests for any new public method or behavior.
+- A matching doc update with a `DF-0NN` ID.
+- Cross-references from related docs.
+- No unrelated formatting or whitespace churn.
 
 ## Code style
 
-This repo currently uses Black-style 88-character formatting and PEP 8 type
-hints. Existing patterns:
+Black-compatible 88-character formatting and PEP 8 type hints. Existing patterns:
 
-- `from __future__ import annotations` is used in `comp/routes.py` and
-  `projects/services.py`
-- Public classes use full type hints; private helpers may use abbreviations
-- Never wrap imports in `try`/`except` (see project AGENTS.md)
+- `from __future__ import annotations` at the top of modules that need it.
+- Public classes carry full type hints; private helpers may use abbreviations.
+- Import framework symbols from their owning module. Do not add re-export shims
+  or forwarding `__init__.py` re-exports.
+
+`ruff` is the linter:
+
+```bash
+uv run --with ruff ruff check src tests
+```
 
 ## Releasing
 
-Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-CHANGELOG.md follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-format. Maintainers handle version bumps and PyPI publication.
+Versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and
+`CHANGELOG.md` follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+The full runbook — version bump, build, `twine check`, wheel smoke test,
+TestPyPI rehearsal, production upload, trusted publishing, and rollback — is
+[**DF-023 Publishing**](./docs/23-publishing.md). The short path:
+
+```bash
+make version        # confirm pyproject.toml, __init__.py, and the changelog agree
+make test
+make dist
+make check-dist
+make publish-test   # TestPyPI rehearsal
+git tag -a vX.Y.Z -m "django-fusion X.Y.Z"
+make publish        # guarded: clean tree at the release tag
+```
+
+A version that reached PyPI is spent. To fix a bad release, ship the next number;
+you cannot edit or re-upload an existing version.
 
 ## Questions?
 
-Open a GitHub issue or discussion on
+Open an issue or discussion on
 [mammhoud/django-fusion](https://github.com/mammhoud/django-fusion).
+
+**Mahmoud Ezzat Moustafa** — Structa Cloud
+
+- GitHub: [github.com/mammhoud](https://github.com/mammhoud)
+- LinkedIn: [linkedin.com/in/mammhoud](https://www.linkedin.com/in/mammhoud)
+- Facebook: [facebook.com/mammhoud](https://www.facebook.com/mammhoud)

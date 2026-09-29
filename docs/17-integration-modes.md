@@ -6,22 +6,23 @@ project code.
 
 ## 1. Project organization
 
+django-fusion is installed into your project, so the two trees sit side by
+side rather than in one another. The library half is fixed; the project half is
+yours to shape:
+
 ```text
-structa.cloud/
-├── libs/django-fusion/
-│   ├── src/django_fusion/core/assets/       # canonical asset JSON API
-│   ├── src/django_fusion/core/health/       # app, DB, media, asset probes
-│   ├── src/django_fusion/comp/templatetags/ # fusion and component tags
-│   └── docs/                                # library contracts and examples
-├── projects/cms-fusion/backend/
-│   ├── apps/                                # CMS models, routes, adapters
-│   └── www/urls.py                          # CMS URL mounts
-├── projects/structa.cloud/backend/
-│   ├── apps/                                # LMS models, routes, adapters
-│   └── www/urls.py                          # LMS URL mounts
-└── applications/proxy/
-    ├── nginx/                               # shared-media static/media server
-    └── traefik/                             # host and path routing
+django-fusion/                               # the installed package
+├── src/django_fusion/core/assets/           # canonical asset JSON API
+├── src/django_fusion/core/health/           # app, DB, media, asset probes
+├── src/django_fusion/comp/templatetags/     # fusion and component tags
+└── docs/                                    # library contracts and examples
+
+your-project/                                # your Django/Wagtail site
+├── apps/                                    # your models, routes, adapters
+├── configs/                                 # your layered project config (DF-007)
+├── www/urls.py                              # your URL mounts
+├── templates/                               # your templates and fragments
+└── static/bundles/                          # your webpack output
 ```
 
 **Rule:** reusable request/response behavior belongs in `django-fusion`;
@@ -51,8 +52,8 @@ folder and stats file:
 ```python
 WEBPACK_LOADER = {
     "DEFAULT": {
-        "BUNDLE_DIR_NAME": "bundles/precis-lms/",
-        "STATS_FILE": BASE_DIR / "assets" / "staticfiles" / "bundles" / "precis-lms" / "webpack-stats.json",
+        "BUNDLE_DIR_NAME": "bundles/main/",
+        "STATS_FILE": BASE_DIR / "staticfiles" / "bundles" / "main" / "webpack-stats.json",
     }
 }
 ```
@@ -204,4 +205,4 @@ non-blocking.
 - [DF-009 Health checks](./09-health.md)
 - [DF-016 Assets pipeline](./16-assets.md)
 - [DF-005 Routing](./05-routing.md)
-- [Structa Cloud django-fusion page](../../docs/projects/libs/django-fusion.md)
+- [DF-000 Documentation index](./INDEX.md)

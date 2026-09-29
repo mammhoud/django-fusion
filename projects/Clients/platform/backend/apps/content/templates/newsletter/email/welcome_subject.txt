@@ -1,1 +1,0 @@
-Welcome to {{ site_name }} — you're on the list

@@ -207,4 +207,14 @@ def designer_webapp_enhancement_plan(**kwargs: Any) -> dict[str, Any]:
         "Verify project-specific journeys, content, and workflows "
         f"according to the {project} product surface."
     )
-    return {"audit": audit, "phases": phases, "apply_required": True, "deployment_required": True}
+    return {
+        "audit": audit,
+        "phases": phases,
+        "apply_required": True,
+        "deployment_required": True,
+        # Exposed for parity with ``designer_website_audit``: the guidance was
+        # already resolved here and then discarded, so callers could not read
+        # the project's audit guidance from the plan even though the audit
+        # returned it.
+        "guidance": guidance,
+    }

@@ -1,7 +1,11 @@
 # Getting Started — DF-001
 
 > Source of truth: `pyproject.toml`, `src/django_fusion/__init__.py`,
+<<<<<<< HEAD
 > `src/django_fusion/comp/`, `QUICKSTART.md`, `src/django_fusion/management/`.
+=======
+> `src/django_fusion/comp/`, and `QUICKSTART.md`.
+>>>>>>> refs/remotes/origin/generic
 
 **Time:** ≈10 minutes.
 
@@ -23,15 +27,12 @@ source .venv/bin/activate
 pip install -e ".[test]"
 ```
 
-> Remark: `requires-python = ">=3.11"` per `pyproject.toml`. Python 3.10
-> works in practice for most calls, but the type annotations in some
-> `projects/*` modules assume 3.11+ syntax.
+> Remark: `requires-python = ">=3.11"` per `pyproject.toml`. Python 3.10 works
+> in practice for most calls, but some modules use 3.11+ annotation syntax.
 
-### Structa Cloud monorepo (submodule)
-
-```bash
-pip install -e projects/libs/django-fusion
-```
+There is no path prefix to install from: this repository **is** the library, so
+`pip install -e .` from the clone root is the whole story. To publish a release,
+see [DF-023 Publishing](./23-publishing.md).
 
 ## Add to `INSTALLED_APPS`
 

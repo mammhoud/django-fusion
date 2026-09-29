@@ -8,7 +8,7 @@ import logging
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 
-from .parser import CompUsage, parse_template
+from .parser import parse_template
 from .post_process import enrich_pages
 from .scanner import MAX_DEPTH, scan
 from .schemas import (

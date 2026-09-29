@@ -1,6 +1,0 @@
-default: {}
-
-staging:
-  DEBUG: false
-  TEMPLATE_DEBUG: false
-  EMAIL_STRATEGY: smtp

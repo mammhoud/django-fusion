@@ -1,96 +1,73 @@
 # DF-000 — django-fusion Package Guide
 
-> The complete package guide: what this library is, how it is structured, how it
-> is used across the Structa Cloud monorepo, and how to work with it.
-> Companion to **DF-000** ([INDEX.md](INDEX.md)) — the docs index remains the
-> numbered source of truth; this guide is the human-facing entry point.
+> The human-facing entry point to the package: what it is, how it is laid out,
+> how it is consumed, and where to look next. The numbered index in
+> [`INDEX.md`](./INDEX.md) remains the source of truth for the doc set.
 
 ---
 
-## 1. What This Package Is
+## 1. What this package is
 
-`django-fusion` is a Django + Wagtail helper library that provides:
+`django-fusion` is a Django + Wagtail helper library:
 
-- **Component system** — `{% comp %}` template tag with props, slots, variables,
-  HTMX scoping (`fragment_name=`), and component tracking/analysis.
+- **Component system** — `{% comp %}` with props, slots, variables, HTMX scoping
+  (`fragment_name=`), and component usage analysis.
 - **Declarative routing** — `Site`, `Application`, `Viewset`, `ModelViewset`,
   `RoutableComponent`, `FragmentComponent`.
+- **Fragment rendering** — fetch any template fragment by dotted name over HTTP,
+  HTMX, Unpoly, or SSE.
 - **Forms & tables** — `FormMixin`, `TableMixin`, `FormTableMixin` with a
   template-resolution cascade.
-- **Auth layer** — django-allauth adapters, mixins, social signup helpers.
-- **Wagtail integration** — StreamField blocks, snippets, viewsets, menus.
+- **Render contract** — render-first HTML, fragments, or a data API from one
+  view, resolved through `FUSION_RENDER_MODE`.
 - **Health checks** — `/health/`, `/health/db/`, `/health/assets/`.
-- **Configuration** — Dynaconf multi-environment YAML settings + model/template
-  registries.
-- **Background tasks** — Dramatiq worker + APScheduler cron runners.
-- **Optional plugins** — django-bolt API bridge, tables adapter, auth extras.
+- **Asset pipeline** — webpack source for component SCSS/JS plus a
+  backend-controlled asset manifest.
+- **Background tasks** — broker-agnostic registration (Dramatiq or in-process).
+- **Configuration** — Dynaconf multi-environment YAML loader and typed `FUSION_*`
+  settings.
+- **Optional integrations** — django-bolt API bridge, django-tables2, allauth,
+  django-webpack-loader, an interactive designer, and MCP routers.
 
-It is the **canonical `django_fusion` package**; import symbols from
-`django_fusion.*` directly. Re-export shims were removed — never add new ones.
+It is the canonical `django_fusion` package. Import symbols from `django_fusion.*`
+directly; re-export shims are not supported.
 
-## 2. Repository Layout
+## 2. Repository layout
 
 ```text
-libs/django-fusion/
+django-fusion/
 ├── src/django_fusion/
-│   ├── comp/            # Components, routes, generic views, template tags
-│   │   ├── routes/      #   Site, Application, Viewset, RoutableComponent…
-│   │   ├── generic/     #   List/Create/Update/Delete/Detail model views
-│   │   └── templatetags/ #   components, routable_components
-│   ├── core/            # handlers (PageHandler), services, middlewares, cache
-│   ├── health/          # /health/ endpoints
-│   ├── config/          # Dynaconf loader, ModelsRegistry, TemplateRegistry
-│   ├── tasks/           # Dramatiq worker + APScheduler scheduler
-│   ├── plugins/         # optional integrations (apis/bolt, tables, auth)
-│   └── assets/          # SCSS/JS entry points for the webpack bundle
-├── docs/                # This documentation set (DF-0NN)
-├── js/fusion-js/        # TypeScript fusion client (nx project `fusion-js`)
-├── static/              # compiled webpack output (bundles, webpack-stats.json)
-├── tests/               # pytest suite (63+ tests + hypothesis property tests)
-├── Makefile             # asset build targets
-└── pyproject.toml       # package metadata + extras (bolt, tables, auth, webpack)
+│   ├── comp/              # Component registry, {% comp %} tags, cache, loader
+│   ├── routes/            # Sites, applications, viewsets, components, renderers
+│   ├── fragments/         # Fragment views, forms, tables, generic CBVs, analyzer
+│   ├── core/              # Middleware, context, rendering, assets, health, encoder
+│   ├── config/            # Typed conf, Dynaconf loader, asset manifest
+│   ├── models/            # Base models, mixins, email, interaction, datatoken
+│   ├── services/          # Base/model services, jobs, token, crud
+│   ├── management/        # Commands, handlers, filters, managers, utils
+│   ├── tasks/             # Broker-agnostic task registry and backends
+│   ├── site/              # Site-level authentication mixins
+│   ├── plugins/           # Optional: apis (bolt), designer, htmx, unpoly, webpack
+│   ├── builder/           # Landing builder: page assembly, themes, styles
+│   ├── template_fields/   # Sandboxed dynamic template field engine
+│   ├── mcp/               # MCP routers (requires the bolt extra)
+│   ├── contrib/           # Admin, cache, privacy, utility extensions
+│   ├── assets/            # SCSS/JS source for the webpack bundle
+│   └── templates/         # Framework templates and components
+├── tests/                 # Self-contained pytest suite + support fixtures
+├── docs/                  # This documentation set (DF-0NN)
+├── .github/workflows/     # Library CI (tests, package check, lint)
+├── webpack.config.js      # Webpack 5 bundle config
+├── MANIFEST.in            # sdist contents
+├── Makefile               # Asset build + release targets
+└── pyproject.toml         # Metadata, extras, tool config
 ```
 
-## 3. How It Is Used Across Structa Cloud
+## 3. How it is consumed
 
-django-fusion is the shared framework layer for every web product in the
-monorepo. Consumers and their intensity:
-
-| Project | Backend | Usage |
-|---------|---------|-------|
-| Precis (main) | `projects/structa.cloud/backend/` | Reference consumer: components, viewsets, fragments |
-| CTC Research | `projects/precis/precis-ctc/backend/` | Heaviest consumer (194 files): health, scheduler, config |
-| Loop-CRM | `projects/loop-crm/backend/` | Pages, seed commands (`seed_demo`, `seed_pages`) |
-| Syntara | `projects/syntara/` | `django_fusion.config.loader` registries |
-| Formint Pro | `projects/formints/formint-pro/server/` | Ninja API + fusion viewsets |
-| Formint Cloud | `projects/formints/formint-cloud/backend/` | Unfold admin + fusion contract |
-| Formint client | `projects/formints/formint-client/backend/` | Purchase app backend |
-
-```mermaid
-graph LR
-    F[🧩 django-fusion] --> P[🎓 Precis]
-    F --> C[🏥 CTC]
-    F --> L[🤝 Loop-CRM]
-    F --> S[🤖 Syntara]
-    F --> Fp[💳 Formint Pro]
-    F --> Fc[☁️ Formint Cloud]
-    F --> Fcl[💻 Formint client]
-```
-
-## 4. Quick Start
-
-### In a Structa Cloud project
-
-The workspace `projects/pyproject.toml` resolves django-fusion as a path source
-(`libs/django-fusion`), so `uv sync` in the workspace installs it. Backend
-Makefiles that want an explicit editable install:
-
-```bash
-cd libs/django-fusion
-uv pip install -e .
-```
-
-### In a standalone project
+`django-fusion` is a standalone published package. It is installed into a Django
+or Wagtail project, which supplies its own settings, models, templates, and URL
+mounts:
 
 ```bash
 pip install django-fusion
@@ -98,6 +75,7 @@ pip install django-fusion
 
 ```python
 INSTALLED_APPS = [
+<<<<<<< HEAD
     # ...
     "django_fusion",                 # app config: task wiring + sub-app discovery
     "django_fusion.comp",            # component system, registry, {% comp %}
@@ -105,58 +83,87 @@ INSTALLED_APPS = [
     "django_fusion.config",          # Dynaconf settings loader
     "django_fusion.core.health",     # optional — /health/ endpoints
     "django_fusion.fragments.analyzer",  # optional — {% comp %} usage scanner
+=======
+    "django_fusion",                     # base models, migrations, task bootstrap
+    "django_fusion.comp",                # component registry (required)
+    # "django_fusion.fragments.analyzer",  # optional
+    # "django_fusion.builder",             # optional
+>>>>>>> refs/remotes/origin/generic
 ]
 ```
 
-Render your first component:
+```mermaid
+graph LR
+    F[🧩 django-fusion] --> P[Django / Wagtail project]
+    F --> T[Project templates<br/>components/*]
+    F --> S[Project settings<br/>FUSION_* keys]
+    F --> A[Project asset bundle]
+```
+
+The library owns framework behavior. The project owns product behavior. See
+[DF-017](./17-integration-modes.md) for the full boundary rules and
+[README § Base vs. customization](../README.md#base-vs-customization) for the
+short version.
+
+`django-fusion` is also used inside a larger workspace as a git submodule. That
+workspace relationship is not part of the library: the package has no knowledge
+of a surrounding repository, and no code path in `src/` references one.
+
+## 4. Quick start
+
+```bash
+pip install django-fusion
+```
 
 ```django
 {% comp "components/button.html" label="Save" variant="primary" / %}
 ```
 
-> Full walkthrough: [DF-001 Getting Started](01-getting-started.md).
+Full walkthrough, including middleware ordering and template-tag builtins:
+[DF-001 Getting Started](./01-getting-started.md).
 
-## 5. Docs Map
+## 5. Docs map
 
-| ID | Topic | File |
-|----|-------|------|
-| DF-000 | Docs index (source of truth) | `INDEX.md` |
-| — | **Package guide (this file)** | `00-package-guide.md` |
-| DF-001 | Getting started | `01-getting-started.md` |
-| DF-002 | Architecture overview | `02-architecture.md` |
-| DF-003 | Component system (Python) | `03-component-system.md` |
-| DF-004 | `{% comp %}` template tag | `04-component-tag.md` |
-| DF-005 | Routing & viewsets | `05-routing.md` |
-| DF-006 | Forms & tables | `06-forms-and-tables.md` |
-| DF-007 | Settings & configuration | `07-configuration.md` |
-| DF-008 | API reference | `08-api-reference.md` |
-| DF-009 | Health checks | `09-health.md` |
-| DF-010 | Wagtail integration | `10-wagtail-integration.md` |
-| DF-011 | Best practices | `11-best-practices.md` |
-| DF-012 | Integration examples | `12-integration-examples.md` |
-| DF-013 | Troubleshooting | `13-troubleshooting.md` |
-| DF-014 | FAQ | `14-faq.md` |
-| DF-015 | Viewflow mapping | `15-viewflow-mapping.md` |
-| DF-016 | Asset pipeline | `16-assets.md` |
-| DF-017 | Integration modes | `17-integration-modes.md` |
-| DF-018 | Render contract | `18-render-contract.md` |
-| DF-019 | OpenAPI & filtering | `19-openapi-and-filtering.md` |
+The numbered set lives in [`INDEX.md`](./INDEX.md). Summary:
 
-## 6. Development Workflow
+| Range | Topic |
+|---|---|
+| DF-001 – DF-002 | Getting started, architecture |
+| DF-003 – DF-006 | Components, `{% comp %}`, routing, forms & tables |
+| DF-007 – DF-009 | Configuration, API reference, health checks |
+| DF-010 – DF-015 | Wagtail integration, best practices, examples, troubleshooting, FAQ, mapping |
+| DF-016 – DF-019 | Assets, integration modes, render contract, OpenAPI & filtering |
+| DF-020 – DF-022 | Language contract, landing builder, template fields |
+| DF-023 | Build and publish to PyPI |
 
-- **Edit** `src/django_fusion/**`, **never** `static/` or `webpack-stats.json` (generated).
-- **Assets:** `make build | dev | watch | clean` in the package root (webpack).
-- **Tests:** `uv run pytest` in the package root (Django 4.2/5.0, Python 3.11/3.12).
-- **Docs:** keep DF-0NN numbers stable; add new numbers only for new topics.
-- **Release:** the lib is a git submodule with its own repo
-  (`github.com/mammhoud/django-fusion`, branch `generic`); bump via the root
-  `make push-lib LIB=django-fusion`.
+Auxiliary references: [`00-package-guide.md`](./00-package-guide.md) (this file),
+[`COMPONENT_CASE_STUDIES.md`](./COMPONENT_CASE_STUDIES.md),
+[`COMPONENT_FORMS_TABLES.md`](./COMPONENT_FORMS_TABLES.md),
+[`DESIGNER_MCP.md`](./DESIGNER_MCP.md), [`WEBSITE_MCP.md`](./WEBSITE_MCP.md),
+[`../QUICKSTART.md`](../QUICKSTART.md), [`../PROMPTS.md`](../PROMPTS.md).
 
-## Remarks & Notes
+## 6. Development workflow
 
-- This guide is DF-000 and intentionally references the rest of the set; keep
-  IDs stable so `INDEX.md` and consumer docs don't rot.
-- The Structa Cloud main docs mirror this guide at
-  `docs/libs/django-fusion.md` — update both when the framework surface changes.
-- `customization_level: not-customizable` — product code consumes the public API
-  and never patches internals.
+- **Edit** `src/django_fusion/**`. Never edit `static/bundles/*` or
+  `webpack-stats.json` — those are generated.
+- **Assets:** `make build | dev | watch | clean`.
+- **Tests:** `uv run --extra test pytest` (no services or network required).
+- **Lint:** `uv run --with ruff ruff check src tests`.
+- **Docs:** keep `DF-0NN` numbers stable; add new numbers only for new topics, and
+  register documented import paths in `tests/test_documented_import_paths.py`.
+- **Release:** bump the version in `pyproject.toml` **and**
+  `src/django_fusion/__init__.py`, update `CHANGELOG.md`, then follow
+  [DF-023](./23-publishing.md).
+
+## 7. Version and compatibility
+
+| | |
+|---|---|
+| Current version | see `pyproject.toml` / `src/django_fusion/__init__.py` |
+| Python | 3.11, 3.12, 3.13 |
+| Django | 4.2, 5.0, 5.1, 5.2 |
+| License | MIT — Structa Cloud / Mahmoud Ezzat Moustafa |
+
+Optional integrations are gated behind extras; importing the base package never
+requires them. `django_fusion.mcp` and `django_fusion.plugins.apis` need
+`django-fusion[bolt]`.

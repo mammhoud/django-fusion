@@ -1,6 +1,0 @@
-default: {}
-
-development:
-  DEBUG: true
-  TEMPLATE_DEBUG: true
-  EMAIL_STRATEGY: console

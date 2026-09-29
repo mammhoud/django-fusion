@@ -2,10 +2,12 @@
 
 30-second setup guide for using forms and tables with routes.
 
-Paths in this file are repo-relative. From the standalone django-fusion
-repo, just `cd` to the root. From the Structa Cloud monorepo the submodule
-lives at `projects/libs/django-fusion/` and the same `src/django_fusion/`
-tree is mounted there.
+Paths in this file are relative to the django-fusion repository root, where the
+package lives at `src/django_fusion/`.
+
+> If `django-fusion` is checked out as a submodule of a larger workspace, the
+> paths below are still relative to the *library* root — the library is a
+> standalone package and never resolves against a surrounding repository.
 
 ## 1. Import Mixins
 
@@ -68,25 +70,40 @@ class UserManagementComponent(RoutableComponent, FormTableMixin):
 
 ## 3. Template Resolution
 
-Your template is automatically looked up in this order:
+Two things compose here, and it is worth keeping them separate.
+
+**The mixin returns a short name chain.** `FormMixin` returns exactly two names:
 
 ```text
-1. <site>/templates/components/form/user.html   (site-specific override)
-2. assets/templates/components/form/user.html   (shared assets)
-3. django_fusion/comp/templates/components/form/form.html   (generic fallback)
+components/form/<form_name>.html    # your form-specific template
+components/form/form.html           # framework fallback
 ```
+
+`TableMixin` returns two as well:
+
+```text
+plugins/tables/<table_name>.html    # your table-specific template
+components/table.html               # framework fallback
+```
+
+**Django's loader then resolves each name through your `DIRS`.** So a
+site-specific override is a matter of putting a file earlier in the search path,
+not of changing the chain:
+
+```text
+1. <your-project>/templates/components/form/user.html   ← override wins here
+2. src/django_fusion/templates/components/form/user.html
+3. src/django_fusion/templates/components/form/form.html
+```
+
+To customise, create the file at the path in step 1. If it is absent, the chain
+falls through to the framework template. See DF-006 for the full logic.
 
 ## 4. Create Site Template (Optional)
 
-To customize for your site, create:
-
 ```text
-<your-site>/templates/components/form/user.html
+<your-project>/templates/components/form/user.html
 ```
-
-If not found, the cascade falls through to the next layer, eventually
-reaching `src/django_fusion/comp/templates/...`. See DF-006 for the full
-resolution logic.
 
 ## 5. Add to Application
 
@@ -156,7 +173,7 @@ class AdminApp(Application):
         <button type="submit">Search</button>
     </form>
 
-    <!-- Results Table -->
+    <!-- Results table: this is exactly the path the TableMixin chain expects. -->
     {% include "plugins/tables/users.html" %}
 </div>
 ```

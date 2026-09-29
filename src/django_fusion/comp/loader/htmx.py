@@ -19,7 +19,9 @@ def _slow_logger() -> logging.Logger:
     if not logger.handlers:
         handler = logging.FileHandler(handler_path)
         handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))
-        logger.addHandler(handler); logger.setLevel(logging.INFO); logger.propagate = False
+        logger.addHandler(handler)
+        logger.setLevel(logging.INFO)
+        logger.propagate = False
     return logger
 
 

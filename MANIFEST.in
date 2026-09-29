@@ -1,0 +1,47 @@
+# Files shipped in the source distribution.
+#
+# The wheel's contents come from [tool.setuptools.package-data] in
+# pyproject.toml; this file controls the sdist and also feeds
+# `include-package-data` for anything inside src/django_fusion/.
+
+include LICENSE
+include README.md
+include CHANGELOG.md
+include CONTRIBUTING.md
+include AGENTS.md
+include QUICKSTART.md
+include PROMPTS.md
+include Makefile
+include pyproject.toml
+
+recursive-include docs *.md
+
+# Node asset build: package.json, webpack.config.js and the workspace configs
+# they require. Shipped so a source-distribution consumer can run `make build`.
+include package.json
+include package-lock.json
+include webpack.config.js
+recursive-include webpack *.js
+
+# Package data: component templates, SCSS sources, compiled builder assets,
+# fixtures, and the PEP 561 marker.
+include src/django_fusion/py.typed
+recursive-include src/django_fusion *.html
+recursive-include src/django_fusion *.txt
+recursive-include src/django_fusion *.scss
+recursive-include src/django_fusion *.css
+recursive-include src/django_fusion *.js
+recursive-include src/django_fusion *.json
+recursive-include src/django_fusion *.svg
+recursive-include src/django_fusion *.pyi
+
+# Test suite (shipped for downstream packagers that run it from the sdist).
+recursive-include tests *.py
+recursive-include tests *.html
+recursive-include tests *.css
+recursive-include tests *.js
+recursive-include tests *.json
+
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude .DS_Store

@@ -220,7 +220,7 @@ class DefaultBase(models.Model):
             app_label = self._meta.app_label
             model_name = self._meta.model_name
             return reverse(f"admin:{app_label}_{model_name}_change", args=[self.id])
-        except:
+        except Exception:
             return None
 
     def get_absolute_url(self):

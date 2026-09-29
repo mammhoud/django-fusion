@@ -113,6 +113,13 @@ def _walk(root: Path, depth: int):
     """
     root_depth = len(root.parts)
     for current, dirs, files in _walk_recursive(root):
+        # Sort in place so both the emitted files and the descent order are
+        # deterministic. ``os.walk`` yields filesystem readdir order, which
+        # differs between machines and filesystems; every consumer of
+        # ``scan()`` (analyzer, skeleton manifest, asset manifest) needs a
+        # stable ordering or its output churns run to run.
+        dirs.sort()
+        files.sort()
         cur_depth = len(Path(current).parts) - root_depth
         if cur_depth > depth:
             dirs.clear()  # prevent descent into deeper subdirs

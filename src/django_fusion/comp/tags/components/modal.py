@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from django.urls import NoReverseMatch, reverse
+from django.urls import reverse
 from django.utils.html import conditional_escape, format_html
 
 from django_fusion.comp.tags.components import register

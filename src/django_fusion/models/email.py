@@ -7,7 +7,6 @@ Provides models for email templates, logs, and user groups for email distributio
 import hashlib
 import json
 import logging
-from datetime import timedelta
 
 from django.db import models
 from django.utils import timezone

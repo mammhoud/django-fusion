@@ -15,7 +15,9 @@
 
 const path = require("path");
 
-const SRC_DIR = path.resolve(__dirname, "..", "src");
+// This file lives in webpack/workspaces/, so the library root is two levels up.
+const ROOT_DIR = path.resolve(__dirname, "..", "..");
+const SRC_DIR = path.resolve(ROOT_DIR, "src");
 
 module.exports = {
   /** Webpack entry points for this workspace */
@@ -27,7 +29,7 @@ module.exports = {
 
   /** Output path overrides (relative to django-fusion root) */
   output: {
-    path: path.resolve(__dirname, "..", "static", "bundles"),
+    path: path.resolve(ROOT_DIR, "static", "bundles"),
     publicPath: "/static/bundles/",
     filename: "js/[name].[contenthash:8].js",
     chunkFilename: "js/[name].[contenthash:8].chunk.js",

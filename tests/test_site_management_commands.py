@@ -1,73 +1,45 @@
 """Regression tests for reusable Fusion site management commands."""
 
-from django.core.management.base import CommandError
+from django.core.management.base import BaseCommand
 
-
-def test_populate_content_parses_page_sections_and_translations():
-    from django_fusion.management.commands.populate_content import (
-        _extract_field_trans,
-        _parse_md_to_dict,
-    )
-
-    content = """## 1. Home PAGE (HomePage)
-- **Title**:
-  - **en**: Welcome
-  - **fr**: Bienvenue
-
-## 2. About PAGE (AboutPage)
-- **Title**: About us
-"""
-
-    pages = _parse_md_to_dict(content)
-
-    assert set(pages) == {"HomePage", "AboutPage"}
-    assert _extract_field_trans(pages["HomePage"])["Title"] == {
-        "en": "Welcome",
-        "fr": "Bienvenue",
-    }
-    assert _extract_field_trans(pages["AboutPage"])["Title"] == "About us"
-
-
-def test_populate_content_requires_site_model_configuration():
-    from django_fusion.management.commands.populate_content import Command
-
-    command = Command()
-
-    try:
-        command.get_model_map()
-    except CommandError as exc:
-        assert "No page models configured" in str(exc)
-    else:
-        raise AssertionError("Unconfigured populate_content command should fail clearly")
-
-
-def test_populate_courses_requires_site_model_configuration():
-    from django_fusion.management.commands.populate_courses import Command
-
-    command = Command()
-
-    try:
-        command._model("")
-    except CommandError as exc:
-        assert "requires site model configuration" in str(exc)
-    else:
-        raise AssertionError("Unconfigured populate_courses command should fail clearly")
+# Commands that ship with django-fusion. Product seeders such as
+# ``populate_courses`` / ``populate_content`` / ``populate_homepage`` were
+# relocated to the consuming projects: they encode a site's page and model
+# vocabulary, which is customization, not framework behavior.
+LIBRARY_COMMANDS = (
+    "analyze_components_to_webpack",
+    "generate_asset_manifest",
+    "generate_skeleton_manifest",
+    "send_bulk_emails",
+    "sync_task_history",
+    "verify_content",
+    "webpack_validate",
+)
 
 
 def test_shared_commands_are_importable_and_have_command_classes():
-    from django_fusion.management.commands import (
-        populate_content,
-        populate_courses,
-        populate_homepage,
-        send_bulk_emails,
-        verify_content,
-    )
 
-    for module in (
-        send_bulk_emails,
-        verify_content,
-        populate_content,
-        populate_courses,
-        populate_homepage,
-    ):
-        assert module.Command.help
+    for name in LIBRARY_COMMANDS:
+        module = __import__(
+            f"django_fusion.management.commands.{name}", fromlist=["Command"]
+        )
+        assert issubclass(module.Command, BaseCommand), name
+        assert module.Command.help, name
+
+
+def test_relocated_product_commands_are_not_shipped_in_the_library():
+    """The library must stay product-agnostic.
+
+    A regression here means a site-specific seeder was reintroduced into the
+    base package instead of living in the consuming project.
+    """
+    import importlib
+
+    for name in ("populate_courses", "populate_content", "populate_homepage"):
+        try:
+            importlib.import_module(f"django_fusion.management.commands.{name}")
+        except ModuleNotFoundError:
+            continue
+        raise AssertionError(
+            f"{name} is product-specific and must not ship in django-fusion"
+        )

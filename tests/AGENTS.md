@@ -1,99 +1,66 @@
-# `tests/` — Workspace Test Guidance
+# `tests/` — django-fusion test suite
 
-Read the root `AGENTS.md` first. This directory contains cross-product tests and
-fixtures; product-local tests remain beside their product code.
+Framework tests for the `django_fusion` package. Read the repository root
+`AGENTS.md` first, then `../AGENTS.md`.
+
+This suite covers the library only. Product and deployment tests live with the
+consuming products (`projects/*`), not here.
 
 ## Layout
 
 ```text
 tests/
-├── unit/                    # isolated models, services, auth, tasks, POS tests
-├── integration/             # multi-app/site/auth workflows
-├── http/                    # Django/TestClient/API and rendering checks
-├── selenium/                # browser and site smoke suites
-├── selenium-detailed/       # detailed user-flow/browser coverage
-├── ci/                      # CI-oriented auth/admin/assets/email suites
-├── websites/                # cross-site settings, URLs, and smoke checks
-├── core/                    # shared invariants, cache/events/config checks
-├── docker/                  # image/Compose validation
-├── email/                   # email delivery/integration tests
-├── apps/                    # shared app behavior tests
-├── fixtures/                # JSON dumps, categorized by product/model/env
-├── assets/                  # test templates and content fixtures
-├── scripts/                 # fixture/data/production helpers
-├── conftest.py              # workspace pytest configuration
-└── settings.py              # test Django settings
+├── conftest.py                     # sys.path bootstrap + Django configure()
+├── _django_settings.py             # single source of truth for TEST_SETTINGS
+├── urls.py                         # ROOT_URLCONF for the suite
+├── analyzer/                       # fragment analyzer: parser, scanner, layout, views
+├── fragments/                      # fragment view/renderer contracts
+├── stubs/                          # wagtail/laces template-tag stubs
+├── assets/                         # test templates and content fixtures
+├── test_templates/                 # component templates under test
+├── test_templates_comp_registry/   # sidecar (html/css/js) registry fixtures
+├── test_rendering_decorators/      # templates for fusion_view dual-mode tests
+└── test_*.py                       # top-level library tests
 ```
 
-## Test selection
+## Running
 
 ```bash
-# Workspace Python tests
-uv run pytest tests/
-uv run pytest tests/unit/ -q
-uv run pytest tests/integration/ -q
-uv run pytest tests/http/ -q
+cd libs/django-fusion
+uv run --extra test pytest            # full suite
+uv run --extra test pytest -q         # quiet
+uv run --extra test pytest tests/analyzer -q
+uv run --extra test pytest tests/test_imports.py
 
-# Useful focused examples
-uv run pytest tests/test_domain_urls.py -q
-uv run pytest tests/websites/ -q
-uv run pytest tests/core/ -q
-
-# Product-local suites
-cd projects/structa.cloud && uv run pytest backend/tests/
-cd projects/precis/landi/backend && make test
-cd projects/formints/formint && make test
-cd libs/django-fusion && uv run pytest
+# Opt-in diagnostics (exact-match gate on "1"):
+DJANGO_DEBUG_CONFTEST=1 uv run --extra test pytest -s tests/test_form_components.py
 ```
 
-For browser suites, use the product's documented Playwright/Selenium command.
-Do not assume Chrome/Chromium is installed in every agent environment.
+Django settings live in `_django_settings.py` and are applied by
+`conftest.py`; do not introduce a `DJANGO_SETTINGS_MODULE` for this suite.
 
-## Test categories and expectations
+## Conventions
 
-- **Unit:** deterministic, isolated, and fast; mock external providers only at
-  the boundary.
-- **Integration:** exercise real Django routing, middleware, models, and
-  database behavior where practical.
-- **HTTP:** assert response status, headers, content contracts, and user-visible
-  behavior rather than private implementation details.
-- **Browser:** cover auth, navigation, forms, translations, assets, and critical
-  product flows from a user's perspective.
-- **Contract/parity:** keep API envelopes, HTMX headers, WebSocket frames,
-  render-mode behavior, and frontend/backend route names synchronized.
-- **Deployment:** validate configuration and health without mutating production
-  resources unless the test explicitly runs in an isolated environment.
+- Pure-library tests only: no monorepo paths, no running services, no network.
+- Assert response contracts and public behavior, not private implementation
+  details.
+- Optional extras (`bolt`, `tables`, `auth`, `webpack`, `tasks`) must degrade to
+  a **skip**, never a collection error. Guard the third-party import *before*
+  importing it — see `test_bolt_inprocess.py`.
+- Keep tests independent and order-insensitive. Scanner/analyzer assertions
+  must not depend on filesystem traversal order.
+- Fixtures belong in `stubs/`, `assets/`, or the `test_templates*` directories;
+  keep secrets and real data out of them.
 
-## Fixtures and database safety
+## Content boundaries
 
-Fixtures are organized under `fixtures/` by product, model, environment, and
-purpose. Before adding or loading one:
-
-1. Read the fixture README and the relevant loader script.
-2. Confirm the selected Django settings/database and site identity.
-3. Prefer temporary SQLite/test databases for local tests.
-4. Do not run production fixture loaders, restores, or destructive cleanup
-   against a shared database without explicit user instruction.
-5. Keep secrets, real user data, tokens, and credentials out of fixtures.
-
-When changing models or Wagtail page structures, update migrations, fixture
-schemas/loaders, and invariant tests together.
-
-## Test conventions
-
-- Use `pytest`/`pytest-django` configuration from the active workspace; do not
-  silently override `DJANGO_SETTINGS_MODULE` in a shared test module.
-- Use `rg` to find existing fixtures, markers, URL names, and test helpers.
-- Prefer existing `conftest.py` fixtures and TestClient utilities.
-- Mark slow/integration/browser tests using the established markers.
-- Keep tests independent and order-insensitive.
-- When a test starts a server or browser, make cleanup reliable and use a
-  unique port/session where the local runner permits it.
+Tests here must not reference product names, product model classes, or product
+page vocabularies. If a test needs a product concept, it belongs in that
+product's suite. `test_site_management_commands.py` pins this boundary for
+management commands.
 
 ## Validation checklist
 
-For a code change, run the narrowest affected test first, then the product
-check. For a shared framework or contract change, run both the library tests and
-at least one consuming product test. Report skipped tests with the reason
-(missing service, browser, database, or dependency) rather than claiming the
-suite passed.
+Run the narrowest affected test first, then the full suite. Report skipped tests
+with their reason (missing optional extra, no database, no browser) rather than
+claiming a pass.

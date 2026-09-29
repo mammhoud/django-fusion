@@ -92,7 +92,7 @@ with extras for component rendering, email rendering, and `HttpResponse` buildin
 
 - Component names **always** use the `components/` prefix in `render()`. With `render_component()` you can omit it: `render_component("button.html", {...})` resolves to `components/button.html`.
 - Pass `request=request` to enable context processors (`request.user`, `LANGUAGE_CODE`, `global_settings`, etc.).
-- Any kwarg that the component doesn't declare as a prop is appended to `{{ attrs }}` (see [COMPONENT_TAG.md](./COMPONENT_TAG.md)).
+- Any kwarg that the component doesn't declare as a prop is appended to `{{ attrs }}` (see [COMPONENT_TAG.md](./04-component-tag.md)).
 - `css_class` is a *convention* — most components accept it as a top-level kwarg and append it to the root element. See the [Styling from Python](#styling-from-python-passing-css-classes-via-kwargs) recipe.
 
 ### 4. When to prefer `FragmentComponent` over `render_component`
@@ -105,9 +105,9 @@ job. Reach for `FragmentComponent` when you want:
 - OOB fragment injection (`oob_fragments`)
 - the `htmx_only` guard
 
-See [FORMS_TABLES_INTEGRATION.md](./FORMS_TABLES_INTEGRATION.md) and
-[`comp/routes/fragments.py`](../src/django_fusion/comp/routes/fragments.py)
-for the full `FragmentComponent` API.
+See [DF-006 Forms and Tables](./06-forms-and-tables.md) and the
+`django_fusion.fragments` package (`src/django_fusion/fragments/`) for the full
+fragment component API.
 
 ---
 
@@ -1456,7 +1456,7 @@ package is version-pinned and will be overwritten on upgrade.
 
 `{% extends "components/<file>.html" %}` works on any component that
 defines `{% block %}` regions. The full list of available blocks is
-documented per-component in [FORMS_TABLES_INTEGRATION.md](./FORMS_TABLES_INTEGRATION.md)
+documented per-component in [FORMS_TABLES_INTEGRATION.md](./06-forms-and-tables.md)
 and in the comments at the top of each template. The most commonly
 extended components are:
 
@@ -1530,11 +1530,11 @@ called with `HX-Request: true`, and the full-page template otherwise.
 ---
 
 **See also**:
-- [COMPONENT_TAG.md](./COMPONENT_TAG.md) — full `{% comp %}` API reference (props, slots, vars, attrs)
-- [COMPONENT_SYSTEM.md](./COMPONENT_SYSTEM.md) — component hierarchy & lifecycle
-- [API_REFERENCE.md](./API_REFERENCE.md) — every Python entry point
-- [FORMS_TABLES_INTEGRATION.md](./FORMS_TABLES_INTEGRATION.md) — form & table integration patterns
-- [ROUTING_SYSTEM.md](./ROUTING_SYSTEM.md) — `RoutableComponent` / `FragmentComponent` URL routing
+- [COMPONENT_TAG.md](./04-component-tag.md) — full `{% comp %}` API reference (props, slots, vars, attrs)
+- [COMPONENT_SYSTEM.md](./03-component-system.md) — component hierarchy & lifecycle
+- [API_REFERENCE.md](./08-api-reference.md) — every Python entry point
+- [FORMS_TABLES_INTEGRATION.md](./06-forms-and-tables.md) — form & table integration patterns
+- [ROUTING_SYSTEM.md](./05-routing.md) — `RoutableComponent` / `FragmentComponent` URL routing
 
 ---
 
@@ -1718,7 +1718,7 @@ A complete, drop-in example of a reusable custom component. We build a `<Feature
 ```
 
 > The template uses the `{% prop %}` / `{% slot %}` / `{{ attrs }}` API described in
-> [COMPONENT_TAG.md](./COMPONENT_TAG.md).
+> [COMPONENT_TAG.md](./04-component-tag.md).
 
 ### 2. Auto-register on app startup
 

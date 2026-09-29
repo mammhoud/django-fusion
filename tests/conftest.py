@@ -15,6 +15,7 @@ Three responsibilities, in order:
    active settings via `pytest_configure` hook (avoids module-load
    ordering issues; gives the smoke tests a stable signal source).
 """
+import copy
 import os
 import sys
 
@@ -100,3 +101,105 @@ def pytest_configure(config):
                 f"  TEMPLATES[{i}].context_processors: {opts.get('context_processors', [])!r}",
                 flush=True,
             )
+
+
+# 4. Global template-state guard.
+#
+# Several modules need a custom `TEMPLATES` configuration and replace
+# `settings.TEMPLATES` (or the cached backend's `dirs`) to get it:
+# `analyzer/test_views.py`, `test_component_tags.py`, `test_comp_registry.py`,
+# `test_form_components.py`, and
+# `test_register_include_path_render_equivalence.py`. None of them restored the
+# original value, so a module that had already run left the engine pointing at
+# a deleted `tmp_path` and every later module that resolved a real component
+# template failed with `TemplateDoesNotExist`. That made the suite
+# order-dependent: identical tests passed in isolation and failed in a full
+# run.
+#
+# The pristine value is captured HERE, at import time, for two reasons:
+#
+# - A ``scope="module"`` fixture that configures templates (e.g.
+#   ``analyzer/test_views.py::shared_e2e_dir``) runs BEFORE the first
+#   function-scoped fixture in its module. A per-test snapshot would therefore
+#   capture the already-polluted value and faithfully restore the pollution.
+# - Capturing per test also lets a polluting fixture leak into the *next*
+#   module when the polluter is module-scoped rather than function-scoped.
+#
+# Import time is the only point that is guaranteed to precede every fixture.
+# The (cheap) deepcopy comparison runs for each test; the engine rebuild is
+# paid only by the handful of tests that actually mutate the value.
+_PRISTINE_TEMPLATES = copy.deepcopy(getattr(settings, "TEMPLATES", None))
+
+
+# Scope is MODULE, not function, on purpose: several modules configure templates
+# for the whole module from a `scope="module"` fixture
+# (`test_comp_registry.py::_boot_django_for_module`,
+# `analyzer/test_views.py::shared_e2e_dir`). Restoring after every test would
+# undo that configuration mid-module and break the tests it was written for.
+# Restoring between modules is what isolation actually requires.
+def _reset_template_engine_cache() -> None:
+    """Discard Django's cached template-engine state.
+
+    Three pieces of state matter, and clearing only the first is not enough:
+
+    - ``engines._engines`` holds the instantiated backends.
+    - ``engines.templates`` is a ``cached_property`` mapping alias to backend.
+    - ``engines._templates`` is the list ``Handler.templates`` captured on its
+      first access -- ``if self._templates is None: self._templates =
+      settings.TEMPLATES``. It is a *reference to the old settings list*, so as
+      long as it is set, rebuilding re-reads the previous ``TEMPLATES`` value
+      and the restore appears to do nothing.
+
+    Dropping all three is what makes the next ``engines["django"]`` lookup read
+    the current ``settings.TEMPLATES``. Omitting ``_templates`` is the subtle one
+    -- ``engines._engines.clear()`` alone looks sufficient and is not.
+    """
+    from django.template import engines
+
+    engines._engines.clear()
+    engines._templates = None
+    engines.__dict__.pop("templates", None)
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _restore_django_template_state():
+    yield
+    if copy.deepcopy(getattr(settings, "TEMPLATES", None)) != _PRISTINE_TEMPLATES:
+        settings.TEMPLATES = copy.deepcopy(_PRISTINE_TEMPLATES)
+        _reset_template_engine_cache()
+
+
+# 5. Global component-registry guard.
+#
+# `components` (django_fusion.comp._init) is a process-global singleton holding
+# the include-path registry and the render history. Several modules mutate it:
+# `test_comp_registry.py` (which resets it per test but deliberately does not
+# reset on teardown), the analyzer views, and the registry/asset tests. Two
+# failure modes followed:
+#
+# - `_render_history` accumulates for the whole session, so
+#   `assert len(history) == 1` failed as soon as anything rendered a component
+#   earlier in the run.
+# - Include paths registered by an earlier module changed how
+#   `{% comp "partials/auth_buttons.html" %}` resolved later.
+#
+# `ComponentRegistry.reset()` plus `_register_builtin_component_paths()` restores
+# exactly what `AppConfig.ready()` produced at startup, so that pair is the
+# pristine state for this suite. Restore only when a test actually changed the
+# registry.
+def _registry_fingerprint() -> tuple[frozenset, int]:
+    from django_fusion.comp._init import components
+
+    return (frozenset(components._components), len(components._render_history))
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _restore_component_registry():
+    before = _registry_fingerprint()
+    yield
+    if _registry_fingerprint() != before:
+        from django_fusion.comp._init import components
+        from django_fusion.comp.apps import _register_builtin_component_paths
+
+        components.reset()
+        _register_builtin_component_paths()

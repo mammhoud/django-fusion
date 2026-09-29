@@ -63,7 +63,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import render
-from django.urls import ResolverMatch
 
 logger = logging.getLogger(__name__)
 

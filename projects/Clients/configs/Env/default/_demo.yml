@@ -1,7 +1,0 @@
-default: {}
-
-demo:
-  DEBUG: false
-  TEMPLATE_DEBUG: false
-  EMAIL_STRATEGY: mailtrap
-  LOAD_FIXTURES: false

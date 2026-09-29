@@ -34,27 +34,19 @@ import pytest
 # ────────────────────────────────────────────────────────────────────
 # Module-scoped real customizer fragment fixture
 # ────────────────────────────────────────────────────────────────────
-# Walks up from this test file looking for a directory that contains
-# ``customizer/templates/fragments/page_card_grid.html``. Robust to
-# renaming the test file's parent directories or repo relocation.
+# Reads the checked-in copy under ``tests/analyzer/fixtures/``. The
+# fragment originally lived in a sibling monorepo project
+# (``customizer/templates/fragments/page_card_grid.html``); walking up
+# the tree to find that path broke when the project was reorganized and
+# made the end-to-end test skip everywhere. The checked-in copy keeps
+# this suite self-contained -- see the fixtures README for provenance.
 
 @pytest.fixture(scope="module")
 def customizer_fragment_path() -> Path:
-    here = Path(__file__).resolve().parent
-    for ancestor in [here, *here.parents]:
-        candidate = (
-            ancestor
-            / "customizer"
-            / "templates"
-            / "fragments"
-            / "page_card_grid.html"
-        )
-        if candidate.exists():
-            return candidate
-    pytest.skip(
-        f"customizer fragment not reachable from {here} "
-        "(test must be inside the repo to read the real file from disk)"
-    )
+    fixture = Path(__file__).resolve().parent / "fixtures" / "page_card_grid.html"
+    if fixture.exists():
+        return fixture
+    pytest.skip(f"checked-in analyzer fixture missing: {fixture}")
 
 
 @pytest.fixture(scope="module")

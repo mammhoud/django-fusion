@@ -257,7 +257,7 @@ class CacheSupportMixin:
             conn = get_redis_connection("default")
             conn.ping()
             return True
-        except:
+        except Exception:
             return False
 
     # ------------------------------ KEY GENERATION
@@ -295,7 +295,7 @@ class CacheSupportMixin:
         if cached:
             try:
                 return self._deserialize_from_cache(cached)
-            except:
+            except Exception:
                 cache.delete(cache_key)
 
         obj = super().get_by_field(identifier, field, **kwargs)
@@ -371,7 +371,7 @@ class CacheSupportMixin:
                     rel = getattr(obj, field)
                     if rel:
                         result[field] = {"id": rel.pk, "str": str(rel)}
-                except:
+                except Exception:
                     pass
         return result
 

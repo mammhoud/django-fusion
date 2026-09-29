@@ -1,13 +1,16 @@
 [project]
 name = "django-fusion"
-version = "0.5.0"
-description = "Reusable Django and Wagtail helpers for Structa Cloud sites - component system, routing, forms/tables, allauth, Wagtail, and a `{% comp %}` template tag."
+version = "2.0.2"
+description = "Reusable Django and Wagtail helpers - component system, routing, forms/tables, allauth, and a `{% comp %}` template tag."
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
-# @tested django-fusion v0.2.0 - Built, linted (ruff), tested (pytest) with Django 4.2/5.0 on Python 3.11/3.12
 authors = [
-    { name = "Structa Cloud Team", email = "dev@structa.cloud" },
+    { name = "Structa Cloud / Mahmoud Ezzat Moustafa", email = "dev@structa.cloud" },
+]
+maintainers = [
+    { name = "Structa Cloud / Mahmoud Ezzat Moustafa", email = "dev@structa.cloud" },
 ]
 keywords = [
     "django",
@@ -19,17 +22,19 @@ keywords = [
     "templating",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Framework :: Django",
     "Framework :: Django :: 4.2",
     "Framework :: Django :: 5.0",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
@@ -40,7 +45,11 @@ dependencies = [
     "django-colorfield",
     "dynaconf>=3.2,<4.0",
     "pluggy>=1.6.0",
-    "pydantic>=2.0",
+    # ``[email]`` pulls ``email-validator``, which pydantic needs before it can
+    # build any model that uses ``EmailStr``. The user/token schemas in
+    # ``routes/schemas/users/`` use it, so a plain ``pydantic`` install would
+    # ship modules that raise ImportError on first import.
+    "pydantic[email]>=2.0",
     "structlog>=24.1.0",
     "wagtail",
 ]
@@ -53,12 +62,13 @@ test = [
     "hypothesis",
 ]
 dev = [
+    "build",
+    "twine",
+    "ruff",
     "pytest",
     "pytest-django",
     "pytest-cov",
     "hypothesis",
-    "build",
-    "twine",
 ]
 webpack = [
     "django-webpack-loader>=3.2.3",
@@ -101,16 +111,90 @@ auth = [
 Homepage = "https://github.com/mammhoud/django-fusion"
 Repository = "https://github.com/mammhoud/django-fusion.git"
 Issues = "https://github.com/mammhoud/django-fusion/issues"
-Documentation = "https://github.com/mammhoud/django-fusion/tree/generic/docs"
+Documentation = "https://github.com/mammhoud/django-fusion/blob/generic/docs/INDEX.md"
 Changelog = "https://github.com/mammhoud/django-fusion/blob/generic/CHANGELOG.md"
+Releases = "https://github.com/mammhoud/django-fusion/releases"
+"GitHub (mammhoud)" = "https://github.com/mammhoud"
+"LinkedIn (mammhoud)" = "https://www.linkedin.com/in/mammhoud"
+"Facebook (mammhoud)" = "https://www.facebook.com/mammhoud"
 
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = {find = {where = ["src"], include = ["django_fusion*"]}}
+# Ship the files MANIFEST.in selects that live inside the package: component
+# templates, SCSS sources, compiled builder CSS, and py.typed. Without this the
+# wheel installs an importable package with no templates, which only fails at
+# render time inside a consumer.
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["django_fusion*"]
+
+[tool.setuptools.package-data]
+django_fusion = [
+    "py.typed",
+    "templates/**/*.html",
+    "templates/**/*.txt",
+    "**/*.html",
+    "**/*.scss",
+    "**/*.css",
+    "**/*.js",
+    "**/*.json",
+    "**/*.svg",
+]
+
+# ---------------------------------------------------------------------------
+# Linting
+#
+# Deliberately self-contained. Ruff resolves configuration from the file's
+# directory upward, so without a config here the library silently inherits
+# whatever config happens to sit in a parent directory, and lint results depend
+# on where the checkout lives. That is exactly the hidden workspace coupling
+# this package must not have.
+#
+# Rule selection is intentionally narrow: real errors and pyflakes only. The
+# style families (W, UP, N, SIM) are not selected because the existing source
+# predates them and enabling them would bury genuine findings under ~2,000
+# cosmetic ones. Raise the selection deliberately, not by accident.
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+ignore = [
+    # Imports deliberately follow executable module-level code in a few places:
+    #
+    # - Django tag libraries must create their shared `register = template.Library()`
+    #   *before* importing the submodules that register into it
+    #   (`comp/tags/components/__init__.py`, `comp/templatetags/components/__init__.py`,
+    #   `management/handlers/mixins/__init__.py`).
+    # - Optional-dependency tests must call `pytest.importorskip(...)` before
+    #   importing the dependency, or collection errors instead of skipping
+    #   (`tests/test_bolt_inprocess.py`).
+    #
+    # Every such site is intentional and locally commented. E401 (multiple
+    # imports on one line) stays enabled.
+    "E402",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Re-export modules: these bind names so that `from x import y` consumers and
+# Django's template-tag auto-discovery can see them. The bindings are
+# intentional even when nothing inside the file itself reads them.
+"**/__init__.py" = ["F401", "F811"]
+# Pydantic fields and classmethods share a namespace here on purpose:
+# `TokenResponseSchema.success` is a constructor helper, while the value on an
+# *instance* is the field.
+"src/django_fusion/routes/schemas/users/user.py" = ["F811"]
+# Star re-export of the HTTP status-code groupings; the names are defined in
+# `.responses` and re-exported on purpose.
+"src/django_fusion/core/encoder/encoder.py" = ["F403", "F405"]
 
 # ---------------------------------------------------------------------------
 # Recognized environment variables (opt-in diagnostics)
@@ -128,18 +212,10 @@ packages = {find = {where = ["src"], include = ["django_fusion*"]}}
 #     The guard is exact-match `os.environ.get("DJANGO_DEBUG_CONFTEST") == "1"`,
 #     NOT a truthy check, so empty strings / accidental values do NOT
 #     trigger the print. This is enforced by
-#     `tests/test_conftest_debug_is_quiet.py` (negative + positive
-#     control).
+#     `tests/test_conftest_debug_is_quiet.py` (negative + positive control).
 #
 #     Usage:
-#         DJANGO_DEBUG_CONFTEST=1 uv run pytest -s tests/test_form_components.py
-#
-# Other env vars considered and rejected (for posterity):
-#   - `DJANGO_SETTINGS_MODULE=tests.settings` - pytest-django would load
-#     `tests/settings.py`, but django-fusion's tests/ stubs use Python's
-#     regular sys.path import chain which pytest-django's lazy engine
-#     init can fail to resolve. The conftest-side `settings.configure()`
-#     remains the simplest working approach.
+#         DJANGO_DEBUG_CONFTEST=1 uv run --extra test pytest -s tests/test_form_components.py
 # ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
 addopts = ["-v"]

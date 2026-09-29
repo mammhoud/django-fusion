@@ -183,7 +183,6 @@ class Command(BaseCommand):
         budget_limit: int,
     ) -> None:
         """Print a component-level bundle budget report to stdout."""
-        import os
 
         lines: list[tuple[str, float, float, float, str]] = []
 

@@ -1,41 +1,41 @@
 # ============================================================================
-# django-fusion — Asset Build Targets
+# django-fusion — asset build + release targets
 # ============================================================================
-# Builds the webpack bundle for component SCSS/JS.
+# Two groups of targets:
 #
-# Prerequisites: Node.js >= 18, npm >= 9
+#   Assets   — build the webpack bundle for component SCSS/JS (needs Node).
+#   Release  — build, validate, and publish the Python distribution.
 #
-# Common commands:
-#   make build         → Production build (one-shot, CI-ready)
-#   make watch         → Development + file watcher
-#   make dev           → Development build (no minification, source maps)
-#   make clean         → Remove all generated assets
+# Prerequisites: Node.js >= 18 / npm >= 9 for assets; uv for release targets.
 #
-# Integration:
-#   The output lands in static/bundles/ and webpack-stats.json.
-#   Django sites consume it via django-webpack-loader:
+# Assets output lands in static/bundles/ and webpack-stats.json, and is
+# consumed by django-webpack-loader:
 #     {% load render_bundle from webpack_loader %}
 #     {% render_bundle 'fusion' 'css' %}
-#     {% render_bundle 'fusion' 'js' %}
+#
+# Publishing is documented end to end in docs/23-publishing.md (DF-023).
 # ============================================================================
 
 SHELL := /bin/bash
 
+<<<<<<< HEAD
 .PHONY: help build watch dev clean install reinstall info check docs plugin-template
+=======
+.PHONY: help build watch dev clean install reinstall info \
+        version dist check-dist publish-test publish test lint
+>>>>>>> refs/remotes/origin/generic
 
-# ── Help alias ─────────────────────────────────────────────────────────────────
+# ── Help alias ────────────────────────────────────────────────────────────────
 help: info
 
-# ── Default target ────────────────────────────────────────────────────────────
+# ── Asset build ───────────────────────────────────────────────────────────────
 
-# ── Default target ────────────────────────────────────────────────────────────
 build: install
 	@echo "→ Building django-fusion assets (production)..."
 	npm run build
 	@echo "✅ Build complete:"
 	@ls -lh static/bundles/*.css static/bundles/*.js 2>/dev/null; echo "   webpack-stats.json: $$(wc -c < webpack-stats.json) bytes"
 
-# ── Development ───────────────────────────────────────────────────────────────
 watch: install
 	@echo "→ Watching for changes (dev mode)..."
 	npm run watch
@@ -45,7 +45,6 @@ dev: install
 	npm run dev
 	@echo "✅ Dev build complete"
 
-# ── Clean ─────────────────────────────────────────────────────────────────────
 clean:
 	@echo "→ Removing generated webpack assets..."
 	rm -rf static/bundles/*.js static/bundles/*.css static/bundles/*.map \
@@ -54,7 +53,6 @@ clean:
 	touch static/bundles/.gitkeep
 	@echo "✅ Clean complete"
 
-# ── Install dependencies ──────────────────────────────────────────────────────
 install:
 	@echo "→ Installing npm dependencies..."
 	@if [ ! -d "node_modules" ]; then \
@@ -69,6 +67,7 @@ reinstall:
 	npm install
 	@echo "✅ Reinstall complete"
 
+<<<<<<< HEAD
 # ── Checks ────────────────────────────────────────────────────────────────────
 # Two passes, both stdlib-only (no venv, no npm install):
 #   1. generated package docs under src/django_fusion/ must be up to date, and
@@ -101,14 +100,17 @@ plugin-template:
 	@python3 scripts/generate_plugin_products.py --template $(PLUGIN)
 
 # ── Info ──────────────────────────────────────────────────────────────────────
+=======
+>>>>>>> refs/remotes/origin/generic
 info:
-	@echo "django-fusion Asset Pipeline"
+	@echo "django-fusion"
 	@echo "════════════════════════════"
+	@echo "  Version:      $$(make -s version)"
 	@echo "  Entry point:  src/django_fusion/assets/entry.js"
 	@echo "  SCSS entry:   src/django_fusion/assets/fusion.scss"
 	@echo "  Output dir:   static/bundles/"
-	@echo "  Stats file:   webpack-stats.json"
 	@echo ""
+<<<<<<< HEAD
 	@echo "  Targets:"
 	@echo "    make build  → Production bundle (content-hashed)"
 	@echo "    make dev    → Dev bundle (fast, no minification)"
@@ -117,8 +119,76 @@ info:
 	@echo "    make check  → Fail on stale module paths in the generated docs"
 	@echo "    make docs   → Regenerate package docs (design.md + README.md)"
 	@echo "    make info   → Show this message"
+=======
+	@echo "  Asset targets:"
+	@echo "    make build        → Production bundle (content-hashed)"
+	@echo "    make dev          → Dev bundle (fast, no minification)"
+	@echo "    make watch        → Dev + file watcher"
+	@echo "    make clean        → Remove generated assets"
+	@echo "    make info         → Show this message"
+	@echo ""
+	@echo "  Release targets:"
+	@echo "    make version      → Print the version from pyproject.toml"
+	@echo "    make test         → Run the test suite"
+	@echo "    make lint         → Run ruff over src and tests"
+	@echo "    make dist         → Build sdist + wheel into dist/"
+	@echo "    make check-dist   → twine check the built artifacts"
+	@echo "    make publish-test → Upload to TestPyPI"
+	@echo "    make publish      → Upload to PyPI (requires a clean tree at the tag)"
+	@echo ""
+	@echo "  See docs/23-publishing.md for the full release runbook."
+>>>>>>> refs/remotes/origin/generic
 	@echo ""
 	@echo "  Component SCSS partials:"
-	@ls -1 src/django_fusion/comp/*/_*.scss 2>/dev/null || echo "    (none yet)"
-	@echo "  Asset partials:"
-	@ls -1 src/django_fusion/assets/*/_*.scss 2>/dev/null || echo "    (none yet)"
+	@ls -1 src/django_fusion/assets/*/_*.scss 2>/dev/null || echo "    (none found)"
+
+# ── Test / lint ───────────────────────────────────────────────────────────────
+
+test:
+	uv run --extra test pytest -q
+
+lint:
+	uv run --with ruff ruff check src tests
+
+# ── Release ───────────────────────────────────────────────────────────────────
+
+# Reads the version from pyproject.toml without importing the package, so it
+# works before dependencies are installed.
+version:
+	@python3 -c "import re,pathlib; print(re.search(r'^version\s*=\s*\"([^\"]+)\"', pathlib.Path('pyproject.toml').read_text(), re.M).group(1))"
+
+dist:
+	@echo "→ Cleaning previous artifacts..."
+	rm -rf dist build src/*.egg-info
+	@echo "→ Building sdist + wheel for $$(make -s version)..."
+	uv build
+	@echo "✅ Built:"
+	@ls -lh dist/
+
+check-dist:
+	@test -d dist || { echo "❌ dist/ is missing — run 'make dist' first"; exit 1; }
+	uv run --with twine twine check dist/*
+
+# TestPyPI first, always. Versions on both indexes are permanent.
+publish-test: check-dist
+	@echo "→ Uploading $$(make -s version) to TestPyPI..."
+	uv run --with twine twine upload --repository testpypi dist/*
+
+# Guarded: the tree must be clean and HEAD must be exactly the v<version> tag,
+# so the published artifact is provably the tagged commit.
+publish: check-dist
+	@VERSION="$$(make -s version)"; \
+	if [ -n "$$(git status --porcelain)" ]; then \
+		echo "❌ Working tree is dirty — commit or stash before publishing"; \
+		exit 1; \
+	fi; \
+	if ! git rev-parse -q --verify "refs/tags/v$$VERSION" >/dev/null; then \
+		echo "❌ Missing tag v$$VERSION — create it first (see docs/23-publishing.md)"; \
+		exit 1; \
+	fi; \
+	if [ "$$(git rev-parse HEAD)" != "$$(git rev-parse "v$$VERSION^{commit}")" ]; then \
+		echo "❌ HEAD is not v$$VERSION — check out the tagged commit before publishing"; \
+		exit 1; \
+	fi; \
+	echo "→ Uploading $$VERSION to PyPI (tag v$$VERSION)..."; \
+	uv run --with twine twine upload dist/*

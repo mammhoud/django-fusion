@@ -9,7 +9,6 @@ from pathlib import Path
 from threading import Lock
 from typing import Any
 
-from django.conf import settings
 from django.template.backends.django import Template as DjangoTemplate
 from django.template.base import Node, NodeList, TextNode
 from django.template.context import Context
@@ -22,6 +21,7 @@ from django_fusion.plugins.manager import pm
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from django_fusion.comp.registry import _LazyIncludeTemplate
     from django_fusion.config.staticfiles import Asset, AssetType
 from django_fusion.comp.loader.templates import (
     find_components_in_template,
@@ -318,7 +318,7 @@ class ComponentRegistry:
             from django_fusion.comp.cache import get_component_map_cache
             cache = get_component_map_cache()
             cache.record_render(metadata.name)
-        except Exception as e:
+        except Exception:
             # Silently fail if caching doesn't work
             pass
 

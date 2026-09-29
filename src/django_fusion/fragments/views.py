@@ -1,7 +1,6 @@
 """Django views for fragment requests."""
 from __future__ import annotations
 
-from typing import Any
 
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views import View
