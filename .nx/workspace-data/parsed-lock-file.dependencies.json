@@ -1,0 +1,1032 @@
+[
+  {
+    "source": "npm:@jridgewell/gen-mapping",
+    "target": "npm:@jridgewell/sourcemap-codec",
+    "type": "static"
+  },
+  {
+    "source": "npm:@jridgewell/gen-mapping",
+    "target": "npm:@jridgewell/trace-mapping",
+    "type": "static"
+  },
+  {
+    "source": "npm:@jridgewell/source-map",
+    "target": "npm:@jridgewell/gen-mapping",
+    "type": "static"
+  },
+  {
+    "source": "npm:@jridgewell/source-map",
+    "target": "npm:@jridgewell/trace-mapping",
+    "type": "static"
+  },
+  {
+    "source": "npm:@jridgewell/trace-mapping",
+    "target": "npm:@jridgewell/resolve-uri",
+    "type": "static"
+  },
+  {
+    "source": "npm:@jridgewell/trace-mapping",
+    "target": "npm:@jridgewell/sourcemap-codec",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:detect-libc",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:is-glob",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:node-addon-api",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:picomatch",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-android-arm64",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-darwin-arm64",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-darwin-x64",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-freebsd-x64",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-linux-arm-glibc",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-linux-arm-musl",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-linux-arm64-glibc",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-linux-arm64-musl",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-linux-x64-glibc",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-linux-x64-musl",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-win32-arm64",
+    "type": "static"
+  },
+  {
+    "source": "npm:@parcel/watcher",
+    "target": "npm:@parcel/watcher-win32-x64",
+    "type": "static"
+  },
+  {
+    "source": "npm:@types/node",
+    "target": "npm:undici-types",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/ast",
+    "target": "npm:@webassemblyjs/helper-numbers",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/ast",
+    "target": "npm:@webassemblyjs/helper-wasm-bytecode",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/helper-numbers",
+    "target": "npm:@webassemblyjs/floating-point-hex-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/helper-numbers",
+    "target": "npm:@webassemblyjs/helper-api-error",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/helper-numbers",
+    "target": "npm:@xtuc/long",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/helper-wasm-section",
+    "target": "npm:@webassemblyjs/ast",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/helper-wasm-section",
+    "target": "npm:@webassemblyjs/helper-buffer",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/helper-wasm-section",
+    "target": "npm:@webassemblyjs/helper-wasm-bytecode",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/helper-wasm-section",
+    "target": "npm:@webassemblyjs/wasm-gen",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/ieee754",
+    "target": "npm:@xtuc/ieee754",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/leb128",
+    "target": "npm:@xtuc/long",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/ast",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/helper-buffer",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/helper-wasm-bytecode",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/helper-wasm-section",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/wasm-gen",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/wasm-opt",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/wasm-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-edit",
+    "target": "npm:@webassemblyjs/wast-printer",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-gen",
+    "target": "npm:@webassemblyjs/ast",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-gen",
+    "target": "npm:@webassemblyjs/helper-wasm-bytecode",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-gen",
+    "target": "npm:@webassemblyjs/ieee754",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-gen",
+    "target": "npm:@webassemblyjs/leb128",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-gen",
+    "target": "npm:@webassemblyjs/utf8",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-opt",
+    "target": "npm:@webassemblyjs/ast",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-opt",
+    "target": "npm:@webassemblyjs/helper-buffer",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-opt",
+    "target": "npm:@webassemblyjs/wasm-gen",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-opt",
+    "target": "npm:@webassemblyjs/wasm-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-parser",
+    "target": "npm:@webassemblyjs/ast",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-parser",
+    "target": "npm:@webassemblyjs/helper-api-error",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-parser",
+    "target": "npm:@webassemblyjs/helper-wasm-bytecode",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-parser",
+    "target": "npm:@webassemblyjs/ieee754",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-parser",
+    "target": "npm:@webassemblyjs/leb128",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wasm-parser",
+    "target": "npm:@webassemblyjs/utf8",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wast-printer",
+    "target": "npm:@webassemblyjs/ast",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webassemblyjs/wast-printer",
+    "target": "npm:@xtuc/long",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webpack-cli/configtest",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webpack-cli/configtest",
+    "target": "npm:webpack-cli",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webpack-cli/info",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webpack-cli/info",
+    "target": "npm:webpack-cli",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webpack-cli/serve",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:@webpack-cli/serve",
+    "target": "npm:webpack-cli",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv",
+    "target": "npm:fast-deep-equal",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv",
+    "target": "npm:fast-uri",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv",
+    "target": "npm:json-schema-traverse",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv",
+    "target": "npm:require-from-string",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv-formats",
+    "target": "npm:ajv",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv-formats",
+    "target": "npm:ajv",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv-keywords",
+    "target": "npm:ajv",
+    "type": "static"
+  },
+  {
+    "source": "npm:ajv-keywords",
+    "target": "npm:fast-deep-equal",
+    "type": "static"
+  },
+  {
+    "source": "npm:browserslist",
+    "target": "npm:baseline-browser-mapping",
+    "type": "static"
+  },
+  {
+    "source": "npm:browserslist",
+    "target": "npm:caniuse-lite",
+    "type": "static"
+  },
+  {
+    "source": "npm:browserslist",
+    "target": "npm:electron-to-chromium",
+    "type": "static"
+  },
+  {
+    "source": "npm:browserslist",
+    "target": "npm:node-releases",
+    "type": "static"
+  },
+  {
+    "source": "npm:browserslist",
+    "target": "npm:update-browserslist-db",
+    "type": "static"
+  },
+  {
+    "source": "npm:chokidar",
+    "target": "npm:readdirp",
+    "type": "static"
+  },
+  {
+    "source": "npm:clone-deep",
+    "target": "npm:is-plain-object",
+    "type": "static"
+  },
+  {
+    "source": "npm:clone-deep",
+    "target": "npm:kind-of",
+    "type": "static"
+  },
+  {
+    "source": "npm:clone-deep",
+    "target": "npm:shallow-clone",
+    "type": "static"
+  },
+  {
+    "source": "npm:cross-spawn",
+    "target": "npm:path-key",
+    "type": "static"
+  },
+  {
+    "source": "npm:cross-spawn",
+    "target": "npm:shebang-command",
+    "type": "static"
+  },
+  {
+    "source": "npm:cross-spawn",
+    "target": "npm:which",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:icss-utils",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:postcss",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:postcss-modules-extract-imports",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:postcss-modules-local-by-default",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:postcss-modules-scope",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:postcss-modules-values",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:postcss-value-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:css-loader",
+    "target": "npm:semver",
+    "type": "static"
+  },
+  {
+    "source": "npm:enhanced-resolve",
+    "target": "npm:graceful-fs",
+    "type": "static"
+  },
+  {
+    "source": "npm:enhanced-resolve",
+    "target": "npm:tapable",
+    "type": "static"
+  },
+  {
+    "source": "npm:eslint-scope",
+    "target": "npm:esrecurse",
+    "type": "static"
+  },
+  {
+    "source": "npm:eslint-scope",
+    "target": "npm:estraverse",
+    "type": "static"
+  },
+  {
+    "source": "npm:esrecurse",
+    "target": "npm:estraverse@5.3.0",
+    "type": "static"
+  },
+  {
+    "source": "npm:find-up",
+    "target": "npm:locate-path",
+    "type": "static"
+  },
+  {
+    "source": "npm:find-up",
+    "target": "npm:path-exists",
+    "type": "static"
+  },
+  {
+    "source": "npm:hasown",
+    "target": "npm:function-bind",
+    "type": "static"
+  },
+  {
+    "source": "npm:icss-utils",
+    "target": "npm:postcss",
+    "type": "static"
+  },
+  {
+    "source": "npm:import-local",
+    "target": "npm:pkg-dir",
+    "type": "static"
+  },
+  {
+    "source": "npm:import-local",
+    "target": "npm:resolve-cwd",
+    "type": "static"
+  },
+  {
+    "source": "npm:is-core-module",
+    "target": "npm:hasown",
+    "type": "static"
+  },
+  {
+    "source": "npm:is-glob",
+    "target": "npm:is-extglob",
+    "type": "static"
+  },
+  {
+    "source": "npm:is-plain-object",
+    "target": "npm:isobject",
+    "type": "static"
+  },
+  {
+    "source": "npm:jest-worker",
+    "target": "npm:@types/node",
+    "type": "static"
+  },
+  {
+    "source": "npm:jest-worker",
+    "target": "npm:merge-stream",
+    "type": "static"
+  },
+  {
+    "source": "npm:jest-worker",
+    "target": "npm:supports-color",
+    "type": "static"
+  },
+  {
+    "source": "npm:locate-path",
+    "target": "npm:p-locate",
+    "type": "static"
+  },
+  {
+    "source": "npm:mini-css-extract-plugin",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:mini-css-extract-plugin",
+    "target": "npm:schema-utils",
+    "type": "static"
+  },
+  {
+    "source": "npm:mini-css-extract-plugin",
+    "target": "npm:tapable",
+    "type": "static"
+  },
+  {
+    "source": "npm:minimizer-webpack-plugin",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:minimizer-webpack-plugin",
+    "target": "npm:@jridgewell/trace-mapping",
+    "type": "static"
+  },
+  {
+    "source": "npm:minimizer-webpack-plugin",
+    "target": "npm:jest-worker",
+    "type": "static"
+  },
+  {
+    "source": "npm:minimizer-webpack-plugin",
+    "target": "npm:schema-utils",
+    "type": "static"
+  },
+  {
+    "source": "npm:minimizer-webpack-plugin",
+    "target": "npm:terser",
+    "type": "static"
+  },
+  {
+    "source": "npm:p-limit",
+    "target": "npm:p-try",
+    "type": "static"
+  },
+  {
+    "source": "npm:p-locate",
+    "target": "npm:p-limit",
+    "type": "static"
+  },
+  {
+    "source": "npm:pkg-dir",
+    "target": "npm:find-up",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss",
+    "target": "npm:nanoid",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss",
+    "target": "npm:picocolors",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss",
+    "target": "npm:source-map-js",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-extract-imports",
+    "target": "npm:postcss",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-local-by-default",
+    "target": "npm:postcss",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-local-by-default",
+    "target": "npm:icss-utils",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-local-by-default",
+    "target": "npm:postcss-selector-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-local-by-default",
+    "target": "npm:postcss-value-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-scope",
+    "target": "npm:postcss",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-scope",
+    "target": "npm:postcss-selector-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-values",
+    "target": "npm:postcss",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-modules-values",
+    "target": "npm:icss-utils",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-selector-parser",
+    "target": "npm:cssesc",
+    "type": "static"
+  },
+  {
+    "source": "npm:postcss-selector-parser",
+    "target": "npm:util-deprecate",
+    "type": "static"
+  },
+  {
+    "source": "npm:rechoir",
+    "target": "npm:resolve",
+    "type": "static"
+  },
+  {
+    "source": "npm:resolve",
+    "target": "npm:es-errors",
+    "type": "static"
+  },
+  {
+    "source": "npm:resolve",
+    "target": "npm:is-core-module",
+    "type": "static"
+  },
+  {
+    "source": "npm:resolve",
+    "target": "npm:path-parse",
+    "type": "static"
+  },
+  {
+    "source": "npm:resolve",
+    "target": "npm:supports-preserve-symlinks-flag",
+    "type": "static"
+  },
+  {
+    "source": "npm:resolve-cwd",
+    "target": "npm:resolve-from",
+    "type": "static"
+  },
+  {
+    "source": "npm:sass",
+    "target": "npm:chokidar",
+    "type": "static"
+  },
+  {
+    "source": "npm:sass",
+    "target": "npm:immutable",
+    "type": "static"
+  },
+  {
+    "source": "npm:sass",
+    "target": "npm:source-map-js",
+    "type": "static"
+  },
+  {
+    "source": "npm:sass",
+    "target": "npm:@parcel/watcher",
+    "type": "static"
+  },
+  {
+    "source": "npm:sass-loader",
+    "target": "npm:sass",
+    "type": "static"
+  },
+  {
+    "source": "npm:sass-loader",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:sass-loader",
+    "target": "npm:neo-async",
+    "type": "static"
+  },
+  {
+    "source": "npm:schema-utils",
+    "target": "npm:@types/json-schema",
+    "type": "static"
+  },
+  {
+    "source": "npm:schema-utils",
+    "target": "npm:ajv",
+    "type": "static"
+  },
+  {
+    "source": "npm:schema-utils",
+    "target": "npm:ajv-formats",
+    "type": "static"
+  },
+  {
+    "source": "npm:schema-utils",
+    "target": "npm:ajv-keywords",
+    "type": "static"
+  },
+  {
+    "source": "npm:shallow-clone",
+    "target": "npm:kind-of",
+    "type": "static"
+  },
+  {
+    "source": "npm:shebang-command",
+    "target": "npm:shebang-regex",
+    "type": "static"
+  },
+  {
+    "source": "npm:source-map-support",
+    "target": "npm:buffer-from",
+    "type": "static"
+  },
+  {
+    "source": "npm:source-map-support",
+    "target": "npm:source-map",
+    "type": "static"
+  },
+  {
+    "source": "npm:style-loader",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:supports-color",
+    "target": "npm:has-flag",
+    "type": "static"
+  },
+  {
+    "source": "npm:terser",
+    "target": "npm:@jridgewell/source-map",
+    "type": "static"
+  },
+  {
+    "source": "npm:terser",
+    "target": "npm:acorn",
+    "type": "static"
+  },
+  {
+    "source": "npm:terser",
+    "target": "npm:commander",
+    "type": "static"
+  },
+  {
+    "source": "npm:terser",
+    "target": "npm:source-map-support",
+    "type": "static"
+  },
+  {
+    "source": "npm:update-browserslist-db",
+    "target": "npm:browserslist",
+    "type": "static"
+  },
+  {
+    "source": "npm:update-browserslist-db",
+    "target": "npm:escalade",
+    "type": "static"
+  },
+  {
+    "source": "npm:update-browserslist-db",
+    "target": "npm:picocolors",
+    "type": "static"
+  },
+  {
+    "source": "npm:watchpack",
+    "target": "npm:graceful-fs",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:@types/estree",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:@types/json-schema",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:@webassemblyjs/ast",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:@webassemblyjs/wasm-edit",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:@webassemblyjs/wasm-parser",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:acorn",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:browserslist",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:chrome-trace-event",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:enhanced-resolve",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:es-module-lexer",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:eslint-scope",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:events",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:graceful-fs",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:mime-db",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:minimizer-webpack-plugin",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:neo-async",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:schema-utils",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:tapable",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:watchpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack",
+    "target": "npm:webpack-sources",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:webpack",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:@discoveryjs/json-ext",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:@webpack-cli/configtest",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:@webpack-cli/info",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:@webpack-cli/serve",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:colorette",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:commander@10.0.1",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:cross-spawn",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:envinfo",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:fastest-levenshtein",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:import-local",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:interpret",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:rechoir",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-cli",
+    "target": "npm:webpack-merge",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-merge",
+    "target": "npm:clone-deep",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-merge",
+    "target": "npm:flat",
+    "type": "static"
+  },
+  {
+    "source": "npm:webpack-merge",
+    "target": "npm:wildcard",
+    "type": "static"
+  },
+  {
+    "source": "npm:which",
+    "target": "npm:isexe",
+    "type": "static"
+  }
+]
