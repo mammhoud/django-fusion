@@ -14,7 +14,7 @@ Constants:
 
 Usage in Django settings::
 
-    from django_fusion.contrib.debug_tools.config import DEBUG_TOOLBAR_ENABLED
+    from django_fusion.plugins.debug_tools.config import DEBUG_TOOLBAR_ENABLED
 """
 
 from pathlib import Path

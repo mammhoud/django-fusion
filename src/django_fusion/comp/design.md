@@ -10,50 +10,23 @@ Path: `django_fusion/comp`
 
 
 ### Modules
+
+- `_init.py`
 - `apps.py`
 - `cache.py`
 - `registry.py`
+- `loader/`
+- `tags/`
+- `templatetags/`
 
-## Architecture / ERD
+## Architecture / Class Diagram
 
 ```mermaid
-erDiagram
-    CompUsage {
-        Field kwargs
+classDiagram
+    class IncludePathComponent {
+      +from_include_path()
     }
-    SectionMarker {
-    }
-    ParsedTemplate {
-        Field sections
-    }
-    Prop {
-    }
-    Slot {
-    }
-    Component {
-        Field props
-        Field slots
-    }
-    Block {
-    }
-    Section {
-    }
-    Template {
-        Field blocks
-        Field sections
-    }
-    PageComponentUsage {
-        Field props
-    }
-    Page {
-        Field components
-    }
-    AnalyzeRequest {
-        Field filters
-    }
-    ScannedFile {
-        ConfigDict model_config
-    }
+    Component <|-- IncludePathComponent
 ```
 ## Request Flow
 
@@ -64,7 +37,7 @@ erDiagram
 ## Usage Example
 
 ```python
-from django_fusion.comp.models import CompUsage
+from django_fusion.comp import CompUsage
 
 # Query and create instances
 qs = CompUsage.objects.all()

@@ -92,26 +92,28 @@ graph TB
 All re-export shims have been removed. Use these paths directly:
 
 ```python
-# Routing (comp.routes)
-from django_fusion.comp.routes import (
-    Site, Application, Viewset, BaseViewset,
-    ModelViewset, ReadonlyModelViewset,
-    route, menu_path, viewprop,
-    RoutableComponent, FragmentComponent,
-)
+# Routing — the routes package defines no aggregate exports
+from django_fusion.routes.core.base import BaseViewset, Viewset, route, menu_path
+from django_fusion.routes.core.sites import Application, Module
+from django_fusion.routes.models.crud import ModelViewset, ReadonlyModelViewset
+from django_fusion.routes.components.routable import RoutableComponent
+from django_fusion.routes.components.fragments import FragmentComponent
 
-# Generic views (comp.generic)
-from django_fusion.comp.generic import (
-    ListModelView, CreateModelView, UpdateModelView,
-    DeleteModelView, DetailModelView, TableView,
-    SearchableViewMixin, Action,
-)
+# Generic views — one module per view class
+from django_fusion.fragments.generic.list import ListModelView
+from django_fusion.fragments.generic.detail import DetailModelView
+from django_fusion.fragments.generic.base import Action
+from django_fusion.fragments.forms.create import CreateModelView
+from django_fusion.fragments.forms.update import UpdateModelView
+from django_fusion.fragments.forms.delete import DeleteModelView
+from django_fusion.fragments.forms.search import SearchableViewMixin
+from django_fusion.fragments.tables.table import TableView
 
 # Core
-from django_fusion.core.handlers import PageHandler
-from django_fusion.core.services import BaseService
-from django_fusion.core.middlewares import SiteMiddleware
-from django_fusion.core.cache import cache_manager
+from django_fusion.routes.pages.handler import PageHandler
+from django_fusion.services import BaseService
+from django_fusion.core.middlewares.site import SiteMiddleware
+from django_fusion.comp.cache import ComponentMapCache, get_component_map_cache
 ```
 
 ## Template Tags

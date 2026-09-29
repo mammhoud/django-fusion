@@ -24,7 +24,7 @@ All branches are named `generic`.
 | `projects/CMS` | `https://github.com/mammhoud/cms.git` | `generic` |
 | `projects/POS` | `https://github.com/mammhoud/pos.git` | `generic` |
 | `projects/Clients/ctc-research` | `https://github.com/mammhoud/ctc-research.git` | `generic` |
-| `application/tools/PlanInc` | `https://github.com/mammhoud/PlanInc.git` | `generic` |
+| `projects/PlanInc` | `https://github.com/mammhoud/PlanInc.git` | `generic` |
 
 ---
 
@@ -89,8 +89,8 @@ Key notes:
     url = https://github.com/mammhoud/ctc-research.git
     branch = generic
 
-[submodule "application/tools/PlanInc"]
-    path = application/tools/PlanInc
+[submodule "projects/PlanInc"]
+    path = projects/PlanInc
     url = https://github.com/mammhoud/PlanInc.git
     branch = generic
 ```
@@ -122,7 +122,7 @@ cd /home/projects/CRM && git remote -v
 cd /home/projects/CMS && git remote -v
 cd /home/projects/POS && git remote -v
 cd /home/projects/Clients/ctc-research && git remote -v
-cd /home/application/tools/PlanInc && git remote -v
+cd /home/projects/PlanInc && git remote -v
 ```
 
 ---

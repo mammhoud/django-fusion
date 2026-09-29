@@ -1,7 +1,7 @@
 # Getting Started — DF-001
 
 > Source of truth: `pyproject.toml`, `src/django_fusion/__init__.py`,
-> `src/django_fusion/comp/`, `QUICKSTART.md`, `src/django_fusion/infrastructure/`.
+> `src/django_fusion/comp/`, `QUICKSTART.md`, `src/django_fusion/management/`.
 
 **Time:** ≈10 minutes.
 
@@ -50,23 +50,24 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     # django-fusion — required
-    "django_fusion.comp",            # Component system
-    "django_fusion.core",            # Handlers, managers, services, cache
-    "django_fusion.config",          # Dynaconf loader
-    "django_fusion.infrastructure",  # Management commands, scripts, locale
-    "django_fusion.site",            # Auth mixins, context processors
-    "django_fusion.web",             # Allauth adapters, view mixins
+    "django_fusion",                 # App config (DjangoFusionConfig): task wiring
+    "django_fusion.comp",            # Component system, registry, {% comp %}
+    "django_fusion.core",            # Handlers, managers, services, cache, middlewares
+    "django_fusion.config",          # Dynaconf settings loader
 
     # django-fusion — optional, only when used
-    "django_fusion.core.health",     # /health/ endpoints
-    "django_fusion.analyzer",        # {% comp %} usage scanner
-    "django_fusion.wagtail",         # Wagtail integration (only if Wagtail)
-    "django_fusion.contrib",         # Admin, cache utils, privacy
+    "django_fusion.core.health",             # /health/ endpoints
+    "django_fusion.fragments.analyzer",      # {% comp %} usage scanner
+    "django_fusion.builder",                 # Wagtail page-builder blocks
+    "django_fusion.contrib",                 # Admin, cache utils, privacy
 ]
 ```
 
-> Remark: see DF-007 for the full per-app purpose table and the optional
-> `wagtail` dependency.
+> Remark: see DF-007 for the full per-app purpose table. There is **no**
+> `django_fusion.wagtail` app and no `wagtail` extra — Wagtail support ships
+> inside `django_fusion.builder` (StreamField blocks),
+> `django_fusion.fragments.viewsets` (snippet viewsets) and
+> `django_fusion.contrib.admin` (snippet hooks). See DF-010.
 
 ## Register the `{% comp %}` template tag globally
 

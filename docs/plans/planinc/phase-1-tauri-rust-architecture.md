@@ -1,7 +1,7 @@
 # Phase 1 — Tauri + Rust Desktop Architecture
 
 **Status:** Planned  
-**Scope:** `application/tools/PlanInc/`  
+**Scope:** `projects/PlanInc/`  
 **Owner:** Desktop / Frontend  
 **Depends on:** Phase 0 (submodule setup complete)
 
@@ -18,7 +18,7 @@ containers, no network port at runtime.
 
 ## Background
 
-The current `application/tools/PlanInc/` layout:
+The current `projects/PlanInc/` layout:
 
 ```
 PlanInc/
@@ -41,7 +41,7 @@ upstream source used for UI patterns only.
 ## Target Architecture
 
 ```
-application/tools/PlanInc/
+projects/PlanInc/
 ├── src/                     # React/Vite frontend (TypeScript)
 │   ├── components/
 │   │   ├── NoteList/

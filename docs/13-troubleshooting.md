@@ -165,9 +165,9 @@ root cause and the code-level fix.
 
 **Symptom:** `wagtail.contrib.forms` import errors during deploy.
 
-**Cause:** `django_fusion.wagtail` requires Wagtail 5+; older `wagtail`
+**Cause:** the Wagtail snippet helpers require Wagtail 5+; older `wagtail`
 versions may break `BaseSnippetViewSet` (see
-`src/django_fusion/wagtail/viewsets.py`).
+`src/django_fusion/fragments/viewsets.py`).
 
 **Fix:** Pin `wagtail>=5` in `pyproject.toml` and rebuild the lock file.
 

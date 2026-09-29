@@ -90,11 +90,16 @@ Add to `INSTALLED_APPS`:
 ```python
 INSTALLED_APPS = [
     # ...
-    "django_fusion.comp",
-    "django_fusion.core",
-    "django_fusion.health",          # optional
-    "django_fusion.analyzer",        # optional
-    "django_fusion.config",
+    "django_fusion",                 # app config: task wiring + sub-app discovery
+    "django_fusion.comp",            # component system, registry, {% comp %}
+    "django_fusion.core",            # handlers, managers, services, cache, middlewares
+    "django_fusion.config",          # Dynaconf settings loader
+
+    # optional — only when used
+    "django_fusion.core.health",             # /health/ endpoints
+    "django_fusion.fragments.analyzer",      # {% comp %} usage scanner
+    "django_fusion.builder",                 # Wagtail page-builder blocks
+    "django_fusion.contrib",                 # admin, privacy, cache utils
 ]
 ```
 

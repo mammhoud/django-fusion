@@ -2,7 +2,7 @@
 
 ## Overview
 
-django_fusion.components.forms — Form integration with tag generation.
+django_fusion.fragments.forms — Form integration with tag generation.
 
 ## Directory
 
@@ -10,8 +10,14 @@ Path: `django_fusion/fragments/forms`
 
 
 ### Modules
+
+- `create.py`
+- `delete.py`
+- `forms.py`
 - `mixins.py`
+- `search.py`
 - `tag_generator.py`
+- `update.py`
 
 ## Architecture / Class Diagram
 
@@ -22,6 +28,40 @@ classDiagram
     }
     FormMixin <|-- FormTableMixin
     TableMixin <|-- FormTableMixin
+    class BaseForm {
+    }
+    BaseFormMixin <|-- BaseForm
+    forms.Form <|-- BaseForm
+    class BaseModelForm {
+    }
+    BaseFormMixin <|-- BaseModelForm
+    forms.ModelForm <|-- BaseModelForm
+    class CreateModelView {
+      +has_add_permission()
+      +get_object_url()
+      +message_user()
+      +queryset()
+      +get_form_widgets()
+    }
+    FormLayoutMixin <|-- CreateModelView
+    generic.CreateView <|-- CreateModelView
+    class DeleteModelView {
+      +has_delete_permission()
+      +get_deleted_objects()
+      +queryset()
+      +get_object()
+      +get_template_names()
+    }
+    generic.DeleteView <|-- DeleteModelView
+    class UpdateModelView {
+      +has_change_permission()
+      +get_object_url()
+      +get_page_actions()
+      +message_user()
+      +queryset()
+    }
+    FormLayoutMixin <|-- UpdateModelView
+    generic.UpdateView <|-- UpdateModelView
 ```
 ## Request Flow
 

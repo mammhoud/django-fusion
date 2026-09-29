@@ -6,10 +6,11 @@ Django model manager classes with caching, role hierarchy, and search support.
 
 ## Directory
 
-Path: `django_fusion/site/management/managers`
+Path: `django_fusion/management/managers`
 
 
 ### Modules
+
 - `base.py`
 - `group_access.py`
 - `role_hierarchy.py`
@@ -17,21 +18,22 @@ Path: `django_fusion/site/management/managers`
 - `tags.py`
 - `token.py`
 - `user.py`
+- `cache/`
 
 ## Architecture / Class Diagram
 
 ```mermaid
 classDiagram
+    class CachedManager {
+    }
+    CacheSupportMixin <|-- CachedManager
+    BaseManager <|-- CachedManager
     class TokenCachedManager {
       +get_token_cached()
       +filter_token_cached()
     }
     TokenAwareManagerMixin <|-- TokenCachedManager
     CachedManager <|-- TokenCachedManager
-    class CachedManager {
-    }
-    CacheSupportMixin <|-- CachedManager
-    BaseManager <|-- CachedManager
 ```
 ## Request Flow
 

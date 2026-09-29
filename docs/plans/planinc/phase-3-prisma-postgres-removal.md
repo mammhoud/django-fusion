@@ -1,7 +1,7 @@
 # Phase 3 — Prisma / PostgreSQL Removal from Blinko Fork
 
 **Status:** Planned  
-**Scope:** `application/tools/PlanInc/planing/`  
+**Scope:** `projects/PlanInc/planing/`  
 **Owner:** Backend  
 **Depends on:** Phase 2 (runtime already SurrealDB-only)  
 **Can run in parallel with:** Phase 4, Phase 5
@@ -85,7 +85,7 @@ Run before and after to confirm zero remaining references:
 
 ```bash
 rg '@prisma/client|PrismaClient|pg-boss|getPgBoss|DATABASE_URL|POSTGRES' \
-  application/tools/PlanInc/planing/server/ \
+  projects/PlanInc/planing/server/ \
   --type ts
 ```
 
@@ -127,7 +127,7 @@ SurrealDB equivalents in `runtime/server.mjs`:
 
 ```bash
 # 1. Install without prisma
-cd application/tools/PlanInc/planing
+cd projects/PlanInc/planing
 bun install
 # Confirm @prisma/client NOT in node_modules
 

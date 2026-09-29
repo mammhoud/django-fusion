@@ -6,18 +6,19 @@ Cache manager utilities for Django model querysets.
 
 ## Directory
 
-Path: `django_fusion/site/management/managers/cache`
+Path: `django_fusion/management/managers/cache`
 
 
 ### Modules
-- `managers.py`
+
+_No modules found in this package._
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Request --> site.management.managers.cache
-    {package_name} --> Response
+    Request --> django_fusion.management.managers.cache
+    django_fusion.management.managers.cache --> Response
 ```
 ## Request Flow
 

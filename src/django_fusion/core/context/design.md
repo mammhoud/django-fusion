@@ -6,22 +6,30 @@ Request context processors and context data builders.
 
 ## Directory
 
-Path: `django_fusion/site/interface/context`
+Path: `django_fusion/core/context`
 
 
 ### Modules
+
+- `_context_mixins.py`
 - `auth.py`
+- `context.py`
 - `cookies.py`
 - `htmx.py`
 - `languages.py`
 - `settings.py`
 
-## Architecture
+## Architecture / Class Diagram
 
 ```mermaid
-flowchart LR
-    Request --> site.interface.context
-    {package_name} --> Response
+classDiagram
+    class FragmentHandlerMixin {
+      +resolve_template_name()
+      +render_response()
+      +render_fragment()
+      +render_layout()
+    }
+    BaseTemplateContextMixin <|-- FragmentHandlerMixin
 ```
 ## Request Flow
 
@@ -32,7 +40,7 @@ flowchart LR
 ## Usage Example
 
 ```python
-from django_fusion.site.interface.context import example_function
+from django_fusion.core.context import example_function
 
 # Replace example_function with a real symbol from this package
 result = example_function()

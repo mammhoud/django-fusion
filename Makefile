@@ -21,7 +21,7 @@
 
 SHELL := /bin/bash
 
-.PHONY: help build watch dev clean install reinstall info
+.PHONY: help build watch dev clean install reinstall info check docs plugin-template
 
 # ── Help alias ─────────────────────────────────────────────────────────────────
 help: info
@@ -69,6 +69,37 @@ reinstall:
 	npm install
 	@echo "✅ Reinstall complete"
 
+# ── Checks ────────────────────────────────────────────────────────────────────
+# Two passes, both stdlib-only (no venv, no npm install):
+#   1. generated package docs under src/django_fusion/ must be up to date, and
+#   2. every `django_fusion.*` reference in the library docs must resolve to a
+#      real module, or a name that module actually exposes.
+# A moved package therefore cannot leave a stale path behind in either the
+# generated docs or the hand-written guides; the gate exits non-zero and CI
+# (fusion-ci) fails.
+# Two gates, both stdlib-only so they run in a bare CI job with no venv:
+#   1. stale `django_fusion.*` package paths across the library docs
+#   2. plugin PRODUCT.md descriptions vs the catalog (missing/drift is a failure)
+check:
+	@echo "→ Checking docs for stale django_fusion.* package paths..."
+	@python3 scripts/generate_design_docs.py --check
+	@echo "→ Checking plugin descriptions against the catalog..."
+	@python3 scripts/generate_plugin_products.py --check
+
+# Regenerate them after a move/rename (writes in place):
+docs:
+	@echo "→ Regenerating package docs..."
+	@python3 scripts/generate_design_docs.py
+	@echo "→ Listing plugin description state..."
+	@python3 scripts/generate_plugin_products.py --list
+	@echo "✅ Docs regenerated"
+
+# Scaffold a description for a plugin that does not have one yet:
+#   make plugin-template PLUGIN=myplugin
+plugin-template:
+	@test -n "$(PLUGIN)" || { echo "✖ usage: make plugin-template PLUGIN=<name>"; exit 2; }
+	@python3 scripts/generate_plugin_products.py --template $(PLUGIN)
+
 # ── Info ──────────────────────────────────────────────────────────────────────
 info:
 	@echo "django-fusion Asset Pipeline"
@@ -83,6 +114,8 @@ info:
 	@echo "    make dev    → Dev bundle (fast, no minification)"
 	@echo "    make watch  → Dev + file watcher"
 	@echo "    make clean  → Remove generated assets"
+	@echo "    make check  → Fail on stale module paths in the generated docs"
+	@echo "    make docs   → Regenerate package docs (design.md + README.md)"
 	@echo "    make info   → Show this message"
 	@echo ""
 	@echo "  Component SCSS partials:"

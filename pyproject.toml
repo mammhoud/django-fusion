@@ -79,6 +79,24 @@ auth = [
     "django-allauth>=65",
 ]
 
+# ---------------------------------------------------------------------------
+# Third-party plugin attach surface — consumed, not declared, here
+#
+# `django_fusion.plugins.manager` loads the entry-point group `django-block`
+# (see ENTRYPOINT_GROUP there). django-fusion deliberately does NOT declare the
+# group in this file: the framework's own plugins register through
+# `plugins.catalog.CORE_PLUGINS`, and setuptools rejects an entry-point table
+# with no entries in it (`project.entry-points` keys must name a real group with
+# at least one member), so an empty declaration cannot exist. A distribution
+# that wants to attach declares the group in ITS OWN metadata:
+#
+#     [project.entry-points."django-block"]
+#     my_plugin = "my_package.plugin"
+#
+# The group name `django-block` is a historical mismatch with `django_fusion` —
+# inherited from django-block, and kept because renaming it would silently
+# unregister every already-published plugin.
+
 [project.urls]
 Homepage = "https://github.com/mammhoud/django-fusion"
 Repository = "https://github.com/mammhoud/django-fusion.git"

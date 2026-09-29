@@ -10,6 +10,7 @@ Path: `django_fusion/contrib/privacy`
 
 
 ### Modules
+
 - `cookies.py`
 - `middleware.py`
 - `privacy.py`
@@ -18,8 +19,8 @@ Path: `django_fusion/contrib/privacy`
 
 ```mermaid
 flowchart LR
-    Request --> contrib.privacy
-    {package_name} --> Response
+    Request --> django_fusion.contrib.privacy
+    django_fusion.contrib.privacy --> Response
 ```
 ## Request Flow
 

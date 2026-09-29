@@ -6,29 +6,23 @@ Django Fusion management module.
 
 ## Directory
 
-Path: `django_fusion/site/management`
+Path: `django_fusion/management`
 
 
 ## Architecture / Class Diagram
 
 ```mermaid
 classDiagram
-    class BaseSnippetViewSet {
-      +duplicate()
-      +export_csv()
-      +icon_boolean()
-      +link_display()
-      +image_display()
+    class CachedManager {
     }
-    SnippetViewSet <|-- BaseSnippetViewSet
-    class BaseForm {
+    CacheSupportMixin <|-- CachedManager
+    BaseManager <|-- CachedManager
+    class TokenCachedManager {
+      +get_token_cached()
+      +filter_token_cached()
     }
-    BaseFormMixin <|-- BaseForm
-    forms.Form <|-- BaseForm
-    class BaseModelForm {
-    }
-    BaseFormMixin <|-- BaseModelForm
-    forms.ModelForm <|-- BaseModelForm
+    TokenAwareManagerMixin <|-- TokenCachedManager
+    CachedManager <|-- TokenCachedManager
     class TokenAwareFilter {
       +run()
     }
@@ -39,16 +33,6 @@ classDiagram
     }
     django_filters.FilterSet <|-- _TokenFilterSet
     TokenFilterMixin <|-- _TokenFilterSet
-    class TokenCachedManager {
-      +get_token_cached()
-      +filter_token_cached()
-    }
-    TokenAwareManagerMixin <|-- TokenCachedManager
-    CachedManager <|-- TokenCachedManager
-    class CachedManager {
-    }
-    CacheSupportMixin <|-- CachedManager
-    BaseManager <|-- CachedManager
 ```
 ## Request Flow
 

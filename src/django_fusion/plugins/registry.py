@@ -40,6 +40,13 @@ _SIGNAL_HEADERS: dict[str, tuple[str, str]] = {
     "unpoly-request": ("X-Up-Target", None),
 }
 _SSE_ACCEPT = "text/event-stream"
+#: Path prefixes that mean "this is an API call".
+#:
+#: ``/api/`` is **canonical** for new endpoints (the product plugin contract
+#: fixes it as ``/api/<vertical>/``). ``/apis/`` is a tolerated legacy alias —
+#: older products route that way and removing it would silently drop their
+#: ``api-request`` signal, so it stays supported but is not to be used for new
+#: work. ``/fragment/`` is the fragment road and is not an alias for either.
 _API_PATH_PREFIXES = ("/api/", "/apis/", "/fragment/")
 
 

@@ -55,7 +55,7 @@ def task(
 
     This decorator is broker-agnostic — it registers with
     django-fusion's :class:`TaskRegistry`, which routes to the
-    configured backend (Dramatiq, RQ, or in-process for testing).
+    configured backend (Dramatiq, or in-process for testing).
 
     Usage::
 

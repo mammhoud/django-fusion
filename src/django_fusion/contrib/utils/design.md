@@ -2,7 +2,7 @@
 
 ## Overview
 
-Utility re-exports from django_fusion.site.interface.
+Utility re-exports from django_fusion.core.utils.
 
 ## Directory
 
@@ -13,8 +13,8 @@ Path: `django_fusion/contrib/utils`
 
 ```mermaid
 flowchart LR
-    Request --> contrib.utils
-    {package_name} --> Response
+    Request --> django_fusion.contrib.utils
+    django_fusion.contrib.utils --> Response
 ```
 ## Request Flow
 

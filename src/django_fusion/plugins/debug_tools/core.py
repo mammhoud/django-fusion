@@ -13,7 +13,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.core import DebugToolbarSetup
+    from django_fusion.plugins.debug_tools.core import DebugToolbarSetup
 
     setup = DebugToolbarSetup()
     setup.print_status()

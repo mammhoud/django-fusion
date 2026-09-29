@@ -10,7 +10,7 @@ Classes:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.orchestrator import DevelopmentOrchestrator
+    from django_fusion.plugins.debug_tools.orchestrator import DevelopmentOrchestrator
 
     orchestrator = DevelopmentOrchestrator()
     orchestrator.setup_environment(installed_apps, middleware)

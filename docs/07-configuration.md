@@ -2,22 +2,28 @@
 
 > Source of truth: `src/django_fusion/config/conf.py`, `conf_utils.py`,
 > `constants.py`, `loader.py`, `pyproject.toml`,
-> `src/django_fusion/projects/middlewares.py`.
+> `src/django_fusion/core/middlewares/`.
 
 ## Required `INSTALLED_APPS`
 
 | App | Purpose |
 |-----|---------|
+| `django_fusion` | App config (`DjangoFusionConfig`) — task wiring + sub-app discovery |
 | `django_fusion.comp` | Component system, registry, tag, routing |
 | `django_fusion.core` | Handlers, models, managers, services, cache, middlewares |
 | `django_fusion.config` | Multi-environment YAML loader (Dynaconf) |
-| `django_fusion.infrastructure` | Management commands, scripts, locale |
-| `django_fusion.site` | Allauth adapter, context processors, auth mixins |
-| `django_fusion.web` | Allauth adapters, view mixins |
 | `django_fusion.core.health` *(optional)* | `/health/`, `/health/db/`, `/health/assets/` |
-| `django_fusion.analyzer` *(optional)* | `{% comp %}` usage scanner |
-| `django_fusion.wagtail` *(if using Wagtail)* | Blocks, snippets, viewsets |
+| `django_fusion.fragments.analyzer` *(optional)* | `{% comp %}` usage scanner |
+| `django_fusion.builder` *(if using Wagtail)* | StreamField blocks |
 | `django_fusion.contrib` *(optional)* | Admin, privacy, debug tools |
+
+> Corrected 2026-09-22: this table previously listed `django_fusion.infrastructure`,
+> `django_fusion.site`, `django_fusion.web`, `django_fusion.analyzer`,
+> `django_fusion.health` and `django_fusion.wagtail`. None of those are apps in
+> this checkout — the real names are in the table above. Auth mixins live in the
+> `site/` namespace subpackage (not an installable app), context processors in
+> `django_fusion.core.context`, and management commands in
+> `django_fusion.management.commands`.
 
 ## Recognized settings
 
@@ -188,7 +194,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     # django-fusion opt-ins inserted by the importing site
-    # (specific class names live in src/django_fusion/projects/middlewares.py)
+    # (specific class names live in src/django_fusion/core/middlewares/)
 ]
 ```
 

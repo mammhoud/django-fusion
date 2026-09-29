@@ -2,10 +2,11 @@
 
 ## Overview
 
-`django_fusion.contrib` provides a unified, dependency-free framework for
-form handling and table rendering in routable components. It replaces the
-fragmented approach of `comp.routes.forms_tables` with enhanced mixins,
-automatic ORM data conversion, and form tag generation.
+`django_fusion.fragments.forms` and `django_fusion.fragments.tables` provide a
+unified, dependency-free framework for form handling and table rendering in
+routable components. They replace the earlier split between form/table views and
+the routing layer with enhanced mixins, automatic ORM data conversion, and form
+tag generation.
 
 ## Quick Start
 
@@ -13,20 +14,23 @@ automatic ORM data conversion, and form tag generation.
 
 ```python
 # Tables
-from django_fusion.contrib.tables import TableMixin, RowGenerator
+from django_fusion.fragments.tables import TableMixin, RowGenerator
 
 # Forms
-from django_fusion.contrib.forms import FormMixin, FormTableMixin, FormTagGenerator
+from django_fusion.fragments.forms import FormMixin, FormTableMixin, FormTagGenerator
 
-# Or all at once
-from django_fusion.contrib import TableMixin, RowGenerator, FormMixin, FormTagGenerator
+# There is no aggregate form/table bundle and no legacy aliases — the two
+# packages above are the only public import surface.
 ```
 
-### Legacy Imports (still work)
+### Per-view classes
+
+Each view class lives in its own module; the packages export mixins only:
 
 ```python
-from django_fusion.routes.forms_tables import TableMixin  # → forwarded to contrib
-from django_fusion.fragments.forms import FormMixin
+from django_fusion.fragments.tables.table import TableView
+from django_fusion.fragments.forms.create import CreateModelView
+from django_fusion.fragments.generic.list import ListModelView
 ```
 
 ## Table Usage
@@ -35,7 +39,7 @@ from django_fusion.fragments.forms import FormMixin
 
 ```python
 from django_fusion.routes.components.routable import RoutableComponent
-from django_fusion.contrib.tables import TableMixin
+from django_fusion.fragments.tables import TableMixin
 
 class ProductList(RoutableComponent, TableMixin):
     route_name = "products"
@@ -82,7 +86,7 @@ class SalesReport(RoutableComponent, TableMixin):
 ### Using RowGenerator Directly
 
 ```python
-from django_fusion.contrib.tables import RowGenerator
+from django_fusion.fragments.tables import RowGenerator
 
 # From QuerySet (auto-detects columns from model)
 gen = RowGenerator(Product.objects.all())
@@ -104,7 +108,7 @@ gen = RowGenerator(
 
 ```python
 from django_fusion.routes.components.routable import RoutableComponent
-from django_fusion.contrib.forms import FormMixin
+from django_fusion.fragments.forms import FormMixin
 
 class ProductCreate(RoutableComponent, FormMixin):
     route_name = "product_create"
@@ -150,7 +154,7 @@ class ProductCreate(RoutableComponent, FormMixin):
 ### Form + Table Combined
 
 ```python
-from django_fusion.contrib.forms import FormTableMixin
+from django_fusion.fragments.forms import FormTableMixin
 
 class ProductSearch(RoutableComponent, FormTableMixin):
     route_name = "search"
@@ -179,7 +183,8 @@ class ProductSearch(RoutableComponent, FormTableMixin):
 
 **Before:**
 ```python
-from django_fusion.routes.forms_tables import TableMixin, FormMixin
+from django_fusion.fragments.tables import TableMixin
+from django_fusion.fragments.forms import FormMixin
 
 class MyReport(RoutableComponent, TableMixin):
     table_name = "report"
@@ -191,7 +196,7 @@ class MyReport(RoutableComponent, TableMixin):
 
 **After:**
 ```python
-from django_fusion.contrib.tables import TableMixin
+from django_fusion.fragments.tables import TableMixin
 
 class MyReport(RoutableComponent, TableMixin):
     table_name = "report"

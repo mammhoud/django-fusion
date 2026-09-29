@@ -86,7 +86,7 @@ pytest tests/
 | # | Note |
 |---|------|
 | ⚠️ | Both libraries are **Git submodules**. If you get `ImportError` after cloning, you forgot `git submodule update --init --recursive`. |
-| 💡 | Use **canonical import paths** — no re-export shims remain. Import from `django_fusion.comp.routes` directly, not from compatibility wrappers. |
+| 💡 | Use **canonical import paths** — no re-export shims remain. Import routing from `django_fusion.routes.core.base` and forms/tables from `django_fusion.fragments.forms` / `django_fusion.fragments.tables`, not from compatibility wrappers. |
 | 🔌 | The `django-fusion` component system uses dot notation: `{% comp "contact.sections.form" %}` |
 | 📦 | Optional dependencies: `django-fusion[dev]` for testing, `ceptor-ai[mcp]` for MCP protocol support, `ceptor-ai[test]` for test utilities |
 

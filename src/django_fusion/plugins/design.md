@@ -2,24 +2,55 @@
 
 ## Overview
 
-This package (`comp.plugins`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
+This package (`plugins`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
 
 ## Directory
 
-Path: `django_fusion/comp/plugins`
+Path: `django_fusion/plugins`
 
 
 ### Modules
+
+- `attach.py`
+- `catalog.py`
+- `descriptions.py`
 - `hookspecs.py`
 - `manager.py`
-- `webpack_compat.py`
+- `registry.py`
+- `tracker.py`
+- `apis/`
+- `debug_tools/`
+- `designer/`
+- `htmx/`
+- `robyn/`
+- `unpoly/`
 
-## Architecture
+## Architecture / Class Diagram
 
 ```mermaid
-flowchart LR
-    Request --> comp.fragment.plugins
-    {package_name} --> Response
+classDiagram
+    class APIApplication {
+    }
+    APISViewMixin <|-- APIApplication
+    class BoltAPIApplication {
+      +mount_on_bolt()
+    }
+    APISViewMixin <|-- BoltAPIApplication
+    Application <|-- BoltAPIApplication
+    class FusionApiViewset {
+      +get_tenant_id()
+      +get_queryset()
+      +apply_filters()
+      +apply_ordering()
+      +serialize()
+    }
+    APISViewMixin <|-- FusionApiViewset
+    class FusionIntrospectionApiView {
+      +get()
+    }
+    class FusionIntrospectionDashboardView {
+      +get()
+    }
 ```
 ## Request Flow
 
@@ -30,8 +61,8 @@ flowchart LR
 ## Usage Example
 
 ```python
-from django_fusion.comp.plugins.manager import pm
-from django_fusion.comp.plugins import hookspecs
+from django_fusion.plugins.manager import pm
+from django_fusion.plugins import hookspecs
 
 # Call a hook implemented by registered plugins
 results = pm.hook.get_template_directories()

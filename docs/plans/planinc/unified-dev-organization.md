@@ -12,7 +12,7 @@ FlyonUI (`flyonui` npm v2.4.1) has been added as a Tailwind CSS plugin in PlanIn
 ## 1. Current State Summary
 
 ### PlanInc (to be integrated into monorepo)
-- **Current location:** `/home/application/tools/PlanInc/` (standalone repo, outside `/home/`)
+- **Current location:** `/home/projects/PlanInc/` (standalone repo, outside `/home/`)
 - **Stack:** React 18 + Vite + TailwindCSS + HeroUI (FlyonUI as optional replacement) + MobX + Tauri v2 + Express/tRPC + SurrealDB
 - **Package manager:** Bun
 - **Key directories:** `src/frontend/`, `src/server/`, `src/frontend/src-tauri/`, `src/frontend/tauri-plugin-planinc/`, `runtime/`, `brandkit/`, `docs/`
@@ -889,7 +889,7 @@ Shared libraries, design tokens, UI components, and Tauri plugin cores are extra
 
 ### Phase 2: Move PlanInc into Monorepo
 
-- [ ] Move `/home/application/tools/PlanInc/` → `projects/planinc/`
+- [ ] Move `/home/projects/PlanInc/` → `projects/planinc/`
 - [ ] Update all internal paths in PlanInc configuration files
 - [ ] Create `projects/planinc/Makefile`
 - [ ] Add PlanInc to root Makefile and Justfile

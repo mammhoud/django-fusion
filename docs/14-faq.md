@@ -19,8 +19,10 @@ declares `django>=4.2`.
 
 ### Q: Does it work with Wagtail 6?
 
-A: Yes. `django_fusion.wagtail` is tested against Wagtail 5.x and 6.x.
-Older 4.x versions may break `BaseSnippetViewSet`.
+A: Yes. The Wagtail surface — `django_fusion.builder.blocks` (StreamField
+blocks) and `django_fusion.fragments.viewsets` (snippet viewsets) — targets
+Wagtail 5.x and 6.x. Older 4.x versions may break `BaseSnippetViewSet`.
+There is no `django_fusion.wagtail` package.
 
 ## Components
 
@@ -122,8 +124,11 @@ because upgrades overwrite it.
 
 ### Q: How do I enable `export_to_csv` on a snippet?
 
-A: Set `export_csv_fields = ["field1", "field2", ...]` on the
-viewset. The button auto-appears in the listing toolbar.
+A: You don't — `BaseSnippetViewSet` (`django_fusion.fragments.viewsets`)
+always contributes the `export_csv` and `duplicate` bulk actions, so the
+buttons appear in the listing toolbar as soon as a viewset subclasses it.
+There is no `export_csv_fields` attribute; to choose the columns, call the
+module-level `export_to_csv(queryset, fields=[...])` helper.
 
 ## Tests
 

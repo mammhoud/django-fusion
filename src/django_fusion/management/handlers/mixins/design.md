@@ -6,10 +6,11 @@ Handler mixins for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/site/management/handlers/mixins`
+Path: `django_fusion/management/handlers/mixins`
 
 
 ### Modules
+
 - `cache.py`
 - `fragment.py`
 - `page.py`
@@ -20,11 +21,6 @@ Path: `django_fusion/site/management/handlers/mixins`
 
 ```mermaid
 classDiagram
-    class TokenProtectedMixin {
-      +save()
-      +delete()
-    }
-    TokenAuthMixin <|-- TokenProtectedMixin
     class ProfileContextMixin {
       +get_profile_context()
       +get_context_data()
@@ -40,6 +36,11 @@ classDiagram
       +search_cached()
     }
     CacheMixin <|-- CacheSearchMixin
+    class TokenProtectedMixin {
+      +save()
+      +delete()
+    }
+    TokenAuthMixin <|-- TokenProtectedMixin
 ```
 ## Request Flow
 

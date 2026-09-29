@@ -420,10 +420,10 @@ validation → escaping → filters → assembly → preview. Spec:
 ### Examples
 
 ```python
-from django_fusion.templates.fields import TemplateRenderer  # provided by the system
+from django_fusion.template_fields import TemplateFieldEngine
 
-renderer = TemplateRenderer()
-result = renderer.render(
+engine = TemplateFieldEngine()
+result = engine.render(
     "Invoice {{ invoice.number }} for {{ customer.name|upper }} — due {{ invoice.due_date|date:\"%Y-%m-%d\" }}",
     {"invoice": invoice, "customer": customer},
 )
@@ -432,29 +432,32 @@ result = renderer.render(
 Define a schema for validation:
 
 ```python
-from django_fusion.templates.fields import TemplateSchema, SchemaField, FieldType
+from django_fusion.template_fields import ValidationIssue, parse_fields
 
-schema = TemplateSchema(fields=[
-    SchemaField(name="customer.name", type=FieldType.TEXT, required=True),
-    SchemaField(name="order.total", type=FieldType.DECIMAL, required=True, allowlist=True),
-    SchemaField(name="invoice.number", type=FieldType.TEXT, fallback="—"),
-])
-issues = schema.validate("{{ customer.name }} — {{ order.total }}")
+# What the template actually reads (the engine parses, never evaluates):
+references = parse_fields("{{ customer.name }} — {{ order.total }}")
+
+# What the engine would complain about, given a context and allowlist:
+issues: list[ValidationIssue] = engine.validate(
+    "{{ customer.name }} — {{ order.total }}", context={}, allowlist={"customer", "order"}
+)
 ```
 
 ### Usage
 
-- Register custom filters in the filter registry (14 built-in: `date`,
-  `upper`, `lower`, `default`, `currency`, `truncate`, `join`, `urlencode`, …).
+- Register custom filters with `django_fusion.template_fields.register_filter`;
+  built-ins include `date`, `upper`, `lower`, `default`, `currency`,
+  `truncate`, `join` and `urlencode`.
 - Configure limits/allowlists in Django settings (`TEMPLATE_FIELD_*`).
-- Preview: `renderer.preview(template, sample_data)` returns watermarked
-  output plus `ValidationIssue` list.
+- Validation: `engine.validate(template, context=…, allowlist=…)` returns
+  `ValidationIssue` entries; previewed output travels in `PreviewResult`.
 
 ### Customization
 
 - New filter: add a function to the registry and document it in
   `05-examples.md`.
-- New field type: extend `FieldType` + the resolver's coercion table.
+- New value formatting: add a filter to the registry — the engine has no
+  `FieldType` enum; `resolve_path` returns raw values and filters format them.
 - New data source: register it in the source allowlist (default: models
   referenced by the owning product).
 

@@ -2,14 +2,15 @@
 
 ## Overview
 
-This package (`comp.templatetags.tags`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
+This package (`comp.tags.tags`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
 
 ## Directory
 
-Path: `django_fusion/comp/templatetags/tags`
+Path: `django_fusion/comp/tags/tags`
 
 
 ### Modules
+
 - `asset.py`
 - `block.py`
 - `prop.py`
@@ -20,8 +21,8 @@ Path: `django_fusion/comp/templatetags/tags`
 
 ```mermaid
 flowchart LR
-    Request --> comp.templatetags.tags
-    {package_name} --> Response
+    Request --> django_fusion.comp.tags.tags
+    django_fusion.comp.tags.tags --> Response
 ```
 ## Request Flow
 

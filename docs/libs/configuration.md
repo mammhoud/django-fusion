@@ -17,10 +17,12 @@ uv pip install -e libs/django-fusion/
 
 ```python
 # Routing
-from django_fusion.comp.routes import Viewset, Site, Application, route
+from django_fusion.routes.core.base import Viewset, route
+from django_fusion.routes.core.sites import Module, Application
 
 # Generic CBVs
-from django_fusion.comp.generic import CreateModelView, ListModelView
+from django_fusion.fragments.forms.create import CreateModelView
+from django_fusion.fragments.generic.list import ListModelView
 
 # Component template tag
 {% comp "contact.sections.form" block=block / %}
@@ -36,9 +38,9 @@ INSTALLED_APPS = [
 TEMPLATES = [{
     "DIRS": [BASE_DIR / "templates"],
     "OPTIONS": {
-        "loaders": [
-            "django_fusion.comp.loaders.ComponentLoader",
-        ],
+        # django-fusion declares no TEMPLATES loader class; component template
+        # names resolve via
+        # django_fusion.comp.loader.templates.get_template_names().
     },
 }]
 ```

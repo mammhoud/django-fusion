@@ -6,18 +6,19 @@ Scripts module for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/site/management/scripts`
+Path: `django_fusion/management/scripts`
 
 
 ### Modules
+
 - `superuser.py`
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Request --> site.management.scripts
-    {package_name} --> Response
+    Request --> django_fusion.management.scripts
+    django_fusion.management.scripts --> Response
 ```
 ## Request Flow
 

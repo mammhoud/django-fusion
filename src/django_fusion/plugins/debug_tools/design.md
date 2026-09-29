@@ -6,10 +6,11 @@ Debug tools for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/contrib/debug_tools`
+Path: `django_fusion/plugins/debug_tools`
 
 
 ### Modules
+
 - `autoreload.py`
 - `base.py`
 - `common_urls.py`
@@ -19,6 +20,7 @@ Path: `django_fusion/contrib/debug_tools`
 - `dev_urls.py`
 - `development.py`
 - `error_views.py`
+- `introspection.py`
 - `middleware.py`
 - `monitoring.py`
 - `orchestrator.py`
@@ -26,12 +28,16 @@ Path: `django_fusion/contrib/debug_tools`
 - `sentry.py`
 - `urls.py`
 
-## Architecture
+## Architecture / Class Diagram
 
 ```mermaid
-flowchart LR
-    Request --> contrib.debug_tools
-    {package_name} --> Response
+classDiagram
+    class FusionIntrospectionApiView {
+      +get()
+    }
+    class FusionIntrospectionDashboardView {
+      +get()
+    }
 ```
 ## Request Flow
 
@@ -42,7 +48,7 @@ flowchart LR
 ## Usage Example
 
 ```python
-from django_fusion.contrib.debug_tools import example_function
+from django_fusion.plugins.debug_tools import example_function
 
 # Replace example_function with a real symbol from this package
 result = example_function()

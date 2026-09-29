@@ -6,24 +6,21 @@ Handler classes and utilities for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/site/management/handlers`
+Path: `django_fusion/management/handlers`
 
 
 ### Modules
+
 - `base.py`
 - `emails.py`
 - `search.py`
 - `tagging.py`
+- `mixins/`
 
 ## Architecture / Class Diagram
 
 ```mermaid
 classDiagram
-    class TokenProtectedMixin {
-      +save()
-      +delete()
-    }
-    TokenAuthMixin <|-- TokenProtectedMixin
     class ProfileContextMixin {
       +get_profile_context()
       +get_context_data()
@@ -39,6 +36,11 @@ classDiagram
       +search_cached()
     }
     CacheMixin <|-- CacheSearchMixin
+    class TokenProtectedMixin {
+      +save()
+      +delete()
+    }
+    TokenAuthMixin <|-- TokenProtectedMixin
 ```
 ## Request Flow
 

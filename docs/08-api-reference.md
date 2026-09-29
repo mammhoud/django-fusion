@@ -102,10 +102,10 @@ from django_fusion.core.middlewares.errors import ErrorTrackerMiddleware
 These are the concrete maintained modules. Import from them directly rather
 than relying on historical package barrels.
 
-## Filters / Views / Loaders — `django_fusion.web` and `django_fusion.comp.loaders`
+## Filters / Views / Loaders — `django_fusion.routes.views.mixins` and `django_fusion.comp.loader`
 
 ```python
-from django_fusion.web.views import FilterMixin, SearchMixin
+from django_fusion.routes.views.mixins import FilterMixin, SearchMixin
 from django_fusion.comp.loader.htmx import component_loader
 ```
 
@@ -115,12 +115,26 @@ from django_fusion.comp.loader.htmx import component_loader
 | `SearchMixin` | Single-field `?q=...` search. Often combined with `FilterMixin`. |
 | `component_loader` | Decorator that marks a view as an HTMX-safe lazy loader. |
 
-## Wagtail — `django_fusion.wagtail`
+## Wagtail — `django_fusion.builder` + `django_fusion.fragments.viewsets`
+
+There is no `django_fusion.wagtail` package in this checkout. The Wagtail
+surface is split across the modules below.
 
 ```python
-from django_fusion.wagtail.blocks    import TimelineItemBlock, SkillBlock
-from django_fusion.wagtail.snippets  import AuthEmailTemplate, BaseSnippetViewSet
-from django_fusion.wagtail.viewsets  import export_to_csv, BaseSnippetViewSet
+# StreamField blocks (14 bundled StructBlocks)
+from django_fusion.builder.blocks import (
+    LinkBlock, ButtonBlock, HeroBlock, FeatureBlock, FeaturesSectionBlock,
+    StepBlock, StepsSectionBlock, StatBlock, StatsSectionBlock,
+    PricingTierBlock, PricingSectionBlock, FaqItemBlock, FaqSectionBlock, CtaBlock,
+)
+
+# Snippet viewset helpers
+from django_fusion.fragments.viewsets import BaseSnippetViewSet, export_to_csv
+
+# Auth email template snippet (see DF-010: this hook currently has a
+# dangling import, and the model lives in django_fusion.models.email)
+from django_fusion.contrib.admin.wagtail_hooks import AuthEmailTemplateViewSet
+from django_fusion.models.email import EmailTemplate
 ```
 
 See [DF-010 Wagtail](./10-wagtail-integration.md).

@@ -14,7 +14,7 @@ Functions:
 
 Usage in urls.py::
 
-    from django_fusion.contrib.debug_tools.error_views import (
+    from django_fusion.plugins.debug_tools.error_views import (
         handler400, handler403, handler404, handler500,
     )
 """

@@ -1,4 +1,4 @@
-"""Task backends — Dramatiq, RQ, in-process."""
+"""Task backends — Dramatiq, in-process."""
 
 from django_fusion.tasks.backends.base import AbstractTaskBackend
 from django_fusion.tasks.backends.inprocess import InProcessBackend

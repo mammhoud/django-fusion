@@ -112,7 +112,7 @@ biggest duplication left.
 **How to use:** sites subclass the abstract bases and add site-only fields:
 
 ```python
-from django_fusion.models.people import AbstractPerson
+from django_fusion.models.people import AbstractPerson  <!-- doc-path-check: allow -->
 
 class Instructor(AbstractPerson):
     bio = RichTextField(blank=True)
@@ -126,7 +126,7 @@ class Instructor(AbstractPerson):
 
 **Recommendations:**
 
-1. **`django_fusion.core.views.api`** — a small `fusion_json`/`json_view`
+1. **`django_fusion.core.views.api`** — a small `fusion_json`/`json_view`  <!-- doc-path-check: allow -->
    decorator + `ApiView` base that standardizes the
    `fusion_json_response({...}, status=...)` envelope (the pattern now used in
    `contrib/api.py` and every `apps/pages/*/api.py`). This kills the last reason
@@ -155,7 +155,7 @@ copy — was deleted this session. `fusion_response`/`fusion_json_response` from
 
 ### 2.4 URLs 🔮
 
-1. **`django_fusion.urls`** — an `api_patterns()` helper returning the standard
+1. **`django_fusion.urls`** — an `api_patterns()` helper returning the standard  <!-- doc-path-check: allow -->
    `health/`, `branding/`, `layouts/` trio so site urls.py becomes one line:
 
    ```python

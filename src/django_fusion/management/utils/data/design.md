@@ -6,10 +6,11 @@ Data utilities for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/site/management/utils/data`
+Path: `django_fusion/management/utils/data`
 
 
 ### Modules
+
 - `cache.py`
 - `datetime_utils.py`
 - `responses.py`
@@ -18,8 +19,8 @@ Path: `django_fusion/site/management/utils/data`
 
 ```mermaid
 flowchart LR
-    Request --> site.management.utils.data
-    {package_name} --> Response
+    Request --> django_fusion.management.utils.data
+    django_fusion.management.utils.data --> Response
 ```
 ## Request Flow
 

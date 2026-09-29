@@ -10,92 +10,33 @@ Path: `django_fusion/routes`
 
 
 ### Modules
-- `core/base.py`
-- `core/converters.py`
-- `core/sites.py`
-- `components/routable.py`
-- `components/fragments.py`
-- `components/dual_mode.py`
-- `models/base.py`
-- `models/crud.py`
-- `pages/handler.py`
-- `pages/views.py`
-- `pages/paginators.py`
-- `http/detection.py`
-- `http/response.py`
-- `http/notifications.py`
-- `rendering/renderers.py`
-- `rendering/template_resolver.py`
 
-## Architecture / Class Diagram
+- `components/`
+- `core/`
+- `http/`
+- `models/`
+- `pages/`
+- `rendering/`
+- `schemas/`
+- `views/`
+
+## Architecture / ERD
 
 ```mermaid
-classDiagram
-    class BaseModelViewset {
-      +filter_kwargs()
-      +index_path()
-      +has_view_permission()
-      +get_list_page_actions()
-      +get_list_view_kwargs()
+erDiagram
+    FusionFragmentSchema {
+        Field status
+        Field message
+        Field data
     }
-    Viewset <|-- BaseModelViewset
-    class Viewset {
-      +viewsets()
-      +filter_kwargs()
-      +urls()
+    FusionFragmentPointer {
+        Field component
+        Field fragment_name
+        Field fragment_url
+        Field fusion_render_first
     }
-    BaseViewset <|-- Viewset
-    class _IndexRedirectView {
-      +get_redirect_url()
+    APIResponse {
     }
-    RedirectView <|-- _IndexRedirectView
-    class RoutableComponent {
-      +get_fragment_name()
-      +urls()
-      +setup()
-      +has_permission()
-      +get_route_url()
-    }
-    ComponentViews <|-- RoutableComponent
-    BaseViewset <|-- RoutableComponent
-    class FragmentComponent {
-      +dispatch()
-      +setup()
-      +get()
-      +get_queryset()
-      +get_fragment_context()
-    }
-    RoutableComponent <|-- FragmentComponent
-    class Application {
-      +get_context_data()
-      +has_view_permission()
-      +menu_items()
-    }
-    IndexViewMixin <|-- Application
-    Viewset <|-- Application
-    class Site {
-      +menu_items()
-      +has_view_permission()
-      +register()
-      +get_absolute_url()
-    }
-    IndexViewMixin <|-- Site
-    Viewset <|-- Site
-    class ModelViewset {
-      +get_object_url()
-      +get_success_url()
-    }
-    ListBulkActionsMixin <|-- ModelViewset
-    CreateViewMixin <|-- ModelViewset
-    UpdateViewMixin <|-- ModelViewset
-    AppMenuMixin <|-- ModelViewset
-    BaseModelViewset <|-- ModelViewset
-    class ReadonlyModelViewset {
-    }
-    DetailViewMixin <|-- ReadonlyModelViewset
-    ListBulkActionsMixin <|-- ReadonlyModelViewset
-    AppMenuMixin <|-- ReadonlyModelViewset
-    BaseModelViewset <|-- ReadonlyModelViewset
 ```
 ## Request Flow
 

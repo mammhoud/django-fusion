@@ -23,7 +23,7 @@ Create a shared, reusable Rust workspace for all PlanInc projects that use Surre
 ## Target Structure
 
 ```
-application/tools/PlanInc/
+projects/PlanInc/
 ├── rust/                          # Unified Rust workspace root
 │   ├── Cargo.toml                 # Workspace manifest
 │   ├── rust-toolchain.toml        # Rust version pin

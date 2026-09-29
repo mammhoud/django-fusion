@@ -2,14 +2,15 @@
 
 ## Overview
 
-This package (`site.interface.schemas.users`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
+This package (`routes.schemas.users`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
 
 ## Directory
 
-Path: `django_fusion/site/interface/schemas/users`
+Path: `django_fusion/routes/schemas/users`
 
 
 ### Modules
+
 - `token.py`
 - `user.py`
 - `utils.py`
@@ -18,177 +19,6 @@ Path: `django_fusion/site/interface/schemas/users`
 
 ```mermaid
 erDiagram
-    TokenSchemaBase {
-    }
-    AccessTokenSchema {
-    }
-    RefreshTokenSchema {
-    }
-    SimpleTokenSchema {
-    }
-    TokenListResponse {
-    }
-    TokenPairResponse {
-    }
-    SimpleTokenCreateResponse {
-    }
-    TokenBase {
-        Field preferences
-        ConfigDict model_config
-    }
-    AccessTokenCreate {
-        Field user_id
-        Field usage
-        Field session_token
-        Field preferences
-        Field expires_in
-    }
-    RefreshTokenCreate {
-        Field user_id
-        Field usage
-        Field session_token
-        Field preferences
-        Field expires_in
-    }
-    TokenPair {
-        Field access_token
-        Field refresh_token
-        Field access_token_expires
-        Field refresh_token_expires
-        Field token_type
-        ConfigDict model_config
-    }
-    TokenValidationResult {
-        Field valid
-        Field user_id
-        Field token_type
-        Field expires_at
-        Field error
-        Field code
-        Field cached
-        Field validated_at
-        ConfigDict model_config
-    }
-    ActionTokenCreate {
-        Field user_id
-        Field action
-        Field metadata
-        Field expires_in
-    }
-    ActionTokenResult {
-        Field token
-        Field token_id
-        Field action
-        Field expires_at
-        Field expires_in
-        Field user_id
-        ConfigDict model_config
-    }
-    EmailVerificationToken {
-        Field email
-        Field user_id
-        Field expires_at
-        Field token
-        Field token_id
-        ConfigDict model_config
-    }
-    TokenResponse {
-        Field success
-        Field data
-        Field error
-        Field code
-        Field timestamp
-        ConfigDict model_config
-    }
-    UserTokensResponse {
-        Field count
-        Field tokens
-        Field active_count
-        Field user_id
-    }
-    TokenRefreshRequest {
-        Field refresh_token
-        Field usage
-    }
-    TokenRevokeRequest {
-        Field token
-        Field all_tokens
-        Field session_token
-    }
-    PasswordResetRequest {
-        Field email
-        Field redirect_url
-    }
-    PasswordResetConfirm {
-        Field token
-        Field new_password
-        Field confirm_password
-    }
-    EmailVerificationRequest {
-        Field email
-        Field user_id
-    }
-    EmailVerificationConfirm {
-        Field token
-    }
-    TokenStatistics {
-        Field total
-        Field active
-        Field expired
-        Field revoked
-        Field by_type
-        Field by_usage
-        Field generated_at
-        ConfigDict model_config
-    }
-    AuthenticatedUser {
-        Field id
-        Field email
-        Field name
-        Field is_email_verified
-        Field is_active
-        Field profile_completion
-        ConfigDict model_config
-    }
-    AuthResponse {
-        Field user
-        Field tokens
-        Field requires_verification
-        Field message
-    }
-    JWTClaims {
-        Field user_id
-        Field token_type
-        Field exp
-        Field iat
-        Field jti
-        Field usage
-        Field refresh_jti
-        Field action
-        Field metadata
-    }
-    TokenCacheData {
-        Field token
-        Field user_id
-        Field valid
-        Field validated_at
-        Field expires_at
-        ConfigDict model_config
-    }
-    BulkTokenOperation {
-        Field user_ids
-        Field token_type
-        Field before_date
-        Field action
-    }
-    WebhookTokenEvent {
-        Field event_type
-        Field token_id
-        Field user_id
-        Field timestamp
-        Field data
-        ConfigDict model_config
-    }
     GroupSchema {
     }
     TokenBaseSchema {
@@ -493,6 +323,177 @@ erDiagram
         Field errors
         Field duration
     }
+    TokenSchemaBase {
+    }
+    AccessTokenSchema {
+    }
+    RefreshTokenSchema {
+    }
+    SimpleTokenSchema {
+    }
+    TokenListResponse {
+    }
+    TokenPairResponse {
+    }
+    SimpleTokenCreateResponse {
+    }
+    TokenBase {
+        Field preferences
+        ConfigDict model_config
+    }
+    AccessTokenCreate {
+        Field user_id
+        Field usage
+        Field session_token
+        Field preferences
+        Field expires_in
+    }
+    RefreshTokenCreate {
+        Field user_id
+        Field usage
+        Field session_token
+        Field preferences
+        Field expires_in
+    }
+    TokenPair {
+        Field access_token
+        Field refresh_token
+        Field access_token_expires
+        Field refresh_token_expires
+        Field token_type
+        ConfigDict model_config
+    }
+    TokenValidationResult {
+        Field valid
+        Field user_id
+        Field token_type
+        Field expires_at
+        Field error
+        Field code
+        Field cached
+        Field validated_at
+        ConfigDict model_config
+    }
+    ActionTokenCreate {
+        Field user_id
+        Field action
+        Field metadata
+        Field expires_in
+    }
+    ActionTokenResult {
+        Field token
+        Field token_id
+        Field action
+        Field expires_at
+        Field expires_in
+        Field user_id
+        ConfigDict model_config
+    }
+    EmailVerificationToken {
+        Field email
+        Field user_id
+        Field expires_at
+        Field token
+        Field token_id
+        ConfigDict model_config
+    }
+    TokenResponse {
+        Field success
+        Field data
+        Field error
+        Field code
+        Field timestamp
+        ConfigDict model_config
+    }
+    UserTokensResponse {
+        Field count
+        Field tokens
+        Field active_count
+        Field user_id
+    }
+    TokenRefreshRequest {
+        Field refresh_token
+        Field usage
+    }
+    TokenRevokeRequest {
+        Field token
+        Field all_tokens
+        Field session_token
+    }
+    PasswordResetRequest {
+        Field email
+        Field redirect_url
+    }
+    PasswordResetConfirm {
+        Field token
+        Field new_password
+        Field confirm_password
+    }
+    EmailVerificationRequest {
+        Field email
+        Field user_id
+    }
+    EmailVerificationConfirm {
+        Field token
+    }
+    TokenStatistics {
+        Field total
+        Field active
+        Field expired
+        Field revoked
+        Field by_type
+        Field by_usage
+        Field generated_at
+        ConfigDict model_config
+    }
+    AuthenticatedUser {
+        Field id
+        Field email
+        Field name
+        Field is_email_verified
+        Field is_active
+        Field profile_completion
+        ConfigDict model_config
+    }
+    AuthResponse {
+        Field user
+        Field tokens
+        Field requires_verification
+        Field message
+    }
+    JWTClaims {
+        Field user_id
+        Field token_type
+        Field exp
+        Field iat
+        Field jti
+        Field usage
+        Field refresh_jti
+        Field action
+        Field metadata
+    }
+    TokenCacheData {
+        Field token
+        Field user_id
+        Field valid
+        Field validated_at
+        Field expires_at
+        ConfigDict model_config
+    }
+    BulkTokenOperation {
+        Field user_ids
+        Field token_type
+        Field before_date
+        Field action
+    }
+    WebhookTokenEvent {
+        Field event_type
+        Field token_id
+        Field user_id
+        Field timestamp
+        Field data
+        ConfigDict model_config
+    }
 ```
 ## Request Flow
 
@@ -503,7 +504,7 @@ erDiagram
 ## Usage Example
 
 ```python
-from django_fusion.site.interface.schemas.users.models import TokenSchemaBase
+from django_fusion.routes.schemas.users import TokenSchemaBase
 
 # Query and create instances
 qs = TokenSchemaBase.objects.all()

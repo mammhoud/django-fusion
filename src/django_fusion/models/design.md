@@ -10,17 +10,75 @@ Path: `django_fusion/models`
 
 
 ### Modules
+
 - `auth.py`
 - `base.py`
+- `cache_storage.py`
+- `certificate.py`
+- `certification.py`
+- `coupon.py`
 - `datatoken.py`
+- `default.py`
 - `email.py`
 - `integrations.py`
 - `managers.py`
+- `message.py`
+- `model_cache.py`
+- `newsletter.py`
+- `note.py`
+- `settings.py`
+- `tags.py`
+- `workspace.py`
+- `mixins/`
+- `tasks/`
 
 ## Architecture / ERD
 
 ```mermaid
 erDiagram
+    TagRelationship {
+        CharField relationship_type
+        FloatField strength
+        TextField description
+        DateTimeField created_at
+        DateTimeField updated_at
+    }
+    TagHistory {
+        CharField action
+        ForeignKey user
+        JSONField changes
+        TextField notes
+        GenericIPAddressField ip_address
+        TextField user_agent
+        DateTimeField created_at
+    }
+    TagAnalytics {
+        ForeignKey tag
+        DateField date
+        PositiveIntegerField views
+        PositiveIntegerField clicks
+        PositiveIntegerField applications
+        PositiveIntegerField removals
+        PositiveIntegerField unique_users
+    }
+    DataToken {
+        CharField token
+        CharField node_id
+        ForeignKey content_type
+        CharField object_id
+        GenericForeignKey content_object
+        ForeignKey parent
+        IntegerField sync_order
+        IntegerField retry_count
+        TextField error_message
+        DateTimeField synced_at
+    }
+    UserRole {
+        ForeignKey user
+        CharField role
+        DateTimeField assigned_at
+        ForeignKey assigned_by
+    }
     Integration {
         CharField name
         CharField external_id
@@ -102,31 +160,37 @@ erDiagram
         DateTimeField created_at
         DateTimeField updated_at
     }
-    UserRole {
-        ForeignKey user
-        CharField role
-        DateTimeField assigned_at
-        ForeignKey assigned_by
-    }
-    DataToken {
-        CharField token
-        CharField node_id
-        ForeignKey content_type
-        CharField object_id
-        GenericForeignKey content_object
-        ForeignKey parent
-        IntegerField sync_order
-        IntegerField retry_count
+    BackgroundTaskLog {
+        UUIDField id
+        CharField job_id
+        CharField task_name
+        CharField queue_name
+        CharField backend
+        CharField status
+        JSONField args
+        JSONField kwargs
+        JSONField result
         TextField error_message
-        DateTimeField synced_at
+        TextField error_traceback
+        DateTimeField created_at
+        DateTimeField started_at
+        DateTimeField completed_at
+        IntegerField retry_count
+        IntegerField max_retries
+        DateTimeField scheduled_at
+        BooleanField is_scheduled
+        IntegerField site_id
+        CharField app_label_field
     }
 
-    EmailLog ||--o| "auth.User" : "user"
-    UserGroup }o--o{ "auth.User" : "users"
-    UserRole ||--o| "auth.User" : "user"
-    UserRole ||--o| "auth.User" : "assigned_by"
+    TagHistory ||--o| "auth.User" : "user"
+    TagAnalytics ||--o| PersonTag : "tag"
     DataToken ||--o| ContentType : "content_type"
     DataToken ||--o| DataToken : "parent (self)"
+    UserRole ||--o| "auth.User" : "user"
+    UserRole ||--o| "auth.User" : "assigned_by"
+    EmailLog ||--o| "auth.User" : "user"
+    UserGroup }o--o{ "auth.User" : "users"
 ```
 ## Request Flow
 
@@ -137,7 +201,7 @@ erDiagram
 ## Usage Example
 
 ```python
-from django_fusion.models.models import Integration
+from django_fusion.models import Integration
 
 # Query and create instances
 qs = Integration.objects.all()

@@ -10,6 +10,7 @@ Path: `django_fusion/comp/templatetags/tags`
 
 
 ### Modules
+
 - `asset.py`
 - `block.py`
 - `prop.py`
@@ -20,8 +21,8 @@ Path: `django_fusion/comp/templatetags/tags`
 
 ```mermaid
 flowchart LR
-    Request --> comp.templatetags.tags
-    {package_name} --> Response
+    Request --> django_fusion.comp.templatetags.tags
+    django_fusion.comp.templatetags.tags --> Response
 ```
 ## Request Flow
 

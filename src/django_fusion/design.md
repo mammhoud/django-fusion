@@ -10,13 +10,74 @@ Path: `django_fusion`
 
 
 ### Modules
+
+- `apps.py`
 - `enums.py`
 - `exceptions.py`
+- `typing.py`
+- `builder/`
+- `comp/`
+- `config/`
+- `contrib/`
+- `core/`
+- `designer/`
+- `fragments/`
+- `management/`
+- `mcp/`
+- `models/`
+- `plugins/`
+- `routes/`
+- `services/`
+- `tasks/`
+- `template_fields/`
 
 ## Architecture / ERD
 
 ```mermaid
 erDiagram
+    TagRelationship {
+        CharField relationship_type
+        FloatField strength
+        TextField description
+        DateTimeField created_at
+        DateTimeField updated_at
+    }
+    TagHistory {
+        CharField action
+        ForeignKey user
+        JSONField changes
+        TextField notes
+        GenericIPAddressField ip_address
+        TextField user_agent
+        DateTimeField created_at
+    }
+    TagAnalytics {
+        ForeignKey tag
+        DateField date
+        PositiveIntegerField views
+        PositiveIntegerField clicks
+        PositiveIntegerField applications
+        PositiveIntegerField removals
+        PositiveIntegerField unique_users
+    }
+    DataToken {
+        CharField token
+        CharField node_id
+        ForeignKey content_type
+        CharField object_id
+        GenericForeignKey content_object
+        ForeignKey parent
+        IntegerField sync_order
+        IntegerField retry_count
+        TextField error_message
+        DateTimeField synced_at
+    }
+    UserRole {
+        ForeignKey user
+        CharField role
+        DateTimeField assigned_at
+        ForeignKey assigned_by
+    }
     Integration {
         CharField name
         CharField external_id
@@ -98,31 +159,15 @@ erDiagram
         DateTimeField created_at
         DateTimeField updated_at
     }
-    UserRole {
-        ForeignKey user
-        CharField role
-        DateTimeField assigned_at
-        ForeignKey assigned_by
-    }
-    DataToken {
-        CharField token
-        CharField node_id
-        ForeignKey content_type
-        CharField object_id
-        GenericForeignKey content_object
-        ForeignKey parent
-        IntegerField sync_order
-        IntegerField retry_count
-        TextField error_message
-        DateTimeField synced_at
-    }
 
-    EmailLog ||--o| "auth.User" : "user"
-    UserGroup }o--o{ "auth.User" : "users"
-    UserRole ||--o| "auth.User" : "user"
-    UserRole ||--o| "auth.User" : "assigned_by"
+    TagHistory ||--o| "auth.User" : "user"
+    TagAnalytics ||--o| PersonTag : "tag"
     DataToken ||--o| ContentType : "content_type"
     DataToken ||--o| DataToken : "parent (self)"
+    UserRole ||--o| "auth.User" : "user"
+    UserRole ||--o| "auth.User" : "assigned_by"
+    EmailLog ||--o| "auth.User" : "user"
+    UserGroup }o--o{ "auth.User" : "users"
 ```
 ## Request Flow
 
@@ -133,7 +178,7 @@ erDiagram
 ## Usage Example
 
 ```python
-from django_fusion...models import Integration
+from django_fusion import Integration
 
 # Query and create instances
 qs = Integration.objects.all()
@@ -151,14 +196,20 @@ urlpatterns = [
 ```
 ## Commands / Entry Points
 
-*No management commands are defined here by default.*
-
-If this package exposes management commands, list them below:
-
 ```bash
-python manage.py <command_name>
+python manage.py plugin  # Inspect, describe and verify django-fusion plugins (list, describe, doctor, check).
+python manage.py populate_content  # Populate Wagtail pages with multilingual content from a markdown file
+python manage.py verify_content  # Generate a markdown report of all published Wagtail pages
+python manage.py generate_skeleton_manifest  # Generate a static skeleton manifest JSON for the Astro build.
+python manage.py generate_asset_manifest  # 
+python manage.py base  # 
+python manage.py send_bulk_emails  # Send bulk emails from CSV file with template support
+python manage.py populate_homepage  # Populate the site HomePage with sample demo content
+python manage.py populate_courses  # Populate site Courses and Events pages with sample content
+python manage.py analyze_components_to_webpack  # 
+python manage.py webpack_validate  # Validate the webpack bundles.json for the current site.
+python manage.py sync_task_history  # Mirror shared BackgroundTaskLog rows into the product TaskExecution website record.
 ```
-
 ## Related Documentation
 
 - [Django docs](https://docs.djangoproject.com/)

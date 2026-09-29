@@ -6,10 +6,11 @@ Formatting utilities for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/site/management/utils/formatting`
+Path: `django_fusion/management/utils/formatting`
 
 
 ### Modules
+
 - `decorators.py`
 - `text.py`
 
@@ -17,8 +18,8 @@ Path: `django_fusion/site/management/utils/formatting`
 
 ```mermaid
 flowchart LR
-    Request --> site.management.utils.formatting
-    {package_name} --> Response
+    Request --> django_fusion.management.utils.formatting
+    django_fusion.management.utils.formatting --> Response
 ```
 ## Request Flow
 

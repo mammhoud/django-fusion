@@ -10,14 +10,55 @@ Path: `django_fusion/core`
 
 
 ### Modules
-- `rendering.py`
 
-## Architecture
+- `rendering.py`
+- `utils.py`
+- `assets/`
+- `context/`
+- `health/`
+- `middlewares/`
+
+## Architecture / Class Diagram
 
 ```mermaid
-flowchart LR
-    Request --> core
-    {package_name} --> Response
+classDiagram
+    class MediaHealthView {
+      +get()
+    }
+    class AssetHealthView {
+      +get()
+    }
+    class HealthCheckView {
+      +get()
+    }
+    class DatabaseHealthView {
+      +get()
+    }
+    class FragmentHandlerMixin {
+      +resolve_template_name()
+      +render_response()
+      +render_fragment()
+      +render_layout()
+    }
+    BaseTemplateContextMixin <|-- FragmentHandlerMixin
+    class AssetsTopView {
+      +get()
+    }
+    class AssetsBottomView {
+      +get()
+    }
+    class AssetsManifestView {
+      +get()
+    }
+    class ComponentAssetsView {
+      +get()
+    }
+    class ComponentAssetDetailView {
+      +get()
+    }
+    class PageAssetsView {
+      +get()
+    }
 ```
 ## Request Flow
 

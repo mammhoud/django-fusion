@@ -8,7 +8,7 @@ hand-written ``_register_crud`` boilerplate with django-fusion model viewsets.
 Usage::
 
     from robyn import Robyn
-    from django_fusion.comp.robyn import RobynAdapter
+    from django_fusion.plugins.robyn import RobynAdapter
     from myapp.viewsets import ProductViewSet, CategoryViewSet
 
     app = Robyn(__file__)

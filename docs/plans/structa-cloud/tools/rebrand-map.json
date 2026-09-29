@@ -341,7 +341,7 @@
 
   "neverWrite": [
     "projects/Clients/ctc-research",
-    "application/tools/PlanInc",
+    "projects/PlanInc",
     "projects/CMS",
     "projects/CRM",
     "projects/POS",

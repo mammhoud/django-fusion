@@ -6,10 +6,11 @@ Security utilities for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/site/management/utils/security`
+Path: `django_fusion/management/utils/security`
 
 
 ### Modules
+
 - `token.py`
 - `validation.py`
 - `validators.py`
@@ -18,8 +19,8 @@ Path: `django_fusion/site/management/utils/security`
 
 ```mermaid
 flowchart LR
-    Request --> site.management.utils.security
-    {package_name} --> Response
+    Request --> django_fusion.management.utils.security
+    django_fusion.management.utils.security --> Response
 ```
 ## Request Flow
 

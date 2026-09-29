@@ -2,14 +2,15 @@
 
 ## Overview
 
-This package (`comp.templatetags.components`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
+This package (`comp.tags.components`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
 
 ## Directory
 
-Path: `django_fusion/comp/templatetags/components`
+Path: `django_fusion/comp/tags/components`
 
 
 ### Modules
+
 - `breadcrumbs.py`
 - `calendar.py`
 - `field.py`
@@ -25,8 +26,8 @@ Path: `django_fusion/comp/templatetags/components`
 
 ```mermaid
 flowchart LR
-    Request --> comp.templatetags.components
-    {package_name} --> Response
+    Request --> django_fusion.comp.tags.components
+    django_fusion.comp.tags.components --> Response
 ```
 ## Request Flow
 

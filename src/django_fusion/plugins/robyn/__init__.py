@@ -1,5 +1,5 @@
 """
-django-fusion Robyn integration (``django_fusion.comp.robyn``).
+django-fusion Robyn integration (``django_fusion.plugins.robyn``).
 
 Bridges django-fusion viewsets, components, and fragment rendering to
 Robyn async servers.  Lets POS sidecars mount django-fusion routes
@@ -8,7 +8,7 @@ without a full Django WSGI/ASGI stack.
 Quickstart::
 
     from robyn import Robyn
-    from django_fusion.comp.robyn import RobynAdapter, RobynRequest, RobynFusionChecker
+    from django_fusion.plugins.robyn import RobynAdapter, RobynRequest, RobynFusionChecker
 
     app = Robyn(__file__)
 
@@ -30,9 +30,9 @@ See `projects/pos/docs/DJANGO_FUSION_ENHANCEMENTS_PLAN.md` for the
 full POS × django-fusion integration roadmap.
 """
 
-from django_fusion.comp.robyn.request import RobynRequest
-from django_fusion.comp.robyn.adapter import RobynAdapter, register_viewset
-from django_fusion.comp.robyn.checker import RobynFusionChecker
+from django_fusion.plugins.robyn.request import RobynRequest
+from django_fusion.plugins.robyn.adapter import RobynAdapter, register_viewset
+from django_fusion.plugins.robyn.checker import RobynFusionChecker
 
 __all__ = [
     "RobynAdapter",

@@ -6,10 +6,11 @@ Filters module for django_fusion.
 
 ## Directory
 
-Path: `django_fusion/site/management/filters`
+Path: `django_fusion/management/filters`
 
 
 ### Modules
+
 - `base.py`
 - `cache.py`
 - `token.py`

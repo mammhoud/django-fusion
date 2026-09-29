@@ -20,8 +20,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-# Canonical core plugins that are auto-registered with the pluggy manager
-# in ``django_fusion.plugins.manager``.
+#: The **only** authority on which plugins register themselves at import.
+#: ``django_fusion.plugins.manager`` iterates this tuple, so there is no second
+#: list to drift from, and ``PluginSpec.core`` must agree with it: if a spec is
+#: ``core=True`` and its name is not here, the manager would never register it
+#: and the flag would be lying. Asserted by ``tests/test_plugin_introspection.py``.
 CORE_PLUGINS: tuple[str, ...] = (
     "django_fusion.config.staticfiles",
     "django_fusion.comp.loader.templates",
@@ -57,9 +60,15 @@ class PluginSpec:
         }
 
 
-#: Built-in catalog. ``core=True`` marks the plugins that the manager
-#: registers with pluggy on import; the rest are shipped utility packages
-#: that sites opt into (and that the recommender suggests enabling).
+#: Built-in catalog.
+#:
+#: ``core=True`` means exactly one thing — **registered by the manager on
+#: import**, i.e. the name is in :data:`CORE_PLUGINS`. It does *not* mean "ships
+#: with the framework" (every entry here does) and it does not mean "more
+#: important". A spec that ships in the distribution but that sites opt into is
+#: ``core=False``; that is why ``plugins.designer`` and ``django_fusion.tasks``
+#: are no longer flagged, and why the invariant is now a test rather than a
+#: comment.
 PLUGIN_CATALOG: dict[str, PluginSpec] = {
     "django_fusion.config.staticfiles": PluginSpec(
         name="django_fusion.config.staticfiles",
@@ -128,19 +137,21 @@ PLUGIN_CATALOG: dict[str, PluginSpec] = {
             "metrics, error views and the fusion introspection dashboard."
         ),
     ),
+    # Ships with the framework but is NOT auto-registered: the designer's
+    # catalog/audit views are opt-in per site, so ``core`` stays False.
     "django_fusion.plugins.designer": PluginSpec(
         name="django_fusion.plugins.designer",
-        core=True,
         description="Interactive designer: component catalog, Wagtail field suggestions, "
         "form/table scaffolds, website audits, and safe component previews.",
         capabilities={"designer", "component-catalog", "wagtail-field", "form-scaffold", "table-scaffold"},
         signals=frozenset({"designer_tools_call"}),
     ),
+    # Ships with the framework but is NOT auto-registered: the task API is
+    # opt-in (a site that wants background work registers it deliberately).
     "django_fusion.tasks": PluginSpec(
         name="django_fusion.tasks",
-        core=True,
         description="Unified background-task API with broker-agnostic registration, "
-        "Dramatiq/RQ/in-process backends, task logging, idempotency, and MCP-safe enqueue.",
+        "Dramatiq/in-process backends, task logging, idempotency, and MCP-safe enqueue.",
         capabilities={"tasks", "background-jobs", "dramatiq", "async-email"},
         signals=frozenset({"task_enqueued", "task_completed", "task_failed"}),
     ),

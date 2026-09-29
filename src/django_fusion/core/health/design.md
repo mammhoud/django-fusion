@@ -6,10 +6,12 @@ Health-check endpoint for Django deployments.
 
 ## Directory
 
-Path: `django_fusion/infrastructure/health`
+Path: `django_fusion/core/health`
 
 
 ### Modules
+
+- `checks.py`
 - `urls.py`
 - `views.py`
 
@@ -17,13 +19,16 @@ Path: `django_fusion/infrastructure/health`
 
 ```mermaid
 classDiagram
+    class MediaHealthView {
+      +get()
+    }
+    class AssetHealthView {
+      +get()
+    }
     class HealthCheckView {
       +get()
     }
     class DatabaseHealthView {
-      +get()
-    }
-    class AssetsHealthView {
       +get()
     }
 ```
@@ -36,7 +41,7 @@ classDiagram
 ## Usage Example
 
 ```python
-from django_fusion.infrastructure.health import HealthCheckView
+from django_fusion.core.health import HealthCheckView
 
 # Wire into urls.py
 from django.urls import path

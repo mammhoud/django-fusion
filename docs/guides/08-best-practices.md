@@ -86,7 +86,7 @@ links:
 
 ## Django (Wagtail + django-fusion)
 
-- **Imports:** `django_fusion.fragments`, `django_fusion.routes`, `django_fusion.comp`, `django_fusion.tables`
+- **Imports:** `django_fusion.fragments`, `django_fusion.routes`, `django_fusion.comp`, `django_fusion.fragments.tables`
 - **Models:** Extend `django_fusion.models.BaseModel`; use `StreamField` for content
 - **Views:** `PageHandler` for pages; `FragmentView` for HTMX fragments
 - **Templates:** `{% comp "name" %}` for components; `{% include_block %}` for StreamField

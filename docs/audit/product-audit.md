@@ -73,7 +73,7 @@ READMEs.
 | Billing | Stripe-backed SaaS billing: checkout/portal/webhook, `/settings/plan/`, public `/apis/billing/plans/` |
 | Landing | Wagtail-managed public landing: `/cms/` editor → `/apis/pages/<slug>/` JSON → Astro |
 | API | Optional django-bolt road (`/bolt/`, JWT + API keys) with per-resource OpenAPI tags; `/api/v1/` compatibility road; pagination/filtering on both |
-| Tasks | Task Center merging shared `django_fusion.BackgroundTaskLog` + `core.TaskExecution` |
+| Tasks | Task Center merging shared `django_fusion.models.BackgroundTaskLog` + `core.TaskExecution` |
 | Tests | 28 backend test files; Playwright covers navigation shell, workflow lifecycle, content lifecycle |
 
 ## Planned features

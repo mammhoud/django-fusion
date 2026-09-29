@@ -11,7 +11,7 @@ to restrict fragment-first mode based on device roles, headers, or capabilities.
 
 Usage::
 
-    from django_fusion.comp.robyn.checker import RobynFusionChecker
+    from django_fusion.plugins.robyn.checker import RobynFusionChecker
 
     checker = RobynFusionChecker()
 

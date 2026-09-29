@@ -10,19 +10,64 @@ Path: `django_fusion/fragments`
 
 
 ### Modules
+
 - `page_context.py`
 - `registry.py`
 - `renderer.py`
-- `sse.py`
 - `urls.py`
 - `views.py`
+- `viewsets.py`
+- `analyzer/`
+- `forms/`
+- `generic/`
+- `skeleton/`
+- `tables/`
 
-## Architecture / Class Diagram
+## Architecture / ERD
 
 ```mermaid
-classDiagram
-    class FragmentRequestView {
-      +get()
+erDiagram
+    CompUsage {
+        Field kwargs
+        Field skeleton_config
+    }
+    SectionMarker {
+    }
+    ParsedTemplate {
+        Field sections
+    }
+    Prop {
+    }
+    Slot {
+    }
+    Component {
+        Field props
+        Field slots
+        Field skeleton
+        Field skeleton_config
+    }
+    Block {
+    }
+    Section {
+    }
+    Template {
+        Field blocks
+        Field sections
+    }
+    PageComponentUsage {
+        Field props
+        Field skeleton_order
+    }
+    Page {
+        Field components
+        Field dependencies
+        Field load_priority
+    }
+    AnalyzeRequest {
+        Field filters
+    }
+    ScannedFile {
+        ConfigDict model_config
     }
 ```
 ## Request Flow

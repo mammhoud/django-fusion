@@ -9,7 +9,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.urls import configure_urls
+    from django_fusion.plugins.debug_tools.urls import configure_urls
 
     urlpatterns = [...]
     urlpatterns = configure_urls(urlpatterns)

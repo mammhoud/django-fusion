@@ -2,23 +2,27 @@
 
 ## Overview
 
-django_fusion.components.tables — Table integration with RowGenerator.
+django_fusion.fragments.tables — Table integration with RowGenerator.
 
 ## Directory
 
-Path: `django_fusion/components/tables`
+Path: `django_fusion/fragments/tables`
 
 
 ### Modules
+
 - `mixins.py`
 - `row_generator.py`
+- `table.py`
 
-## Architecture
+## Architecture / Class Diagram
 
 ```mermaid
-flowchart LR
-    Request --> components.tables
-    {package_name} --> Response
+classDiagram
+    class TableView {
+      +get_table()
+      +get_context_data()
+    }
 ```
 ## Request Flow
 
@@ -29,7 +33,7 @@ flowchart LR
 ## Usage Example
 
 ```python
-from django_fusion.components.tables import example_function
+from django_fusion.fragments.tables import example_function
 
 # Replace example_function with a real symbol from this package
 result = example_function()

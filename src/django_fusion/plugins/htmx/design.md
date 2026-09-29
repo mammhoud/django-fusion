@@ -10,14 +10,16 @@ Path: `django_fusion/plugins/htmx`
 
 
 ### Modules
+
 - `core.py`
+- `sse.py`
 
 ## Architecture
 
 ```mermaid
 flowchart LR
     Request --> django_fusion.plugins.htmx
-    {package_name} --> Response
+    django_fusion.plugins.htmx --> Response
 ```
 ## Request Flow
 

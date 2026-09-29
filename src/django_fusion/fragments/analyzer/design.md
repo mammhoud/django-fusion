@@ -10,10 +10,13 @@ Path: `django_fusion/fragments/analyzer`
 
 
 ### Modules
+
 - `apps.py`
 - `parser.py`
+- `post_process.py`
 - `scanner.py`
 - `schemas.py`
+- `skeleton_view.py`
 - `urls.py`
 - `views.py`
 
@@ -23,6 +26,7 @@ Path: `django_fusion/fragments/analyzer`
 erDiagram
     CompUsage {
         Field kwargs
+        Field skeleton_config
     }
     SectionMarker {
     }
@@ -36,6 +40,8 @@ erDiagram
     Component {
         Field props
         Field slots
+        Field skeleton
+        Field skeleton_config
     }
     Block {
     }
@@ -47,9 +53,12 @@ erDiagram
     }
     PageComponentUsage {
         Field props
+        Field skeleton_order
     }
     Page {
         Field components
+        Field dependencies
+        Field load_priority
     }
     AnalyzeRequest {
         Field filters
@@ -67,7 +76,7 @@ erDiagram
 ## Usage Example
 
 ```python
-from django_fusion.fragments.analyzer.models import CompUsage
+from django_fusion.fragments.analyzer import CompUsage
 
 # Query and create instances
 qs = CompUsage.objects.all()

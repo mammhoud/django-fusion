@@ -99,11 +99,12 @@ pip install django-fusion
 ```python
 INSTALLED_APPS = [
     # ...
-    "django_fusion.comp",
-    "django_fusion.core",
-    "django_fusion.health",          # optional
-    "django_fusion.analyzer",        # optional
-    "django_fusion.config",
+    "django_fusion",                 # app config: task wiring + sub-app discovery
+    "django_fusion.comp",            # component system, registry, {% comp %}
+    "django_fusion.core",            # handlers, managers, services, cache, middlewares
+    "django_fusion.config",          # Dynaconf settings loader
+    "django_fusion.core.health",     # optional — /health/ endpoints
+    "django_fusion.fragments.analyzer",  # optional — {% comp %} usage scanner
 ]
 ```
 

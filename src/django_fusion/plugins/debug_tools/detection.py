@@ -10,7 +10,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.detection import get_internal_ips, get_environment_info
+    from django_fusion.plugins.debug_tools.detection import get_internal_ips, get_environment_info
 """
 
 import socket

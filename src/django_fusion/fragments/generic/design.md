@@ -10,24 +10,24 @@ Path: `django_fusion/fragments/generic`
 
 
 ### Modules
+
 - `actions.py`
 - `base.py`
-- `create.py`
-- `delete.py`
 - `detail.py`
 - `list.py`
-- `search.py`
-- `table.py`
-- `update.py`
 
 ## Architecture / Class Diagram
 
 ```mermaid
 classDiagram
-    class TableView {
-      +get_table()
-      +get_context_data()
+    class DetailModelView {
+      +has_view_permission()
+      +get_object_data()
+      +get_page_actions()
+      +get_object_actions()
+      +get_object_change_link()
     }
+    generic.DetailView <|-- DetailModelView
     class BaseBulkActionView {
       +get_template_names()
       +get_success_url()
@@ -44,31 +44,6 @@ classDiagram
       +message_user()
     }
     BaseBulkActionView <|-- DeleteBulkActionView
-    class DetailModelView {
-      +has_view_permission()
-      +get_object_data()
-      +get_page_actions()
-      +get_object_actions()
-      +get_object_change_link()
-    }
-    generic.DetailView <|-- DetailModelView
-    class UpdateModelView {
-      +has_change_permission()
-      +get_object_url()
-      +get_page_actions()
-      +message_user()
-      +queryset()
-    }
-    FormLayoutMixin <|-- UpdateModelView
-    generic.UpdateView <|-- UpdateModelView
-    class DeleteModelView {
-      +has_delete_permission()
-      +get_deleted_objects()
-      +queryset()
-      +get_object()
-      +get_template_names()
-    }
-    generic.DeleteView <|-- DeleteModelView
     class BaseListModelView {
       +has_view_permission()
       +get_columns()
@@ -83,15 +58,6 @@ classDiagram
     FilterMixin <|-- ListModelView
     OrderableListViewMixin <|-- ListModelView
     BaseListModelView <|-- ListModelView
-    class CreateModelView {
-      +has_add_permission()
-      +get_object_url()
-      +message_user()
-      +queryset()
-      +get_form_widgets()
-    }
-    FormLayoutMixin <|-- CreateModelView
-    generic.CreateView <|-- CreateModelView
 ```
 ## Request Flow
 

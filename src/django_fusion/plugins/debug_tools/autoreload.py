@@ -13,7 +13,7 @@ Functions:
 
 Usage in Django settings::
 
-    from django_fusion.contrib.debug_tools.autoreload import configure_autoreload
+    from django_fusion.plugins.debug_tools.autoreload import configure_autoreload
 
     settings_dict = configure_autoreload(settings_dict)
 """

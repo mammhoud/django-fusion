@@ -1,7 +1,7 @@
 # Phase 6 — PlanInc Brand Identity & Visual System
 
 **Status:** Planned  
-**Scope:** `application/tools/PlanInc/brandkit/`, `planing/app/src/styles/`, `src-tauri/`  
+**Scope:** `projects/PlanInc/brandkit/`, `planing/app/src/styles/`, `src-tauri/`  
 **Owner:** Design / Frontend  
 **Depends on:** Phase 5 (CSS token system in place)  
 **Can start in parallel with:** Phase 5
@@ -101,7 +101,7 @@ Secondary tagline (for documentation):
 
 ---
 
-## Brandkit Directory (`application/tools/PlanInc/brandkit/`)
+## Brandkit Directory (`projects/PlanInc/brandkit/`)
 
 ```
 brandkit/
@@ -172,7 +172,7 @@ Generate via the brandkit skill:
 
 ## CSS Token Application
 
-`application/tools/PlanInc/planing/app/src/styles/brand.css`:
+`projects/PlanInc/planing/app/src/styles/brand.css`:
 
 ```css
 :root {

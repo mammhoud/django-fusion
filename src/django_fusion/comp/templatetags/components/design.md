@@ -10,6 +10,7 @@ Path: `django_fusion/comp/templatetags/components`
 
 
 ### Modules
+
 - `breadcrumbs.py`
 - `calendar.py`
 - `field.py`
@@ -25,8 +26,8 @@ Path: `django_fusion/comp/templatetags/components`
 
 ```mermaid
 flowchart LR
-    Request --> comp.templatetags.components
-    {package_name} --> Response
+    Request --> django_fusion.comp.templatetags.components
+    django_fusion.comp.templatetags.components --> Response
 ```
 ## Request Flow
 

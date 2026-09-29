@@ -2,14 +2,16 @@
 
 ## Overview
 
-django_fusion.contrib.views
+django_fusion.routes.views
 
 ## Directory
 
-Path: `django_fusion/site/interface/views`
+Path: `django_fusion/routes/views`
 
 
 ### Modules
+
+- `mixins.py`
 - `notifications.py`
 - `tags.py`
 
@@ -40,7 +42,7 @@ classDiagram
 ## Usage Example
 
 ```python
-from django_fusion.site.interface.views import EnhancedTagsView
+from django_fusion.routes.views import EnhancedTagsView
 
 # Wire into urls.py
 from django.urls import path

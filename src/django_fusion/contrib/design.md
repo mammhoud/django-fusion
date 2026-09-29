@@ -10,7 +10,12 @@ Path: `django_fusion/contrib`
 
 
 ### Modules
-- `context.py`
+
+- `api.py`
+- `admin/`
+- `branding/`
+- `privacy/`
+- `utils/`
 
 ## Architecture / Class Diagram
 

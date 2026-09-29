@@ -13,7 +13,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.development import DevelopmentEnvironment
+    from django_fusion.plugins.debug_tools.development import DevelopmentEnvironment
 
     env = DevelopmentEnvironment()
     env.configure_all(installed_apps, middleware)

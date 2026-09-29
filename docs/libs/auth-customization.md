@@ -1,6 +1,6 @@
 # Auth System
 
-All sites use `django-allauth` with custom `django-fusion` auth mixins. Auth views extend `PageHandler` from `django_fusion.site`.
+All sites use `django-allauth` with custom `django-fusion` auth mixins. Auth views extend `PageHandler` from `django_fusion.routes.pages.handler`; the shared auth mixins live in the `django_fusion.site.auth` namespace subpackage.
 
 ## Adapters
 

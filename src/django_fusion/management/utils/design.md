@@ -6,15 +6,15 @@ Django Forge utilities module.
 
 ## Directory
 
-Path: `django_fusion/site/management/utils`
+Path: `django_fusion/management/utils`
 
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Request --> site.management.utils
-    {package_name} --> Response
+    Request --> django_fusion.management.utils
+    django_fusion.management.utils --> Response
 ```
 ## Request Flow
 

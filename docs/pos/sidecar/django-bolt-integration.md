@@ -60,7 +60,7 @@ graph TB
 
 ```python
 # portal/views.py
-from django_fusion.comp.routes import ModelViewset
+from django_fusion.routes.models.crud import ModelViewset
 
 class ProductViewSet(ModelViewset):
     model = Product

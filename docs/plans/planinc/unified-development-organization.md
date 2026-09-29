@@ -9,7 +9,7 @@ This document establishes a unified file organization for both PlanInc and Formi
 ## 1. Current State Summary
 
 ### PlanInc (to be integrated into monorepo)
-- **Current location:** `/home/application/tools/PlanInc/` (standalone repo, outside `/home/`)
+- **Current location:** `/home/projects/PlanInc/` (standalone repo, outside `/home/`)
 - **Stack:** React 18 + Vite + TailwindCSS + HeroUI + MobX + Tauri v2 + Express/tRPC + SurrealDB
 - **Package manager:** Bun
 - **Key directories:** `src/frontend/`, `src/server/`, `src/frontend/src-tauri/`, `src/frontend/tauri-plugin-planinc/`, `runtime/`, `brandkit/`, `docs/`
@@ -886,10 +886,17 @@ Shared libraries, design tokens, UI components, and Tauri plugin cores are extra
 
 ### Phase 2: Move PlanInc into Monorepo
 
-- [ ] Move `/home/application/tools/PlanInc/` → `projects/planinc/`
-- [ ] Update all internal paths in PlanInc configuration files
-- [ ] Create `projects/planinc/Makefile`
-- [ ] Add PlanInc to root Makefile and Justfile
+> **Complete / obsolete (verified 2026-09-27):** PlanInc is already in the
+> monorepo at `projects/PlanInc/` — a git submodule on `generic` and the Nx
+> project `PlanInc`. The steps below are retained for history and marked done;
+> note the canonical casing is `projects/PlanInc`, and workspace registration is
+> via the Nx `project.json` + `projects/Makefile` dispatcher rather than root
+> `Makefile`/`Justfile` targets.
+
+- [x] Move `/home/projects/PlanInc/` → `projects/PlanInc/` (canonical casing; tracked as a git submodule)
+- [x] Update all internal paths in PlanInc configuration files
+- [x] Create `projects/PlanInc/Makefile`
+- [x] Add PlanInc to root Makefile and Justfile — superseded: registered as the Nx project `PlanInc` (`project.json`) and dispatched via `projects/Makefile`
 
 ### Phase 3: Infrastructure Updates
 

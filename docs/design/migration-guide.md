@@ -338,7 +338,7 @@ calls with the sandboxed dynamic template field system.
 
 ```text
 BEFORE: f"Dear {customer.name}, your order is {order.total}"   (no validation, no escaping, no preview)
-AFTER:  renderer.render("Dear {{ customer.name }}, your order is {{ order.total }}", {...})
+AFTER:  engine.render("Dear {{ customer.name }}, your order is {{ order.total }}", {...})
         → validated · escaped · filterable · previewable
 ```
 
@@ -354,11 +354,11 @@ body = f"Hi {customer.name}, total {order.total}"
 AFTER:
 
 ```python
-from django_fusion.templates.fields import TemplateRenderer  # provided by the system
+from django_fusion.template_fields import TemplateFieldEngine
 
-renderer = TemplateRenderer()
-subject = renderer.render("Your invoice {{ invoice.number }} is ready", {"invoice": invoice})
-body = renderer.render(
+engine = TemplateFieldEngine()
+subject = engine.render("Your invoice {{ invoice.number }} is ready", {"invoice": invoice})
+body = engine.render(
     "Hi {{ customer.name }}, total {{ order.total|currency }}",
     {"customer": customer, "order": order},
 )
@@ -368,8 +368,8 @@ body = renderer.render(
 
 1. Find every f-string/`format()` that interpolates record data into user-
    facing text (emails, receipts, certificates, notifications).
-2. Replace with template strings + `renderer.render(...)`.
-3. Add a `TemplateSchema` where inputs are user-editable so editors get
+2. Replace with template strings + `engine.render(...)`.
+3. Add `engine.validate(...)` where inputs are user-editable so editors get
    validation and preview.
 4. Remove any `mark_safe` on interpolated output — the renderer escapes.
 

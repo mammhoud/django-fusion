@@ -10,6 +10,7 @@ Path: `django_fusion/contrib/admin`
 
 
 ### Modules
+
 - `admin_site.py`
 - `email_admin.py`
 - `wagtail_hooks.py`

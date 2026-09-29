@@ -72,7 +72,7 @@ component from Python code.
 ### 1. The singleton `TemplateRenderer`
 
 ```python
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 renderer = TemplateRenderer.get_default()   # honours `COMPONENT_TEMPLATE_RENDERER` setting
 ```
@@ -171,7 +171,7 @@ the form lives inside a fragment that needs to swap itself out via HTMX.
 ```python
 # views.py
 from django.views import View
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 class PostCreateFragment(View):
     """Render the form once, then re-render the same form for HTMX posts."""
@@ -286,7 +286,7 @@ gradient variant — and where the element may be either a link or a button.
 **Python Usage**:
 
 ```python
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 # Simple: render to string for an HTMX-OOB swap
 btn = TemplateRenderer.get_default().render_component(
@@ -367,7 +367,7 @@ extra JS.
 
 ```python
 # forms/handlers.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_delete_button(item_id: int) -> str:
     return TemplateRenderer.get_default().render_component(
@@ -439,7 +439,7 @@ fake block context to render a single field outside a stream field.
 ```python
 # Use the helper tag to convert a dict into a block-like namespace
 from types import SimpleNamespace
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_single_field(field_def: dict) -> str:
     block = SimpleNamespace(id="synth", value={"show_icons": True, "show_labels": True})
@@ -516,7 +516,7 @@ the same place.
 
 ```python
 # views.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 from django.views import View
 from django.http import HttpResponse
 
@@ -587,7 +587,7 @@ their own content.
 
 ```python
 # services/tables.py — return a list of triggers for a user table
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_edit_triggers(user_ids):
     renderer = TemplateRenderer.get_default()
@@ -712,7 +712,7 @@ JavaScript (API: `showToast`, `showAlert`, `showPopup`).
 
 ```python
 # views.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 from django.http import HttpResponse
 from django.contrib import messages
 
@@ -814,7 +814,7 @@ status messages, validation hints, list-item badges.
 
 ```python
 # forms/validators.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_validation_hint(field_name: str) -> str:
     return TemplateRenderer.get_default().render_component(
@@ -868,7 +868,7 @@ across full-page reloads and HTMX partial swaps.
 ```python
 # views.py
 from django.core.paginator import Paginator
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 class PostListView(View):
     def get(self, request):
@@ -1007,7 +1007,7 @@ pattern and a modern django-tables2 integration.
 ```python
 # views.py
 import django_tables2 as tables
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 class UserTable(tables.Table):
     class Meta:
@@ -1075,7 +1075,7 @@ to survive a search.
 
 ```python
 # views.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_user_search(request) -> str:
     return TemplateRenderer.get_default().render_component(
@@ -1126,7 +1126,7 @@ JSON-LD plus Unpoly/HTMX fragment navigation.
 
 ```python
 # views.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 class PageView(View):
     def get(self, request, slug):
@@ -1185,7 +1185,7 @@ Pairs with the ceptor × nawaai backend exposed by `ceptor-ai`.
 
 ```python
 # views.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_chat_widget(request) -> str:
     config = {
@@ -1248,7 +1248,7 @@ user clicks "Manage cookies".
 
 ```python
 # base.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def get_context_data(self, **kwargs):
     ctx = super().get_context_data(**kwargs)
@@ -1309,7 +1309,7 @@ All three follow the same `<template id="...">` pattern.
 
 ```python
 # services/nav.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 from django_fusion.comp.templatetags.navigation import _build_attrs
 
 def render_nav_link(request, item) -> str:
@@ -1381,7 +1381,7 @@ or sidebar, with per-app sub-menus.
 
 ```python
 # views.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 from django_fusion.routes.core.sites import Site
 
 def render_main_menu(request) -> str:
@@ -1484,7 +1484,7 @@ string:
 
 ```python
 from django_fusion.routes.components.fragments import FragmentComponent
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 class PostPreviewFragment(FragmentComponent):
     route_path = "blog/<slug:slug>/preview/"
@@ -1566,7 +1566,7 @@ class ContactForm(forms.Form):
 # myapp/views.py
 from django.urls import reverse_lazy
 from django.views import View
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 from myapp.forms import ContactForm
 
 class ContactView(View):
@@ -1764,7 +1764,7 @@ With a default slot:
 
 ```python
 # myapp/services/landing.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_feature_cards(features: list[dict]) -> str:
     renderer = TemplateRenderer.get_default()
@@ -1789,7 +1789,7 @@ def render_feature_cards(features: list[dict]) -> str:
 ```python
 # myapp/views.py
 from django.views.generic import TemplateView
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 from myapp.services.landing import render_feature_cards
 
 class LandingView(TemplateView):
@@ -1899,7 +1899,7 @@ The template's `variant` prop is a free-form string — no enum in Python — so
 
 ```python
 # myapp/services/cta.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def render_dashboard_cta(request) -> str:
     return TemplateRenderer.get_default().render_component(
@@ -1937,7 +1937,7 @@ class LandingView(TemplateView):
 
 ```python
 # myapp/emails.py
-from django_fusion.web.rendering import TemplateRenderer
+from django_fusion.core.rendering import TemplateRenderer
 
 def build_welcome_email(user) -> dict:
     renderer = TemplateRenderer.get_default()

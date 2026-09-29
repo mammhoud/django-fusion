@@ -10,18 +10,18 @@ Path: `django_fusion/comp/loader`
 
 
 ### Modules
+
 - `discovery.py`
 - `htmx.py`
 - `templates.py`
-- `up.py`
 - `urls.py`
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Request --> comp.fragment.loader
-    {package_name} --> Response
+    Request --> django_fusion.comp.loader
+    django_fusion.comp.loader --> Response
 ```
 ## Request Flow
 

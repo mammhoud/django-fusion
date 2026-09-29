@@ -1,7 +1,7 @@
 # Phase 2 — SurrealDB Embedded File Migration
 
 **Status:** Planned — immediate priority  
-**Scope:** `application/tools/PlanInc/runtime/`, `docker-compose.yml`, `verify-surrealdb.sh`  
+**Scope:** `projects/PlanInc/runtime/`, `docker-compose.yml`, `verify-surrealdb.sh`  
 **Owner:** Backend / Infrastructure  
 **Depends on:** Phase 0 complete  
 **Blocks:** Phase 3, Phase 4 (can proceed in parallel)

@@ -113,7 +113,8 @@ projects/
 
 ```python
 # Routing
-from django_fusion.comp.routes import Site, Application, route
+from django_fusion.routes.core.base import Viewset, route
+from django_fusion.routes.core.sites import Module, Application
 
 # Components
 from django_fusion.comp import Component
@@ -123,7 +124,7 @@ from django_fusion.comp import Component
 {% comp_include "path/to/template" %}    # Tracked include
 
 # Viewsets
-from django_fusion.comp.routes import ModelViewset
+from django_fusion.routes.models.crud import ModelViewset
 
 class ProductViewset(ModelViewset):
     model = Product

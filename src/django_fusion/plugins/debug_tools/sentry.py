@@ -13,7 +13,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.sentry import SentrySetup
+    from django_fusion.plugins.debug_tools.sentry import SentrySetup
 
     setup = SentrySetup()
     config = setup.configure(dsn, environment)

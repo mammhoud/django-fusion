@@ -8,7 +8,7 @@ without a full Django WSGI/ASGI stack.
 Usage::
 
     from robyn import Request as RobynRequest
-    from django_fusion.comp.robyn.request import RobynRequest as FusionRequest
+    from django_fusion.plugins.robyn.request import RobynRequest as FusionRequest
 
     @app.get("/products")
     async def list_products(request: RobynRequest):

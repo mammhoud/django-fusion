@@ -14,7 +14,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.prometheus import PrometheusSetup
+    from django_fusion.plugins.debug_tools.prometheus import PrometheusSetup
 
     setup = PrometheusSetup()
     apps, middleware = setup.configure(installed_apps, middleware)

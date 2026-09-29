@@ -1,7 +1,7 @@
 """
 django_fusion.tasks — Unified background-task API.
 
-Provides broker-agnostic task registration, backends (Dramatiq, RQ, in-process),
+Provides broker-agnostic task registration, backends (Dramatiq, in-process),
 MCP tooling for AI-driven task management, and an async email backend.
 
 Usage::

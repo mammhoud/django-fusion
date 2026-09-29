@@ -10,14 +10,15 @@ Path: `django_fusion/models/mixins`
 
 
 ### Modules
+
 - `display_mode.py`
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Request --> models.mixins
-    {package_name} --> Response
+    Request --> django_fusion.models.mixins
+    django_fusion.models.mixins --> Response
 ```
 ## Request Flow
 
@@ -28,7 +29,7 @@ flowchart LR
 ## Usage Example
 
 ```python
-from django_fusion.models.mixins.models import DisplayModeMixin
+from django_fusion.models.mixins import DisplayModeMixin
 
 # Create an instance
 obj = DisplayModeMixin.objects.create(display_mode='...', modal_size='...', display_mode_panels='...')

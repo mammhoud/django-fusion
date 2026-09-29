@@ -10,18 +10,30 @@ Path: `django_fusion/config`
 
 
 ### Modules
+
+- `analyzer.py`
+- `asset_tag.py`
+- `assets.py`
 - `conf.py`
 - `conf_utils.py`
 - `constants.py`
+- `context.py`
 - `loader.py`
 - `logging.py`
+- `manifest.py`
+- `options.py`
+- `params.py`
+- `plugins.py`
+- `project.py`
+- `skeleton.py`
+- `staticfiles.py`
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Request --> config
-    {package_name} --> Response
+    Request --> django_fusion.config
+    django_fusion.config --> Response
 ```
 ## Request Flow
 

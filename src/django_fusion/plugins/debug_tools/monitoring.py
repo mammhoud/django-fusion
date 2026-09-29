@@ -12,7 +12,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.monitoring import MonitoringSetup
+    from django_fusion.plugins.debug_tools.monitoring import MonitoringSetup
 
     setup = MonitoringSetup()
     config = setup.setup(enable_prometheus=True, enable_sentry=True)

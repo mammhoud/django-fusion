@@ -10,6 +10,7 @@ Path: `django_fusion/plugins/unpoly`
 
 
 ### Modules
+
 - `adapter.py`
 - `core.py`
 
@@ -18,7 +19,7 @@ Path: `django_fusion/plugins/unpoly`
 ```mermaid
 flowchart LR
     Request --> django_fusion.plugins.unpoly
-    {package_name} --> Response
+    django_fusion.plugins.unpoly --> Response
 ```
 ## Request Flow
 

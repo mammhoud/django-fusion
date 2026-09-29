@@ -188,14 +188,15 @@ def test_user_row_renders_in_edit_mode(client):
 
 ```python
 # myapp/wagtail_hooks.py
-from django_fusion.wagtail.viewsets import BaseSnippetViewSet
+from django_fusion.fragments.viewsets import BaseSnippetViewSet
 from .models import Subscriber
 
 class SubscriberViewSet(BaseSnippetViewSet):
     model = Subscriber
     list_display = ["email", "subscribed_at", "is_confirmed"]
-    duplicate_enabled = False
-    export_csv_fields = ["email", "subscribed_at", "is_confirmed"]
+    # BaseSnippetViewSet contributes the `duplicate` and `export_csv` bulk
+    # actions plus icon_boolean() / link_display() / image_display() helpers.
+    # There is no `duplicate_enabled` / `export_csv_fields` attribute to set.
 ```
 
 Then visit `/admin/snippets/myapp/subscriber/` and a `Download CSV`

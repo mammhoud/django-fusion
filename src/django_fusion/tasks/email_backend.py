@@ -14,7 +14,7 @@ class AsyncEmailBackend(BaseEmailBackend):
     """Email backend that enqueues all messages as background tasks.
 
     Requires ``django_fusion.tasks`` to be configured with a broker
-    backend (Dramatiq, RQ, or in-process).
+    backend (Dramatiq, or in-process).
 
     Configure with::
 

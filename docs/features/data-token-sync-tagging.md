@@ -99,7 +99,7 @@ All token models inherit shared fields from `AbstractDataToken`:
 | `updated_at` | AbstractDataToken | DataToken, DeviceToken |
 
 ```python
-from django_fusion.core.models import AbstractDataToken
+from django_fusion.models import AbstractDataToken
 
 class DeviceToken(AbstractDataToken):
     device_id = models.CharField(...)
@@ -155,7 +155,7 @@ DataToken.objects.filter(
 Connect the built-in handler to your project's `SyncLog` model:
 ```python
 # In AppConfig.ready():
-from django_fusion.core.models import sync_log_success_handler
+from django_fusion.models import sync_log_success_handler
 from django.db.models.signals import post_save
 post_save.connect(sync_log_success_handler, sender=SyncLog)
 ```
@@ -164,7 +164,7 @@ marked as synced — **no manual cleanup needed**.
 
 ### 7. DataTokenMixin — Drop-in for Any Model
 ```python
-from django_fusion.core.models import DataTokenMixin
+from django_fusion.models import DataTokenMixin
 
 class Invoice(DataTokenMixin, models.Model):
     customer = models.CharField(max_length=100)
@@ -183,7 +183,7 @@ invoice.mark_synced()              # Preserves audit trail
 
 ### Step 1: Tag rows after creation (with app_type)
 ```python
-from django_fusion.core.models import DataToken, AbstractDataToken
+from django_fusion.models import DataToken, AbstractDataToken
 
 invoice = Invoice.objects.create(customer="Acme", total=99.99)
 DataToken.objects.tag_row(
@@ -208,7 +208,7 @@ for item in items:
 
 ### Step 2: Sync batch in the scheduler (with app_type filter)
 ```python
-from django_fusion.core.models import DataToken
+from django_fusion.models import DataToken
 
 # Filter by app_type as well as node_id
 batch = DataToken.objects.sync_batch(node_id=self.node_id, limit=50).filter(

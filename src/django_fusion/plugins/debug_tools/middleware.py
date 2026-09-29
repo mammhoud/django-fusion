@@ -12,7 +12,7 @@ Functions:
 
 Usage::
 
-    from django_fusion.contrib.debug_tools.middleware import MiddlewareConfig
+    from django_fusion.plugins.debug_tools.middleware import MiddlewareConfig
 
     config = MiddlewareConfig.configure_all(installed_apps, middleware)
 """

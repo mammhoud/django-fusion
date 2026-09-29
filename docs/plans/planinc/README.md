@@ -2,7 +2,7 @@
 
 Enterprise Planning & Incubation Platform  
 License: AGPL-3.0 | Repo: `https://github.com/mammhoud/PlanInc` | Branch: `generic`  
-Directory: `application/tools/PlanInc/`
+Directory: `projects/PlanInc/`
 
 ---
 
@@ -59,7 +59,7 @@ Phase 0 (done)
 ## Current Architecture
 
 ```
-application/tools/PlanInc/
+projects/PlanInc/
 ├── planing/              ← Blinko upstream fork
 │   ├── prisma/           ← PostgreSQL schema (to be removed in Phase 3)
 │   ├── server/           ← Express + tRPC + pg-boss backend (Blinko original)
@@ -75,7 +75,7 @@ application/tools/PlanInc/
 ## Target Architecture (after all phases)
 
 ```
-application/tools/PlanInc/
+projects/PlanInc/
 ├── src/                  ← React/Vite frontend (Tauri app)
 ├── src-tauri/            ← Rust backend (SurrealDB embedded)
 │   └── src/commands/     ← All data access via Tauri invoke
@@ -97,7 +97,7 @@ application/tools/PlanInc/
 | `projects/CMS` | `mammhoud/cms` | `generic` |
 | `projects/POS` | `mammhoud/pos` | `generic` |
 | `projects/Clients/ctc-research` | `mammhoud/ctc-research` | `generic` |
-| `application/tools/PlanInc` | `mammhoud/PlanInc` | `generic` |
+| `projects/PlanInc` | `mammhoud/PlanInc` | `generic` |
 
 Workspace root: `https://github.com/mammhoud/workspace.git` → branch `generic`
 
@@ -113,9 +113,9 @@ Workspace root: `https://github.com/mammhoud/workspace.git` → branch `generic`
 
 | File | Location | Notes |
 |---|---|---|
-| `LICENSE` | `application/tools/PlanInc/LICENSE` | AGPL-3.0 |
-| `README.md` | `application/tools/PlanInc/README.md` | Updated with Blinko/Anytype resources, ideations |
-| `project.json` | `application/tools/PlanInc/project.json` | AGPL-3.0, PlanInc identity |
+| `LICENSE` | `projects/PlanInc/LICENSE` | AGPL-3.0 |
+| `README.md` | `projects/PlanInc/README.md` | Updated with Blinko/Anytype resources, ideations |
+| `project.json` | `projects/PlanInc/project.json` | AGPL-3.0, PlanInc identity |
 
 ---
 

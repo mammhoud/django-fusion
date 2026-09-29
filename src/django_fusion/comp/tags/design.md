@@ -2,30 +2,35 @@
 
 ## Overview
 
-This package (`comp.templatetags`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
+This package (`comp.tags`) is part of `django-fusion` and provides reusable components, utilities, or routing helpers.
 
 ## Directory
 
-Path: `django_fusion/comp/templatetags`
+Path: `django_fusion/comp/tags`
 
 
 ### Modules
-- `components/` — component inclusion tags (table, pagination, search, form, modal, breadcrumbs, navigation, menu, card, etc.)
-- `tags/` — core component tags (block, slot, prop, var, asset)
-- `menu.py` — site and application menu tags
-- `routable_components.py` — routable component helpers (component_url, active_menu)
-- `format.py` — text, number, and date filters
-- `field_adapter.py` — Wagtail form field adapter
-- `content_type.py` — content type helpers
-- `user_role.py` — role/permission filters
-- `embed_blocks.py` — embed block filters
+
+- `content_type.py`
+- `embed_blocks.py`
+- `format.py`
+- `fusion_assets.py`
+- `fusion_form_field_adapter.py`
+- `fusion_layout.py`
+- `fusion_skeleton.py`
+- `menu.py`
+- `navigation.py`
+- `routable_components.py`
+- `user_role.py`
+- `components/`
+- `tags/`
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Request --> comp.templatetags
-    {package_name} --> Response
+    Request --> django_fusion.comp.tags
+    django_fusion.comp.tags --> Response
 ```
 ## Request Flow
 
