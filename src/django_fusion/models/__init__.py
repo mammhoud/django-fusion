@@ -25,6 +25,7 @@ from .settings import (
     AbstractNewsletterSubscription,
 )  # noqa: F401
 from .integrations import Integration
+from .workspace import AbstractWorkspace  # noqa: F401
 try:
     from .default import ContentBase  # noqa: F401
 except ImportError:
