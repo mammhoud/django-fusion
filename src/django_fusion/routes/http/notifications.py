@@ -435,7 +435,11 @@ class NotificationMixin:
                     pass
 
             notification_data = {
-                "id": extra_data.get("id", f"msg_{hash(message)}"),
+                # ``message`` is a django.contrib.messages ``Message`` instance,
+                # which defines ``__eq__`` without ``__hash__`` and is therefore
+                # unhashable. Hash its text instead so notification rendering
+                # never raises ``TypeError: unhashable type: 'Message'``.
+                "id": extra_data.get("id", f"msg_{hash(str(message))}"),
                 "message": str(message),
                 "level": message.level_tag or "info",
                 "title": extra_data.get("title", ""),
