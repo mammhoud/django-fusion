@@ -149,7 +149,7 @@ is absent — this mirrors the formint sidecar pattern.
 
 ## Choosing a road
 
-- **Django-served site** (Precis, CTC, Loop CRM): use the Django-native
+- **Django-served site** (Precis, CTC, Operit): use the Django-native
   `OpenAPISpec` + viewset filtering. No second process to run.
 - **High-throughput Rust sidecar** (formint professional): use the bolt
   bridge; bolt generates the OpenAPI spec from `response_model`/msgspec types

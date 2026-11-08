@@ -38,7 +38,7 @@ BUILDER_BRANDS = [
     ("structa", _("Structa")),
     ("precis", _("Precis")),
     ("formint", _("Formint")),
-    ("loop", _("Loop")),
+    ("operit", _("Operit")),
 ]
 
 #: Theme keys that map to a real ``[data-theme]`` block (everything except

@@ -181,13 +181,13 @@ class TestSyncTaskHistory:
         from django_fusion.tasks import views as views_mod
 
         seen = []
-        monkeypatch.setattr(views_mod, "resolve_default_site", lambda: "loop-crm")
+        monkeypatch.setattr(views_mod, "resolve_default_site", lambda: "operit")
         monkeypatch.setattr(
             views_mod, "sync_website_record", lambda site: seen.append(site) or 3
         )
 
         assert sync_task_history() == 3
-        assert seen == ["loop-crm"]
+        assert seen == ["operit"]
 
 
 # ── InProcessBackend ───────────────────────────────────────────

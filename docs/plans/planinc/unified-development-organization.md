@@ -468,13 +468,13 @@ deploy-all: deploy-databases deploy-coder deploy-media deploy-app deploy-tasks d
 # Add to existing check/test targets:
 check-all:
 	$(MAKE) -C structa.cloud check
-	$(MAKE) -C loop-crm check
+	$(MAKE) -C CRM check
 	$(MAKE) -C $(PLANINC_DIR) check
 	$(MAKE) -C $(FORMINT_DEV_DIR) formint-dev-check-all
 
 test-all:
 	$(MAKE) -C structa.cloud test
-	$(MAKE) -C loop-crm test
+	$(MAKE) -C CRM test
 	$(MAKE) -C $(PLANINC_DIR) test
 	$(MAKE) -C $(FORMINT_DEV_DIR) formint-dev-test-all
 ```
