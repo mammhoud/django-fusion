@@ -168,19 +168,24 @@ class DefaultLanguageMiddleware:
         request.LANGUAGE_CODE = language
         response = self.get_response(request)
 
-        # A cookie or explicit/session choice is durable. The default is not
-        # written until the user chooses a language, avoiding a false choice
-        # in a fresh browser while still refreshing malformed/missing cookies.
-        #
-        # When the session already carries the resolved language (e.g. the
-        # set_language_api wrote it in the same request), skip re-persistence
-        # so the view's cookie is not overwritten by a stale request-level
-        # cookie value.
-        session_already_set = session_language == language
-        if not session_already_set and (
-            explicit or session_language or cookie_language or language_cookie_name() not in request.COOKIES
-        ):
-            persist_language(request, response, language, save_session=bool(explicit or session_language or cookie_language))
+        # A view may persist a new preference during the request
+        # (``set_language_api`` writes the session before responding). Re-read
+        # the session so the response cookie carries the value the view chose,
+        # then stop: a request-scoped ``?lang=`` override also differs from the
+        # stored preference and must not be answered with that preference's
+        # cookie.
+        current_session_language = _session_language(request)
+        if current_session_language != session_language:
+            if current_session_language:
+                persist_language(request, response, current_session_language, save_session=False)
+            return response
+
+        # Otherwise write the resolved language only for a durable choice
+        # (cookie, session or ``?lang=``) or when the cookie was missing, so a
+        # session that already matches stays cookie-stable.
+        durable = explicit or session_language or cookie_language
+        if session_language != language and (durable or language_cookie_name() not in request.COOKIES):
+            persist_language(request, response, language, save_session=bool(durable))
         return response
 
 
