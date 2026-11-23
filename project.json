@@ -3,31 +3,54 @@
   "name": "django-fusion-assets",
   "root": "libs/django-fusion",
   "projectType": "library",
-  "tags": ["type:library", "stack:webpack", "framework:django-fusion"],
+  "tags": [
+    "type:library",
+    "stack:webpack",
+    "framework:django-fusion"
+  ],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
-      "inputs": ["assets"],
+      "inputs": [
+        "assets"
+      ],
       "cache": true,
-      "options": { "command": "npm run build", "cwd": "libs/django-fusion" }
+      "options": {
+        "command": "npm run build",
+        "cwd": "libs/django-fusion"
+      }
     },
     "dev": {
       "executor": "nx:run-commands",
-      "options": { "command": "npm run dev", "cwd": "libs/django-fusion" }
+      "options": {
+        "command": "npm run dev",
+        "cwd": "libs/django-fusion"
+      }
     },
     "watch": {
       "executor": "nx:run-commands",
-      "options": { "command": "npm run watch", "cwd": "libs/django-fusion" }
+      "options": {
+        "command": "npm run watch",
+        "cwd": "libs/django-fusion"
+      }
     },
     "clean": {
       "executor": "nx:run-commands",
-      "options": { "command": "npm run clean", "cwd": "libs/django-fusion" }
+      "options": {
+        "command": "npm run clean",
+        "cwd": "libs/django-fusion"
+      }
     },
     "check": {
       "executor": "nx:run-commands",
-      "inputs": ["default"],
+      "inputs": [
+        "default"
+      ],
       "cache": true,
-      "options": { "command": "make check", "cwd": "libs/django-fusion" }
+      "options": {
+        "command": "make check",
+        "cwd": "libs/django-fusion"
+      }
     }
   }
 }

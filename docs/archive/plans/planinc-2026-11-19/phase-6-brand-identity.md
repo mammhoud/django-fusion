@@ -1,3 +1,9 @@
+> **ARCHIVED:** This document is historical and is not an active source of truth.
+> **Archived:** 2026-11-19
+> **Replacement:** `projects/PlanInc/docs/10-blinko-parity-and-design-plan.md`
+> **Reason:** Completed: the brandkit and palette ship at `projects/PlanInc/brandkit/`; the identity is documented in the design plan.
+> **Rollback:** See `projects/docs/plans/deletion-manifest.md` entry `DOC-0033`.
+
 # Phase 6 — PlanInc Brand Identity & Visual System
 
 **Status:** Planned  

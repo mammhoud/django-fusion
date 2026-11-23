@@ -38,7 +38,7 @@ links:
 # 🧩 django-fusion — `libs/django-fusion/`
 
 > **Customization level:** 🔴 Not Customizable — use its public API, don't modify internals.
-> **Complete package docs** live at [`libs/django-fusion/docs/`](../../libs/django-fusion/docs/INDEX.md) with stable `DF-0NN` IDs.
+> **Complete package docs** live at [`libs/django-fusion/docs/`](../INDEX.md) with stable `DF-0NN` IDs.
 
 django-fusion is the shared Django + Wagtail toolkit every Structa Cloud web product is built on:
 **component system (`{% comp %}`), declarative routing, forms/tables mixins, allauth auth,
@@ -173,14 +173,14 @@ The library ships its own complete guide under `libs/django-fusion/docs/`:
 
 | Area | Guide |
 |------|-------|
-| Getting started | [DF-001](../../libs/django-fusion/docs/01-getting-started.md) |
-| Component system | [DF-003](../../libs/django-fusion/docs/03-component-system.md) |
-| `{% comp %}` tag | [DF-004](../../libs/django-fusion/docs/04-component-tag.md) |
-| Routing & viewsets | [DF-005](../../libs/django-fusion/docs/05-routing.md) |
-| Forms & tables | [DF-006](../../libs/django-fusion/docs/06-forms-and-tables.md) |
-| Health checks | [DF-009](../../libs/django-fusion/docs/09-health.md) |
-| Wagtail integration | [DF-010](../../libs/django-fusion/docs/10-wagtail-integration.md) |
-| Troubleshooting & FAQ | [DF-013](../../libs/django-fusion/docs/13-troubleshooting.md) · [DF-014](../../libs/django-fusion/docs/14-faq.md) |
+| Getting started | [DF-001](../01-getting-started.md) |
+| Component system | [DF-003](../03-component-system.md) |
+| `{% comp %}` tag | [DF-004](../04-component-tag.md) |
+| Routing & viewsets | [DF-005](../05-routing.md) |
+| Forms & tables | [DF-006](../06-forms-and-tables.md) |
+| Health checks | [DF-009](../09-health.md) |
+| Wagtail integration | [DF-010](../10-wagtail-integration.md) |
+| Troubleshooting & FAQ | [DF-013](../13-troubleshooting.md) · [DF-014](../14-faq.md) |
 
 ## Remarks & Notes
 

@@ -1,3 +1,9 @@
+> **ARCHIVED:** This document is historical and is not an active source of truth.
+> **Archived:** 2026-11-19
+> **Replacement:** `projects/PlanInc/docs/13-single-frontend-platforms.md`
+> **Reason:** Superseded: the Tauri v2 shell ships at `projects/PlanInc/src/src-tauri/`.
+> **Rollback:** See `projects/docs/plans/deletion-manifest.md` entry `DOC-0030`.
+
 # Phase 1 — Tauri + Rust Desktop Architecture
 
 **Status:** Planned  

@@ -35,4 +35,4 @@ limits:
   (`npm run build`, webpack); this plugin is the serving half.
 - It does not host assets on a CDN or object store.
 - It does not decide `STATIC_ROOT` / `STATIC_URL` — the site does, per
-  [`docs/publish/`](../../../../docs/publish/README.md) guidance.
+  [`docs/publish/`](../../../../../docs/publish/README.md) guidance.

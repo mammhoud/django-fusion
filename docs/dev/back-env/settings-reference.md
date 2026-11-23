@@ -406,6 +406,6 @@ TEMPLATES = [
 | Topic | Path |
 |-------|------|
 | Back-env overview | [`README.md`](README.md) |
-| Per-project config | [`../projects/`](../projects/) |
-| Infrastructure | [`../infrastructure/`](../infrastructure/) |
-| Deployment | [`../publish/docker-deploy.md`](../publish/docker-deploy.md) |
+| Per-project config | [`../../../../../Clients/`](../../../../../Clients/) |
+| Infrastructure | [`../../../../../application/`](../../../../../application/) |
+| Deployment | [`../../../../../docs/publish/docker-deploy.md`](../../../../../docs/publish/docker-deploy.md) |

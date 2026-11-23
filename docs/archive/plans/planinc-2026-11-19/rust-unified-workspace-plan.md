@@ -1,3 +1,9 @@
+> **ARCHIVED:** This document is historical and is not an active source of truth.
+> **Archived:** 2026-11-19
+> **Replacement:** `projects/PlanInc/src/src-tauri/Cargo.toml` (current single-crate shell)
+> **Reason:** Proposed only, never implemented: there is no Cargo workspace or shared `planinc-core` crate in the checkout.
+> **Rollback:** See `projects/docs/plans/deletion-manifest.md` entry `DOC-0034`.
+
 # Plan: Unified Rust Workspace for SurrealDB Projects
 
 ## Goal

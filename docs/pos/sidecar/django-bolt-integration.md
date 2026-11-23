@@ -226,7 +226,7 @@ urlpatterns = [
 |----------|------|
 | django-bolt docs | [bolt.farhana.li](https://bolt.farhana.li/) |
 | django-bolt GitHub | [dj-bolt/django-bolt](https://github.com/dj-bolt/django-bolt) |
-| django-bolt pydantic | [libs/django-bolt/python/django_bolt/pydantic/](../../../../libs/django-bolt/python/django_bolt/pydantic/) |
-| POS editions | [../editions.md](../editions.md) |
+| django-bolt pydantic | `libs/django-bolt/python/django_bolt/pydantic/` (optional local library) |
+| POS editions | [docs/pos/editions.md](../../../../../docs/pos/editions.md) |
 | Sidecar overview | [sidecar-readme.md](sidecar-readme.md) |
-| Cloud sync plan | [../cloud/sync-plan.md](../cloud/sync-plan.md) |
+| Cloud sync plan | `cloud/sync-plan.md` (archived; see git history) |

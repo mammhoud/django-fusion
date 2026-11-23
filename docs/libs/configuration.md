@@ -82,4 +82,4 @@ server.serve()
 |----------|------|
 | Libs README | [`README.md`](README.md) |
 | django-fusion guide | [`django-fusion.md`](django-fusion.md) |
-| AI & Agents | [`../../ai/`](../../ai/) |
+| AI & Agents | [`../../../../docs/ai/`](../../../../docs/ai/) |

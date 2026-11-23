@@ -1,3 +1,9 @@
+> **ARCHIVED:** This document is historical and is not an active source of truth.
+> **Archived:** 2026-11-19
+> **Replacement:** `projects/PlanInc/docs/plans/README.md` + `.gitmodules`
+> **Reason:** Completed migration record (submodules established). No forward work remains.
+> **Rollback:** See `projects/docs/plans/deletion-manifest.md` entry `DOC-0029`.
+
 # Phase 0 — Git Remotes & Submodule Setup
 
 **Status:** Completed  

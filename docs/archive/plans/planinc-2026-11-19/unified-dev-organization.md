@@ -1,3 +1,9 @@
+> **ARCHIVED:** This document is historical and is not an active source of truth.
+> **Archived:** 2026-11-19
+> **Replacement:** `projects/PlanInc/docs/13-single-frontend-platforms.md`
+> **Reason:** Duplicate draft (v4.1) describing a `/home/` monorepo layout and `formint-*` directories that do not exist; its one unique section (the responsive radius/motion ladder) was folded into the canonical platform doc.
+> **Rollback:** See `projects/docs/plans/deletion-manifest.md` entry `DOC-0035`.
+
 # Unified Development Organization Plan — PlanInc & Formint
 
 ## Status: Draft · Version: 4.1 · Date: 2026-09-20

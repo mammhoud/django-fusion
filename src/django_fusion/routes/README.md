@@ -171,9 +171,9 @@ route barrel.
 
 ## Documentation
 
-- [Forms & Tables Integration](../../docs/FORMS_TABLES_INTEGRATION.md)
-- [Routable Components Guide](../../docs/ROUTABLE_COMPONENTS.md)
-- [Template Resolution Strategy](../../docs/TEMPLATE_RESOLUTION.md)
+- [Forms & Tables Integration](../../../docs/06-forms-and-tables.md)
+- [Routable Components Guide](../../../docs/03-component-system.md)
+- [Template Resolution Strategy](../../../docs/05-routing.md)
 
 ## File Organization
 

@@ -2,7 +2,7 @@
 
 Status: ✅ Applied (rename + consolidation) · 🔮 Proposed (enhancements)
 
-Companion audit: [`dead-code-audit-cms-lms.md`](./dead-code-audit-cms-lms.md)
+Companion audit: `dead-code-audit-cms-lms.md` (archived; see git history)
 
 ---
 

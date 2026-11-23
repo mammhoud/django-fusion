@@ -150,4 +150,4 @@ make migrate WEBSITE=precis-ctc   # Run migrations for a site
 
 ---
 
-→ [Back to docs](../README.md)
+→ [Back to docs](../INDEX.md)

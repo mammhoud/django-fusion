@@ -44,6 +44,17 @@ class FusionIntrospectionApiView(View):
         return JsonResponse(data, json_dumps_params={"indent": 2, "sort_keys": True})
 
 
+def _dump(data: Any) -> str:
+    """Serialise the snapshot for display.
+
+    The snapshot carries model/plugin metadata straight from the ORM, which
+    includes lazy translation proxies (``__proxy__``) that ``json.dumps``
+    refuses. Falling back to ``str`` renders those resolved values instead of
+    raising TypeError in the dashboard view.
+    """
+    return json.dumps(data, indent=2, sort_keys=True, default=str)
+
+
 def tracker_plugins_detect(request) -> dict[str, Any]:
     """Plugin detection for the current request (public helper for views)."""
     from django_fusion.plugins.registry import plugins
@@ -61,7 +72,7 @@ class FusionIntrospectionDashboardView(View):
         data["detected"] = tracker_plugins_detect(request)
         html = render_to_string(
             "django_fusion/plugins/debug_tools/introspection.html",
-            {"snapshot": data, "json_snapshot": json.dumps(data, indent=2, sort_keys=True)},
+            {"snapshot": data, "json_snapshot": _dump(data)},
             request=request,
         )
         return HttpResponse(html)

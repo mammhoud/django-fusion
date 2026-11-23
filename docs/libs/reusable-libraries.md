@@ -109,6 +109,6 @@ pytest tests/
 |----------|------|
 | django-fusion docs | [`django-fusion.md`](django-fusion.md) |
 | django-fusion README | [GitHub](https://github.com/mammhoud/django-fusion) |
-| ceptor-ai README | [GitHub](https://github.com/mammhoud/ceptor-ai) |
+| ceptor-ai README | `github.com/mammhoud/ceptor-ai` (private/optional) |
 | Component system guides | [`django-tags.md`](django-tags.md) |
 | Configuration | [`configuration.md`](configuration.md) |

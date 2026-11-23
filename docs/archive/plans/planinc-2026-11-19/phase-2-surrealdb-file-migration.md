@@ -1,3 +1,9 @@
+> **ARCHIVED:** This document is historical and is not an active source of truth.
+> **Archived:** 2026-11-19
+> **Replacement:** `projects/PlanInc/docs/02-architecture.md`
+> **Reason:** Completed: the desktop stores data in embedded SurrealKV (`surrealkv://data/planinc.db`), and the compose file no longer runs a SurrealDB image.
+> **Rollback:** See `projects/docs/plans/deletion-manifest.md` entry `DOC-0031`.
+
 # Phase 2 — SurrealDB Embedded File Migration
 
 **Status:** Planned — immediate priority  
